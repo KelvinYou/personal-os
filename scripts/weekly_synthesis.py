@@ -136,6 +136,50 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
     days_logged = len(logs_compiled)
     avg_energy = sum(energy_levels) / len(energy_levels) if energy_levels else 0
 
+    # --- Circuit Breaker 熔断检查 ---
+    breakers = config.get("circuit_breakers", [])
+    tripped_breakers = []
+
+    # 最近一天的 per-day 指标
+    latest_metrics = {}
+    if files:
+        last_meta, _ = parse_log(sorted(files)[-1])
+        if last_meta:
+            latest_metrics["sleep_duration"] = safe_float(last_meta.get("sleep_duration"))
+            latest_metrics["energy_level"] = safe_float(last_meta.get("energy_level"))
+            latest_metrics["mental_load"] = safe_float(last_meta.get("mental_load"))
+
+    latest_metrics["cumulative_sleep_debt"] = total_sleep_debt
+
+    # 计算连续 Poor 睡眠 (从最近一天往回数)
+    consec_poor = 0
+    for sq in reversed(sleep_records):
+        if sq == "Poor":
+            consec_poor += 1
+        else:
+            break
+    latest_metrics["consecutive_poor_sleep"] = consec_poor
+
+    ops = {"<": lambda a, b: a < b, "<=": lambda a, b: a <= b,
+           ">": lambda a, b: a > b, ">=": lambda a, b: a >= b,
+           "==": lambda a, b: a == b}
+
+    for cb in breakers:
+        cond = cb.get("condition", {})
+        metric_name = cond.get("metric", "")
+        op_str = cond.get("operator", "")
+        threshold = safe_float(cond.get("value"))
+        actual = latest_metrics.get(metric_name, 0.0)
+        op_fn = ops.get(op_str)
+        if op_fn and op_fn(actual, threshold):
+            tripped_breakers.append({
+                "name": cb["name"],
+                "metric": metric_name,
+                "actual": actual,
+                "threshold": threshold,
+                "actions": cb.get("actions", []),
+            })
+
     # --- 打印聚合摘要 ---
     print("=" * 50)
     print("[Status: OK] Weekly Synthesis Complete")
@@ -146,7 +190,11 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
     print(f"  Avg Energy     : {avg_energy:.1f}/10")
     print(f"  Poor Sleep     : {incidents} days")
     print(f"  Sleep Debt     : {total_sleep_debt:.1f}h")
-    print(f"  Total Spend    : ${total_spend:.2f}")
+    print(f"  Total Spend    : RM{total_spend:.2f}")
+    print(f"  Breakers Trip  : {len(tripped_breakers)}")
+    if tripped_breakers:
+        for tb in tripped_breakers:
+            print(f"    [TRIPPED] {tb['name']}: {tb['metric']}={tb['actual']}")
     print("=" * 50)
 
     # --- 拼装 Agent Prompt ---
@@ -184,9 +232,22 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
 - 咖啡因截断时间记录：{', '.join(caffeine_cutoffs) if caffeine_cutoffs else '暂无数据'}
 - 本周主要效率阻碍 (Primary Blockers)：
 {chr(10).join(['  - ' + b for b in primary_blockers]) if primary_blockers else '  - 暂无明显数据'}
-- 总量化显性支出：${total_spend:.2f}
+- 总量化显性支出：RM{total_spend:.2f}
 
-## 2. 每日日志切片采样 (Daily Slices)
+## 2. 🚨 Circuit Breaker 熔断状态 (System Alerts)
+"""
+    if tripped_breakers:
+        for tb in tripped_breakers:
+            actions_md = "\n".join([f"    - {a}" for a in tb["actions"]])
+            prompt_context += f"""- **[TRIPPED] {tb['name']}**: `{tb['metric']}` = {tb['actual']} (阈值: {tb['threshold']})
+  - 强制行为限制:
+{actions_md}
+"""
+    else:
+        prompt_context += "- [Status: OK] 所有熔断器正常，无触发。\n"
+
+    prompt_context += f"""
+## 3. 每日日志切片采样 (Daily Slices)
 {''.join(logs_compiled)}
 """
 

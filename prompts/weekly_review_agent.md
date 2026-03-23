@@ -20,13 +20,24 @@
 
 2. **核心产出提炼 (Core Outputs)**: 将过去一周的高光成果整理成工程师视角的模块进展。
 
-3. **下周战略目标与精确的时间区块排期 (Next Week Goals & Time-blocked Timetable)**: 
+3. **Circuit Breaker 熔断响应 (Circuit Breaker Enforcement)**:
+   输入数据中包含 `Circuit Breaker 熔断状态` 区块。如果有任何熔断器被触发 (`[TRIPPED]`)：
+   - **评分时**：必须在扣分项中体现触发的熔断器及其 Root Cause。
+   - **排期时**：下周时间表**必须严格遵守所有已触发熔断器的行为限制**（如禁止晨跑、Deep Work 上限等）。这些限制是硬约束，不可因产出目标而放宽。
+   - **恢复条件**：在排期中标注何时预计解除熔断（基于恢复趋势判断）。
+
+4. **下周战略目标与精确的时间区块排期 (Next Week Goals & Time-blocked Timetable)**:
    针对本周的扣分项与项目进度，输出下周的：
    - **核心目标 (Core Objectives)**: 3 个明确的里程碑目标。
    - **精确时间表 (Time-blocked Timetable)**: 结合根目录预设的 `user_profile.md` 全局偏好，以每天为粒度按**具体时间段（例如 09:00-11:00）**进行精细化划分 (Time-blocking)。排期必须精确到：何时起床、**一日三餐的具体时间区块与饮食搭配 (Macros)**、何时进入 Deep Work 冲刺、何时进行身体锻炼，以及最关键的**强制断电/休整时间**。排期必须严谨考量本周积压的神经疲劳，合理安排恢复干预。
+   - **⚠️ 排期必须遵守所有已触发 Circuit Breaker 的强制行为限制**。
 
 ## Output Format
 请严格按照以下格式输出你的分析报告：
+
+### 🚨 0. System Alerts (熔断状态)
+- 列出所有已触发的 Circuit Breaker 及其强制行为限制
+- 如无触发则标注 `[All Clear]`
 
 ### 🏆 1. 本周系统多维度得分: [例如: 78/100]
 - **模块细分**:

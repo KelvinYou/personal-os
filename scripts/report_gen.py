@@ -98,6 +98,53 @@ def run_checks(log_dir=None, config=None):
                 if isinstance(item, dict):
                     total_spend += safe_float(item.get("amount"))
 
+    # --- Circuit Breaker 熔断检查 ---
+    breakers = config.get("circuit_breakers", [])
+    tripped = []
+
+    # 收集最近日志的指标快照用于熔断判定
+    latest_metrics = {}
+    if recent_sleep:
+        last_name, _ = recent_sleep[-1]
+        # 从最后一天获取 per-day 指标
+        last_file = Path(log_dir) / f"{last_name}.md"
+        if last_file.exists():
+            last_meta = parse_frontmatter(last_file)
+            if last_meta:
+                latest_metrics["sleep_duration"] = safe_float(last_meta.get("sleep_duration"))
+                latest_metrics["energy_level"] = safe_float(last_meta.get("energy_level"))
+                latest_metrics["mental_load"] = safe_float(last_meta.get("mental_load"))
+
+    # 累计/连续指标
+    latest_metrics["cumulative_sleep_debt"] = total_sleep_debt
+
+    consec_poor = 0
+    for _, sq in reversed(recent_sleep):
+        if sq == "Poor":
+            consec_poor += 1
+        else:
+            break
+    latest_metrics["consecutive_poor_sleep"] = consec_poor
+
+    ops = {"<": lambda a, b: a < b, "<=": lambda a, b: a <= b,
+           ">": lambda a, b: a > b, ">=": lambda a, b: a >= b,
+           "==": lambda a, b: a == b}
+
+    for cb in breakers:
+        cond = cb.get("condition", {})
+        metric_name = cond.get("metric", "")
+        op_str = cond.get("operator", "")
+        threshold = safe_float(cond.get("value"))
+        actual = latest_metrics.get(metric_name, 0.0)
+
+        op_fn = ops.get(op_str)
+        if op_fn and op_fn(actual, threshold):
+            tripped.append(cb)
+            actions_str = " / ".join(cb.get("actions", []))
+            alerts.append(
+                f"[BREAKER] {cb['name']}: {metric_name}={actual} {op_str} {threshold} → {actions_str}"
+            )
+
     # --- 聚合规则检查 ---
 
     # 连续 Poor 睡眠告警
@@ -116,7 +163,7 @@ def run_checks(log_dir=None, config=None):
 
     # 周度支出告警
     if total_spend > spend_alert:
-        alerts.append(f"[Warning] Weekly spend ${total_spend:.2f} exceeds alert threshold ${spend_alert:.2f}.")
+        alerts.append(f"[Warning] Weekly spend RM{total_spend:.2f} exceeds alert threshold RM{spend_alert:.2f}.")
 
     # --- 输出 ---
     print("=" * 50)
@@ -124,7 +171,7 @@ def run_checks(log_dir=None, config=None):
     print("=" * 50)
     print(f"  Days scanned  : {days}")
     print(f"  Sleep debt    : {total_sleep_debt:.1f}h")
-    print(f"  Weekly spend  : ${total_spend:.2f}")
+    print(f"  Weekly spend  : RM{total_spend:.2f}")
     print("-" * 50)
 
     if not alerts:

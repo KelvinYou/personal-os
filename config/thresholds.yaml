@@ -21,7 +21,7 @@ energy:
 # === 财务 (Financials) ===
 finance:
   savings_target_pct: 20       # 储蓄目标占收入百分比
-  weekly_spend_alert: 100.0    # 周度支出超过此值触发告警 (MYR)
+  weekly_spend_alert: 200.0    # 周度支出超过此值触发告警 (MYR)
 
 # === 咖啡因 (Caffeine) ===
 caffeine:
@@ -34,6 +34,69 @@ schedule:
   core_work_start: "09:00"
   core_work_end: "18:00"
   shutdown_time: "22:00"       # 强制断电协议
+
+# === 熔断规则 (Circuit Breakers) ===
+# IF 条件触发 → THEN 强制执行行为限制。逻辑引擎自动输出告警。
+circuit_breakers:
+  - name: "Sleep Critical"
+    description: "单日睡眠严重不足"
+    condition:
+      metric: sleep_duration
+      operator: "<"
+      value: 6.5
+    actions:
+      - "禁止晨跑，改为低心率快走或完全休息"
+      - "禁止大重量抗阻训练 (Deload only)"
+      - "Deep Work 上限 4h，强制午休 20min"
+      - "22:00 强制断电零容忍"
+
+  - name: "Sleep Debt Accumulation"
+    description: "累计睡眠负债危险"
+    condition:
+      metric: cumulative_sleep_debt
+      operator: ">="
+      value: 5.0
+    actions:
+      - "禁止晨跑直到负债 < 3h"
+      - "抗阻训练降重 30% (Deload Mode)"
+      - "每日强制补午休 20-30min"
+      - "周末禁止安排任何产出目标"
+
+  - name: "Energy Collapse"
+    description: "精力值跌破安全线"
+    condition:
+      metric: energy_level
+      operator: "<"
+      value: 4
+    actions:
+      - "当日立即取消所有训练"
+      - "Deep Work 上限 2h，仅允许低认知任务"
+      - "提前至 21:30 执行断电协议"
+      - "次日晨间禁止跑步"
+
+  - name: "Mental Overload"
+    description: "心智负荷过载"
+    condition:
+      metric: mental_load
+      operator: ">="
+      value: 7
+    actions:
+      - "禁止当日安排额外会议或社交"
+      - "Deep Work 切换为单任务模式 (禁止并行)"
+      - "强制插入 15min 散步/呼吸间隔 per 2h"
+      - "晚间禁止技术阅读，仅允许轻度娱乐"
+
+  - name: "Consecutive Poor Sleep"
+    description: "连续多日低质量睡眠"
+    condition:
+      metric: consecutive_poor_sleep
+      operator: ">="
+      value: 2
+    actions:
+      - "触发 System Offline 模式：次日视为恢复日"
+      - "禁止一切高强度训练直到录得 1 天 Fair+"
+      - "咖啡因窗口收紧至 10:00 前"
+      - "Deep Work 上限 3h"
 
 # === 评分权重 (Scoring Weights) ===
 scoring:
