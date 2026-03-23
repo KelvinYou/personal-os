@@ -1,0 +1,43 @@
+# Personal-OS 系统阈值配置 (System Thresholds)
+# 所有逻辑引擎与评分框架的硬编码数字统一在此管理。
+
+# === 产出与工作 (Output & Work) ===
+deep_work:
+  minimum_hours: 4.0          # 低于此值触发关联性检查告警
+  weekly_target_hours: 30.0   # 周度目标 Deep Work 总时长
+
+# === 睡眠与健康 (Sleep & Health) ===
+sleep:
+  baseline_hours: 8.0         # 睡眠基准时长，低于此值计入睡眠负债
+  ideal_range: [7.5, 8.5]     # 理想睡眠时长区间
+  poor_streak_alert: 3        # 连续 Poor 天数触发健康预警
+  critical_debt_hours: 10.0   # 累计睡眠负债超过此值 → 健康防线极度脆弱
+
+# === 精力 (Energy) ===
+energy:
+  low_threshold: 4             # 低于此值视为精力严重不足
+  warning_threshold: 5         # 低于此值触发精力预警
+
+# === 财务 (Financials) ===
+finance:
+  savings_target_pct: 20       # 储蓄目标占收入百分比
+  weekly_spend_alert: 100.0    # 周度支出超过此值触发告警 (MYR)
+
+# === 咖啡因 (Caffeine) ===
+caffeine:
+  cutoff_time: "14:00"         # 下午最晚咖啡因摄入时间
+  late_cutoff_time: "16:00"    # 超过此时间视为严重违规，强关联失眠
+
+# === 作息 (Schedule) ===
+schedule:
+  wakeup_target: "06:30"
+  core_work_start: "09:00"
+  core_work_end: "18:00"
+  shutdown_time: "22:00"       # 强制断电协议
+
+# === 评分权重 (Scoring Weights) ===
+scoring:
+  output_max: 40
+  health_max: 30
+  mental_max: 20
+  habits_max: 10
