@@ -79,6 +79,13 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
     primary_blockers = []
     incidents = 0
     logs_compiled = []
+    # COROS 睡眠结构聚合
+    sleep_durations = []
+    deep_pcts = []
+    rem_pcts = []
+    hrv_values = []
+    # Zepp Life 身体成分 (取最新一条)
+    latest_body = None
 
     for fp in sorted(files):
         meta, body = parse_log(fp)
@@ -94,19 +101,39 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
         if e > 0:
             energy_levels.append(e)
 
-        # Sleep
-        sq = meta.get("sleep_quality")
+        # Sleep — 兼容新旧格式
+        sleep_data = meta.get("sleep")
+        if isinstance(sleep_data, dict):
+            sq = sleep_data.get("quality")
+            sd = safe_float(sleep_data.get("duration"))
+            dp = safe_float(sleep_data.get("deep_pct"))
+            rp = safe_float(sleep_data.get("rem_pct"))
+            hv = safe_float(sleep_data.get("hrv"))
+            if dp > 0:
+                deep_pcts.append(dp)
+            if rp > 0:
+                rem_pcts.append(rp)
+            if hv > 0:
+                hrv_values.append(hv)
+        else:
+            sq = meta.get("sleep_quality")
+            sd = safe_float(meta.get("sleep_duration"))
+
         if sq:
             sleep_records.append(sq)
             if sq == "Poor":
                 incidents += 1
 
-        # Sleep Debt
-        sd = safe_float(meta.get("sleep_duration"))
         if sd > 0:
+            sleep_durations.append(sd)
             debt = sleep_baseline - sd
             if debt > 0:
                 total_sleep_debt += debt
+
+        # Body Composition (Zepp Life) — 保留最新
+        body_data = meta.get("body")
+        if isinstance(body_data, dict) and body_data.get("body_fat_pct"):
+            latest_body = body_data
 
         # Caffeine
         cc = meta.get("caffeine_cutoff")
@@ -135,6 +162,10 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
 
     days_logged = len(logs_compiled)
     avg_energy = sum(energy_levels) / len(energy_levels) if energy_levels else 0
+    avg_sleep = sum(sleep_durations) / len(sleep_durations) if sleep_durations else 0
+    avg_deep_pct = sum(deep_pcts) / len(deep_pcts) if deep_pcts else 0
+    avg_rem_pct = sum(rem_pcts) / len(rem_pcts) if rem_pcts else 0
+    avg_hrv = sum(hrv_values) / len(hrv_values) if hrv_values else 0
 
     # --- Circuit Breaker 熔断检查 ---
     breakers = config.get("circuit_breakers", [])
@@ -145,7 +176,12 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
     if files:
         last_meta, _ = parse_log(sorted(files)[-1])
         if last_meta:
-            latest_metrics["sleep_duration"] = safe_float(last_meta.get("sleep_duration"))
+            # 兼容新旧 sleep 格式
+            last_sleep = last_meta.get("sleep")
+            if isinstance(last_sleep, dict):
+                latest_metrics["sleep_duration"] = safe_float(last_sleep.get("duration"))
+            else:
+                latest_metrics["sleep_duration"] = safe_float(last_meta.get("sleep_duration"))
             latest_metrics["energy_level"] = safe_float(last_meta.get("energy_level"))
             latest_metrics["mental_load"] = safe_float(last_meta.get("mental_load"))
 
@@ -188,8 +224,15 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
     print(f"  Days logged    : {days_logged}")
     print(f"  Deep Work      : {total_deep_work:.1f}h")
     print(f"  Avg Energy     : {avg_energy:.1f}/10")
+    print(f"  Avg Sleep      : {avg_sleep:.1f}h")
+    print(f"  Avg Deep%      : {avg_deep_pct:.0f}%")
+    print(f"  Avg REM%       : {avg_rem_pct:.0f}%")
+    print(f"  Avg HRV        : {avg_hrv:.0f}ms")
     print(f"  Poor Sleep     : {incidents} days")
     print(f"  Sleep Debt     : {total_sleep_debt:.1f}h")
+    if latest_body:
+        print(f"  Body Fat       : {latest_body.get('body_fat_pct')}%")
+        print(f"  Muscle         : {latest_body.get('muscle_kg')}kg")
     print(f"  Total Spend    : RM{total_spend:.2f}")
     print(f"  Breakers Trip  : {len(tripped_breakers)}")
     if tripped_breakers:
@@ -227,6 +270,11 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
 - 有效记录天数：{days_logged} 天
 - 总专注工作时长：{total_deep_work:.1f} 小时
 - 平均精力值：{avg_energy:.1f}/10
+- **睡眠结构 (COROS)**:
+  - 平均睡眠时长：{avg_sleep:.1f}h
+  - 平均深睡占比：{avg_deep_pct:.0f}%
+  - 平均 REM 占比：{avg_rem_pct:.0f}%
+  - 平均夜间 HRV：{avg_hrv:.0f}ms
 - 睡眠红色告警天数：{incidents} 天
 - 累计睡眠负债 (Sleep Debt)：{total_sleep_debt:.1f} 小时
 - 咖啡因截断时间记录：{', '.join(caffeine_cutoffs) if caffeine_cutoffs else '暂无数据'}
@@ -245,6 +293,21 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
 """
     else:
         prompt_context += "- [Status: OK] 所有熔断器正常，无触发。\n"
+
+    # Body Composition 区块
+    prompt_context += "\n## 2.5 身体成分快照 (Zepp Life — 最新测量)\n"
+    if latest_body:
+        prompt_context += f"""- 体脂率: {latest_body.get('body_fat_pct')}%
+- 肌肉量: {latest_body.get('muscle_kg')}kg
+- 内脏脂肪: {latest_body.get('visceral_fat')}
+- BMI: {latest_body.get('bmi')}
+- 水分: {latest_body.get('water_pct')}%
+- 蛋白质: {latest_body.get('protein_pct')}%
+- 骨量: {latest_body.get('bone_mass_kg')}kg
+- 基础代谢: {latest_body.get('basal_metabolism')}kcal
+"""
+    else:
+        prompt_context += "- 本周无体成分数据。\n"
 
     prompt_context += f"""
 ## 3. 每日日志切片采样 (Daily Slices)
