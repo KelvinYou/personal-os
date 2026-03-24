@@ -12,6 +12,24 @@ sleep:
   ideal_range: [7.5, 8.5]     # 理想睡眠时长区间
   poor_streak_alert: 3        # 连续 Poor 天数触发健康预警
   critical_debt_hours: 10.0   # 累计睡眠负债超过此值 → 健康防线极度脆弱
+  # COROS 睡眠结构参考范围
+  deep_pct_range: [16, 30]    # 深睡占比正常区间 %
+  rem_pct_range: [11, 35]     # REM 占比正常区间 %
+  light_pct_max: 60           # 浅睡占比上限 %
+  awake_min_max: 20           # 清醒时长上限 (分钟)
+  interruptions_max: 1        # 中断次数上限 (>5min)
+  hrv_warning_low: 30         # HRV 低于此值触发恢复预警 (ms)
+
+# === 身体成分 (Body Composition — Zepp Life) ===
+body:
+  body_fat_pct_range: [10, 20]   # 体脂率正常区间 % (男性)
+  muscle_kg_min: 50.0            # 肌肉量下限 (kg)
+  visceral_fat_max: 9            # 内脏脂肪等级上限
+  bmi_range: [18.5, 24.9]       # BMI 正常区间
+  water_pct_min: 55.0            # 水分比例下限 %
+  protein_pct_min: 16.0          # 蛋白质比例下限 %
+  bone_mass_kg_min: 3.0          # 骨量下限 (kg)
+  basal_metabolism_min: 1600     # 基础代谢下限 (kcal)
 
 # === 精力 (Energy) ===
 energy:
