@@ -74,13 +74,18 @@ def run_checks(log_dir=None, config=None):
         if energy and energy < energy_warn:
             alerts.append(f"[Warning] {name}: Energy {energy}/10 below threshold {energy_warn}.")
 
-        # --- Rule 3: 睡眠质量追踪 ---
-        sleep_q = meta.get("sleep_quality")
+        # --- Rule 3: 睡眠质量追踪 (兼容新旧格式) ---
+        sleep_data = meta.get("sleep")
+        if isinstance(sleep_data, dict):
+            sleep_q = sleep_data.get("quality")
+            s_dur = safe_float(sleep_data.get("duration"))
+        else:
+            sleep_q = meta.get("sleep_quality")
+            s_dur = safe_float(meta.get("sleep_duration"))
         if sleep_q:
             recent_sleep.append((name, sleep_q))
 
         # --- Rule 4: 睡眠负债累计 ---
-        s_dur = safe_float(meta.get("sleep_duration"))
         if s_dur > 0:
             debt = sleep_baseline - s_dur
             if debt > 0:
@@ -111,7 +116,12 @@ def run_checks(log_dir=None, config=None):
         if last_file.exists():
             last_meta = parse_frontmatter(last_file)
             if last_meta:
-                latest_metrics["sleep_duration"] = safe_float(last_meta.get("sleep_duration"))
+                # 兼容新旧 sleep 格式
+                last_sleep = last_meta.get("sleep")
+                if isinstance(last_sleep, dict):
+                    latest_metrics["sleep_duration"] = safe_float(last_sleep.get("duration"))
+                else:
+                    latest_metrics["sleep_duration"] = safe_float(last_meta.get("sleep_duration"))
                 latest_metrics["energy_level"] = safe_float(last_meta.get("energy_level"))
                 latest_metrics["mental_load"] = safe_float(last_meta.get("mental_load"))
 
