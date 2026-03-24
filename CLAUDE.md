@@ -7,9 +7,10 @@
 ```
 /config/          — 系统阈值与配置 (thresholds.yaml)
 /daily/           — 每日工程师日志 (YYYY-MM-DD.md)
+/finance/         — 财务数据 (portfolio.yaml, interest_rates.yaml)
 /templates/       — 空白模板文件
 /scripts/         — 自动化脚本 (Python 3)
-/prompts/         — AI Agent 系统提示词
+/prompts/         — AI Agent 系统提示词 (weekly_review_agent.md)
 /reports/         — 生成的周报存档
 /user_profile.md  — 全局用户画像 (作息/饮食/锻炼偏好)
 ```

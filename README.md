@@ -13,20 +13,23 @@
 ```
 personal-os/
 ├── config/
-│   └── thresholds.yaml    # 系统阈值配置 (睡眠基准、支出告警、评分权重等)
-├── daily/                 # 每日工程师日志 (YYYY-MM-DD.md)
+│   └── thresholds.yaml        # 系统阈值配置 (睡眠基准、支出告警、评分权重等)
+├── daily/                     # 每日工程师日志 (YYYY-MM-DD.md)
+├── finance/
+│   ├── portfolio.yaml         # 投资组合配置 (资产配置、基金持仓)
+│   └── interest_rates.yaml    # 利率参考数据 (定存、货币基金等)
 ├── templates/
-│   └── daily.md           # 标准空白日志模板
+│   └── daily.md               # 标准空白日志模板
 ├── scripts/
-│   ├── report_gen.py      # 逻辑引擎 — 规则告警检查器
-│   └── weekly_synthesis.py # 周度数据聚合管道
+│   ├── report_gen.py          # 逻辑引擎 — 规则告警检查器
+│   └── weekly_synthesis.py    # 周度数据聚合管道
 ├── prompts/
-│   ├── daily_report_agent.md   # Daily Report Agent 系统提示词
-│   └── weekly_review_agent.md  # Weekly Review Agent 系统提示词
-├── reports/               # 生成的周报存档
-├── user_profile.md        # 全局用户画像 (作息/饮食/锻炼偏好)
-├── Makefile               # 一键自动化入口
-└── CLAUDE.md              # AI 协作规范
+│   └── weekly_review_agent.md # Weekly Review Agent 系统提示词
+├── reports/                   # 生成的周报存档
+├── user_profile.md            # 全局用户画像 (作息/饮食/锻炼偏好)
+├── weekly_report_prompt.md    # 生成的周报 prompt (make weekly 输出)
+├── Makefile                   # 一键自动化入口
+└── CLAUDE.md                  # AI 协作规范
 ```
 
 ## 快速开始
