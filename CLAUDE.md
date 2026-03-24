@@ -6,7 +6,7 @@
 ## 目录结构
 ```
 /config/          — 系统阈值与配置 (thresholds.yaml)
-/daily/           — 每日工程师日志 (YYYY-MM-DD-template.md)
+/daily/           — 每日工程师日志 (YYYY-MM-DD.md)
 /templates/       — 空白模板文件
 /scripts/         — 自动化脚本 (Python 3)
 /prompts/         — AI Agent 系统提示词
@@ -15,7 +15,7 @@
 ```
 
 ## 关键约定
-- 每日日志文件名格式: `YYYY-MM-DD-template.md`
+- 每日日志文件名格式: `YYYY-MM-DD.md`
 - YAML frontmatter 必须包含完整字段集 (见 templates/daily.md)
 - 所有阈值从 `config/thresholds.yaml` 读取，脚本中禁止硬编码魔法数字
 - 脚本使用 Python 3，依赖: PyYAML
