@@ -1,2 +1,10 @@
 __pycache__/
 *.pyc
+
+# === Privacy: 以下含个人隐私数据，不可公开 ===
+daily/
+finance/
+reports/
+user_profile.md
+weekly_report_prompt.md
+.claude/projects/*/memory/
