@@ -1,0 +1,23 @@
+{
+  "skill_name": "learning-agent",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "最近该学什么新技术？感觉 AI 发展太快跟不上了",
+      "expected_output": "A structured skill radar with prioritized tech skills, resource links, and personalized recommendations based on user profile",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "最近看到很多人在讨论 multi-agent 和 MCP，这些值得学吗？还是炒作？",
+      "expected_output": "An assessment of multi-agent and MCP specifically, with clear opinion on whether they're worth learning, placed within the broader skill radar context",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "我是做全栈的，想知道 2026 年哪些技能最能涨薪",
+      "expected_output": "Skills prioritized by career/salary impact for a full-stack developer, with concrete ROI reasoning",
+      "files": []
+    }
+  ]
+}
