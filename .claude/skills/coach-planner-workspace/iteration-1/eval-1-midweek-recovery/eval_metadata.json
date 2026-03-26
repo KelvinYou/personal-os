@@ -1,0 +1,37 @@
+{
+  "eval_id": 1,
+  "eval_name": "midweek-recovery",
+  "prompt": "这周 deep work 才做了 12 小时，已经周四了，还有救吗？上周的 P0 是 zero sleep debt，P1 是 personal-os infra",
+  "assertions": [
+    {
+      "name": "remaining-capacity",
+      "text": "Response calculates remaining deep work capacity for Thu-Sun (approximately 4 days left in the week)",
+      "type": "content"
+    },
+    {
+      "name": "honest-assessment",
+      "text": "Response honestly assesses whether 30h weekly target is reachable (it likely isn't from 12h at Thursday)",
+      "type": "content"
+    },
+    {
+      "name": "revised-plan",
+      "text": "Response proposes a concrete revised plan for the remaining days of the week",
+      "type": "content"
+    },
+    {
+      "name": "goal-tracking",
+      "text": "Response addresses the P0 (zero sleep debt) and P1 (personal-os infra) objectives and their current status",
+      "type": "content"
+    },
+    {
+      "name": "reads-weekly-report",
+      "text": "Response references data from the previous week's report or current week's daily logs",
+      "type": "content"
+    },
+    {
+      "name": "supportive-tone",
+      "text": "Response frames the situation supportively rather than punitively (not 'you failed' but 'here's how to make the most of remaining time')",
+      "type": "content"
+    }
+  ]
+}

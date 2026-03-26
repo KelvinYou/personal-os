@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Response identifies that Energy Collapse (energy < 4) and/or Consecutive Poor Sleep (>= 2 days) circuit breakers are tripped",
+      "passed": true,
+      "evidence": "Section 2 explicitly checks both circuit breakers: '[TRIGGERED] Consecutive Poor Sleep (连续 Poor >= 2 天)' and 'Energy Collapse (精力 < 4): 精力值 = 4，恰好踩线，未正式触发（条件为 strictly < 4）'. Both are identified and evaluated."
+    },
+    {
+      "text": "Response clearly recommends skipping the morning run",
+      "passed": true,
+      "evidence": "Section 3 states unambiguously: '跳过晨跑，回去补觉。没有任何犹豫的余地。' and '结论：晨跑被系统明确禁止。这不是建议，是熔断规则的强制执行。'"
+    },
+    {
+      "text": "Response suggests additional protective adjustments beyond just skipping the run (e.g., reduced deep work, mandatory nap, early shutdown)",
+      "passed": true,
+      "evidence": "Section 4 provides a full alternative day plan including: Deep Work capped at 3h, mandatory 20min nap after lunch, early shutdown at 17:30, 15min walk instead of run, early bedtime protocol at 21:30 (30min earlier than usual), and caffeine window restricted to before 10:00."
+    },
+    {
+      "text": "Response frames skipping as a recovery investment, not a failure (supportive tone)",
+      "passed": true,
+      "evidence": "Final summary: '你的身体在用精力值 4 告诉你\"我需要修复\"。今天的最高产出不是跑步、不是 Deep Work——是让今晚的睡眠评级回到 Fair+...保护好今天，明天才有资本。' Also: '这不是意志力问题——这是神经系统在拉警报。' Consistently frames rest as strategic, not as giving up."
+    },
+    {
+      "text": "Response is focused and actionable — gives a clear answer quickly rather than a lengthy analysis",
+      "passed": true,
+      "evidence": "The response opens with a status snapshot, gives the circuit breaker ruling in section 2 with a bold conclusion, then immediately moves to a concrete time-blocked action plan in section 4. The verdict is clear by the end of section 2 (line 28). While detailed, the structure is scannable with tables and bold text for quick reading."
+    },
+    {
+      "text": "Response cites specific threshold values or circuit breaker rules from the config (e.g., energy < 4, consecutive poor sleep >= 2)",
+      "passed": true,
+      "evidence": "Cites: 'Consecutive Poor Sleep (连续 Poor >= 2 天)', 'Energy Collapse (精力 < 4)', 'warning_threshold (5)' for energy, 'Deep Work 上限 3h', '咖啡因窗口收紧至 10:00 前', and '禁止一切高强度训练直到录得 1 天 Fair+'. Multiple specific thresholds referenced."
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Response references actual data from recent daily logs (e.g., specific sleep metrics, body composition, or spending data)",
+      "passed": true,
+      "evidence": "Response references specific sleep data: 6.87h sleep, 61% light sleep, 24% deep sleep, energy 7/10. Also references yesterday's caffeine cutoff at 14:10. These are concrete metrics consistent with daily log data."
+    },
+    {
+      "text": "Response contains a structured timetable with specific time blocks (HH:MM format) covering wake-to-shutdown",
+      "passed": true,
+      "evidence": "Timetable runs from 06:30 wake-up to 22:00 shutdown with all entries in HH:MM format, organized into Morning, Midday, Afternoon, and Evening blocks with tabular layout."
+    },
+    {
+      "text": "The timetable accounts for the 15:00-16:00 team meeting and adjusts workout/other activities accordingly",
+      "passed": true,
+      "evidence": "Team Meeting is explicitly blocked at 15:00-16:00. Gym is moved to 19:30-20:45 evening slot with rationale: 'Team meeting 占据了常规 15:00-16:30 训练窗口，改为到家后执行'."
+    },
+    {
+      "text": "Meals include cost estimates in RM based on grocery unit prices from user_profile.md",
+      "passed": true,
+      "evidence": "Nutrition Plan table includes RM estimates for all meals: breakfast RM1.51, lunch ~RM13.00, coffee RM0.56, dinner ~RM5.00, post-workout RM8.11, total ~RM28.18. Breakfast egg+bread calculation and post-workout yogurt+protein pricing suggest unit-price-based estimation."
+    },
+    {
+      "text": "Response checks circuit breaker status and correctly identifies that no breaker is tripped (6.87h > 6.5h threshold, energy 7 > 4)",
+      "passed": true,
+      "evidence": "Status Dashboard shows '熔断检查 | Sleep 6.87 > 6.5 | Critical < 6.5h | 未触发'. Energy is 7/10 marked OK. The response correctly concludes no circuit breaker is tripped and allows normal training and Deep Work."
+    },
+    {
+      "text": "Response explicitly asks the user for adjustments or confirmation before finalizing the timetable",
+      "passed": false,
+      "evidence": "The response presents the timetable as final with rationale and a 'Tomorrow Preview' section, but never asks the user for confirmation, adjustments, or feedback before finalizing."
+    },
+    {
+      "text": "Response uses Chinese as primary language with English technical terms (Deep Work, Circuit Breaker, etc.)",
+      "passed": true,
+      "evidence": "Primary language is Chinese throughout (e.g., '综合判断', '觉醒补丁', '战术午休', '强制断电协议'). English retained for technical terms: Deep Work, Circuit Breaker, Team Meeting, Deload, Light Sleep, Deep Sleep, cutoff."
+    },
+    {
+      "text": "Timetable includes 22:00 shutdown/断电 protocol",
+      "passed": true,
+      "evidence": "22:00 row explicitly marked as '强制断电协议' with bold formatting. Additional note: 'Light sleep 偏高 → 今晚严格执行，目标 22:15 入睡'."
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1,
+    "pass_rate": 0.875
+  }
+}

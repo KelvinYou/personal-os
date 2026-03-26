@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Response calculates remaining deep work capacity for Thu-Sun (approximately 4 days left in the week)",
+      "passed": true,
+      "evidence": "Section 1 explicitly identifies '剩余 Thu(今天) + Fri + Sat + Sun' as 4 remaining days. Section 2 breaks down each day's available deep work window (Thu ~5h, Fri ~4-5h, Sat 0, Sun 1h) with a theoretical ceiling of 11h."
+    },
+    {
+      "text": "Response honestly assesses whether 30h weekly target is reachable (it likely isn't from 12h at Thursday)",
+      "passed": true,
+      "evidence": "Section 2 opens with '直接回答: 30h 几乎不可能，但 22-24h 完全可以抢救'. The math analysis shows the gap is ~18.5h with a realistic ceiling of ~11h remaining, making 30h unreachable. The scenario table in Section 4 confirms even the 'aggressive' scenario only reaches ~29.5h with health risks."
+    },
+    {
+      "text": "Response proposes a concrete revised plan for the remaining days of the week",
+      "passed": true,
+      "evidence": "Section 3 provides hour-by-hour schedules for Thu, Fri, Sat, and Sun with specific time blocks, activities, and expected deep work output per day. Includes core principles and contingency rules (e.g., evening block only if energy >=6)."
+    },
+    {
+      "text": "Response addresses the P0 (zero sleep debt) and P1 (personal-os infra) objectives and their current status",
+      "passed": true,
+      "evidence": "Section 1 has a P0/P1 table: P0 sleep debt marked [Status: Warning] with HRV recovery noted (37->53), P1 personal-os infra marked [Status: Warning] with insufficient progress. Section 5 provides specific P1 scope-reduction recommendations."
+    },
+    {
+      "text": "Response references data from the previous week's report or current week's daily logs",
+      "passed": true,
+      "evidence": "References specific daily log data: Mon 4.0h deep work, Tue 3.5h/8.35h sleep/HRV 46, Wed 4.0h/6.2h sleep/HRV 37, Thu 6.87h sleep/HRV 53. References prior week (W12): '28.5h 是在健康分 10/30、累计负债 8.1h 的代价下换来的，导致了黑视事件'. Also references W13 plan priorities from the prior week's report."
+    },
+    {
+      "text": "Response frames the situation supportively rather than punitively (not 'you failed' but 'here's how to make the most of remaining time')",
+      "passed": true,
+      "evidence": "Consistently supportive framing: '还有救' (there's still hope), '23h...体面' (respectable), 'HRV 从 37 涨回 53...这才是本周最大的胜利' (this is the week's biggest win), '这个周报写出来比30h + 身体再次崩盘好看得多' (this looks better than 30h + another crash). Never uses failure language."
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}

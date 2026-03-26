@@ -1,0 +1,47 @@
+{
+  "eval_id": 0,
+  "eval_name": "daily-timetable",
+  "prompt": "昨天只睡了 6.87h，light sleep 占了 61%，但精力还行有 7。今天帮我排个时间表吧，下午有个 team meeting 15:00-16:00",
+  "assertions": [
+    {
+      "name": "reads-recent-logs",
+      "text": "Response references actual data from recent daily logs (e.g., specific sleep metrics, body composition, or spending data)",
+      "type": "content"
+    },
+    {
+      "name": "timetable-format",
+      "text": "Response contains a structured timetable with specific time blocks (HH:MM format) covering wake-to-shutdown",
+      "type": "content"
+    },
+    {
+      "name": "meeting-constraint",
+      "text": "The timetable accounts for the 15:00-16:00 team meeting and adjusts workout/other activities accordingly",
+      "type": "content"
+    },
+    {
+      "name": "meal-costs",
+      "text": "Meals include cost estimates in RM based on grocery unit prices from user_profile.md",
+      "type": "content"
+    },
+    {
+      "name": "circuit-breaker-check",
+      "text": "Response checks circuit breaker status and correctly identifies that no breaker is tripped (6.87h > 6.5h threshold, energy 7 > 4)",
+      "type": "content"
+    },
+    {
+      "name": "asks-for-confirmation",
+      "text": "Response explicitly asks the user for adjustments or confirmation before finalizing the timetable",
+      "type": "content"
+    },
+    {
+      "name": "bilingual",
+      "text": "Response uses Chinese as primary language with English technical terms (Deep Work, Circuit Breaker, etc.)",
+      "type": "content"
+    },
+    {
+      "name": "shutdown-protocol",
+      "text": "Timetable includes 22:00 shutdown/断电 protocol",
+      "type": "content"
+    }
+  ]
+}

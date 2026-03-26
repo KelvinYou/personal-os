@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Response calculates remaining deep work capacity for Thu-Sun (approximately 4 days left in the week)",
+      "passed": true,
+      "evidence": "Response explicitly breaks down remaining days: Thu + Fri as primary work days, Saturday as System Offline, Sunday as light. Calculates that Thu+Fri each have ~4.5-5h capacity and Sunday can add 2-3h, totaling ~18h remaining capacity needed vs realistic ~9-13h achievable."
+    },
+    {
+      "text": "Response honestly assesses whether 30h weekly target is reachable (it likely isn't from 12h at Thursday)",
+      "passed": true,
+      "evidence": "Explicitly states '要追满 30h，剩余需要 18h，意味着 Thu+Fri 每天 9h —— 物理上不可能'. Sets revised realistic target of 20-22h and adds it to the modified goals table as '[Warning] 需要接受现实'."
+    },
+    {
+      "text": "Response proposes a concrete revised plan for the remaining days of the week",
+      "passed": true,
+      "evidence": "Provides detailed day-by-day plans: Thu (5 numbered action items with specific times like 9:00-12:00 deep work block, 22:00 shutdown), Fri (deep work morning, clear backlog afternoon, no morning run), Sat (System Offline, sleep recovery), Sun (light deload training, weekly protocol, optional 2-3h light deep work)."
+    },
+    {
+      "text": "Response addresses the P0 (zero sleep debt) and P1 (personal-os infra) objectives and their current status",
+      "passed": true,
+      "evidence": "P0 sleep debt gets detailed analysis: calculates current cumulative debt at ~13h, acknowledges clearing is impossible this week, revises target to 'control under 10h, no further worsening'. P1 personal-os infra gets a dedicated section noting Mon's template upgrade design (4h), limited progress Tue-Wed due to company work, and suggests prioritizing engine adaptation if time allows."
+    },
+    {
+      "text": "Response references data from the previous week's report or current week's daily logs",
+      "passed": true,
+      "evidence": "References W12 data extensively: '28.5h Deep Work + 8.1h 睡眠负债的组合最终导致了健身房黑视宕机', W12 carry-over debt of ~8.1h. References current week daily logs with specific numbers: sleep values 5.3h/8.35h/6.2h/6.87h, HRV 46→37→53, mental_load 5→7→4, energy 6→6→7, spending ~RM43.20, and specific daily activities (Tue meetings on Button Component/多语言翻译)."
+    },
+    {
+      "text": "Response frames the situation supportively rather than punitively (not 'you failed' but 'here's how to make the most of remaining time')",
+      "passed": true,
+      "evidence": "Consistently supportive framing: 'Deep Work 12h 不是懈怠的结果，是身体在执行必要的 garbage collection', 'P0 本周已经不可能实现。但这不是失败——趋势是正确的', '这些才是真正重要的指标', and '接下来两天稳扎稳打'. Reframes shortfall as reasonable given health constraints rather than a failure."
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}

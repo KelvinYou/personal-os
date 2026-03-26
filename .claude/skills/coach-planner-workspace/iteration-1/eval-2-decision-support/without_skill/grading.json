@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Response identifies that Energy Collapse (energy < 4) and/or Consecutive Poor Sleep (>= 2 days) circuit breakers are tripped",
+      "passed": true,
+      "evidence": "Response explicitly identifies both circuit breakers: 'Consecutive Poor Sleep（连续低质量睡眠 >= 2 天）' and 'Energy Collapse（精力值 = 4，触发阈值 < 4 的边缘）'. Also identifies a third potential breaker (Sleep Critical)."
+    },
+    {
+      "text": "Response clearly recommends skipping the morning run",
+      "passed": true,
+      "evidence": "Opening conclusion states '必须跳过晨跑，补觉是强制指令，没有商量余地'. The action table lists '取消一切训练（无晨跑、无抗阻）'."
+    },
+    {
+      "text": "Response suggests additional protective adjustments beyond just skipping the run (e.g., reduced deep work, mandatory nap, early shutdown)",
+      "passed": true,
+      "evidence": "Response includes: Deep Work capped at 2-3h with only low-cognitive tasks, caffeine window tightened to before 10:00, early shutdown at 21:30, sleep by 22:00 targeting 8h, and only light walking (10-15 min) allowed."
+    },
+    {
+      "text": "Response frames skipping as a recovery investment, not a failure (supportive tone)",
+      "passed": true,
+      "evidence": "Closing section states '跑步少一天不会掉体能，但睡眠负债继续堆积会全面崩盘' and frames recovery as '今天的唯一任务是：恢复'. The tone is authoritative and supportive, not punitive."
+    },
+    {
+      "text": "Response is focused and actionable — gives a clear answer quickly rather than a lengthy analysis",
+      "passed": true,
+      "evidence": "The conclusion appears immediately on line 3: '必须跳过晨跑'. The response is structured with a clear action table and specific time-based instructions. While thorough, it leads with the decision and stays focused on actionable steps."
+    },
+    {
+      "text": "Response cites specific threshold values or circuit breaker rules from the config (e.g., energy < 4, consecutive poor sleep >= 2)",
+      "passed": true,
+      "evidence": "Cites 'energy.low_threshold: 4', 'consecutive poor sleep >= 2 天', 'Sleep Critical < 6.5h', 'Deep Work 上限 3h / 2h', caffeine window '10:00 前', and references 'config/thresholds.yaml' and 'thresholds.yaml' by name."
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}

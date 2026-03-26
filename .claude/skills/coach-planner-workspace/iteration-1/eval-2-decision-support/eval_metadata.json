@@ -1,0 +1,37 @@
+{
+  "eval_id": 2,
+  "eval_name": "decision-support",
+  "prompt": "今天精力只有 4，昨晚又是 poor sleep，连续第二天了。我该不该跳过晨跑去补觉？",
+  "assertions": [
+    {
+      "name": "identifies-circuit-breakers",
+      "text": "Response identifies that Energy Collapse (energy < 4) and/or Consecutive Poor Sleep (>= 2 days) circuit breakers are tripped",
+      "type": "content"
+    },
+    {
+      "name": "recommends-skip-run",
+      "text": "Response clearly recommends skipping the morning run",
+      "type": "content"
+    },
+    {
+      "name": "protective-adjustments",
+      "text": "Response suggests additional protective adjustments beyond just skipping the run (e.g., reduced deep work, mandatory nap, early shutdown)",
+      "type": "content"
+    },
+    {
+      "name": "recovery-framing",
+      "text": "Response frames skipping as a recovery investment, not a failure (supportive tone)",
+      "type": "content"
+    },
+    {
+      "name": "concise",
+      "text": "Response is focused and actionable — gives a clear answer quickly rather than a lengthy analysis",
+      "type": "content"
+    },
+    {
+      "name": "references-thresholds",
+      "text": "Response cites specific threshold values or circuit breaker rules from the config (e.g., energy < 4, consecutive poor sleep >= 2)",
+      "type": "content"
+    }
+  ]
+}

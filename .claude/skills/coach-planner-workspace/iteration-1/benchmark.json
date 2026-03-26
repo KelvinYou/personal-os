@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "skill_name": "coach-planner",
+    "skill_path": "/Users/kelvin/Documents/coding/personal-os/.agents/skills/coach-planner",
+    "timestamp": "2026-03-27T12:00:00Z",
+    "evals_run": [0, 1, 2],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "Daily Timetable",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 121.1,
+        "tokens": 32076,
+        "tool_calls": 19,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "References actual data from recent daily logs", "passed": true, "evidence": "Cites specific sleep metrics, body composition, spending data from 03-26 log"},
+        {"text": "Structured timetable with HH:MM time blocks", "passed": true, "evidence": "Full wake-to-shutdown timetable with time blocks"},
+        {"text": "Accounts for 15:00-16:00 team meeting", "passed": true, "evidence": "Meeting shown in timetable, workout adjusted"},
+        {"text": "Meal cost estimates in RM", "passed": true, "evidence": "Uses grocery unit prices from user_profile.md"},
+        {"text": "Correct circuit breaker check (none tripped)", "passed": true, "evidence": "Correctly identifies 6.87h > 6.5h, energy 7 > 4"},
+        {"text": "Asks for user confirmation", "passed": true, "evidence": "Ends with interactive prompt for adjustments"},
+        {"text": "Bilingual (Chinese + English terms)", "passed": true, "evidence": "Chinese primary with Deep Work, Circuit Breaker in English"},
+        {"text": "22:00 shutdown protocol", "passed": true, "evidence": "Shutdown/断电 included at 22:00"}
+      ]
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "Daily Timetable",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.875,
+        "passed": 7,
+        "failed": 1,
+        "total": 8,
+        "time_seconds": 71.6,
+        "tokens": 19754,
+        "tool_calls": 6,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "References actual data from recent daily logs", "passed": true, "evidence": "References sleep data and metrics"},
+        {"text": "Structured timetable with HH:MM time blocks", "passed": true, "evidence": "Time-blocked schedule present"},
+        {"text": "Accounts for 15:00-16:00 team meeting", "passed": true, "evidence": "Meeting in schedule, gym moved to evening"},
+        {"text": "Meal cost estimates in RM", "passed": true, "evidence": "RM cost estimates included"},
+        {"text": "Correct circuit breaker check (none tripped)", "passed": true, "evidence": "Correctly notes no breaker tripped"},
+        {"text": "Asks for user confirmation", "passed": false, "evidence": "Presents plan as final without asking for adjustments"},
+        {"text": "Bilingual (Chinese + English terms)", "passed": true, "evidence": "Uses Chinese with English terms"},
+        {"text": "22:00 shutdown protocol", "passed": true, "evidence": "22:00 shutdown enforced"}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "Midweek Recovery",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 125.6,
+        "tokens": 33089,
+        "tool_calls": 15,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Calculates remaining deep work capacity for Thu-Sun", "passed": true, "evidence": "Detailed per-day capacity estimates"},
+        {"text": "Honestly assesses 30h target unreachable", "passed": true, "evidence": "Declares 30h unreachable, revises to 20-22h"},
+        {"text": "Proposes revised plan for remaining days", "passed": true, "evidence": "Day-by-day plans with specifics"},
+        {"text": "Addresses P0 (sleep debt) and P1 (personal-os infra)", "passed": true, "evidence": "Both goals tracked with status"},
+        {"text": "References data from reports or daily logs", "passed": true, "evidence": "Cites W12 report and daily log data"},
+        {"text": "Supportive framing", "passed": true, "evidence": "Frames shortfall as reasonable given health recovery"}
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "Midweek Recovery",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 103.1,
+        "tokens": 32366,
+        "tool_calls": 14,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Calculates remaining deep work capacity for Thu-Sun", "passed": true, "evidence": "Calculates remaining capacity"},
+        {"text": "Honestly assesses 30h target unreachable", "passed": true, "evidence": "Recommends 22-24h revised target"},
+        {"text": "Proposes revised plan for remaining days", "passed": true, "evidence": "Detailed hour-by-hour plans"},
+        {"text": "Addresses P0 (sleep debt) and P1 (personal-os infra)", "passed": true, "evidence": "Both goals addressed"},
+        {"text": "References data from reports or daily logs", "passed": true, "evidence": "References daily logs and W12 report"},
+        {"text": "Supportive framing", "passed": true, "evidence": "Supportive tone maintained"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "Decision Support",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 82.3,
+        "tokens": 29989,
+        "tool_calls": 16,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Identifies circuit breakers tripped", "passed": true, "evidence": "Names Consecutive Poor Sleep and Energy Collapse"},
+        {"text": "Recommends skipping morning run", "passed": true, "evidence": "Clear recommendation to skip"},
+        {"text": "Suggests protective adjustments", "passed": true, "evidence": "Reduced deep work, nap, early shutdown, caffeine restriction"},
+        {"text": "Recovery framing (not failure)", "passed": true, "evidence": "Frames as strategic investment"},
+        {"text": "Concise and actionable", "passed": true, "evidence": "Clear answer upfront"},
+        {"text": "Cites threshold values", "passed": true, "evidence": "Specific values from config cited"}
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "Decision Support",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 111.9,
+        "tokens": 18773,
+        "tool_calls": 7,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Identifies circuit breakers tripped", "passed": true, "evidence": "Names both breakers with thresholds"},
+        {"text": "Recommends skipping morning run", "passed": true, "evidence": "Clear skip recommendation"},
+        {"text": "Suggests protective adjustments", "passed": true, "evidence": "Recovery schedule provided"},
+        {"text": "Recovery framing (not failure)", "passed": true, "evidence": "System-mandated recovery framing"},
+        {"text": "Concise and actionable", "passed": true, "evidence": "Verdict delivered immediately"},
+        {"text": "Cites threshold values", "passed": true, "evidence": "Specific thresholds cited"}
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 109.7, "stddev": 23.4, "min": 82.3, "max": 125.6},
+      "tokens": {"mean": 31718, "stddev": 1585, "min": 29989, "max": 33089}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.958, "stddev": 0.072, "min": 0.875, "max": 1.0},
+      "time_seconds": {"mean": 95.5, "stddev": 21.2, "min": 71.6, "max": 111.9},
+      "tokens": {"mean": 23631, "stddev": 7678, "min": 18773, "max": 32366}
+    },
+    "delta": {
+      "pass_rate": "+0.042",
+      "time_seconds": "+14.2",
+      "tokens": "+8087"
+    }
+  },
+  "notes": [
+    "The skill's main quantitative advantage is in eval 0 (Daily Timetable) where the baseline missed the 'asks for confirmation' assertion — this is a key skill behavior.",
+    "Evals 1 and 2 pass at 100% for both configurations, making them non-discriminating on pass rate alone. Qualitative differences (format, depth, tone) are more informative.",
+    "The skill uses ~35% more tokens and ~15% more time on average, reflecting the more thorough data gathering (reading 3 days of logs, config, user profile, reports).",
+    "The baseline performs surprisingly well because the project's CLAUDE.md and file structure already provide strong context — the skill's value is in standardizing the format and enforcing the interactive confirmation loop."
+  ]
+}

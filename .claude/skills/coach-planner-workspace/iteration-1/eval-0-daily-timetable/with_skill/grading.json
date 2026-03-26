@@ -1,0 +1,50 @@
+{
+  "expectations": [
+    {
+      "text": "Response references actual data from recent daily logs (e.g., specific sleep metrics, body composition, or spending data)",
+      "passed": true,
+      "evidence": "References specific sleep data (6.87h, light sleep 61%, deep sleep 24%, HRV 53ms), body composition (water 54.7%, body fat 20.1%, BMR 1588), spending totals (03-24: RM19.69, 03-25: RM26.21, 03-26: RM25.61), and Deep Work hours (03-24: 3.5h, 03-25: 4h)."
+    },
+    {
+      "text": "Response contains a structured timetable with specific time blocks (HH:MM format) covering wake-to-shutdown",
+      "passed": true,
+      "evidence": "Full markdown table with HH:MM time blocks from 06:30 (wake) through 22:00 (shutdown), covering the entire day."
+    },
+    {
+      "text": "The timetable accounts for the 15:00-16:00 team meeting and adjusts workout/other activities accordingly",
+      "passed": true,
+      "evidence": "Team Meeting is placed at 15:00, with meeting prep at 14:30, light work before the meeting (13:15), and post-meeting physical activity (16:00 Push-ups + Plank) to counter the afternoon energy dip. Morning workout is scheduled at 06:45 instead of afternoon."
+    },
+    {
+      "text": "Meals include cost estimates in RM based on grocery unit prices from user_profile.md",
+      "passed": true,
+      "evidence": "Breakfast: ~RM1.92 with itemized breakdown (0.42+0.69+0.80), lunch: ~RM4.00 (chicken 2.25+rice 1.00+veg 0.50+seasoning 0.25), dinner options with costs (~RM6.50 or ~RM8.12). Daily total estimated at ~RM14.38 or ~RM16.00."
+    },
+    {
+      "text": "Response checks circuit breaker status and correctly identifies that no breaker is tripped (6.87h > 6.5h threshold, energy 7 > 4)",
+      "passed": true,
+      "evidence": "Circuit Breaker section checks Sleep Critical (6.87h > 6.5h, not triggered), Energy Collapse (7 > 4, not triggered), Mental Overload (4 < 7, not triggered). Also flags Sleep Debt Accumulation as Warning/approaching trigger, which is a reasonable additional check."
+    },
+    {
+      "text": "Response explicitly asks the user for adjustments or confirmation before finalizing the timetable",
+      "passed": true,
+      "evidence": "Final line asks: '这个安排有什么需要调整的吗？比如 team meeting 前后有没有额外的事情、身体感觉和精力 7 是否一致、或者想调整晚餐方案？'"
+    },
+    {
+      "text": "Response uses Chinese as primary language with English technical terms (Deep Work, Circuit Breaker, etc.)",
+      "passed": true,
+      "evidence": "Primary text is in Chinese. English technical terms retained: Deep Work, Circuit Breaker, Zone 2, HRV, MR Review, Push-up, Plank, System Offline, Deload, etc."
+    },
+    {
+      "text": "Timetable includes 22:00 shutdown/断电 protocol",
+      "passed": true,
+      "evidence": "22:00 row: '[强制断电] 熄灯入睡' with note about >= 8h sleep target. Also 21:30 pre-shutdown protocol: '开始断电协议: 关闭所有屏幕，准备入睡'."
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "pass_rate": 1.0
+  }
+}
