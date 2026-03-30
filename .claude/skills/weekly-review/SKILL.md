@@ -2,11 +2,12 @@
 name: weekly-review
 description: >
   Generate a comprehensive weekly review report for Personal-OS: aggregate daily logs, score across 4 dimensions
-  (Output/Health/Mental/Habits), enforce circuit breakers, compare week-over-week trends, and produce a detailed
-  next-week time-blocked timetable. Use this skill whenever the user mentions weekly review, weekly report, 周报,
-  week summary, "how was my week", wants to review their week, asks for next week's plan/schedule, or says
+  (Output/Health/Mental/Habits), enforce circuit breakers, compare week-over-week trends, and output next-week
+  P0/P1/P2 objectives (but NOT timetables — timetable generation is coach-planner's job).
+  Use this skill whenever the user mentions weekly review, weekly report, 周报,
+  week summary, "how was my week", wants to review their week, or says
   "make report" / "make weekly". Also trigger when the user asks about weekly scores, trends, sleep debt trajectory,
-  or wants to generate a W## report.
+  or wants to generate a W## report. Do NOT trigger for "排下周时间表" or schedule requests — those go to coach-planner.
 ---
 
 # Weekly Review Agent — Personal-OS
@@ -144,29 +145,20 @@ Split into:
 | [Last week's objective 2] | Done/Partial/Miss | [Evidence] |
 | [Last week's objective 3] | Done/Partial/Miss | [Evidence] |
 
-### 4. 下周目标与精确时间表 (Next Week Action Plan)
+### 4. 下周目标 (Next Week Objectives)
 
 **核心目标:**
-1. [P0] [Objective derived from this week's biggest gap]
-2. [P1] [Objective for ongoing project progress]
-3. [P2] [Objective for habit/financial correction]
+1. [P0] [Objective derived from this week's biggest gap — with specific metric target]
+2. [P1] [Objective for ongoing project progress — with deliverable]
+3. [P2] [Objective for habit/financial correction — with measurable criteria]
 
-**精确执行时间表 (Time-blocked Timetable):**
+**执行约束 (Constraints for Planner):**
+- List all active circuit breaker restrictions that must carry into next week
+- Note any known schedule exceptions (meetings, events, travel)
+- Specify training mode: Normal / Deload / Recovery
 
-For each day Mon-Sun, produce a detailed schedule following these rules:
-- Reference `user_profile.md` for wake time (6:30), commute (8:20), core work (9-18), shutdown (22:00)
-- Specify exact meal times with macro composition and estimated cost using grocery unit prices
-- Mark workout slots: morning cardio (6:45 if no sleep debt) or rest, afternoon strength (15:00-16:30) with pre/post nutrition
-- Deep Work blocks with specific project assignments
-- Enforce all active circuit breaker restrictions (no morning run if sleep-critical, deload if debt > 5h, etc.)
-- Saturday = System Offline (no coding), Sunday = planning + meal prep
-- Post-workout window: Greek Yogurt + protein powder + honey
-
-Format each day as:
-- **Day MM-DD (Theme)**:
-  - `[HH:MM-HH:MM]` Action with specifics
-  - ...
-  - `[22:00]` **[强制断电]**
+> **Note:** 时间表由 coach-planner agent 负责生成。完成周报后，用户可以对 coach-planner 说"排下周时间表"，
+> coach-planner 会读取本报告的 P0/P1/P2 目标和执行约束来生成精确排期。
 
 ### 5. 每日数据明细 (Daily Breakdown)
 | 日期 | Energy | Deep Work | Sleep | Quality | Spend (RM) | Mental Load | Blocker |
