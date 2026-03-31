@@ -3,15 +3,15 @@
 
 # === 产出与工作 (Output & Work) ===
 deep_work:
-  minimum_hours: 4.0          # 低于此值触发关联性检查告警
-  weekly_target_hours: 30.0   # 周度目标 Deep Work 总时长
+  minimum_hours: 4.0          # 工作日低于此值触发关联性检查告警 (可能整天在开会)
 
 # === 睡眠与健康 (Sleep & Health) ===
 sleep:
-  baseline_hours: 8.0         # 睡眠基准时长，低于此值计入睡眠负债
+  baseline_hours: 7.5         # 睡眠基准时长，低于此值计入睡眠负债 (与 ideal_range 下沿对齐)
+  debt_window_days: 7          # 滚动窗口天数，仅计算近 N 天的负债 (旧数据自动衰减)
+  debt_recovery_streak: 3      # 连续 N 天 ≥ baseline 即可解锁 Level 1 运动限制
   ideal_range: [7.5, 8.5]     # 理想睡眠时长区间
   poor_streak_alert: 3        # 连续 Poor 天数触发健康预警
-  critical_debt_hours: 10.0   # 累计睡眠负债超过此值 → 健康防线极度脆弱
   # COROS 睡眠结构参考范围
   deep_pct_range: [16, 30]    # 深睡占比正常区间 %
   rem_pct_range: [11, 35]     # REM 占比正常区间 %
@@ -39,7 +39,8 @@ energy:
 # === 财务 (Financials) ===
 finance:
   savings_target_pct: 20       # 储蓄目标占收入百分比
-  weekly_spend_alert: 200.0    # 周度支出超过此值触发告警 (MYR)
+  weekly_spend_alert: 120.0    # 周度支出超过此值触发告警 (MYR, 目标 RM100 + 20% buffer)
+  daily_spend_alert: 25.0      # 单日支出超过此值触发预警 (全自炊日约 RM20-23, 超 25 说明有外食)
 
 # === 咖啡因 (Caffeine) ===
 caffeine:
@@ -68,17 +69,30 @@ circuit_breakers:
       - "Deep Work 上限 4h，强制午休 20min"
       - "22:00 强制断电零容忍"
 
-  - name: "Sleep Debt Accumulation"
-    description: "累计睡眠负债危险"
+  - name: "Sleep Debt Level 1"
+    description: "7天滚动睡眠负债中度 (5-8h)"
     condition:
-      metric: cumulative_sleep_debt
+      metric: rolling_7d_sleep_debt    # 仅计算近 7 天 vs baseline(7.5h) 的累计差额
       operator: ">="
       value: 5.0
     actions:
-      - "禁止晨跑直到负债 < 3h"
+      - "晨跑降级为 Zone 2 慢跑 (HR ≤ 145bpm, ≤ 30min)，禁止 Tempo/间歇"
       - "抗阻训练降重 30% (Deload Mode)"
       - "每日强制补午休 20-30min"
+      - "连续 3 天 ≥ 7.5h 睡眠后自动解除本级限制"
+
+  - name: "Sleep Debt Level 2"
+    description: "7天滚动睡眠负债严重 (>8h)"
+    condition:
+      metric: rolling_7d_sleep_debt
+      operator: ">"
+      value: 8.0
+    actions:
+      - "晨跑降级为低心率快走 (HR < 120bpm)，禁止一切跑步"
+      - "抗阻训练降重 50% 或改为纯徒手"
+      - "每日强制补午休 20-30min"
       - "周末禁止安排任何产出目标"
+      - "降至 Level 1 后恢复 Zone 2 慢跑权限"
 
   - name: "Energy Collapse"
     description: "精力值跌破安全线"
@@ -115,6 +129,29 @@ circuit_breakers:
       - "禁止一切高强度训练直到录得 1 天 Fair+"
       - "咖啡因窗口收紧至 10:00 前"
       - "Deep Work 上限 3h"
+
+  - name: "HRV Recovery Alert"
+    description: "HRV 跌破恢复安全线，身体修复能力受损"
+    condition:
+      metric: hrv
+      operator: "<"
+      value: 30               # 与 sleep.hrv_warning_low 对齐
+    actions:
+      - "当日禁止一切高强度训练，仅允许拉伸/快走"
+      - "强制午休 20-30min"
+      - "22:00 强制断电零容忍"
+      - "次日如 HRV 仍 < 30，触发 System Offline 恢复日"
+
+  - name: "Spending Surge"
+    description: "单笔大额消费预警"
+    condition:
+      metric: single_transaction
+      operator: ">"
+      value: 30.0             # 单笔超 RM30 触发 (覆盖绝大多数外食场景)
+    actions:
+      - "日志中必须记录消费理由 (合理代偿/社交/冲动)"
+      - "当周剩余天数自炊率必须 ≥ 95%"
+      - "如本周已触发 2 次，锁定周末外食额度为 RM0"
 
 # === 评分权重 (Scoring Weights) ===
 scoring:
