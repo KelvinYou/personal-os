@@ -1,0 +1,52 @@
+{
+  "skill_name": "xhs-content",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "帮我写一篇小红书，方向 A，用这周的睡眠数据",
+      "expected_output": "生成一篇关于睡眠/自律的小红书帖子，包含从近期日志中提取的真实睡眠数据，保存到 ventures/xhs-content/ 目录",
+      "files": [],
+      "expectations": [
+        "Output is a markdown file with YAML frontmatter containing direction, title, date, data_sources, tags, and status fields",
+        "Title is ≤20 Chinese characters and has a hook (uses numbers, questions, or first-person)",
+        "Post contains at least 3 specific data points from actual daily logs (e.g., sleep duration, HRV, sleep debt numbers)",
+        "All numbers in the post can be traced back to actual values in daily/*.md or reports/*.md",
+        "Post uses short paragraphs (2-3 lines each), includes emojis, and has a conversational Chinese tone",
+        "Post body is between 300-800 characters (excluding frontmatter and image suggestions)",
+        "Post includes image/card suggestions section describing what visuals to create",
+        "Post is saved to ventures/xhs-content/YYYY-MM-DD-{slug}.md with proper slug naming"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "batch — 这周有什么值得发小红书的？",
+      "expected_output": "扫描近期日志数据，输出 3-5 个选题推荐，每个包含数据亮点、钩子角度和大纲，覆盖不同方向",
+      "files": [],
+      "expectations": [
+        "Output contains 3-5 distinct post ideas/topics",
+        "Ideas cover at least 2 different content directions (A/B/C/D)",
+        "Each idea includes specific data points extracted from recent daily logs or reports",
+        "Each idea includes a hook angle explaining why this data has viral/engagement potential",
+        "Each idea includes a brief outline with 3-4 key points",
+        "Batch mode outputs to conversation only, does NOT create files in ventures/xhs-content/",
+        "Output ends with an invitation for the user to pick which idea to fully generate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "出一篇小红书，方向 D，主题是 meal prep 成本精算",
+      "expected_output": "生成一篇关于程序员低成本增肌饮食的帖子，包含真实食材单价和每日热量数据，有配图建议和标签",
+      "files": [],
+      "expectations": [
+        "Output is a markdown file with YAML frontmatter containing direction: D, title, date, data_sources, tags, and status fields",
+        "Title is ≤20 Chinese characters and has a hook (uses numbers like RM amounts, or a surprising cost figure)",
+        "Post references actual grocery unit prices from user_profile.md (e.g., chicken breast RM15/kg, eggs RM0.23 each)",
+        "Post includes a calculated daily or weekly food cost breakdown using real spending data from daily logs",
+        "Post includes calorie or macro estimates alongside cost data",
+        "Post uses short paragraphs, emojis, conversational Chinese tone with English technical terms",
+        "Post includes image/card suggestions (e.g., cost breakdown table, meal photo suggestions)",
+        "Post is saved to ventures/xhs-content/YYYY-MM-DD-{slug}.md with proper slug naming"
+      ]
+    }
+  ]
+}
