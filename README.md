@@ -21,17 +21,18 @@ personal-os/
 │   └── git-commit/            #   智能 commit message
 ├── config/
 │   └── thresholds.yaml        # 系统阈值配置 (睡眠基准、支出告警、评分权重等)
-├── daily/                     # 每日工程师日志 (YYYY-MM-DD.md)
-├── finance/
-│   ├── portfolio.yaml         # 投资组合配置 (资产配置、基金持仓)
-│   └── interest_rates.yaml    # 利率参考数据 (定存、货币基金等)
+├── data/                      # 🔒 Private submodule (personal-os-data)
+│   ├── daily/                 #   每日工程师日志 (YYYY-MM-DD.md)
+│   ├── finance/
+│   │   ├── portfolio.yaml     #   投资组合配置 (资产配置、基金持仓)
+│   │   └── interest_rates.yaml #  利率参考数据 (定存、货币基金等)
+│   ├── reports/               #   生成的周报存档
+│   └── user_profile.md        #   全局用户画像 (作息/饮食/锻炼偏好)
 ├── templates/
 │   └── daily.md               # 标准空白日志模板
 ├── scripts/
 │   ├── report_gen.py          # 逻辑引擎 — 规则告警检查器
 │   └── weekly_synthesis.py    # 周度数据聚合管道
-├── reports/                   # 生成的周报存档
-├── user_profile.md            # 全局用户画像 (作息/饮食/锻炼偏好)
 ├── Makefile                   # 一键自动化入口
 └── CLAUDE.md                  # AI 协作规范
 ```
@@ -39,6 +40,9 @@ personal-os/
 ## 快速开始
 
 ```bash
+# 首次克隆（含私有 data submodule）
+git clone --recurse-submodules https://github.com/KelvinYou/personal-os.git
+
 # 生成今天的日志模板
 make today
 
@@ -93,12 +97,12 @@ graph TB
     end
 
     %% ── Data Stores ──
-    subgraph Data ["📂 Data Layer"]
-        DL["daily/<br/>每日日志"]
-        RPT["reports/<br/>周报存档"]
-        FIN["finance/<br/>portfolio.yaml<br/>interest_rates.yaml"]
+    subgraph Data ["📂 Data Layer (data/ submodule 🔒)"]
+        DL["data/daily/<br/>每日日志"]
+        RPT["data/reports/<br/>周报存档"]
+        FIN["data/finance/<br/>portfolio.yaml<br/>interest_rates.yaml"]
         CFG["config/<br/>thresholds.yaml"]
-        UP["user_profile.md"]
+        UP["data/user_profile.md"]
         TPL["templates/daily.md"]
     end
 
