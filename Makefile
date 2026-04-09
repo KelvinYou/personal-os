@@ -2,7 +2,7 @@
 # 一键自动化入口：降低每日/每周执行摩擦
 
 PYTHON := python3
-DAILY_DIR := daily
+DAILY_DIR := data/daily
 SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
