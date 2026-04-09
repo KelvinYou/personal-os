@@ -11,9 +11,9 @@ from datetime import date, timedelta
 
 PROJECT_ROOT = Path(__file__).parent.parent
 CONFIG_PATH = PROJECT_ROOT / "config" / "thresholds.yaml"
-DAILY_DIR = PROJECT_ROOT / "daily"
+DAILY_DIR = PROJECT_ROOT / "data" / "daily"
 PROMPTS_DIR = PROJECT_ROOT / "prompts"
-REPORTS_DIR = PROJECT_ROOT / "reports"
+REPORTS_DIR = PROJECT_ROOT / "data" / "reports"
 
 
 def load_config():
@@ -250,7 +250,7 @@ def generate_weekly_synthesis(log_dir=None, config=None, target_date=None):
         system_prompt = "你现在是系统配置的 Weekly Review Agent。\n"
 
     # 读取 User Profile
-    profile_file = PROJECT_ROOT / "user_profile.md"
+    profile_file = PROJECT_ROOT / "data" / "user_profile.md"
     if profile_file.exists():
         profile_content = profile_file.read_text(encoding="utf-8")
     else:
