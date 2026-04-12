@@ -83,7 +83,7 @@ Circuit breaker tripped → automatic -3 per breaker on top of above scoring.
 
 | Criteria | Points |
 |----------|--------|
-| Weekly spend <= RM100 = 5 pts, <= RM150 = 3, <= RM200 = 1, > RM200 = 0 | Up to 5 pts |
+| Weekly spend (proportional): 5 × max(0, 1 − (spend − 100) / 150). Each RM30 over RM100 costs ~1 pt; spend ≥ RM250 = 0. Round to nearest 0.5. | Up to 5 pts |
 | Caffeine cutoff compliance (all days before 14:00) | Up to 3 pts |
 | Bedtime/wakeup consistency (stddev of bedtime < 30min) | Up to 2 pts |
 
