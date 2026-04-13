@@ -54,6 +54,6 @@ $ARGUMENTS
 
 - 严格遵守 `templates/daily.md` 的字段结构，严禁编造数据
 - 日期使用今天的日期
-- 将完整日志写入 `daily/{YYYY-MM-DD}.md`
+- 将完整日志写入 `data/daily/{YYYY-MM-DD}.md`
 - 如果该日期文件已存在，先读取现有内容，合并而非覆盖
 - 中文为主，技术术语保留英文
