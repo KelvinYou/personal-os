@@ -43,7 +43,7 @@ When the user triggers this skill, execute these steps in order:
    - `config/thresholds.yaml` — all scoring thresholds and circuit breaker rules
    - `user_profile.md` — schedule baselines, dietary macros, fitness architecture, grocery prices
 
-5. Check for the previous week's report in `reports/` (e.g., if generating W13, look for `*-w12-*.md`). If found, read it to enable week-over-week trend comparison and to check whether last week's 3 core objectives were achieved.
+5. Check for the previous week's report in `data/reports/` (e.g., if generating W13, look for `*-w12-*.md`). If found, read it to enable week-over-week trend comparison and to check whether last week's 3 core objectives were achieved.
 
 ### Step 2: Analyze & Score
 
@@ -170,7 +170,7 @@ Split into:
 
 Save the generated report to:
 ```
-reports/YYYY-w##-weekly-report.md
+data/reports/YYYY-w##-weekly-report.md
 ```
 Where YYYY is the ISO year and ## is the ISO week number (zero-padded).
 
