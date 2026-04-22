@@ -5,6 +5,7 @@ Logic Engine — 逻辑引擎告警检查器
 """
 import sys
 import yaml
+from datetime import date, timedelta
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -44,14 +45,17 @@ def run_checks(log_dir=None, config=None):
     dw_min = config["deep_work"]["minimum_hours"]
     poor_streak = config["sleep"]["poor_streak_alert"]
     sleep_baseline = config["sleep"]["baseline_hours"]
-    critical_debt = config["sleep"]["critical_debt_hours"]
     energy_warn = config["energy"]["warning_threshold"]
     spend_alert = config["finance"]["weekly_spend_alert"]
     late_caffeine = config["caffeine"]["late_cutoff_time"]
 
-    recent_sleep = []
+    today = date.today()
+    seven_days_ago = today - timedelta(days=7)
+
+    recent_sleep = []              # list[(name, is_poor: bool)]
     total_spend = 0.0
-    total_sleep_debt = 0.0
+    rolling_7d_debt = 0.0          # 与熔断器 metric 名对齐
+    latest_hrv = None              # 最近一天的 readiness.hrv
     alerts = []
     days = 0
 
@@ -74,22 +78,34 @@ def run_checks(log_dir=None, config=None):
         if energy and energy < energy_warn:
             alerts.append(f"[Warning] {name}: Energy {energy}/10 below threshold {energy_warn}.")
 
-        # --- Rule 3: 睡眠质量追踪 (兼容新旧格式) ---
-        sleep_data = meta.get("sleep")
-        if isinstance(sleep_data, dict):
-            sleep_q = sleep_data.get("quality")
-            s_dur = safe_float(sleep_data.get("duration"))
-        else:
-            sleep_q = meta.get("sleep_quality")
-            s_dur = safe_float(meta.get("sleep_duration"))
-        if sleep_q:
-            recent_sleep.append((name, sleep_q))
-
-        # --- Rule 4: 睡眠负债累计 ---
+        # --- Rule 3: 睡眠质量追踪 (新 schema: derive Poor from duration/awake/HRV) ---
+        sleep_data = meta.get("sleep") or {}
+        readiness = meta.get("readiness") or {}
+        s_dur = safe_float(sleep_data.get("duration")) if isinstance(sleep_data, dict) else 0.0
+        awake_min = safe_float(sleep_data.get("awake_min")) if isinstance(sleep_data, dict) else 0.0
+        hrv = safe_float(readiness.get("hrv")) if isinstance(readiness, dict) else 0.0
+        hrv_baseline = safe_float(readiness.get("hrv_baseline")) if isinstance(readiness, dict) else 0.0
+        # Option P-d: 时长不足是刚性；否则碎片化+低 HRV 组合才算差
+        is_poor = (s_dur > 0 and s_dur < 6.5) or (
+            awake_min > 40 and hrv > 0 and hrv_baseline > 0 and hrv < hrv_baseline * 0.9
+        )
         if s_dur > 0:
-            debt = sleep_baseline - s_dur
-            if debt > 0:
-                total_sleep_debt += debt
+            recent_sleep.append((name, is_poor))
+
+        # --- Rule 4: 滚动 7 日睡眠负债 ---
+        if s_dur > 0:
+            try:
+                log_date = date.fromisoformat(name)
+                if log_date >= seven_days_ago:
+                    debt = sleep_baseline - s_dur
+                    if debt > 0:
+                        rolling_7d_debt += debt
+            except ValueError:
+                pass
+
+        # 记录最近一天的 HRV (用于熔断器)
+        if hrv > 0:
+            latest_hrv = hrv
 
         # --- Rule 5: 咖啡因截断违规 ---
         cutoff = meta.get("caffeine_cutoff")
@@ -108,29 +124,34 @@ def run_checks(log_dir=None, config=None):
     tripped = []
 
     # 收集最近日志的指标快照用于熔断判定
-    latest_metrics = {}
+    latest_metrics: dict = {}
     if recent_sleep:
         last_name, _ = recent_sleep[-1]
-        # 从最后一天获取 per-day 指标
         last_file = Path(log_dir) / f"{last_name}.md"
         if last_file.exists():
             last_meta = parse_frontmatter(last_file)
             if last_meta:
-                # 兼容新旧 sleep 格式
                 last_sleep = last_meta.get("sleep")
                 if isinstance(last_sleep, dict):
-                    latest_metrics["sleep_duration"] = safe_float(last_sleep.get("duration"))
-                else:
-                    latest_metrics["sleep_duration"] = safe_float(last_meta.get("sleep_duration"))
-                latest_metrics["energy_level"] = safe_float(last_meta.get("energy_level"))
-                latest_metrics["mental_load"] = safe_float(last_meta.get("mental_load"))
+                    sd_val = safe_float(last_sleep.get("duration"))
+                    if sd_val > 0:
+                        latest_metrics["sleep_duration"] = sd_val
+                energy_val = safe_float(last_meta.get("energy_level"))
+                mental_val = safe_float(last_meta.get("mental_load"))
+                if energy_val > 0:
+                    latest_metrics["energy_level"] = energy_val
+                if mental_val > 0:
+                    latest_metrics["mental_load"] = mental_val
 
-    # 累计/连续指标
-    latest_metrics["cumulative_sleep_debt"] = total_sleep_debt
+    # 滚动 / 衍生指标
+    latest_metrics["rolling_7d_sleep_debt"] = rolling_7d_debt
+    if latest_hrv is not None:
+        latest_metrics["hrv"] = latest_hrv
 
+    # 连续 Poor 睡眠日 (new schema derivation)
     consec_poor = 0
-    for _, sq in reversed(recent_sleep):
-        if sq == "Poor":
+    for _, poor in reversed(recent_sleep):
+        if poor:
             consec_poor += 1
         else:
             break
@@ -145,7 +166,10 @@ def run_checks(log_dir=None, config=None):
         metric_name = cond.get("metric", "")
         op_str = cond.get("operator", "")
         threshold = safe_float(cond.get("value"))
-        actual = latest_metrics.get(metric_name, 0.0)
+        actual = latest_metrics.get(metric_name)
+        # 缺数据跳过，不用 0 默认值触发 false positive
+        if actual is None:
+            continue
 
         op_fn = ops.get(op_str)
         if op_fn and op_fn(actual, threshold):
@@ -157,19 +181,17 @@ def run_checks(log_dir=None, config=None):
 
     # --- 聚合规则检查 ---
 
-    # 连续 Poor 睡眠告警
+    # 连续 Poor 睡眠告警 (new schema: is_poor derived in Rule 3)
     poor_count = 0
-    for name, sq in recent_sleep:
-        if sq == "Poor":
+    for name, poor in recent_sleep:
+        if poor:
             poor_count += 1
             if poor_count >= poor_streak:
                 alerts.append(f"[Critical] {name}: {poor_count} consecutive Poor sleep days. REST STRONGLY ADVISED.")
         else:
             poor_count = 0
 
-    # 累计睡眠负债告警
-    if total_sleep_debt >= critical_debt:
-        alerts.append(f"[Critical] Accumulated sleep debt {total_sleep_debt:.1f}h >= {critical_debt}h. Health defense critically low.")
+    # 累计睡眠负债告警 -- 已由 Sleep Debt L1/L2 熔断器覆盖, 不再重复
 
     # 周度支出告警
     if total_spend > spend_alert:
@@ -180,8 +202,10 @@ def run_checks(log_dir=None, config=None):
     print("[Logic Engine] System Check Report")
     print("=" * 50)
     print(f"  Days scanned  : {days}")
-    print(f"  Sleep debt    : {total_sleep_debt:.1f}h")
+    print(f"  7d Sleep debt : {rolling_7d_debt:.1f}h")
     print(f"  Weekly spend  : RM{total_spend:.2f}")
+    if latest_hrv is not None:
+        print(f"  Latest HRV    : {latest_hrv:.0f}ms")
     print("-" * 50)
 
     if not alerts:
