@@ -47,53 +47,49 @@ When the user triggers this skill, execute these steps in order:
 
 ### Step 2: Analyze & Score
 
-Apply the **four-dimensional scoring framework** (total 100 points) with explicit rubrics:
+The **base score is pre-computed deterministically by `scripts/lib/score.py`** and
+appears in `weekly_report_prompt.md` as "Deterministic Base Score". Read it — do
+NOT recompute the mechanical portion. Your job is to (1) fill the AI-gated
+subjective criteria and (2) apply qualitative bonus/penalty on top.
 
-#### Output/Deep Work [40 points max]
+#### What code already computed (don't recompute)
 
-| Criteria | Points |
-|----------|--------|
-| Weekly deep work >= 30h target | Up to 25 pts (proportional: `actual/30 * 25`, cap at 25) |
-| Quality of outputs (shipped features, research depth, knowledge sharing) | Up to 10 pts (subjective, evidence-based) |
-| Blocker management (identified early, resolved efficiently, escalated when stuck) | Up to 5 pts |
+- `deep_work` (proportional to 30h target → 25 pts max)
+- `avg_energy` (proportional to 7 → 8 pts max)
+- `poor_sleep_days` (count via Option P-d derivation → 10 pts max)
+- `rolling_sleep_debt` (threshold lookup → 7 pts max)
+- `avg_mental_load` (threshold lookup → 10 pts max)
+- `weekly_spend` (inverse-proportional around RM100 baseline → 5 pts max)
+- `caffeine_compliance` (fraction of days with cutoff ≤ 14:00 → 3 pts max)
+- `sleep_duration_consistency` (stddev of nightly durations → 2 pts max)
 
-Deductions: Major unplanned time sinks (e.g., 5h regression bug) without post-mortem → -2 to -5 pts.
+Thresholds live in `config/thresholds.yaml` under `scoring:` — treat that file
+as the source of truth. If you think a criterion should score differently than
+what the prompt shows, that is a rubric change, not an AI override.
 
-#### Health & Energy [30 points max]
+#### Subjective criteria (AI fills; 0–1 input per criterion)
 
-| Criteria | Points |
-|----------|--------|
-| Average energy >= 7/10 | Up to 8 pts (proportional: `avg/7 * 8`, cap at 8) |
-| Sleep quality: 0 Poor days = 10 pts, 1 Poor = 7, 2 Poor = 4, 3+ Poor = 1 | Up to 10 pts |
-| Sleep debt < 3h = 7 pts, < 5h = 5 pts, < 10h = 3 pts, >= 10h = 0 | Up to 7 pts |
-| COROS sleep structure (deep% in range, HRV stable/improving) | Up to 3 pts |
-| Body composition trending positively or stable | Up to 2 pts |
+For each criterion below, form a 0–1 rating from the week's narrative evidence
+and multiply into the criterion's max points (rubric's `max_points` field).
+Cite the evidence in the final report under "加分/扣分项".
 
-Circuit breaker tripped → automatic -3 per breaker on top of above scoring.
+- `output_quality` [max 10]: shipped features, research depth, knowledge sharing
+- `blocker_management` [max 5]: blockers identified early, resolved efficiently
+- `sleep_structure` [max 3]: deep_min in range [60, 150]; HRV stable or ≥ 0.85 × baseline
+- `body_composition` [max 2]: trending stable/positive; no measurement → 0
+- `crisis_handling` [max 5]: responded decisively to tripped breakers
+- `emotional_resilience` [max 5]: maintained output despite disruptions
 
-#### Mental Load & Crisis [20 points max]
+#### Bonus & Penalty (on top of base + subjective)
 
-| Criteria | Points |
-|----------|--------|
-| Average mental_load <= 4 = 10 pts, <= 6 = 7, <= 8 = 4, > 8 = 1 | Up to 10 pts |
-| Crisis handling: circuit breaker executed decisively when needed | Up to 5 pts |
-| Emotional resilience: maintained output despite disruptions | Up to 5 pts |
+- **Bonuses (+1 to +3 each)**: exceptional discipline under adversity, creative
+  problem-solving, proactive health interventions, successful cheat-meal
+  substitution, knowledge sharing.
+- **Penalties (-1 to -8 each)**: cascading sleep debt without intervention,
+  CNS/health incidents, budget blowout, ignoring triggered breaker actions.
+- **Breaker penalty**: each tripped circuit breaker → -3.
 
-#### Habits & Financials [10 points max]
-
-| Criteria | Points |
-|----------|--------|
-| Weekly spend (proportional): 5 × max(0, 1 − (spend − 100) / 150). Each RM30 over RM100 costs ~1 pt; spend ≥ RM250 = 0. Round to nearest 0.5. | Up to 5 pts |
-| Caffeine cutoff compliance (all days before 14:00) | Up to 3 pts |
-| Bedtime/wakeup consistency (stddev of bedtime < 30min) | Up to 2 pts |
-
-#### Bonus & Penalty
-
-After computing the base score, apply bonus/penalty adjustments:
-- **Bonuses (+1 to +3 each)**: Exceptional discipline under adversity, creative problem-solving, proactive health interventions, successful cheat-meal substitution, knowledge sharing to team.
-- **Penalties (-1 to -8 each)**: Cascading sleep debt without intervention, CNS/health incidents (blackout, injury), budget blowout, ignoring triggered circuit breaker actions.
-
-Each bonus/penalty must cite the specific day and event as evidence.
+Every bonus/penalty must cite the specific day and event.
 
 ### Step 3: Generate Report
 
@@ -119,15 +115,26 @@ List all tripped circuit breakers with their metric values and enforced actions.
 If none: `[All Clear] 所有熔断器正常。`
 
 ### 1. 本周系统多维度得分: XX/100
-- **模块细分**:
-  - **产出分 (Output)**: XX/40 — (1-sentence justification with data)
-  - **健康分 (Health)**: XX/30 — (1-sentence justification with data)
-  - **心智分 (Mental)**: XX/20 — (1-sentence justification with data)
-  - **习惯分 (Habits)**: XX/10 — (1-sentence justification with data)
-- **加分项**:
-  - (+N) [Specific event with date]
-- **扣分项**:
-  - (-N) [Specific event with date, root cause analysis]
+
+**Deterministic base (from code):**
+- 产出 XX/40 · 健康 XX/30 · 心智 XX/20 · 习惯 XX/10 = XX/100
+
+**Subjective criteria (AI-filled, 0-1 per criterion):**
+- output_quality: N/10 — [evidence]
+- blocker_management: N/5 — [evidence]
+- sleep_structure: N/3 — [evidence]
+- body_composition: N/2 — [evidence]
+- crisis_handling: N/5 — [evidence]
+- emotional_resilience: N/5 — [evidence]
+
+**加分项:**
+- (+N) [Specific event with date]
+
+**扣分项:**
+- (-N) [Specific event with date, root cause analysis]
+- (-3) per tripped breaker (list each)
+
+**Final total: XX/100**
 
 ### 2. 系统核心产出盘点
 Split into:
