@@ -1,13 +1,13 @@
 # Personal-OS Makefile
 # 一键自动化入口：降低每日/每周执行摩擦
 
-PYTHON := python3
+PYTHON := .venv/bin/python3
 DAILY_DIR := data/daily
 SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
 
-.PHONY: today check weekly help
+.PHONY: today check weekly sync-coros help
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -27,6 +27,11 @@ check:
 weekly:
 	@$(PYTHON) $(SCRIPTS_DIR)/weekly_synthesis.py $(if $(DATE),--date $(DATE),)
 
+## 同步 COROS 手表数据到 data/fitness/
+## 用法: make sync-coros 或 make sync-coros DATE=2026-04-21
+sync-coros:
+	@$(PYTHON) $(SCRIPTS_DIR)/sync_coros.py $(if $(DATE),--date $(DATE),)
+
 ## 完整流程: 检查 + 聚合
 report: check weekly
 	@echo ""
@@ -39,5 +44,6 @@ help:
 	@echo "  make today   — 生成今天的日志模板"
 	@echo "  make check   — 运行逻辑引擎告警检查"
 	@echo "  make weekly  — 聚合本周数据 (可选: make weekly DATE=2026-03-22)"
+	@echo "  make sync-coros — 拉取昨日 COROS 数据 (可选: DATE=YYYY-MM-DD)"
 	@echo "  make report  — 一键完整流程 (check + weekly)"
 	@echo "  make help    — 显示本帮助"
