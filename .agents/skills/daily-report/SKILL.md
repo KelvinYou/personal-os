@@ -26,16 +26,13 @@ $ARGUMENTS
 ### YAML Metadata
 - `energy_level`: (1-10) 根据描述的情绪和精力打分
 - `deep_work_hours`: (float) 提取专注工作的小时数
-- `sleep.quality`: (Good/Fair/Poor) 根据描述判断
-- `sleep.duration`: (float) 睡眠时长（小时）
-- `sleep.bedtime` / `sleep.wakeup`: 入睡和醒来时间
-- `sleep` 其余字段: 如用户提供了 COROS/手环数据则填入，否则留空
-- `caffeine_cutoff`: (HH:MM) 下午最晚一次咖啡因摄入时间
+- `sleep.*` / `readiness.*` / `training.*` / `activities[]`: **COROS 自动填充**（`make sync-coros`），Brain Dump 无需处理；如果这些字段在现有文件中已有值，不要覆盖
+- `caffeine_cutoff`: (HH:MM) 下午最晚一次咖啡因摄入时间；无咖啡因摄入留空，不要写字符串
 - `primary_blocker`: 一句话概括今日最大效率阻碍
 - `daily_spend`: 提取所有消费记录，结构化为 `amount` (RM), `category`, `note`
   - **重要**: 自炊也必须按食材实际单价估算成本，不能写 amount: 0
 - `mental_load`: (1-10) 心智负担和压力水平
-- `body.*`: 如用户提供体重/体脂等数据则填入，否则留空
+- `body.*`: 如用户提供体重/体脂等数据则填入，否则留空（走 Zepp Life 手填通道，不来自 COROS）
 
 ### Markdown Body
 - **今日核心产出 (Highlights)**: 分类提炼工作内容，涵盖公司+个人项目
