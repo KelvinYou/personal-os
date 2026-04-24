@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "最近该学什么新技术？感觉 AI 发展太快跟不上了",
-      "expected_output": "A structured skill radar with prioritized tech skills, resource links, and personalized recommendations based on user profile",
+      "expected_output": "A structured skill radar with prioritized tech skills, resource links, and personalized recommendations based on user profile. Should use trend mode primarily.",
       "files": []
     },
     {
@@ -16,7 +16,25 @@
     {
       "id": 3,
       "prompt": "我是做全栈的，想知道 2026 年哪些技能最能涨薪",
-      "expected_output": "Skills prioritized by career/salary impact for a full-stack developer, with concrete ROI reasoning",
+      "expected_output": "Skills prioritized by career/salary impact for a full-stack developer, with concrete ROI reasoning. Should lean toward hybrid mode — real MY/SG job data should be consulted or noted, not just web trends.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "帮我扫一下 MY 和 SG 的 Senior SWE 招聘市场，看看现在都在要什么 skill",
+      "expected_output": "Job-market mode scan: invokes fetch_jobs.py / fetch_jobstreet.py, extracts skills from JDs via batched LLM call, aggregates into trends.json, produces a Job Market Scan report with top skills, MY vs SG breakdown, and personalized gap analysis. Should call out data gaps honestly (e.g., LinkedIn rate-limited). If dependencies missing, should explain what to install rather than fabricate data.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "我在考虑从 backend 转 AI engineer，MY/SG 现在这个岗位在招什么，薪资大概多少？",
+      "expected_output": "Job-market mode scan with AI engineer / ML engineer search term, MY + SG locations. Report should include: top required skills, salary bands where data is available (SG via Adzuna-style salary fields, MY from JobStreet where disclosed), sample size caveats, and a gap analysis comparing user's current backend stack to the AI engineer requirements.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "现在什么技术方向最有前途？我在考虑下半年投入学一个新领域",
+      "expected_output": "Hybrid mode: combines trend research (web sources on emerging tech) AND job market scan (MY/SG demand signal) with a cross-validation section. Should explicitly call out which signals agree (strong buy) and which diverge (watchlist only), with reasoning. Bias toward market signal over blog hype.",
       "files": []
     }
   ]
