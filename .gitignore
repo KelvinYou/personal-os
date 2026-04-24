@@ -5,6 +5,7 @@ __pycache__/
 # === Privacy: 个人隐私数据通过 submodule data/ (personal-os-data) 管理 ===
 weekly_report_prompt.md
 .claude/projects/*/memory/
+.claude/skills/*-workspace/
 
 # === Secrets ===
 .env
