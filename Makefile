@@ -7,7 +7,7 @@ SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
 
-.PHONY: today daily check weekly sync-coros report lint migrate help
+.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new help
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -51,6 +51,16 @@ sync-coros:
 migrate:
 	@$(PYTHON) $(SCRIPTS_DIR)/lib/migrate.py $(if $(APPLY),--apply,)
 
+## 列出今日到期需 review 的决策
+decisions-due:
+	@$(PYTHON) $(SCRIPTS_DIR)/decisions_due.py
+
+## 创建一条新决策
+## 用法: make decision-new SLUG=cancel-gym
+decision-new:
+	@if [ -z "$(SLUG)" ]; then echo "用法: make decision-new SLUG=<slug>"; exit 1; fi
+	@$(PYTHON) $(SCRIPTS_DIR)/decision_new.py --slug $(SLUG)
+
 ## 完整流程: lint + 检查 + 聚合
 report: lint check weekly
 	@echo ""
@@ -68,4 +78,6 @@ help:
 	@echo "  make sync-coros         — 拉取昨日 COROS 数据 (可选: DATE=...)"
 	@echo "  make migrate            — dry-run schema 迁移 (APPLY=1 真写)"
 	@echo "  make report             — 一键完整流程 (lint + check + weekly)"
+	@echo "  make decisions-due      — 列出到期待 review 的决策"
+	@echo "  make decision-new SLUG= — 创建新决策条目"
 	@echo "  make help               — 显示本帮助"

@@ -28,6 +28,7 @@ personal-os/
 │   └── thresholds.yaml        # 系统阈值配置 (睡眠基准、支出告警、评分权重等)
 ├── data/                      # 🔒 Private submodule (personal-os-data)
 │   ├── daily/                 #   每日工程师日志 (YYYY-MM-DD.md)
+│   ├── decisions/             #   决策日志 (YYYY-MM-DD-slug.md)
 │   ├── fitness/               #   COROS 原始数据 (YYYY-MM-DD.yaml)
 │   ├── finance/
 │   │   ├── portfolio.yaml     #   投资组合配置 (资产配置、基金持仓)
@@ -65,6 +66,12 @@ make weekly
 
 # 一键完整流程 (check + weekly)
 make report
+
+# 列出到期待 review 的决策
+make decisions-due
+
+# 创建新决策条目
+make decision-new SLUG=cancel-gym
 ```
 
 ## COROS 自动同步
@@ -122,11 +129,13 @@ graph TB
         WR["/weekly-review\n四维评分 & 周报"]
         WM["/wealth-manager\n投资组合 & 净资产"]
         LA["/learning-agent\n技能雷达 & 学习规划"]
+        DJL["/decision-log\n决策捕获 & 回顾"]
         GC["/git-commit\nConventional Commits"]
     end
 
     subgraph Data ["📂 Data Layer (data/ submodule 🔒)"]
         DL["data/daily/"]
+        DEC["data/decisions/"]
         FIT["data/fitness/"]
         RPT["data/reports/"]
         FIN["data/finance/"]
@@ -152,12 +161,13 @@ graph TB
     User --> LA -. "读取" .-> UP
     CFG -. "阈值" .-> RG & WR & CP
     UP -. "偏好" .-> DR & CP & WR
+    User --> DJL --> DEC
     User --> GC
 
     classDef agent fill:#4A90D9,stroke:#2C5F8A,color:#fff
     classDef data fill:#F5A623,stroke:#C77D0A,color:#fff
     classDef script fill:#7B68EE,stroke:#5A4CB5,color:#fff
-    class DR,CP,WR,WM,LA,GC agent
+    class DR,CP,WR,WM,LA,DJL,GC agent
     class DL,FIT,RPT,FIN,CFG,UP data
     class SC,PC,RG,WS script
 ```
@@ -171,6 +181,7 @@ graph TB
 | `/coach-planner` | 教练式排期 + 实时决策支持 |
 | `/wealth-manager` | 投资组合分析、买入时机、净资产汇总 |
 | `/learning-agent` | AI 时代技能雷达与学习规划 |
+| `/decision-log` | 决策日志捕获与回顾 |
 | `/git-commit` | 智能 conventional commit |
 
 ## 依赖

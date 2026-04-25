@@ -25,6 +25,7 @@ graph TB
         DR["/daily-report"]
         CP["/coach-planner"]
         WR["/weekly-review"]
+        DJL["/decision-log"]
     end
 
     subgraph Engine ["Logic Engine (Python)"]
@@ -32,12 +33,14 @@ graph TB
         PC["patch_coros.py\n写入日志 frontmatter"]
         RG["report_gen.py\n规则告警检查"]
         WS["weekly_synthesis.py\n周度数据聚合"]
+        DD["decisions_due.py\n决策到期检查"]
     end
 
     subgraph Store ["Data Layer (data/ submodule 🔒)"]
         DL["data/daily/\nYYYY-MM-DD.md"]
         FIT["data/fitness/\nYYYY-MM-DD.yaml"]
         RPT["data/reports/\n周报存档"]
+        DEC["data/decisions/\n决策日志"]
         UP["user_profile.md"]
         CFG["config/thresholds.yaml"]
     end
@@ -56,6 +59,8 @@ graph TB
     DL --> WS --> WR --> REPORT --> User
     REPORT --> CP
     User --> CP --> SCHED --> User
+    User --> DJL --> DEC
+    DEC --> DD --> User
     CFG -. "阈值" .-> RG
     CFG -. "阈值" .-> WR
     UP -. "偏好" .-> DR
@@ -179,8 +184,24 @@ erDiagram
         object wow_delta "week-over-week"
     }
 
+    DECISION {
+        string id PK "YYYY-MM-DD-slug"
+        date date_decided
+        string category "career|finance|health|..."
+        string stakes "medium|high"
+        string reversibility "easy|costly|irreversible"
+        string decision_type "proactive|reactive|default"
+        string expected_outcome "falsifiable"
+        date review_date "default +30d"
+        string status "open|reviewed|pushed|expired"
+        string actual_outcome "nullable"
+        string calibration_delta "nullable"
+        string lesson "nullable"
+    }
+
     DAILY_LOG ||--|| FITNESS_YAML : "patched by sync_coros"
     DAILY_LOG }o--o{ WEEKLY_REPORT : "aggregated into"
+    DAILY_LOG }o--o{ DECISION : "contextual (same date)"
 ```
 
 ---
@@ -268,6 +289,7 @@ graph TD
 
     subgraph Specialists ["专项 Agents (Personal-OS)"]
         DR["/daily-report\nBrain Dump → 结构化日志"]
+        DJL["/decision-log\n决策捕获 + 回顾"]
         WM["/wealth-manager\n投资组合 + 净资产分析"]
         LA["/learning-agent\n技能雷达 + 学习规划"]
     end
@@ -314,6 +336,8 @@ graph TD
 | `/weekly-review` | 本周 frontmatter + **完整正文** + `weekly_report_prompt.md` + 上周 report |
 | `/coach-planner` | 最近 3 天 frontmatter + 完整正文 + `user_profile.md` + 上周 report |
 | `/daily-report` | `templates/daily.md` + `user_profile.md` + （若存在）当日现有 daily.md（合并模式） |
+| `decisions_due.py` | `data/decisions/*.md` frontmatter only（status + review_date） |
+| `/decision-log` | `templates/decision.md`（schema）+ brain dump input |
 
 ### 8.4 Breaker 评估不变式
 
@@ -341,6 +365,16 @@ graph TD
 | `weekly_synthesis` 找到 0 日志 | 打印 warning，不产出 prompt 文件 |
 | 指标越界（如 `energy_level: 15`） | `safe_float` 强转 float，无范围校验；Wave 2.5 D2 `make lint` 会拒绝 |
 | schema 演进（如删除 `sleep.quality`） | 老日志字段保留为 frontmatter 冗余；通过 Wave 2.5 `scripts/lib/migrate.py` 一次性批量迁移 |
+| `data/decisions/*.md` YAML 解析失败 | `decisions_due.py` 打印 warning，skip 该文件，不崩 |
+
+### 8.7 Decision Journal 不变量
+
+- **Schema source**: `templates/decision.md` 是 decision frontmatter 的唯一 schema 定义
+- **写入所有权**：`/decision-log` skill 写所有捕获字段（id ~ status）；`/decision-review` skill 独占写 review 字段（actual_outcome / calibration_delta / lesson）
+- **读契约**：`weekly-review` 不读 decisions（保持职责分离）；`decisions_due.py` 只读 frontmatter 元数据；未来 meta-coach（L2）读 decisions
+- **时间契约**：`review_date` 使用 KL 本地日期，与 daily.md 一致；默认 `date_decided + 30d`
+- **expected_outcome immutable**：一旦写入，review 流程不得修改 expected_outcome 字段（防事后合理化）
+- **Push 机制**：review 时 outcome 不明确 → `calibration_delta: too_early` + `status: pushed` + `review_date += 30d`
 
 ---
 
