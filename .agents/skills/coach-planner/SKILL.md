@@ -77,6 +77,9 @@ Read the following files to build situational awareness:
    windows, and timetable format templates.
 7. **Meal planning** — Read `references/meal-library.md` for meal templates, grocery prices, and macro data.
    Use this to build specific meal plans with cost estimates and protein totals.
+8. **Training timing** — Read `references/training-timing-evidence.md` for circadian/sleep evidence on AM vs PM
+   training. Use the decision tree to set workout slots: enforce ≥2h gap between training end and lights-out
+   (≥4h optimal); resistance OK in evening, cardio/Z2 should be AM or weekend.
 
 ### Step 2: Assess Current State
 
@@ -146,7 +149,7 @@ to produce the next-week schedule.
 5. Before presenting, scan for weekly-level optimization opportunities (rotating protein sources, new mobility
    work, budget-friendly swaps) and present as **💡 本周优化建议** block
 6. Present as **Draft** and ask the user to confirm or adjust
-7. Once confirmed, save to `reports/YYYY-w##-timetable.md` (same week number as the report)
+7. Once confirmed, save to `data/reports/YYYY-w##-timetable.md` (same week number as the report)
 
 #### C. Weekly Plan Adjustment ("这周计划需要调整")
 
@@ -194,6 +197,8 @@ When the user confirms a timetable:
 
 - **Daily timetable**: Append to or update the `## 3. 明日规划 (Next Steps)` section of today's daily log,
   or write to tomorrow's log if planning ahead. If the daily log doesn't exist yet, create it from `templates/daily.md`.
+- **Next-week timetable**: Save to `data/reports/YYYY-w##-timetable.md` (same week number as the weekly report
+  it's based on). This creates an archival copy for future plan-vs-actual analysis.
 - **Weekly adjustment**: If there's no weekly report yet, note the adjusted plan in today's daily log.
   If a report exists, mention the adjustment but don't modify the report file.
 
