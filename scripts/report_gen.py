@@ -101,6 +101,17 @@ def run_checks() -> list[str]:
         for a in alerts:
             print(f"  {a}")
 
+    # --- Decision Journal: surface due reviews ---
+    from decisions_due import iter_due  # noqa: E402
+    due = iter_due()
+    if due:
+        print("")
+        print(f"[Decision Review] {len(due)} decision(s) due for review:")
+        for path, meta in due:
+            title = meta.get("id", path.stem)
+            print(f"  → {title}  (review_date: {meta.get('review_date')})")
+        print("  Run: /decision-review")
+
     print("=" * 50)
 
     emit_event("check_run", {

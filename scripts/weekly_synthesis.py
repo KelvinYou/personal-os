@@ -181,7 +181,34 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     lines.append(format_breakdown_md(base_score))
     lines.append("")
 
-    lines.append("## 4. 每日日志切片采样 (Daily Slices)")
+    # --- Decision Journal summary ---
+    from decisions_due import DECISIONS_DIR, _parse_frontmatter, iter_due  # noqa: E402
+    total_decisions = 0
+    week_decisions = 0
+    due_decisions = iter_due()
+    if DECISIONS_DIR.is_dir():
+        for p in DECISIONS_DIR.glob("*.md"):
+            if p.name.startswith("."):
+                continue
+            total_decisions += 1
+            meta = _parse_frontmatter(p)
+            if meta:
+                dd = meta.get("date_decided")
+                if dd:
+                    d = dd if isinstance(dd, date) else date.fromisoformat(str(dd))
+                    if monday <= d <= sunday:
+                        week_decisions += 1
+    if total_decisions > 0 or due_decisions:
+        lines.append("## 4.5 决策日志快照 (Decision Journal)")
+        lines.append(f"- 本周新增决策：{week_decisions} 条")
+        lines.append(f"- 决策总数：{total_decisions} 条")
+        lines.append(f"- 待 review：{len(due_decisions)} 条")
+        if due_decisions:
+            nearest = due_decisions[0][1].get("id", "?")
+            lines.append(f"- 最近到期：{nearest}")
+        lines.append("")
+
+    lines.append("## 5. 每日日志切片采样 (Daily Slices)")
     lines.append("")
     lines.extend(logs_compiled)
 
