@@ -13,6 +13,7 @@ status:                   # open | reviewed | pushed | expired
 # 以下字段由 /decision-review 写入
 actual_outcome:           # null 直到 review
 calibration_delta:        # null | "as_expected" | "better" | "worse" | "too_early" | "irrelevant"
+confidence:               # null | 0.0-1.0 — review 时回填，用于 Brier score 校准
 lesson:                   # null | 1-2 句话
 ---
 

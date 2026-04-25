@@ -7,7 +7,7 @@ SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
 
-.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new help
+.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration help
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -61,6 +61,10 @@ decision-new:
 	@if [ -z "$(SLUG)" ]; then echo "用法: make decision-new SLUG=<slug>"; exit 1; fi
 	@$(PYTHON) $(SCRIPTS_DIR)/decision_new.py --slug $(SLUG)
 
+## 决策校准分析 (Brier score + 分布)
+calibration:
+	@$(PYTHON) $(SCRIPTS_DIR)/calibration.py
+
 ## 完整流程: lint + 检查 + 聚合
 report: lint check weekly
 	@echo ""
@@ -80,4 +84,5 @@ help:
 	@echo "  make report             — 一键完整流程 (lint + check + weekly)"
 	@echo "  make decisions-due      — 列出到期待 review 的决策"
 	@echo "  make decision-new SLUG= — 创建新决策条目"
+	@echo "  make calibration        — 决策校准分析 (Brier score)"
 	@echo "  make help               — 显示本帮助"
