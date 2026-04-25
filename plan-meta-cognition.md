@@ -1,6 +1,6 @@
 # Plan — Meta-Cognition Layer for Personal-OS
 
-> **Status**: Proposal · 2026-04-25 · v2 (post-review improvements)
+> **Status**: **All phases implemented** · 2026-04-25 · v3
 > **Scope**: 在现有 daily/weekly/coach 三层之上，新增**判断追踪**与**自我审计**层
 > **Sibling docs**: `plan.md`（master roadmap）, `architecture.md`（系统不变量）
 

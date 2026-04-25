@@ -72,6 +72,9 @@ make decisions-due
 
 # 创建新决策条目
 make decision-new SLUG=cancel-gym
+
+# 决策校准分析 (需要 reviewed 决策)
+make calibration
 ```
 
 ## COROS 自动同步
@@ -181,7 +184,10 @@ graph TB
 | `/coach-planner` | 教练式排期 + 实时决策支持 |
 | `/wealth-manager` | 投资组合分析、买入时机、净资产汇总 |
 | `/learning-agent` | AI 时代技能雷达与学习规划 |
-| `/decision-log` | 决策日志捕获与回顾 |
+| `/decision-log` | 决策日志捕获 |
+| `/decision-review` | 决策回顾与校准 |
+| `/meta-coach` | 月度 agent 建议质量审计 |
+| `/identity-audit` | 季度行为 vs 声称身份审计 |
 | `/git-commit` | 智能 conventional commit |
 
 ## 依赖
