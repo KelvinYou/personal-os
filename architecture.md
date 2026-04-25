@@ -289,9 +289,15 @@ graph TD
 
     subgraph Specialists ["专项 Agents (Personal-OS)"]
         DR["/daily-report\nBrain Dump → 结构化日志"]
-        DJL["/decision-log\n决策捕获 + 回顾"]
+        DJL["/decision-log\n决策捕获"]
+        DJR["/decision-review\n决策回顾 + 校准"]
         WM["/wealth-manager\n投资组合 + 净资产分析"]
         LA["/learning-agent\n技能雷达 + 学习规划"]
+    end
+
+    subgraph Meta ["Meta-Cognition Layer (月度/季度)"]
+        MC["/meta-coach\n月度 agent 审计"]
+        IA["/identity-audit\n季度行为身份审计"]
     end
 
     LOGS["7× daily logs\n+ fitness yamls"] --> WR
@@ -301,6 +307,10 @@ graph TD
     CP -- "时间块排期" --> SCHED["明日/本周计划"]
     CP -. "读取近期日志" .-> LOGS
     CP -. "读取上周目标" .-> REPORT
+
+    REPORT --> MC
+    SCHED --> MC
+    LOGS --> IA
 ```
 
 > Claude Code 的通用 skill（`/git-commit`、`/skill-creator`、`/review` 等）不属于 Personal-OS 系统组件，故不列入本图。
@@ -338,6 +348,10 @@ graph TD
 | `/daily-report` | `templates/daily.md` + `user_profile.md` + （若存在）当日现有 daily.md（合并模式） |
 | `decisions_due.py` | `data/decisions/*.md` frontmatter only（status + review_date） |
 | `/decision-log` | `templates/decision.md`（schema）+ brain dump input |
+| `/decision-review` | `data/decisions/*.md` 完整内容（frontmatter + body） |
+| `calibration.py` | `data/decisions/*.md` frontmatter（confidence + calibration_delta） |
+| `/meta-coach` | 最近 4 周 weekly reports + timetables + daily logs；不读 decisions |
+| `/identity-audit` | 一季度 daily logs + weekly reports + `user_profile.md` + decisions（category 分布） |
 
 ### 8.4 Breaker 评估不变式
 
