@@ -76,6 +76,45 @@
   3. 缩短训练到 45min (20:30 结束 → 1.5h 间隔)
   4. ❌ 22:00 灯灭硬上：长期 HRV 趋势会被压低
 
+## AM 训练生理学 (2025 Research)
+
+### 力量表现：短期下降，2-3 周适应
+
+- AM 力量输出比 PM 低 **~2-10%**（核心体温低、神经肌肉效率低、CNS 唤醒不完全）
+- **持续 AM 训练 2-3 周后适应**，可追平甚至超过原 PM 峰值 (PMC 2023 meta-analysis)
+- 首周策略：接受 RPE 上浮 0.5-1，不追求 PR，收集 AM baseline 数据
+- Source: [Morning vs Evening Training Meta-analysis](https://pmc.ncbi.nlm.nih.gov/articles/PMC10198889/)
+
+### AM 热身：最低 10min（PM 可 6min，AM 不行）
+
+AM 特有风险：
+- **椎间盘含水量最高**（夜间卧床吸水）→ 刚性更强，弯曲耐受度降低
+- CNS 唤醒不完全 → 神经肌肉协调差 → 受伤风险上升
+
+AM 热身协议（10min）：
+1. **2min 升温**: Jumping Jack ×30 + High Knees ×20（核心体温 +0.5°C）
+2. **3min 活动度**: Arm Circle + Cat-Cow + Scapular Push-up
+3. **5min 4 级递增 Ramp**: 轻→中→次工作→feeler（如 8kg×8 → 12kg×5 → 14kg×3 → 工作重量×2）
+
+### 冷水暴露 & mTOR 信号
+
+- 训练后立即冷水浸泡可能抑制 mTOR 信号，**降低肌肥大效果 ~10-15%** (Roberts et al. 2015)
+- 排期规则：**训练日用常温水澡**（或冷暴露 <1min），冷水澡留给休息日
+
+### 空腹 / 半空腹 AM 训练
+
+- **2025 meta-analysis**: 空腹 vs 进食训练在肌肉量、肥大程度、力量增长上**无显著差异**
+- 关键条件：训后 1-2h 内补足蛋白质
+- AM 实操：训前快碳（香蕉）稳血糖 + 半勺 whey 填充氨基酸池即可，不需要完整正餐
+- Source: [Fasted vs Fed Resistance Training Meta-analysis](https://www.sciencedirect.com/science/article/abs/pii/S1360859225003043)
+
+### 碳水时间线：今天吃的碳水给明天的训练
+
+- 肌糖原在 4-6h 内从碳水转化储存，睡眠期间几乎不消耗（肝糖原降 ~50%，肌糖原不变）
+- AM 训练的燃料 = **前一天全天的碳水摄入**，不是当天早上的
+- 训前香蕉只补肝糖原和稳血糖，真正的肌肉燃料早就在那了
+- **排期含义**：AM 训练者的前一天（含休息日）晚餐仍需保留适量碳水
+
 ## Sources (2024-2025)
 
 - [Leota et al. 2025 — Dose-response relationship between evening exercise and sleep](https://www.nature.com/articles/s41467-025-58271-x) — Nature Communications, 14,689 WHOOP 用户
@@ -86,3 +125,9 @@
 - [Prevention Observatory of Montreal Heart Institute — 2025 summary on evening exercise](https://observatoireprevention.org/en/2025/08/06/the-impact-of-evening-exercise-on-sleep/)
 - [Resistance training prescription for muscle strength and hypertrophy (Bayesian network meta-analysis)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10579494/)
 - [The impact of exercise on sleep and sleep disorders (npj Biological Timing and Sleep 2024)](https://www.nature.com/articles/s44323-024-00018-w)
+- [Morning vs Evening Training Meta-analysis (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10198889/)
+- [Fasted vs Fed Resistance Training Meta-analysis (ScienceDirect 2025)](https://www.sciencedirect.com/science/article/abs/pii/S1360859225003043)
+- [Sleep Deprivation and Muscle Protein Synthesis (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7785053/)
+- [Pre-sleep Casein and Overnight MPS (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7451833/)
+- [Energy Deficit and Lean Mass Meta-analysis (PubMed)](https://pubmed.ncbi.nlm.nih.gov/34623696/)
+- [VLCD and Muscle Preservation (PMC 2023)](https://pmc.ncbi.nlm.nih.gov/articles/PMC10552824/)
