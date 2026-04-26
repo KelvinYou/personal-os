@@ -100,7 +100,7 @@ lesson:                   # null | 1-2 句话
 - 用户对 Claude 说 "review 一下到期的决策" → `/decision-review` skill → 引导评估 actual_outcome → 写入
 - **Push 机制**：outcome 尚不明确时，review 中选 `calibration_delta: too_early` → skill 自动将 status 改为 `pushed`，review_date += 30d。避免"到期了但没结果所以跳过"的死循环
 
-### L2 — Meta-Coach（**冻结，不实现**）
+### L2 — Meta-Coach（**已实现 — Phase 3**）
 
 **目的**：每月一次审计 weekly-review 和 coach-planner 的建议质量，不审计用户行为。
 
@@ -115,12 +115,12 @@ lesson:                   # null | 1-2 句话
 - **Optimism index**: 排期目标完成率的滚动均值；< 70% 触发 "plan 太乐观" 信号
 - **Self-justification flags**: weekly-review 在解释 miss 时使用的归因模式（"心智过载"、"熔断"、"外部干扰"），找出过度归外的迹象
 
-**冻结理由**：
-1. 没有归档的 coach-planner 历史，分析无样本
-2. 现在只有 ~5 份 weekly report（W12-W16），meta 分析至少需要 12+ 份才有信号
+**原冻结理由**（已解除）：
+1. ~~没有归档的 coach-planner 历史，分析无样本~~ → Phase 0 已实现归档
+2. ~~现在只有 ~5 份 weekly report~~ → skill 已就绪，等数据积累后即可运行
 3. 设计与 L1 解耦——L1 不需要 L2
 
-### L3 — Identity Audit（**冻结，不实现**）
+### L3 — Identity Audit（**已实现 — Phase 4**）
 
 **目的**：季度一次，输出"行为反映的我" vs "声称的我"的差距。
 
@@ -136,7 +136,7 @@ lesson:                   # null | 1-2 句话
 - 与 user_profile.md 中的声明对比
 - 不打分、不批判，只呈现 gap
 
-**冻结理由**：现在做太早。需要 L1 + L2 至少各 1 个完整周期才有素材。
+**原冻结理由**（已解除）：~~现在做太早~~ → skill 已就绪，需 ≥ 12 周日志数据即可运行。`make quarterly` 入口已加入 Makefile。
 
 ---
 
@@ -263,7 +263,7 @@ AI 交互层，建在已验证的基础设施之上。
 | Phase 1 用 `decision_type` | proactive/reactive/default | `confidence: 0.0-1.0` | confidence 无校准基础是噪音；decision_type 无需基础设施就能揭示模式。confidence 延迟到 Phase 2 |
 | 写入方 | 专属 `/decision-log` skill | 让 `/daily-report` 顺手写 | daily-report 已经够忙；混入会让两个 skill 都失焦。但 daily-report **提示**用户有潜在决策（§4.1 钩子） |
 | 与 weekly-review 关系 | **轻量耦合**：weekly_synthesis 输出决策计数（1 行） | 完全解耦 / 深度集成 | 完全解耦 → 决策日志隐形化；深度集成 → weekly-review 膨胀。1 行计数是最小可见度 |
-| L2/L3 现在做不做 | 冻结设计，不实施 | 一次性全做 | 没数据 = 设计无法验证；先收集 8-12 周 L1 数据 |
+| L2/L3 现在做不做 | ~~冻结设计~~ → **已实施** Phase 3/4 | 一次性全做 | skill 已就绪，运行需要足够数据积累（L2: ≥4 周 timetable; L3: ≥12 周日志） |
 | coach-planner 归档时机 | **现在就做**（Phase 0，独立 PR） | 等 L2 启动时再做 | 数据积累不可追溯，晚一天少一天样本，且归档本身 ≤ 30 min |
 | 触发 review 的 UI | `make check` 输出 + `/decision-review` 主动调用 | 写 cron / 推送通知 | 与 Personal-OS "无 cron / 显式 make 触发" 原则一致（architecture.md §1） |
 
@@ -319,12 +319,16 @@ AI 交互层，建在已验证的基础设施之上。
 
 ---
 
-## 9. 第一步
+## 9. 实施记录
 
-Open questions 已决议（§6）。实施顺序：
+所有 Phase 已于 2026-04-25 实施完成。交付物：
 
-1. **Phase 0 PR** — coach-planner 归档（~30min，可与 Phase 1a 并行）
-2. **Phase 1a PR** — 基础设施：template + scripts + Makefile（~3h）
-3. **Phase 1b PR** — decision-log skill + daily-report 钩子（~3h，Phase 1a 合入后）
-
-三个 PR 总计 ~6.5h。Phase 0 和 Phase 1a 可同日开工。
+| Phase | 交付 | 关键文件 |
+|-------|------|---------|
+| **0** | coach-planner 归档 | `coach-planner/SKILL.md` (Step 4 写 timetable) |
+| **1a** | 基础设施 | `templates/decision.md`, `scripts/decisions_due.py`, `scripts/decision_new.py`, Makefile targets |
+| **1b** | decision-log skill + daily-report 钩子 | `.agents/skills/decision-log/SKILL.md`, `daily-report/SKILL.md` |
+| **1.5** | Surface integration | `report_gen.py` (到期决策), `weekly_synthesis.py` (§4.5 决策快照) |
+| **2** | Review + 校准 | `.agents/skills/decision-review/SKILL.md`, `scripts/calibration.py` |
+| **3** | Meta-Coach | `.agents/skills/meta-coach/SKILL.md` |
+| **4** | Identity Audit | `.agents/skills/identity-audit/SKILL.md`, `make quarterly` |

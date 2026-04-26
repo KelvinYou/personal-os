@@ -75,6 +75,9 @@ make decision-new SLUG=cancel-gym
 
 # 决策校准分析 (需要 reviewed 决策)
 make calibration
+
+# 季度身份审计 (需 ≥ 12 周日志)
+make quarterly
 ```
 
 ## COROS 自动同步

@@ -7,7 +7,7 @@ SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
 
-.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration help
+.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly help
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -65,6 +65,11 @@ decision-new:
 calibration:
 	@$(PYTHON) $(SCRIPTS_DIR)/calibration.py
 
+## 季度身份审计 (需 ≥ 12 周日志)
+## 用法: make quarterly 或 make quarterly QUARTER=2026-Q1
+quarterly:
+	@echo "[Identity Audit] Run: /identity-audit $(if $(QUARTER),$(QUARTER),)"
+
 ## 完整流程: lint + 检查 + 聚合
 report: lint check weekly
 	@echo ""
@@ -85,4 +90,5 @@ help:
 	@echo "  make decisions-due      — 列出到期待 review 的决策"
 	@echo "  make decision-new SLUG= — 创建新决策条目"
 	@echo "  make calibration        — 决策校准分析 (Brier score)"
+	@echo "  make quarterly          — 季度身份审计 (可选: QUARTER=2026-Q1)"
 	@echo "  make help               — 显示本帮助"
