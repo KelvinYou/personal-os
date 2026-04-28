@@ -52,12 +52,42 @@ def _find_block_range(lines: list[str], key: str) -> tuple[int, int] | None:
     return start, end
 
 
+def _insert_pos(lines: list[str], key: str) -> int:
+    """Find the best insertion position for a missing COROS block."""
+    order = ("sleep", "readiness", "training", "activities")
+    idx = order.index(key) if key in order else -1
+    for prev_key in reversed(order[:idx]):
+        rng = _find_block_range(lines, prev_key)
+        if rng:
+            return rng[1]
+    for i, line in enumerate(lines):
+        if re.match(r"^deep_work_hours:", line):
+            return i + 1
+    return len(lines)
+
+
+def _generate_map_block(key: str, values: dict) -> list[str]:
+    """Generate a full COROS map block from fitness data."""
+    result = [f"{key}:"]
+    for field, val in values.items():
+        result.append(f"  {field}: {_fmt(val)}".rstrip())
+    return result
+
+
 def _patch_map(lines: list[str], key: str, values: dict, changed: list[str]) -> list[str]:
     """Patch leaf fields under `key:`, preserving comments/indent. In-place on copy."""
     rng = _find_block_range(lines, key)
     if rng is None:
-        return lines
+        pos = _insert_pos(lines, key)
+        new_block = _generate_map_block(key, values)
+        changed.append(f"{key}=[inserted {len(values)} field(s)]")
+        return lines[:pos] + new_block + lines[pos:]
     start, end = rng
+    existing_fields = set()
+    for k in range(start + 1, end):
+        m = _FIELD_RE.match(lines[k])
+        if m:
+            existing_fields.add(m.group(2))
     out = lines[:start + 1]
     for k in range(start + 1, end):
         line = lines[k]
@@ -73,6 +103,11 @@ def _patch_map(lines: list[str], key: str, values: dict, changed: list[str]) -> 
         out.append(new_line)
         if new_line.strip() != line.strip():
             changed.append(f"{key}.{field}={old.strip() or '∅'}→{new_val or '∅'}")
+    missing = [f for f in values if f not in existing_fields]
+    if missing:
+        for field in missing:
+            out.append(f"  {field}: {_fmt(values[field])}".rstrip())
+            changed.append(f"{key}.{field}=∅→{_fmt(values[field]) or '∅'}")
     out.extend(lines[end:])
     return out
 
@@ -81,7 +116,16 @@ def _patch_list(lines: list[str], key: str, items: list, changed: list[str]) -> 
     """Replace `key:` block wholesale with a YAML list. Preserves comment on the key line."""
     rng = _find_block_range(lines, key)
     if rng is None:
-        return lines
+        pos = _insert_pos(lines, key)
+        if not items:
+            new_block = [f"{key}: []"]
+        else:
+            body = yaml.safe_dump(items, sort_keys=False, allow_unicode=True,
+                                  default_flow_style=False).rstrip()
+            indented = "\n".join("  " + line for line in body.splitlines())
+            new_block = [f"{key}:", indented]
+        changed.append(f"{key}=[inserted {len(items)} item(s)]")
+        return lines[:pos] + new_block + lines[pos:]
     start, end = rng
 
     # Keep any trailing comment on the `key:` line, drop inline `[]`.
