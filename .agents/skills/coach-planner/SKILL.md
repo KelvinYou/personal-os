@@ -80,6 +80,10 @@ Read the following files to build situational awareness:
 8. **Training timing** — Read `references/training-timing-evidence.md` for circadian/sleep evidence on AM vs PM
    training. Use the decision tree to set workout slots: enforce ≥2h gap between training end and lights-out
    (≥4h optimal); resistance OK in evening, cardio/Z2 should be AM or weekend.
+9. **Training methodology** — Read `references/training-methodology-evidence.md` for evidence on RIR vs failure,
+   ROM, frequency, tempo, cold water immersion, deload, BCAA/creatine. Use this to **avoid prescribing debunked
+   conventional wisdom** (e.g., "train to failure", "60s static stretch warmup", "30-min anabolic window",
+   "post-workout ice bath", "fixed deload every 4-6 weeks").
 
 ### Step 2: Assess Current State
 
