@@ -2,21 +2,50 @@
 
 Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价。
 
-## 营养科学 Evidence (2025 Research)
+## 营养科学 Evidence (2024-2026 Research)
 
-### 蛋白质每餐 MPS 上限
+### 单餐蛋白质上限：**没有上限** [Updated 2026-05]
 
-- 单餐 MPS（肌肉蛋白合成）在 **~40-50g protein 时封顶**，超过的部分被氧化，不额外刺激增肌
-- 最优分布：**4-5 餐 × 30-40g**，每餐都触发 MPS，优于 1-2 餐集中大量摄入
-- Source: Schoenfeld & Aragon 2018 meta-analysis
+> 旧说法 (Schoenfeld & Aragon 2018): 单餐 MPS 在 ~40-50g 封顶，多余被氧化。**已被推翻。**
 
-### Pre-sleep 蛋白质阈值
+- **Trommelen et al. 2023 (Cell Reports Medicine)**: 给受训者 25g vs 100g whey 单次摄入，用稳定同位素追踪 12h。**100g 组的 MPS 总量更高，且持续 >12h**，没有看到任何"封顶"。多余的蛋白没有被氧化，而是被慢慢消化吸收并持续合成肌肉。
+- **机制**: 大剂量蛋白延长氨基酸入血时间，整夜都在喂 MPS，而不是塞进一个 3h 窗口然后停掉
+- **实操含义**:
+  - 早午晚每餐 30g 是**够用**，不是**最优**
+  - 如果某一餐能塞 50-70g，照塞，**不会浪费**
+  - 漏掉一餐导致空窗 8h 完全不是末日 — 下一餐补大剂量即可
+- Source: [Trommelen et al. 2023 — No upper limit (Cell Reports Medicine)](https://www.cell.com/cell-reports-medicine/fulltext/S2666-3791(23)00540-2) / [PMC mirror](https://pmc.ncbi.nlm.nih.gov/articles/PMC10772463/)
 
-- **20g pre-sleep protein vs 安慰剂 = 无显著 MPS 差异**
-- **30-40g casein pre-sleep = 夜间 MPS 提升 ~22%**（结合当天重训效果更佳，+37%）
-- Greek Yogurt 是最佳 pre-sleep 载体（酪蛋白缓释 6-7h 覆盖整夜）
-- 排期规则：**pre-sleep 蛋白质必须 ≥30g**，低于此无意义
-- Source: [Pre-sleep Casein and MPS (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7451833/)
+### 蛋白质每日总量：1.6g/kg 是**门槛**，不是天花板 [Updated 2026-05]
+
+- **Tagawa 2020 meta-regression**: 1.6g/kg 是收益拐点，但 dose-response 曲线**到 ~3g/kg 仍正斜率**（边际收益递减但非零）
+- 1.6-2.2g/kg 是"性价比甜区"，不是封顶
+- Cut 期间取 **2.0-2.4g/kg** 上限层最大化肌肉保护，是有 evidence 的（不是过度摄入）
+- Source: [Tagawa et al. 2020 — Dose-response meta-analysis](https://academic.oup.com/nutritionreviews/article/79/1/66/5936522)
+
+### Pre-sleep 蛋白质：不是必须 [Updated 2026-05]
+
+> 旧说法: 30-40g casein pre-sleep 必备，否则夜间 MPS 漏掉。**部分推翻。**
+
+- 旧 evidence (Snijders 2015 等) 是在**白天蛋白质摄入不足**的背景下做的实验。当总摄入 ≥1.6g/kg 且分布合理时，pre-sleep casein 的边际增益接近零
+- **Trommelen 2023 直接颠覆**了"夜间 MPS 缺口"假设 — 一份 100g 大餐能撑 12h+，根本不需要单独的 pre-sleep dose
+- **本人执行规则** (见 feedback memory): 默认跳过 pre-sleep casein，把 30-40g 重分配到午晚餐放大版（如午餐蛋白源加到 200g、晚餐加蛋）
+- 例外：晚训日 + 训后到睡眠 <2h，可补 20-30g whey（不是 casein）作为后训餐
+
+### 蛋白质分布 vs 总量
+
+- **总量 > 分布**。每天 1.6-2.2g/kg 总量优先级远高于"4-5 餐均匀分配"
+- 3 餐 × 50-70g 与 5 餐 × 30-40g 在总量相同时**hypertrophy 等效**（2024 research）
+- 排期含义：不要为了"凑餐数"安排牵强的加餐
+
+### Anabolic Window：5-6 小时，不是 30 分钟 [Updated 2026-05]
+
+> 旧说法: 训后 30-60min 不补蛋白，"窗口"就关了。**已被推翻。**
+
+- Schoenfeld 2013 meta + 2024 后续研究: 训前 1-2h 吃过完整餐，训后 anabolic 窗口实际 ≥5h
+- 空腹训练时窗口收窄但仍有数小时
+- **实操**: AM 空腹训后 1-2h 内补 30g+ 蛋白即可，不需要"训后 30min 立刻喝 shake"
+- Source: [Nutrient timing revisited (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC3577439/) / [Protein timing meta-analysis 2024](https://pmc.ncbi.nlm.nih.gov/articles/PMC12250900/)
 
 ### 每日蛋白质总量
 
@@ -112,11 +141,12 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 
 ## 每日蛋白质校验
 
-- **目标**: 112-154g/天 (1.6-2.2g/kg × 70kg)，cut 期间取上限
-- **AM 训练日达标路径**: pre-workout 13g + 早餐 32g + 午餐 42g + 晚餐 34g + pre-sleep 33g = 154g
-- **休息日达标路径**: 早餐 32g + 午餐 40g + 晚餐 34g + pre-sleep 33g = 139g
+- **目标**: 112-168g/天 (1.6-2.4g/kg × 70kg)，cut 期间取上限
+- **AM 训练日达标路径**: pre-workout 13g + 早餐 32g + 午餐 42g + 晚餐 34g + 加餐 33g = 154g
+- **休息日达标路径**: 早餐 32g + 午餐 40g + 晚餐 34g + 加餐 33g = 139g
 - 排餐后应快速加总蛋白质，确认达标
-- **Pre-sleep 必须 ≥30g**（低于此无 MPS 意义）
+- **总量 > 分布**: 凑到日总量优先，单餐 50-70g 大剂量不会浪费（Trommelen 2023）
+- **Pre-sleep casein 不强制**（见上方 Evidence 章节）— 用户默认跳过，把份额并入午晚餐
 
 ## 食材单价表 (MYR)
 
