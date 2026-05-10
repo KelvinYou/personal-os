@@ -113,7 +113,8 @@ Not all data will always be available. When files are missing or incomplete:
   Trust the user's real-time account — the log might not be updated yet, or subjective quality matters
   beyond raw duration. Note the discrepancy and suggest updating the log.
 - **thresholds.yaml or user_profile.md unreadable**: Use the values you know from context (baseline sleep 7.5h,
-  protein target 112-140g, shutdown 22:00) and tell the user you couldn't read the config file.
+  protein target 161g (recomp 2.3 g/kg @ 70kg), shutdown 22:00, training 3-day full body Mon/Wed/Fri AM)
+  and tell the user you couldn't read the config file.
 
 The goal is to never get stuck. Missing data means asking the user, not abandoning the plan.
 
