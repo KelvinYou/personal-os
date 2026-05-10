@@ -1,6 +1,55 @@
 # Personal-OS 系统阈值配置 (System Thresholds)
 # 所有逻辑引擎与评分框架的硬编码数字统一在此管理。
 
+# === 阶段 (Phase) ===
+# 当前体成分阶段。影响热量/蛋白/训练频次目标。切换阶段时手动修改本字段。
+phase:
+  current: recomp                  # cut | recomp | bulk | maintain
+  start_date: "2026-05-11"         # W20 起切到 recomp
+  bodyweight_kg: 70.0              # 用于 g/kg 蛋白计算
+  reassess_after_weeks: 6           # 评估窗口；4-6 周后看 HRV/体成分趋势
+
+# === 营养 (Nutrition — phase-aware) ===
+# 实际值由 phase.current 决定 (recomp 用 recomp.*，cut 用 cut.*)
+nutrition:
+  recomp:
+    protein_g_per_kg: 2.30          # 161g @ 70kg
+    protein_g_target: 161
+    protein_g_min: 155              # 5g 容差
+    training_day_kcal: 1900
+    rest_day_kcal: 1700
+    weekly_deficit_min: -2000       # 周累计赤字下限 (kcal)
+    weekly_deficit_max: -3500       # 周累计赤字上限 (避免日均 > -500)
+  cut:
+    protein_g_per_kg: 2.00          # 140g @ 70kg
+    protein_g_target: 140
+    protein_g_min: 135
+    training_day_kcal: 1800
+    rest_day_kcal: 1620             # = BMR 底线
+    weekly_deficit_min: -3500
+    weekly_deficit_max: -4500
+  fat_g_min: 49                      # 0.7 g/kg 底线 (维持激素，所有阶段共用)
+  bmr_floor_kcal: 1620               # 摄入硬底线，破此触发肌肉分解警示
+  weight_loss_max_pct: 1.0           # 周减重上限 (% BW)；超此掉肌肉概率大增
+  caffeine_cutoff_time: "14:00"
+
+# === 训练架构 (Training Architecture — phase-aware) ===
+training:
+  recomp:
+    days_per_week: 3                 # Mon/Wed/Fri Full Body
+    architecture: "full_body_3d"     # full_body_3d | upper_lower_4d | ppl_6d
+    frequency_per_muscle_per_week: [2, 3]
+    weekly_minutes: 210
+  cut:
+    days_per_week: 4                 # 4-way split
+    architecture: "split_4way"
+    frequency_per_muscle_per_week: [1, 2]
+    weekly_minutes: 300
+  am_warmup_min: 10                  # AM 训练强制热身 ≥10min（4 级 ramp）
+  pm_warmup_min: 6
+  hrv_full_volume_threshold: 0.95    # HRV ≥ 0.95 × baseline 才全量
+  hrv_progressive_threshold: 1.20    # HRV ≥ 1.20 × baseline 可 +1 档
+
 # === 产出与工作 (Output & Work) ===
 deep_work:
   minimum_hours: 4.0          # 工作日低于此值触发关联性检查告警 (可能整天在开会)
@@ -54,10 +103,13 @@ caffeine:
 
 # === 作息 (Schedule) ===
 schedule:
-  wakeup_target: "06:30"
+  wakeup_target_training: "05:45"   # AM 训练日 (Mon/Wed/Fri)
+  wakeup_target_neat: "06:00"       # Tue/Thu Z2 walk
+  wakeup_target_rest: "06:30"       # Sat/Sun
   core_work_start: "09:00"
   core_work_end: "18:00"
-  shutdown_time: "22:00"       # 强制断电协议
+  shutdown_time: "22:00"            # 灯灭硬红线
+  sleep_window_hours: 7.75          # 22:00 → 05:45
 
 # === 熔断规则 (Circuit Breakers) ===
 # IF 条件触发 → THEN 强制执行行为限制。逻辑引擎自动输出告警。
