@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -73,6 +73,17 @@ class DailySpend(BaseModel):
     note: str | None = None
 
 
+class Adherence(BaseModel):
+    """Timetable adherence flag — replaces narrative sections for plan-vs-reality tracking.
+
+    timetable: ✅ = followed plan / ⚠️ = minor deviation / 🔴 = broke plan
+    deviation_note: free-text root cause; expected only when timetable != ✅
+    """
+    model_config = ConfigDict(extra="forbid")
+    timetable: Literal["✅", "⚠️", "🔴"] | None = None
+    deviation_note: str | None = None
+
+
 class DailyLog(BaseModel):
     """Frontmatter of a data/daily/YYYY-MM-DD.md file."""
 
@@ -90,6 +101,7 @@ class DailyLog(BaseModel):
     daily_spend: list[DailySpend] = Field(default_factory=list)
     mental_load: int | None = None
     body: Body = Field(default_factory=Body)
+    adherence: Adherence = Field(default_factory=Adherence)
 
     @field_validator("activities", mode="before")
     @classmethod
@@ -106,7 +118,7 @@ class DailyLog(BaseModel):
             return []
         return v
 
-    @field_validator("sleep", "readiness", "training", "body", mode="before")
+    @field_validator("sleep", "readiness", "training", "body", "adherence", mode="before")
     @classmethod
     def _normalize_nested(cls, v: Any) -> Any:
         if v is None:
