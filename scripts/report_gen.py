@@ -81,6 +81,26 @@ def run_checks() -> list[str]:
         else:
             poor_count = 0
 
+    # --- Rule 7: Adherence drift (W22+ lightweight log) ---
+    # 3+ 连续 ⚠️/🔴 → timetable 与 reality 系统性偏离，coach-planner 需重排
+    ADHERENCE_DRIFT_THRESHOLD = 3
+    adh_streak = 0
+    adh_start: str | None = None
+    for log in sorted(logs, key=lambda l: l.date):
+        status = log.adherence.timetable
+        if status in ("⚠️", "🔴"):
+            if adh_streak == 0:
+                adh_start = log.date.isoformat()
+            adh_streak += 1
+            if adh_streak == ADHERENCE_DRIFT_THRESHOLD:
+                alerts.append(
+                    f"[Warning] {adh_start} → {log.date}: {adh_streak} consecutive adherence drift days. "
+                    f"Timetable 与 reality 系统性偏离，下次 coach-planner 排期需调整。"
+                )
+        else:
+            adh_streak = 0
+            adh_start = None
+
     if total_spend > spend_alert:
         alerts.append(f"[Warning] Weekly spend RM{total_spend:.2f} exceeds alert threshold RM{spend_alert:.2f}.")
 
