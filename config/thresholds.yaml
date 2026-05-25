@@ -36,7 +36,7 @@ nutrition:
 # === 训练架构 (Training Architecture — phase-aware) ===
 training:
   recomp:
-    days_per_week: 3                 # Mon/Wed/Fri Full Body
+    days_per_week: 3                 # Tue/Thu/Sat Full Body
     architecture: "full_body_3d"     # full_body_3d | upper_lower_4d | ppl_6d
     frequency_per_muscle_per_week: [2, 3]
     weekly_minutes: 210
@@ -103,9 +103,9 @@ caffeine:
 
 # === 作息 (Schedule) ===
 schedule:
-  wakeup_target_training: "05:45"   # AM 训练日 (Mon/Wed/Fri)
-  wakeup_target_neat: "06:00"       # Tue/Thu Z2 walk
-  wakeup_target_rest: "06:30"       # Sat/Sun
+  wakeup_target_training: "05:45"   # AM 训练日 (Tue/Thu/Sat)
+  wakeup_target_neat: "06:00"       # Mon/Wed Z2 walk
+  wakeup_target_rest: "06:30"       # Fri/Sun
   core_work_start: "09:00"
   core_work_end: "18:00"
   shutdown_time: "22:00"            # 灯灭硬红线
