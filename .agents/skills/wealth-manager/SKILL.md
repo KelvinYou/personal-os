@@ -4,9 +4,10 @@ description: >
   Analyze stocks (Bursa Malaysia & US markets), identify buy-the-dip opportunities,
   manage investment portfolio, and summarize net worth across all vehicles (stocks, MMFs, FDs, digital banks).
   Use this skill whenever the user asks about stocks, portfolio, investments, savings allocation,
-  interest rates comparison, net worth, or mentions buying/selling shares — even if they don't
+  interest rates comparison, net worth, asset allocation, a financial/investment plan, tax-efficient
+  investing (PRS, ETF withholding tax), or mentions buying/selling shares — even if they don't
   explicitly say "wealth" or "portfolio". Also trigger when the user provides a new trade,
-  updates savings placement, or asks "where should I put my money".
+  updates savings placement, asks "where should I put my money", or "is my plan any good".
 ---
 
 # Wealth Manager — 个人财富管理助手
@@ -22,7 +23,9 @@ where their cash sits across savings vehicles.
 | `finance/portfolio.yaml` | Holdings, avg cost, current prices | Any portfolio/stock query |
 | `finance/interest_rates.yaml` | Digital banks, MMFs, FDs rates | Savings allocation queries |
 | `config/thresholds.yaml` | Finance thresholds (savings target, spend alert) | Spending/savings analysis |
-| `references/investment-framework.md` | Investment philosophy, decision criteria, portfolio-level analysis | Stock analysis, buy/sell decisions, portfolio review |
+| `references/investment-framework.md` | Single-stock + portfolio decision criteria (the "satellite" layer) | Stock analysis, buy/sell decisions, portfolio review |
+| `references/wealth-building-playbook.md` | Holistic plan: fund layering, asset allocation, core-satellite, DCA evidence, rebalancing, behavior | Any "where should my money go" / allocation / full-plan / net-worth-strategy question |
+| `references/malaysia-wealth-vehicles.md` | MY-specific: PRS/EPF tax relief, digital banks/MMF/FD, Ireland-domiciled UCITS ETFs, US estate-tax trap | Savings allocation, tax optimization, ETF/core selection |
 
 Always read the relevant files before responding — your answers must reflect the user's actual positions.
 
@@ -65,6 +68,10 @@ When the user asks you to analyze stocks or find buying opportunities:
 6. **Assess portfolio-level health** — after individual stock analysis, evaluate concentration risk,
    sector correlation, and currency exposure (see framework). If the recommendation would worsen
    an existing imbalance (e.g., adding another US tech stock when tech is already >50%), flag it explicitly.
+7. **Frame stock picks as the satellite, not the whole portfolio** — per `references/wealth-building-playbook.md`,
+   the user's individual picks are the *satellite* layer (target 25–40%). If they have no index *core*
+   (e.g., VWRA/CSPX), surface this: adding more single stocks without a core concentrates risk.
+   Don't just answer "which stock" — periodically zoom out to "is the overall structure sound".
 
 **Output format for stock analysis:**
 
@@ -119,12 +126,16 @@ For sells, reduce share count accordingly. If fully sold, remove the entry.
 When the user asks where to park cash, or provides their savings allocation:
 
 1. Read `finance/interest_rates.yaml` — check if rates are fresh (see Data Freshness section)
-2. Consider constraints: promo conditions, minimum deposits, withdrawal flexibility
-3. Recommend optimal allocation based on:
-   - Emergency fund (3-6 months expenses) → high-liquidity vehicles (TNG Go+, digital bank base)
-   - Short-term parking (< 6 months) → best promo rate with acceptable conditions
+2. Read `references/malaysia-wealth-vehicles.md` for the MY tool landscape (digital banks, MMF, FD, ASNB)
+   and the cash-layering table — and `references/wealth-building-playbook.md` §1 for the order of operations
+3. Consider constraints: promo conditions, minimum deposits, withdrawal flexibility
+4. Recommend optimal allocation based on:
+   - Emergency fund (3-6 months expenses) → high-liquidity vehicles (TNG Go+, digital bank high-yield)
+   - Short-term parking (< 6 months) → best promo rate / MMF with acceptable conditions
    - Medium-term (6-12 months) → FD promos or higher-tier MMFs
-4. If the user provides their current allocation, update `finance/interest_rates.yaml` with a
+   - **Don't let excess cash sit idle** — cash beyond the emergency fund + near-term goals loses to
+     inflation; route it into the index core per the playbook rather than hoarding it
+5. If the user provides their current allocation, update `finance/interest_rates.yaml` with a
    `my_allocation` section or create a `finance/savings.yaml`
 
 ### 4. Net Worth Summary
@@ -165,6 +176,28 @@ When the user asks to update prices, or periodically:
 3. Update `usd_myr` exchange rate
 4. Update the `updated` date
 5. Show what changed
+
+### 6. Holistic Wealth Plan / Allocation
+
+Trigger when the user asks "where should I put my money", "is my plan good", "how should I invest my
+savings", "build me a plan", or any question that's about **structure rather than a single stock/rate**.
+This is the capability that fixes "草率" — don't answer with a one-off stock pick; give a layered plan.
+
+1. Read `references/wealth-building-playbook.md` (the plan backbone) and `references/malaysia-wealth-vehicles.md`
+   (MY tax + vehicle specifics). Read `finance/portfolio.yaml` + `finance/interest_rates.yaml` for current state.
+2. **Diagnose the current structure** against the playbook: Is there an index *core*, or is everything
+   single-stock satellite? Is the emergency fund covered? Is excess cash sitting idle? Is PRS tax relief unused?
+3. **Walk the Financial Order of Operations** (playbook §1) and place the user on it — what's the next
+   best ringgit move given their actual positions.
+4. **Propose a target allocation** (playbook §2) — for this user, default to Core-Satellite: 65–75%
+   global index core (UCITS ETF, see MY vehicles §3 for the 30%→15% withholding + estate-tax rationale)
+   + 25–35% their existing stock picks.
+5. **Surface the high-value MY-specific moves** that are easy to miss: PRS RM3,000 tax relief (if marginal
+   tax rate ≥ ~19%), and switching the core from US-listed ETFs to Ireland-domiciled UCITS (VWRA/CSPX).
+6. Tie it to their RM<redacted>/month cash flow (playbook §3 DCA) and a once-a-year rebalancing rule (§4).
+
+Output a concrete, sequenced plan — not generic advice. Confirm assumptions you can't verify (marginal
+tax rate, Bumiputera status for ASB, whether they already hold a core) rather than guessing.
 
 ## General Guidelines
 

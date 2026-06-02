@@ -2,6 +2,10 @@
 
 Wealth-manager 做投资分析和建议时的决策框架。主 SKILL.md 定义工作流，本文件存放投资哲学和判断准则。
 
+> **本文件只覆盖 satellite 层（个股选择）。** 整体方案骨架——资金分层、资产配置、core-satellite、
+> 再平衡、DCA 证据——见 `wealth-building-playbook.md`；MY 税务/工具/UCITS ETF 见 `malaysia-wealth-vehicles.md`。
+> 做个股建议时务必同时看组合是否已有 index core，别让用户只堆 satellite。
+
 ## 用户投资哲学
 
 用户是 25 岁成长型投资者，核心理念是**用时间换复利**：
