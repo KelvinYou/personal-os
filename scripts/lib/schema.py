@@ -50,6 +50,8 @@ class Activity(BaseModel):
     avg_hr: int | None = None
     calories: int | None = None
     training_load: float | None = None
+    elevation_m: float | None = None
+    avg_power: int | None = None
 
 
 class Body(BaseModel):
