@@ -183,6 +183,7 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 | 核桃 | 1kg | RM30.00 | RM3.00/100g | 15g/14g/65g/3g |
 | Chia Seeds | 400g | RM14.88 | RM0.37/10g (≈RM1.04/28g) | 16.5g/63.8g/30.7g/0g (Fiber 34.4g) |
 | 可可粉 (100%) | 300g | RM27.94 | RM0.47/5g (≈RM9.31/100g) | 22.9g/10.7g/11.0g/0g (Fiber 34.4g) |
+| 黑芝麻粉 | 100g | RM11.00 (Shopee 券) | RM1.10/10g (≈RM0.55/5g) | 18g/23g/50g/0g (Ca ~975mg, Fe ~14mg/100g) |
 | Ikan Kembung (鲭鱼) | 1kg | ~RM12.00 | ~RM1.20/100g | 20g/0g/8g/0g |
 | Tempeh | 300g | ~RM3.00 | ~RM1.00/100g | 19g/9g/11g/0g |
 | Creatine Monohydrate | 500g | ~RM60.00 | ~RM0.30/5g | — |
