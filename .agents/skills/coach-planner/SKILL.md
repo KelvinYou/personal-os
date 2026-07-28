@@ -144,6 +144,15 @@ Only after the user confirms should you present the final version.
 This is the **primary handoff from weekly-review**. After the user generates a weekly report, they will ask you
 to produce the next-week schedule.
 
+0. **Freshness check before anything else**: confirm the latest file in `data/reports/*-weekly-report.md`
+   actually covers the week that JUST ended (its date range should end the day before the week you're about
+   to plan). If the most recent weekly report is missing or older than that, do NOT silently generate the
+   timetable from whatever older report/data is available. Tell the user explicitly:
+   "最新周报是 W## 的，还没有本周的报告——要现在用旧数据排，还是先跑 weekly-review 再排？" and let them choose.
+   Generating on stale data and assuming a future report will "revise" it later is the failure mode that
+   produced the W30 timetable/report mismatch (it was written on W28 data before W29's report landed, the
+   W29 report flagged it as needing revision, and that revision never happened — the stale plan just ran for
+   the full week). Get it right at generation time or flag it; don't defer correctness to a future step.
 1. **Read the latest weekly report** — extract P0/P1/P2 objectives and execution constraints
 2. **Read recent daily logs** (last 3 days) for current state awareness
 3. **Read references** — `references/schedule-rules.md` for format and rhythm, `references/meal-library.md` for meals
