@@ -1,0 +1,10 @@
+PyYAML==6.0.3
+python-dotenv==1.2.2
+pydantic==2.13.3
+pydantic-settings==2.14.0
+
+# Google Calendar sync (scripts/sync_calendar.py)
+google-auth==2.56.2
+google-auth-oauthlib==1.4.0
+google-auth-httplib2==0.4.0
+google-api-python-client==2.198.0

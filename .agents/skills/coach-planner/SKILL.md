@@ -213,6 +213,11 @@ When the user confirms a timetable:
   or write to tomorrow's log if planning ahead. If the daily log doesn't exist yet, create it from `templates/daily.md`.
 - **Next-week timetable**: Save to `data/reports/YYYY-w##-timetable.md` (same week number as the weekly report
   it's based on). This creates an archival copy for future plan-vs-actual analysis.
+  **Also write** `data/reports/YYYY-w##-calendar.yaml` — the structured Google Calendar sidecar
+  `scripts/sync_calendar.py` reads (schema + rationale in `references/schedule-rules.md`, section
+  "Google Calendar Sidecar"). This is not optional: the narrative timetable's format changes too often
+  for a parser to track, so the sidecar is the only reliable machine-readable copy. Regenerate and
+  overwrite it (don't append) any time the timetable itself is regenerated or revised mid-week.
 - **Weekly adjustment**: If there's no weekly report yet, note the adjusted plan in today's daily log.
   If a report exists, mention the adjustment but don't modify the report file.
 

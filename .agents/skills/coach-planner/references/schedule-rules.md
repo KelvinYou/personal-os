@@ -65,6 +65,30 @@ Coach-planner 排期时的约束规则速查。主 SKILL.md 定义工作流，�
 
 > **Sat 训练日变体**: 沿用「AM 训练日模式」的起床/训练/早餐段，但去掉 08:20 通勤与 09:00-18:00 核心工作时间——周六是 System Offline，不排 Deep Work / 产出目标，训练后直接进入自由活动，午晚餐时间不变。
 
+## Google Calendar Sidecar (calendar.yaml) — MANDATORY 与 timetable 同步生成
+
+`scripts/sync_calendar.py` 靠这份结构化文件把 timetable 推到 Google Calendar，**不会去解析叙事版 Markdown**（那份格式几乎每周都在变，解析器会不断碎掉）。所以每次保存 `data/reports/YYYY-w##-timetable.md` 时，**必须同时**写一份 `data/reports/YYYY-w##-calendar.yaml`。
+
+**Schema**（顶层 3 个必需字段 + events 数组，每个 event 4 个必需字段）：
+```yaml
+week: "2026-W31"                # ISO 周编号，脚本用它做同名事件的清空重建 tag
+timezone: "Asia/Kuala_Lumpur"   # IANA tz name
+calendar_id: "primary"          # 可省略，省略则读 .env 的 GOOGLE_CALENDAR_ID
+events:
+  - date: "2026-07-27"          # YYYY-MM-DD
+    start: "07:00"              # HH:MM，24h，当地时区
+    end: "07:15"                # 必须显式给出，不要留给脚本猜测时长
+    title: "查 HRV + 决定恢复日模式"
+    description: "Sleep Critical 触发日；HRV<30 升级 System Offline"   # 可省略
+```
+
+**取舍粒度**: 每个 event 对应叙事版 timetable 里"值得上日历"的一个时间块——起床/训练/三餐/Deep Work 段/wind-down/断电，不必逐行照抄备注列的每一个细节；条件分支（如"HRV<30 则改为…"）写进 description，不要因为分支而拆成多个事件。
+
+**同步规则**: 脚本按 `week` 字段做"先删除该周所有已同步事件、再整批插入"，所以：
+- 每次重新生成/修订这周的 timetable，calendar.yaml 也要重新生成并覆盖保存（不是追加）
+- `make sync-calendar` 默认读 `data/reports/` 里最新的 `*-calendar.yaml`；也可以 `make sync-calendar WEEK=2026-w31` 指定
+- 首次使用需要用户自己完成一次性 OAuth 设置，见 `scripts/lib/gcal.py` 文件顶部注释
+
 > **Pre-sleep casein 已移除**（per user feedback）— Trommelen 2023；改为午晚餐放大版替代。
 
 ## 训练时间窗口

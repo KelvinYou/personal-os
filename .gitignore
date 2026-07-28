@@ -9,3 +9,4 @@ weekly_report_prompt.md
 
 # === Secrets ===
 .env
+.credentials/

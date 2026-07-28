@@ -1,0 +1,119 @@
+"""Google Calendar sync — auth + week-scoped upsert.
+
+One-time setup (do this yourself, in a browser, before first run):
+1. https://console.cloud.google.com/ → new project → enable "Google Calendar API"
+2. Credentials → Create Credentials → OAuth client ID → Application type "Desktop app"
+3. Download the JSON, save it as `.credentials/google_calendar_client.json` (gitignored)
+4. Run `make sync-calendar` once — it opens your browser for the OAuth consent screen and
+   caches a token at `.credentials/google_calendar_token.json`. Subsequent runs are silent.
+
+Idempotency model: every event this script creates carries a private extended property
+`{source: personal-os, week: "2026-W31"}`. A sync for a given week always deletes every
+existing event tagged with that week before re-inserting from the yaml — so re-running
+after editing the sidecar (or a mid-week plan change) never duplicates or leaves stale
+events behind, at the cost of a full delete+recreate instead of a real diff.
+"""
+from __future__ import annotations
+
+from datetime import date, datetime, timedelta
+from pathlib import Path
+from typing import Any
+from zoneinfo import ZoneInfo
+
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+
+ROOT = Path(__file__).resolve().parents[2]
+CRED_DIR = ROOT / ".credentials"
+CLIENT_SECRET_PATH = CRED_DIR / "google_calendar_client.json"
+TOKEN_PATH = CRED_DIR / "google_calendar_token.json"
+
+SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
+SOURCE_TAG = "personal-os"
+
+
+def _get_credentials() -> Credentials:
+    if not CLIENT_SECRET_PATH.exists():
+        raise SystemExit(
+            f"[Status: Critical] 找不到 {CLIENT_SECRET_PATH.relative_to(ROOT)} — "
+            "先完成 scripts/lib/gcal.py 顶部注释里的一次性 OAuth client 设置。"
+        )
+    creds: Credentials | None = None
+    if TOKEN_PATH.exists():
+        creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(str(CLIENT_SECRET_PATH), SCOPES)
+            creds = flow.run_local_server(port=0)
+        CRED_DIR.mkdir(parents=True, exist_ok=True)
+        TOKEN_PATH.write_text(creds.to_json(), encoding="utf-8")
+    return creds
+
+
+def _service():
+    return build("calendar", "v3", credentials=_get_credentials())
+
+
+def _week_bounds_rfc3339(events: list[dict], timezone: str) -> tuple[str, str]:
+    """Widest [min_date 00:00, max_date+1 00:00) window covering every event, as
+    offset-aware RFC3339 timestamps in the given IANA timezone — used only to scope
+    the list() query, not written to any event."""
+    tz = ZoneInfo(timezone)
+    dates = sorted(date.fromisoformat(e["date"]) for e in events)
+    start = datetime.combine(dates[0], datetime.min.time(), tzinfo=tz)
+    end = datetime.combine(dates[-1] + timedelta(days=1), datetime.min.time(), tzinfo=tz)
+    return start.isoformat(), end.isoformat()
+
+
+def clear_week(week_tag: str, events: list[dict], timezone: str, calendar_id: str) -> int:
+    """Delete every existing event tagged with this week_tag. Returns count deleted."""
+    service = _service()
+    time_min, time_max = _week_bounds_rfc3339(events, timezone)
+    deleted = 0
+    page_token = None
+    while True:
+        resp = (
+            service.events()
+            .list(
+                calendarId=calendar_id,
+                timeMin=time_min,
+                timeMax=time_max,
+                privateExtendedProperty=[f"source={SOURCE_TAG}", f"week={week_tag}"],
+                pageToken=page_token,
+                singleEvents=True,
+            )
+            .execute()
+        )
+        for item in resp.get("items", []):
+            service.events().delete(calendarId=calendar_id, eventId=item["id"]).execute()
+            deleted += 1
+        page_token = resp.get("nextPageToken")
+        if not page_token:
+            break
+    return deleted
+
+
+def insert_events(week_tag: str, events: list[dict], timezone: str, calendar_id: str) -> int:
+    service = _service()
+    for e in events:
+        body: dict[str, Any] = {
+            "summary": e["title"],
+            "description": e.get("description", ""),
+            "start": {"dateTime": f"{e['date']}T{e['start']}:00", "timeZone": timezone},
+            "end": {"dateTime": f"{e['date']}T{e['end']}:00", "timeZone": timezone},
+            "extendedProperties": {"private": {"source": SOURCE_TAG, "week": week_tag}},
+        }
+        service.events().insert(calendarId=calendar_id, body=body).execute()
+    return len(events)
+
+
+def sync_week(week_tag: str, events: list[dict], timezone: str, calendar_id: str) -> tuple[int, int]:
+    """Delete this week's previously-synced events, then insert the current set.
+    Returns (deleted_count, inserted_count)."""
+    deleted = clear_week(week_tag, events, timezone, calendar_id)
+    inserted = insert_events(week_tag, events, timezone, calendar_id)
+    return deleted, inserted

@@ -47,6 +47,11 @@ weekly:
 sync-coros:
 	@$(PYTHON) $(SCRIPTS_DIR)/sync_coros.py $(if $(DATE),--date $(DATE),)
 
+## 把 timetable 的 calendar.yaml sidecar 推到 Google Calendar
+## 用法: make sync-calendar 或 make sync-calendar WEEK=2026-w31
+sync-calendar:
+	@$(PYTHON) $(SCRIPTS_DIR)/sync_calendar.py $(if $(WEEK),--week $(WEEK),)
+
 ## 运行 schema 迁移 (dry-run 默认；APPLY=1 真写)
 migrate:
 	@$(PYTHON) $(SCRIPTS_DIR)/lib/migrate.py $(if $(APPLY),--apply,)
@@ -85,6 +90,7 @@ help:
 	@echo "  make check              — 运行逻辑引擎告警检查"
 	@echo "  make weekly             — 聚合本周数据 (可选: DATE=2026-03-22)"
 	@echo "  make sync-coros         — 拉取昨日 COROS 数据 (可选: DATE=...)"
+	@echo "  make sync-calendar      — 推送 timetable calendar.yaml 到 Google Calendar (可选: WEEK=...)"
 	@echo "  make migrate            — dry-run schema 迁移 (APPLY=1 真写)"
 	@echo "  make report             — 一键完整流程 (lint + check + weekly)"
 	@echo "  make decisions-due      — 列出到期待 review 的决策"
