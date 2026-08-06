@@ -13,6 +13,9 @@
 /prompts/         — AI Agent 系统提示词 (weekly_review_agent.md)
 /reports/         — 生成的周报存档
 /user_profile.md  — 全局用户画像 (作息/饮食/锻炼偏好)
+/repos/           — 外部项目 submodules，统一管理 + 供 skills 读取
+  /repos/portfolio-website  — 个人网站 (career 相关统一入口)
+  /repos/ai-stock-analysis  — 股票分析工具 (wealth-manager skill 历史记录分析用)
 ```
 
 ## 关键约定
