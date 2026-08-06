@@ -48,22 +48,34 @@ conviction score + signal convergence），比单纯 WebSearch 出的一次性�
    - `data/<TICKER>/` 目录不存在（这个 ticker 从没跑过深度分析）
    - `briefing.json` 存在但 `date` 距今 > 14 天
    - 用户明确要求"最新分析"/"重新跑一下"
+   - **WebSearch-only 分析本身出现明显分歧**：分析师共识与基本面红旗冲突（如 consensus Strong Buy
+     但 FCF/利润率在恶化）、bull/bear 论点势均力敌、或你自己判断不出"暂时性回撤 vs 结构性恶化"——
+     这种情况**不要含糊带过或自己硬编一个结论**，按下面第 3 步（含环境自检）走完整流程，跑不了就在输出里把它列为
+     明确的下一步行动项（例如 "建议对 META 跑一次完整 pipeline 拿 conviction score"），不要只是
+     一句"数据可能不准"就结束。
 3. **触发时的执行步骤**：
+   0. **环境自检（先自己尝试修，别一上来就放弃）**：
+      - 检查 `python3 -c "import stock_analysis"` 能不能 import；不能的话在
+        `repos/ai-stock-analysis` 目录下自动跑 `pip install -e .`（或按仓库实际情况用 `uv pip install -e .`），
+        装完再试一次 import。
+      - 检查 `ANTHROPIC_API_KEY` 环境变量是否存在。**不存在的话直接问用户**："跑深度 pipeline 需要
+        `ANTHROPIC_API_KEY`，现在环境里没有，要现在设置一下让我跑，还是先用 WebSearch 版本？"——
+        不要静默 fallback，让用户有机会当场决定要不要花这个 API 成本换更硬的信号。
+      - 只有当 pip install 失败（比如依赖装不上）或用户明确选择跳过时，才走 WebSearch fallback。
    a. 先刷新 Layer 1 数据：`cd repos/ai-stock-analysis && git pull origin main`（拉取每日 cron fetch
       的最新价格），如果 submodule 落后太多再 `git submodule update --remote repos/ai-stock-analysis`
       （回到 personal-os 根目录执行，会改动 `.gitmodules` 指针，提交前记得告诉用户）。
    b. 跑 pipeline：US 股票用 `stock-analysis <TICKER> --market US -v`；MY 股票用
       `stock-analysis <TICKER> --market MY -v`（Bursa ticker 用代码，如 `1155`、`4197`）。
-      在 `repos/ai-stock-analysis` 目录下执行，需要该仓库已 `pip install -e .` 且设了
-      `ANTHROPIC_API_KEY`——如果环境没装好，明确告诉用户并退回到 WebSearch 模式，不要假装跑了。
+      在 `repos/ai-stock-analysis` 目录下执行。
    c. 如果 ticker 从未被 `stock-fetch` 抓过（比如不在 FBM KLCI/S&P500 等自动 universe 里的马股，
       像 BIMB/5258），先跑 `stock-fetch <TICKER> --market MY` 补 Layer 1，再跑 `stock-analysis`。
    d. 完整 pipeline 跑一次有实际 API 成本（Opus debate + Haiku 分析师，约 1-2 分钟）。**只对持仓
       和用户明确要求深度评估的候选触发，不要对每一句随口的股票问题都跑**——随口问题继续用
       WebSearch 快速回答即可。
-4. **读不到就不要装**：如果 pipeline 跑不了（没装环境、没 API key、用户明确说不要跑），直接用
+4. **读不到就不要装**：如果最终还是没跑成（pip install 失败、用户选择不设 API key），直接用
    WebSearch 分析并在输出里注明 "非结构化深度分析，仅基于当前搜索"，不要暗示这是 conviction-scored
-   的结果。
+   的结果，并且**明确留一句行动项**告诉用户下次想要更准的信号该怎么跑（见上）。
 
 ### 如何使用 pipeline 输出
 
