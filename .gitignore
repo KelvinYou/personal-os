@@ -6,6 +6,7 @@ __pycache__/
 weekly_report_prompt.md
 .claude/projects/*/memory/
 .claude/skills/*-workspace/
+.agents/skills/*-workspace/
 
 # === Secrets ===
 .env
