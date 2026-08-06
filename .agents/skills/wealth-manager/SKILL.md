@@ -26,6 +26,12 @@ where their cash sits across savings vehicles.
 | `references/investment-framework.md` | Single-stock + portfolio decision criteria (the "satellite" layer) | Stock analysis, buy/sell decisions, portfolio review |
 | `references/wealth-building-playbook.md` | Holistic plan: fund layering, asset allocation, core-satellite, DCA evidence, rebalancing, behavior | Any "where should my money go" / allocation / full-plan / net-worth-strategy question |
 | `references/malaysia-wealth-vehicles.md` | MY-specific: PRS/EPF tax relief, digital banks/MMF/FD, Ireland-domiciled UCITS ETFs, US estate-tax trap | Savings allocation, tax optimization, ETF/core selection |
+| `repos/ai-stock-analysis/data/<TICKER>/` | AI 四层流水线的历史分析产出（`fundamentals.json`, `technicals.json`, `analyst_reports.json`, `debate_result.json`, `briefing.json`, `price_history.csv`）| 用户持仓的深度分析、回测参考、conviction/signal 交叉验证时读取 |
+
+`repos/ai-stock-analysis` 是独立 submodule（[ai-stock-analysis](https://github.com/KelvinYou/ai-stock-analysis)），跑一次完整四层分析比 WebSearch 更结构化（bull/bear debate + conviction score）。
+检查新鲜度看 JSON 内的 `date` 字段（不是文件 mtime——submodule checkout 会重置所有文件时间戳）。
+如果 `data/<TICKER>/` 下没有目标股票，或 `date` 比当前查询日期早太多，明确告诉用户可以运行
+`stock-analysis <TICKER> --market US` 或 `stock-fetch <TICKER>` 生成/刷新，不要假装数据存在或直接当最新结论用。
 
 Always read the relevant files before responding — your answers must reflect the user's actual positions.
 

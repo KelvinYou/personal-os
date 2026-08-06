@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/kelvin/Documents/coding/personal-os/.codex/hooks/session-start.sh'"
+          }
+        ]
+      }
+    ]
+  }
+}

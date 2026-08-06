@@ -38,6 +38,15 @@ JD 数据、用户已有经历、或公开的 best-practice 模式。
 如果用户只给了 profile 没给目标方向，**停下来问一句**，不要瞎猜。
 即使用户当前在 dtcpay，也不能直接推断他下一步要投同方向的岗位。
 
+**portfolio 网站是特例**：如果用户说"portfolio 顺序"或"我的网站怎么改"，实际内容在
+`repos/portfolio-website`（独立 submodule，用户自己的仓库，非 LinkedIn/Jobstreet 那种第三方平台）：
+- `src/constants/data.ts`、`src/components/products-services/data.ts` — projects/products 列表数据
+- `src/app/[locale]/(main)/resume/resume-page-content.tsx` — resume 页内容
+- `src/content/` — blog / for-me MDX 内容
+
+这部分**不受 Step 7"不替用户改文件"限制**——因为这是用户自己控制的仓库，不是要手动复制粘贴回
+LinkedIn 的场景。可以直接 Read/Edit 这些文件，但改完要明确告诉用户改了哪些文件，让其 review + 提交。
+
 ## 数据依赖检查（第二步永远要做）
 
 ```
@@ -161,10 +170,11 @@ reference_profiles_count: 0
 5. **标杆对照**（如有） — 模式抽取 + 你怎么应用
 6. **行动清单** — ≤ 5 条，标 P0/P1，每条 < 30 分钟可完成
 
-### Step 7: 不替用户发布
+### Step 7: 不替用户发布（LinkedIn/Jobstreet 例外见上）
 
 - ❌ 不要尝试调用任何 LinkedIn API / 不要尝试抓 LinkedIn 数据
-- ❌ 不要替用户改文件——所有重写都给在报告里，让用户自己复制粘贴
+- ❌ 不要替用户改 LinkedIn/Jobstreet 文本文件——所有重写都给在报告里，让用户自己复制粘贴
+- ✅ 若目标是 `repos/portfolio-website`（见输入收集章节的例外），可以直接 Edit 对应文件
 - ✅ 在报告末尾留一段 "下次运行" 提示：建议 4-6 周后基于新的 trends.json 重跑
 
 ## 不做清单（明确划出）
