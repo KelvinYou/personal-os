@@ -7,7 +7,7 @@ SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
 
-.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly help
+.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly wealth help
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -66,6 +66,11 @@ decision-new:
 	@if [ -z "$(SLUG)" ]; then echo "用法: make decision-new SLUG=<slug>"; exit 1; fi
 	@$(PYTHON) $(SCRIPTS_DIR)/decision_new.py --slug $(SLUG)
 
+## 资产到期与利率监控 (FD/数字银行；不含股票与 NAV 产品)
+## 用法: make wealth 或 make wealth DATE=2026-09-01 (预演到期)
+wealth:
+	@$(PYTHON) $(SCRIPTS_DIR)/wealth_check.py $(if $(DATE),--date $(DATE),)
+
 ## 决策校准分析 (Brier score + 分布)
 calibration:
 	@$(PYTHON) $(SCRIPTS_DIR)/calibration.py
@@ -96,5 +101,6 @@ help:
 	@echo "  make decisions-due      — 列出到期待 review 的决策"
 	@echo "  make decision-new SLUG= — 创建新决策条目"
 	@echo "  make calibration        — 决策校准分析 (Brier score)"
+	@echo "  make wealth             — 资产到期与利率监控 (可选: DATE=2026-09-01)"
 	@echo "  make quarterly          — 季度身份审计 (可选: QUARTER=2026-Q1)"
 	@echo "  make help               — 显示本帮助"

@@ -96,6 +96,16 @@ finance:
   weekly_spend_alert: 120.0    # 周度支出超过此值触发告警 (MYR, 目标 RM100 + 20% buffer)
   daily_spend_alert: 25.0      # 单日支出超过此值触发预警 (全自炊日约 RM20-23, 超 25 说明有外食)
 
+# === 理财 / 资产监控 (Wealth — Tracked Assets) ===
+# 供 scripts/wealth_check.py (make wealth) 使用。
+wealth:
+  maturity_alert_days: 30        # 锁定产品到期前 N 天进入告警窗口
+  maturity_critical_days: 7      # 到期前 N 天升级为 Critical
+  staleness_warn_days: 30        # finance/*.yaml 的 updated 超过 N 天视为 stale
+  price_stale_days: 7            # 股价 as_of 超过 N 天视为过期 (pipeline 每日跑，>7 说明没跑)
+  rate_edge_min_pct: 0.25        # 候选去处需比现有利率高出至少此值 (% p.a.) 才值得迁移
+  cap_utilization_warn: 0.90     # 账户余额达 cap 的此比例时提示，超出部分只拿 base rate
+
 # === 咖啡因 (Caffeine) ===
 caffeine:
   cutoff_time: "14:00"         # 下午最晚咖啡因摄入时间

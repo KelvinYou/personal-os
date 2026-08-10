@@ -169,6 +169,16 @@ class FinanceCfg(BaseModel):
     savings_target_pct: float | None = None
 
 
+class WealthCfg(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    maturity_alert_days: int = 30
+    maturity_critical_days: int = 7
+    staleness_warn_days: int = 30
+    price_stale_days: int = 7
+    rate_edge_min_pct: float = 0.25
+    cap_utilization_warn: float = 0.90
+
+
 class CaffeineCfg(BaseModel):
     model_config = ConfigDict(extra="allow")
     cutoff_time: str
@@ -227,6 +237,7 @@ class Thresholds(BaseModel):
     sleep: SleepCfg
     energy: EnergyCfg
     finance: FinanceCfg
+    wealth: WealthCfg = Field(default_factory=WealthCfg)
     caffeine: CaffeineCfg
     readiness: ReadinessCfg | None = None
     circuit_breakers: list[Breaker] = Field(default_factory=list)

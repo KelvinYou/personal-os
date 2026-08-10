@@ -1,0 +1,38 @@
+# Fixture for tests/test_wealth.py — 刻意与真实 data/finance/savings.yaml 解耦，
+# 这样更新真实持仓不会让测试变红。
+updated: 2026-08-01
+currency: MYR
+
+accounts:
+  locked_fd:
+    balance: 10000.00
+    rate: 4.00
+    type: fd
+    rate_reason: "促销 FD"
+    liquidity: locked
+    locked: true
+    lock_until: 2026-08-20      # 距 fixture today (2026-08-11) 9 天 → Warning
+    cap: null
+
+  capped_mmf:
+    balance: 19500.00
+    rate: 3.00
+    type: mmf
+    rate_reason: "首 RM20k 3%"
+    liquidity: t+1
+    locked: false
+    cap: 20000                   # 97.5% → 触发 cap warning
+
+  roomy_wallet:
+    balance: 500.00
+    rate: 3.30
+    type: wallet
+    liquidity: instant
+    locked: false
+    cap: 20000                   # 2.5% → 不触发
+
+summary:
+  total_cash: 30000.00
+  weighted_avg_rate: 3.34
+  liquid_now: 20000.00
+  locked: 10000.00

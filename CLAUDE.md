@@ -30,6 +30,7 @@
 - `make check` — 运行逻辑引擎检查所有日志
 - `make weekly` — 聚合本周数据，生成周报 prompt
 - `make report` — 一键生成完整周报 (聚合 + 调用 AI)
+- `make wealth` — 资产到期与利率监控 (FD/数字银行；不含股票与 NAV 产品)
 
 ## AI Agent 协作须知
 - 生成排期时必须参考 `user_profile.md` 中的作息/饮食偏好

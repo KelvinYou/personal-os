@@ -20,8 +20,9 @@ where their cash sits across savings vehicles.
 
 | File | Purpose | When to read |
 |------|---------|--------------|
-| `data/finance/portfolio.yaml` | Holdings, avg cost, current prices | Any portfolio/stock query |
-| `data/finance/interest_rates.yaml` | Digital banks, MMFs, FDs rates | Savings allocation queries |
+| `data/finance/portfolio.yaml` | Holdings + avg cost **only** — no current prices (see Price Ownership) | Any portfolio/stock query |
+| `data/finance/savings.yaml` | Actual cash/FD/MMF positions, caps, lock dates, liabilities | Savings, net worth, maturity queries |
+| `data/finance/interest_rates.yaml` | Digital banks, MMFs, FDs rates (market catalog, not holdings) | Savings allocation queries |
 | `config/thresholds.yaml` | Finance thresholds (savings target, spend alert) | Spending/savings analysis |
 | `references/investment-framework.md` | Single-stock + portfolio decision criteria (the "satellite" layer) | Stock analysis, buy/sell decisions, portfolio review |
 | `references/wealth-building-playbook.md` | Holistic plan: fund layering, asset allocation, core-satellite, DCA evidence, rebalancing, behavior | Any "where should my money go" / allocation / full-plan / net-worth-strategy question |
@@ -134,13 +135,30 @@ Layer 1（数据抓取）和风险计算部分继续复用 repo 的真实代码�
 - `technicals.json` / `fundamentals.json`: 补充具体数字（RSI、P/E、支撑位）到输出表格里。
 - 把 `key_uncertainties` 列进 "⚠️ Review / At Risk" 或单独一节，让用户知道结论背后没解决的问题是什么。
 
+## Price Ownership
+
+`portfolio.yaml` records **holding facts only** (`shares`, `avg_cost`). It has no
+`current_price` fields, and you must not add them back.
+
+Current price comes from the ai-stock-analysis pipeline:
+`repos/ai-stock-analysis/data/<TICKER>/technicals.json` → `close` + `as_of_date`
+(Bursa tickers sit under their numeric `code`, e.g. `1155`, not `MAYBANK`).
+
+- `make wealth` resolves every position and prints valuation, P&L, price source and age.
+  Prefer it over hand-computing a portfolio total.
+- A holding the pipeline does not cover may carry `manual_price` + `manual_price_as_of`
+  as an explicit fallback. Today only `SIME` (4197) does. If you add a manual price,
+  always write `manual_price_as_of` too — an undated price is worse than none.
+- WebSearch is still right for **intraday checks and analysis narrative**. Do not write
+  what you find back into `portfolio.yaml`; if the pipeline data is stale, re-run the
+  pipeline instead.
+
 ## Data Freshness
 
 Financial data goes stale fast. Before using any data from YAML files, check the `updated` field:
 
-- **Stock prices** (`portfolio.yaml`): Stale if >1 trading day old. Always WebSearch for current prices
-  when doing analysis — treat YAML prices as a reference point, not ground truth.
-  After searching, update the YAML with the fresh prices and today's date.
+- **Stock prices**: owned by the pipeline (above). `make wealth` flags any price older than
+  `wealth.price_stale_days` in `config/thresholds.yaml`.
 - **Interest rates** (`interest_rates.yaml`): Stale if >30 days old. Promo rates especially change
   frequently. If the user asks about savings allocation and rates are >2 weeks old, WebSearch for
   "[bank name] promo rate 2026" to verify before recommending.
@@ -226,7 +244,7 @@ When the user reports a new trade (e.g., "I bought 200 SIME at RM2.30"):
 2. Calculate the new average cost if adding to an existing position:
    `new_avg = (old_shares × old_avg + new_shares × new_price) / (old_shares + new_shares)`
 3. Update the YAML file with new shares count and recalculated avg_cost
-4. Update `current_price` if the user provides it or you can fetch it
+4. Do **not** write a current price — valuation comes from the pipeline (see Price Ownership)
 5. Update the `updated` date to today
 6. Show a confirmation summary with before/after
 
@@ -246,8 +264,9 @@ When the user asks where to park cash, or provides their savings allocation:
    - Medium-term (6-12 months) → FD promos or higher-tier MMFs
    - **Don't let excess cash sit idle** — cash beyond the emergency fund + near-term goals loses to
      inflation; route it into the index core per the playbook rather than hoarding it
-5. If the user provides their current allocation, update `data/finance/interest_rates.yaml` with a
-   `my_allocation` section or create a `data/finance/savings.yaml`
+5. If the user reports a new placement or balance change, update `data/finance/savings.yaml`
+   (the holdings file). Keep `interest_rates.yaml` free of holdings — it is a market catalog:
+   rates, caps, and promo terms only, never "how much I have there".
 
 ### 4. Net Worth Summary
 
@@ -280,12 +299,16 @@ Total Net Worth: RM XX,XXX
 
 ### 5. Price Updates
 
-When the user asks to update prices, or periodically:
+Prices are no longer updated by hand — see Price Ownership. When the user asks to
+refresh prices:
 
-1. Use WebSearch to fetch latest prices for all holdings
-2. Update `current_price` / `current_price_usd` in `data/finance/portfolio.yaml`
-3. Update `usd_myr` exchange rate
-4. Update the `updated` date
+1. Run `make wealth` to show current valuation, price source, and price age per position
+2. If pipeline prices are stale, re-run the ai-stock-analysis pipeline for those tickers —
+   do not patch `portfolio.yaml`
+3. If a ticker has no pipeline coverage at all, either add it to the pipeline watchlist
+   (preferred) or set `manual_price` + `manual_price_as_of` on that holding
+4. `usd_myr` in `portfolio.yaml` is still hand-maintained: WebSearch it and update it
+   with the `updated` date
 5. Show what changed
 
 ### 6. Holistic Wealth Plan / Allocation

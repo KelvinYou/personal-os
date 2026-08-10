@@ -1,0 +1,44 @@
+# Fixture for tests/test_wealth.py — 覆盖 rate catalog 的全部形状变体。
+updated: 2026-08-05
+currency: MYR
+
+digital_banks:
+  high_promo_bank:
+    base_rate: 2.00
+    promo_rate: 5.50            # 无 valid_until → 视为仍然有效
+    notes: "New-user promo."
+
+  expired_with_base:
+    base_rate: 1.00
+    promo_rate: 4.50
+    promo_valid_until: 2026-07-01   # 已过期 → 回落 base 1.00
+    notes: "Promo window closed."
+
+  capped_mmf:                    # key 与 savings.yaml 对应 → 触发 headroom 交叉检查
+    base_rate: 3.00
+    promo_rate: 3.00
+    notes: "First RM20k only."
+
+cash_management:
+  expired_no_base:
+    promo_rate: 4.90
+    promo_valid_until: 2026-08-03   # 过期且无 base_rate → 无可比较利率
+    notes: "Campaign ended."
+
+traditional_fd_promos:
+  fd_ok:
+    tenure_months: 6
+    promo_rate: 4.50
+    min_deposit: 1000
+    notes: "Fresh funds."
+
+  big_min_fd:
+    tenure_months: 12
+    promo_rate: 4.80
+    min_deposit: 60000            # > 到期金额 → 不合资格
+    notes: "Wealth clients only."
+
+  general_board_rates:
+    tenure_months: 12
+    rate_range: "2.05% - 2.55% p.a."
+    notes: "Board rates, no campaign."
