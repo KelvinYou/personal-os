@@ -1,6 +1,6 @@
 # Plan: 个人理财仪表盘 (Tracked Assets Dashboard)
 
-> Status: **v3 — Phase A / B ✅ 已完成 (2026-08-11) · Phase C–E 待实施**
+> Status: **v3 — Phase A / B / C ✅ 已完成 (2026-08-11) · Phase D–E 待实施**
 > Owner: Kelvin
 > 修订: v3 — 2026-08-11，基于对仓库实际状态的核实重写
 > 相关 repo: `data` (submodule, private) · `repos/ai-stock-analysis` (submodule, **public**)
@@ -215,14 +215,35 @@ liabilities 与 excluded assets 的范围。
 到 `portfolio.yaml`，与新归属直接冲突，已改写为"跑 pipeline，不要手补 YAML"，
 并新增 Price Ownership 一节。
 
-### Phase C — Tracked Assets Overview 页（原 Phase 2）
+### Phase C — Tracked Assets Overview 页（原 Phase 2）✅ 已完成 (2026-08-11)
 
-- 新建 `personal-os/web/`，读 Position 数据，按经济行为聚合。
-- 股票与财务两条独立读取路径，不做统一抽象。
-- 复用 `ai-stock-analysis` 的 `shared/section-card.tsx`、`shared/stat.tsx` 原子组件
-  （复制而非跨 repo import——两个 repo 可见性不同，不建立编译期耦合）。
-- 验收：能看到"股票 X% / FD Y% / digital bank Z% / wallet W%"的配置图，
-  且 stale / unpriced 持仓**有明确标记而非静默计入**。
+**交付**：`make web` → `localhost:3000`（Next 15 + Tailwind，local-only，不部署）
+
+**关键实现决策：页面不重算任何东西。**
+所有数字来自 `scripts/wealth_check.py --json`——`make wealth` 用的同一份代码。
+在 TypeScript 里重写估值数学，等于把 Phase B 刚从数据文件里消灭的 dual-owner 漂移
+原样搬到代码层。`lib/report.ts` 只做三件事：起子进程、解析 JSON、渲染。
+改口径只改 `scripts/lib/wealth.py`，CLI 和网页一起变。
+
+为此给 CLI 加了 `--json`，并把渲染重构成 `build_report()` → `render_text()`
+两段——报告 dict 现在是 CLI 与网页共同的契约，有测试守着（JSON 可序列化、
+合计等于各部分之和、配置占比合 100%）。
+
+页面结构（按"先说数据可信度，再说数字"排）：
+数据健康 → KPI 行 → 资产配置（堆叠条 + 表）→ 到期监控 → 股票 → 现金与储蓄。
+
+**验收结果**：配置图跑出 MMF 53.0% / FD 26.3% / 股票 16.7% / 钱包 4.1%。
+stale 与 unpriced 全部显式标记：`SIME` 标"手工兜底 + 过期 25 天"，
+`savings.yaml` 标"陈旧 70 天"，`ryt_bank` 标"未核实 + cap 98.7%"，
+boost_bank 利率冲突单列一行。无价格持仓不计入合计，并写明"合计因此偏低而非静默补零"。
+
+配色按 dataviz 规范做了：分类色板 4 槽固定顺序（色相跟随类别而非排名），
+`validate_palette.js` 双模式全绿；light 模式 contrast 触发 WARN → 按 relief 规则
+配直接标签 + 完整表格，颜色从不是唯一通道；状态色独立于序列色，且始终带图标 + 文字。
+
+**顺带修的**：`make wealth` 在有 Warning 时会被 make 报成 `Error 1`，与 `make check`
+的约定不一致（那个也打 Critical 但退出 0）。改为默认退出 0，
+新增 `--strict` 给 cron/CI 用。
 
 ### Phase D — 知识库浏览页
 
@@ -254,12 +275,11 @@ liabilities 与 excluded assets 的范围。
   当前按 4.00% 记账并标了 `rate_unverified: true`；若实际已回落到 base 2.05%，
   加权平均利率会从 3.74% 降到约 3.14%。
 - **是否把 SIME (4197) 加进 ai-stock-analysis watchlist**，以消除唯一的手工兜底价。
-- `personal-os/web/` 是否需要任何形式的部署，还是永远 `localhost` 本地跑？
-  （若要部署，须先解决 private 数据的托管边界——建议 MVP 阶段明确不部署。）
 
 ### 已关闭
 
 - ~~股票 current price 的唯一 owner~~ → ai-stock-analysis pipeline，见 Phase B。
+- ~~`personal-os/web/` 是否部署~~ → 不部署，localhost only。见 Phase C 与 `web/README.md`。
 
 - ~~两个 repo 的 public/private 状态~~ → 见 §1.2，已确认。
 - ~~`data` submodule 是否 checkout / 字段名~~ → 已 checkout，见 §2.1。

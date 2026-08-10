@@ -5,6 +5,7 @@ updating real holdings never turns these red.
 """
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from datetime import date
@@ -16,6 +17,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from lib.config import load_thresholds  # noqa: E402
 from lib.schema import WealthCfg  # noqa: E402
 from lib.wealth import (  # noqa: E402
+    build_report,
     cap_warnings,
     catalog_conflicts,
     derive_summary,
@@ -268,6 +270,74 @@ class CatalogConflictTests(unittest.TestCase):
         savings = _savings()
         savings.accounts["locked_fd"].rate = 99.0
         self.assertEqual(catalog_conflicts(savings, _rates()), [])
+
+
+class BuildReportTests(unittest.TestCase):
+    """The report dict is the contract the web dashboard renders from."""
+
+    def _report(self):
+        return build_report(
+            _savings(),
+            _rates(),
+            load_portfolio(FIXTURES / "portfolio.yaml"),
+            _cfg(),
+            TODAY,
+            STOCK_FIXTURES,
+        )
+
+    def test_is_json_serialisable(self):
+        # The web layer parses this over a pipe; a stray date or dataclass
+        # would break the dashboard at runtime, not at test time.
+        json.dumps(self._report(), ensure_ascii=False)
+
+    def test_totals_agree_with_the_parts(self):
+        r = self._report()
+        self.assertAlmostEqual(
+            r["tracked_total_myr"],
+            round(r["stocks"]["total_myr"] + r["cash"]["total_cash"], 2),
+        )
+
+    def test_allocation_buckets_follow_economic_behaviour(self):
+        r = self._report()
+        self.assertEqual(
+            {a["bucket"] for a in r["allocation"]},
+            {"stocks", "fd", "mmf", "wallet"},
+        )
+
+    def test_allocation_percentages_sum_to_100(self):
+        r = self._report()
+        self.assertAlmostEqual(sum(a["pct"] for a in r["allocation"]), 100.0, places=1)
+
+    def test_allocation_is_sorted_largest_first(self):
+        amounts = [a["amount_myr"] for a in self._report()["allocation"]]
+        self.assertEqual(amounts, sorted(amounts, reverse=True))
+
+    def test_unpriced_holding_excluded_from_stock_total_but_still_listed(self):
+        r = self._report()
+        self.assertEqual(r["stocks"]["priced_count"], 4)
+        self.assertEqual(r["stocks"]["total_count"], 5)
+        symbols = {p["symbol"] for p in r["stocks"]["positions"]}
+        self.assertIn("NOPRICE", symbols)
+
+    def test_maturity_events_carry_their_candidates(self):
+        r = self._report()
+        self.assertEqual(len(r["maturity"]), 1)
+        self.assertEqual(r["maturity"][0]["key"], "locked_fd")
+        self.assertEqual(len(r["maturity"][0]["candidates"]), 7)
+
+    def test_rate_unverified_flag_survives_into_the_report(self):
+        savings = _savings()
+        savings.accounts["capped_mmf"].__pydantic_extra__["rate_unverified"] = True
+        r = build_report(
+            savings,
+            _rates(),
+            load_portfolio(FIXTURES / "portfolio.yaml"),
+            _cfg(),
+            TODAY,
+            STOCK_FIXTURES,
+        )
+        flagged = {a["key"] for a in r["cash"]["accounts"] if a["rate_unverified"]}
+        self.assertEqual(flagged, {"capped_mmf"})
 
 
 class StalenessTests(unittest.TestCase):

@@ -537,3 +537,173 @@ def stale_files(cfg: WealthCfg, today: date, **files: date) -> list[tuple[str, i
         if age > cfg.staleness_warn_days:
             out.append((name, age))
     return sorted(out, key=lambda x: -x[1])
+
+
+# ── Report assembly ──────────────────────────────────────────────────────
+# Single source of truth for the numbers. Both the CLI text output and the
+# web dashboard render from this dict — the valuation math is never
+# reimplemented downstream, which is the same dual-owner bug Phase B removed,
+# just at the code layer instead of the data layer.
+
+# Allocation buckets follow economic behaviour, not vehicle branding.
+BUCKET_LABELS = {
+    "stocks": "股票 (market-valued)",
+    "fd": "定存 FD (locked)",
+    "mmf": "货币基金 MMF",
+    "wallet": "钱包 (instant)",
+    "savings": "储蓄账户",
+}
+
+
+def _iso(value: date | None) -> str | None:
+    return None if value is None else value.isoformat()
+
+
+def _candidate_dict(c: Candidate) -> dict:
+    return {
+        "category": c.category,
+        "key": c.key,
+        "rate": c.rate,
+        "basis": c.basis,
+        "eligible": c.eligible,
+        "reasons": c.reasons,
+        "min_deposit": c.min_deposit,
+        "tenure_months": c.tenure_months,
+        "notes": c.notes,
+    }
+
+
+def build_report(
+    savings: SavingsFile,
+    rates: RatesFile,
+    portfolio: PortfolioFile,
+    cfg: WealthCfg,
+    today: date,
+    data_dir: Path | None = None,
+) -> dict:
+    cash = derive_summary(savings)
+    positions = resolve_positions(portfolio, data_dir)
+    priced = [p for p in positions if p.priced]
+    fx = portfolio.usd_myr
+    stock_total = sum(p.in_myr(fx) for p in priced)
+
+    buckets: dict[str, float] = {"stocks": stock_total}
+    for acct in savings.accounts.values():
+        buckets[acct.type] = buckets.get(acct.type, 0.0) + acct.balance
+    grand_total = sum(buckets.values())
+    allocation = [
+        {
+            "bucket": key,
+            "label": BUCKET_LABELS.get(key, key),
+            "amount_myr": round(amount, 2),
+            "pct": round(amount / grand_total * 100, 2) if grand_total else 0.0,
+        }
+        for key, amount in sorted(buckets.items(), key=lambda kv: -kv[1])
+        if amount > 0
+    ]
+
+    return {
+        "as_of": today.isoformat(),
+        "currency": savings.currency,
+        "thresholds": cfg.model_dump(),
+        "stale_files": [
+            {"name": n, "age_days": a}
+            for n, a in stale_files(
+                cfg,
+                today,
+                **{
+                    "savings.yaml": savings.updated,
+                    "interest_rates.yaml": rates.updated,
+                    "portfolio.yaml": portfolio.updated,
+                },
+            )
+        ],
+        "summary_drift": [
+            {"field": d.field_name, "recorded": d.recorded, "derived": d.derived}
+            for d in summary_drift(savings)
+        ],
+        "catalog_conflicts": [
+            {
+                "key": c.key,
+                "held_rate": c.held_rate,
+                "catalog_base": c.catalog_base,
+                "catalog_promo": c.catalog_promo,
+            }
+            for c in catalog_conflicts(savings, rates)
+        ],
+        "cash": {
+            **cash,
+            "accounts": [
+                {
+                    "key": key,
+                    "balance": a.balance,
+                    "rate": a.rate,
+                    "type": a.type,
+                    "liquidity": a.liquidity,
+                    "locked": a.locked,
+                    "cap": a.cap,
+                    "lock_until": _iso(a.lock_until),
+                    "rate_reason": a.rate_reason,
+                    "rate_unverified": bool((a.model_extra or {}).get("rate_unverified")),
+                }
+                for key, a in sorted(
+                    savings.accounts.items(), key=lambda kv: -kv[1].balance
+                )
+            ],
+        },
+        "stocks": {
+            "fx_usd_myr": fx,
+            "total_myr": round(stock_total, 2),
+            "priced_count": len(priced),
+            "total_count": len(positions),
+            "positions": [
+                {
+                    "symbol": p.symbol,
+                    "market": p.market,
+                    "currency": p.currency,
+                    "shares": p.shares,
+                    "avg_cost": p.avg_cost,
+                    "price": p.price,
+                    "price_source": p.price_source,
+                    "price_as_of": _iso(p.price_as_of),
+                    "market_value": p.market_value,
+                    "market_value_myr": p.in_myr(fx),
+                    "pnl": p.pnl,
+                    "pnl_pct": p.pnl_pct,
+                }
+                for p in sorted(positions, key=lambda x: (x.market, x.symbol))
+            ],
+            "stale_prices": [
+                {"symbol": s, "age_days": a} for s, a in stale_prices(positions, cfg, today)
+            ],
+        },
+        "allocation": allocation,
+        "maturity": [
+            {
+                "key": ev.key,
+                "balance": ev.balance,
+                "rate": ev.rate,
+                "lock_until": _iso(ev.lock_until),
+                "days_left": ev.days_left,
+                "severity": ev.severity,
+                "candidates": [
+                    _candidate_dict(c)
+                    for c in rollover_candidates(
+                        rates, savings, ev.balance, ev.rate, cfg, today
+                    )
+                ],
+            }
+            for ev in maturity_events(savings, cfg, today)
+        ],
+        "caps": [
+            {
+                "key": w.key,
+                "balance": w.balance,
+                "cap": w.cap,
+                "utilization": w.utilization,
+                "overflow": w.overflow,
+            }
+            for w in cap_warnings(savings, cfg)
+        ],
+        "tracked_total_myr": round(stock_total + cash["total_cash"], 2),
+    }
