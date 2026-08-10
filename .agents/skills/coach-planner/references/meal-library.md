@@ -120,7 +120,7 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 | 18:00 | 瘦蛋白150g(生) + 蔬菜1份 | 38g | 6g | 5g | ~215 |
 | **合计** | | **~141g** | **~211g** | **~54g** | **~1,871** |
 
-相对旧版（~<redacted-protein-target> P）的三处改动，均由 `data/user_profile.md` 的硬约束推导：
+相对旧版（蛋白目标下调前）的三处改动，均由 `data/user_profile.md` 的硬约束推导：
 
 1. **07:30 Greek Yogurt 200g → 100g**（−10g P）—— 蛋白目标下调后 post-workout 不需要 37g。
 2. **20g 核桃从晚餐移到 15:00**（不改总量）—— §2 GERD 条款明确禁止坚果/高脂放晚餐，
@@ -183,10 +183,9 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 | 训练日 kcal | `nutrition.<phase.current>.training_day_kcal` |
 | 休息日 kcal | `nutrition.<phase.current>.rest_day_kcal` |
 
-> 历史注记：本表曾内联 recomp <redacted-protein-target>/1,900/1,700 与 cut 140g/1,800/1,620 三套数值，
-> 与 `config/thresholds.yaml` 和 `user_profile.md` 构成三个事实源并已分叉。
-> 2026-08-11 起统一由 §0 下发。
-| Bulk（暂未启用）| 1.80 | 126 | 2,400 | 2,200 |
+> 历史注记：本表曾为 recomp / cut / bulk 各内联一套蛋白与热量数值，与
+> `config/thresholds.yaml` 和 `user_profile.md` 构成三个事实源并已分叉。
+> 2026-08-11 起统一由 §0 下发；bulk 档如需启用，在 §0 的 `nutrition` 下新增即可。
 
 ## 食材单价表 (MYR)
 
