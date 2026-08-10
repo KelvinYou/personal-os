@@ -107,30 +107,50 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 | Keto Almond Chocolate ×2 | ~2.4g | RM1.80 | 低糖零食 |
 | 99.9% 黑巧克力 ×2 | ~1.1g | RM1.16 | 抗氧化 |
 
-### AM 训练日餐食模板 (~1,900 kcal recomp)
+### AM 训练日餐食模板 (目标 `{{protein_target_g}}`g P / `{{kcal_training_day}}` kcal)
+
+蛋白目标 = `{{body_weight_kg}}` kg × `{{protein_per_kg}}` g/kg = `{{protein_target_g}}`g。
 
 | 时间 | 内容 | Protein | Carbs | Fat | kcal |
 |------|------|---------|-------|-----|------|
 | 05:50 | 半勺 whey + 1 香蕉 + 5g creatine | 13g | 29g | 1g | ~176 |
-| 07:30 | 2 蛋 + 150g 白饭(cooked) + 200g Greek Yogurt | 37g | 70g | 15g | ~555 |
+| 07:30 | 2 蛋 + 150g 白饭(cooked) + 100g Greek Yogurt | 27g | 64g | 13g | ~490 |
 | 12:00 | 蛋白源200g(生) + 糙米150g(cooked) + 蔬菜 + 1 苹果 | 52g | 60g | 9g | ~530 |
-| 16:30 | 蛋白源200g(生) + 蔬菜 + 20g 核桃 | 50g | 8g | 22g | ~470 |
-| 19:30 (饿才吃) | 100g Greek Yogurt OR 1 蛋 | ~9g | ~12g | ~3g | ~110 |
-| **合计 (含兜底)** | | **~<redacted-protein-target>** | **~179g** | **~50g** | **~1,841** |
+| 15:00 | 甜品段: 45g 燕麦 + chia + 可可粉 + 蓝莓 + 20g 核桃 | 11g | 52g | 26g | ~460 |
+| 18:00 | 瘦蛋白150g(生) + 蔬菜1份 | 38g | 6g | 5g | ~215 |
+| **合计** | | **~141g** | **~211g** | **~54g** | **~1,871** |
 
-> Pre-sleep casein 已移除 (per Trommelen 2023 + user feedback)；蛋白由午晚餐放大版承接。
+相对旧版（~<redacted-protein-target> P）的三处改动，均由 `data/user_profile.md` 的硬约束推导：
 
-### 休息日餐食模板 (~1,700 kcal recomp)
+1. **07:30 Greek Yogurt 200g → 100g**（−10g P）—— 蛋白目标下调后 post-workout 不需要 37g。
+2. **20g 核桃从晚餐移到 15:00**（不改总量）—— §2 GERD 条款明确禁止坚果/高脂放晚餐，
+   高脂一律排到 15:00 及之前。旧版把核桃放在 16:30 晚餐位，与该条款冲突。
+3. **晚餐 200g → 150g 生重 + 取消 19:30 兜底**（−12g / −9g P）—— §2 规定晚餐（18:00，当日
+   最后一餐）只放「瘦蛋白 150g + 蔬菜1份」，且 18:00 后不再进食。旧版的 16:30 时间与
+   19:30 兜底都是 2026-08-09 调整前的遗留。
+
+> **kcal 缺口**：本表 ~1,871 kcal，低于 `{{kcal_training_day}}` 目标约 330 kcal。缺口应由
+> **碳水/脂肪**补足（不要加蛋白，否则破 `{{protein_target_g}}`g）：12:00 加 100g 熟糙米
+> (~+130)、15:00 燕麦 45→70g (~+95)、07:30 加 1 片全麦 (~+80) 即可补齐。未直接写进表里，
+> 因为具体补法取决于当天食材库存。
+
+> Pre-sleep casein 已移除 (per Trommelen 2023 + user feedback)；蛋白由午餐放大版承接。
+
+### 休息日餐食模板 (目标 `{{protein_target_g}}`g P / `{{kcal_rest_day}}` kcal)
 
 | 时间 | 内容 | Protein | Carbs | Fat | kcal |
 |------|------|---------|-------|-----|------|
-| 07:15 | 3 蛋 + 1 全麦 + 100g Greek Yogurt + matcha | 31g | 35g | 16g | ~430 |
-| 12:00 | 蛋白源200g + 糙米150g(cooked) + 蔬菜 + 1 苹果 | 52g | 60g | 9g | ~530 |
-| 16:30 | 蛋白源200g + 蔬菜 + 20g 核桃 | 50g | 8g | 22g | ~470 |
-| 19:30 | 100g GY + 15g 杏仁 (可选) | ~12g | ~12g | ~10g | ~180 |
-| **合计** | | **~145g** | **~115g** | **~57g** | **~1,610** |
+| 07:15 | 3 蛋 + 1 全麦 + 150g Greek Yogurt + matcha | 36g | 38g | 17g | ~465 |
+| 12:00 | 蛋白源200g(生) + 糙米150g(cooked) + 蔬菜 + 1 苹果 | 52g | 60g | 9g | ~530 |
+| 15:00 | 甜品段: 45g 燕麦 + chia + 可可粉 + 蓝莓 + 20g 核桃 + 15g 杏仁 | 13g | 50g | 30g | ~490 |
+| 18:00 | 瘦蛋白150g(生) + 蔬菜1份 | 38g | 6g | 5g | ~215 |
+| **合计** | | **~139g** | **~154g** | **~61g** | **~1,700** |
 
-> 休息日仍达 BMR 底线 (1,620 kcal)，蛋白 145g (<redacted> g/kg) 略低于 recomp <redacted-protein-target> — 可接受，因为休息日合成代谢需求较低。
+改动与训练日同源（坚果移出晚餐、晚餐降到 150g 生重、取消 19:30），另把早餐 Greek Yogurt
+100g → 150g 补回 5g 蛋白，使总量落在 `{{protein_target_g}}`g 的 ±5g 容差内。
+
+> 休息日仍高于 BMR 底线 (`{{bmr_floor_kcal}}` kcal)。距 `{{kcal_rest_day}}` 目标约 300 kcal 缺口，
+> 同训练日：用碳水/脂肪补，不加蛋白。
 
 ### 晚餐蛋白质轮换选项 (Recomp 放大版 ~50g P)
 
@@ -145,19 +165,27 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 
 ## 每日蛋白质校验
 
-- **当前阶段: Recomp** — 目标 **<redacted-protein-target>/天 (<redacted> g/kg × <redacted-bodyweight>)**，最低达标线 155g (5g 容差)
-- **AM 训练日达标路径**: pre-workout 13g + 早餐 37g + 午餐 52g + 晚餐 50g + 兜底 9g = <redacted-protein-target>
-- **休息日达标路径**: 早餐 31g + 午餐 52g + 晚餐 50g + 加餐 12g = 145g（休息日略低可接受）
-- 排餐后应快速加总蛋白质，确认达标
-- **总量 > 分布**: 凑到日总量优先，单餐 50-70g 大剂量不会浪费（Trommelen 2023）
-- **Pre-sleep casein 不强制 — 用户已默认跳过**，把份额并入午晚餐放大版（晚餐由 130g → 200g 蛋白源）
+- **当前目标: `{{protein_target_g}}`g/天 (`{{protein_per_kg}}` g/kg × `{{body_weight_kg}}`kg)** — 从
+  `data/user_profile.md` §0 解析。训练日/休息日统一，不再分开。
+- 排餐后应快速加总蛋白质，确认接近 `{{protein_target_g}}`g（±5-10g 容差即可，不必卡死）
+- **总量 > 分布**: 凑到日总量优先，单餐 30-50g 即可，不需要刻意堆量
+- **Pre-sleep casein 不强制 — 用户已默认跳过**，晚餐仍是当日最后一餐(18:00)
 
-### 阶段切换映射 (供 Agent 排餐参考)
+### 阶段切换映射
 
-| 阶段 | g/kg | g/天 (<redacted-bodyweight>) | 训练日 kcal | 休息日 kcal |
-|------|------|-------------|-------------|-------------|
-| Recomp（当前）| 2.30 | 161 | 1,900 | 1,700 |
-| Cut（备用）| 2.00 | 140 | 1,800 | 1,620 (=BMR) |
+**不要在本文件里维护阶段数值** —— 蛋白/热量目标全部从 `data/user_profile.md` §0 的
+`nutrition.<phase.current>` 解析，切换阶段只需改 §0 的 `phase.current`。
+
+| 需要的值 | 键路径 |
+|---|---|
+| 当前阶段 | `phase.current` |
+| 蛋白目标 | `nutrition.<phase.current>.protein_g_target` |
+| 训练日 kcal | `nutrition.<phase.current>.training_day_kcal` |
+| 休息日 kcal | `nutrition.<phase.current>.rest_day_kcal` |
+
+> 历史注记：本表曾内联 recomp <redacted-protein-target>/1,900/1,700 与 cut 140g/1,800/1,620 三套数值，
+> 与 `config/thresholds.yaml` 和 `user_profile.md` 构成三个事实源并已分叉。
+> 2026-08-11 起统一由 §0 下发。
 | Bulk（暂未启用）| 1.80 | 126 | 2,400 | 2,200 |
 
 ## 食材单价表 (MYR)
@@ -186,6 +214,12 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 | 黑芝麻粉 | 100g | RM11.00 (Shopee 券) | RM1.10/10g (≈RM0.55/5g) | 18g/23g/50g/0g (Ca ~975mg, Fe ~14mg/100g) |
 | Ikan Kembung (鲭鱼) | 1kg | ~RM12.00 | ~RM1.20/100g | 20g/0g/8g/0g |
 | Tempeh | 300g | ~RM3.00 | ~RM1.00/100g | 19g/9g/11g/0g |
+| 三文鱼 (Salmon, 生重) | 1kg | ~RM45.00 | ~RM4.50/100g | 20g/0g/13g/0g |
+| Dory 鱼 (龙脷/多利鱼柳, 生重) | 1kg | ~RM22.00 | ~RM2.20/100g | 15g/0g/2g/0g |
+| 虾仁 (去壳生虾) | 1kg | ~RM38.00 | ~RM3.80/100g | 20g/0g/1g/0g |
+| Rolled Oats | 900g | ~RM8.90 | ~RM0.99/100g | 13.5g/68g/6.9g/1g |
+| 黑芝麻油 | 250ml | ~RM18.00 | ~RM7.20/100ml | 0g/0g/100g/0g |
+| 冷冻蓝莓 | 400g | ~RM14.00 | ~RM3.50/100g | 0.7g/14g/0.3g/10g |
 | Creatine Monohydrate | 500g | ~RM60.00 | ~RM0.30/5g | — |
 | Magnesium Glycinate | 60粒 | ~RM50.00 | ~RM0.83/粒 | — |
 

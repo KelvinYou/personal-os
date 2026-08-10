@@ -140,9 +140,9 @@ events:
 | 休息日 | **~1,700 kcal** | ~500 kcal | 高于 BMR 1,620 底线 |
 
 - 周累计 deficit 目标: **-2,000 至 -3,500 kcal/周**（避免日均 > -500 kcal 切到 cut 模式）
-- 周减体重控制在 <0.5% BW (~0.35kg)，recomp 不追求快速减重
-- 蛋白质: **<redacted-protein-target>/天 (<redacted> g/kg)** — recomp 黄金区间 (2.2-2.6 g/kg)
-- 脂肪: ≥49g (0.7g/kg 底线，维持激素)
+- 周减体重控制在 <0.5% BW（按 `{{body_weight_kg}}`kg 计算），recomp 不追求快速减重
+- 蛋白质: **`{{protein_target_g}}`g/天 (`{{protein_per_kg}}` g/kg)** — 从 `data/user_profile.md` §0 解析
+- 脂肪: ≥`{{fat_floor_g}}`g (0.7 g/kg 底线，维持激素)
 - 餐间隔: 3-5h（持续触发 MPS）
 - **Pre-sleep casein 已移除** — 改午晚餐放大版（晚餐蛋白源 130g → 200g 生重）
 
@@ -153,8 +153,9 @@ events:
 | 训练日 | ~1,800 kcal | ~600 kcal |
 | 休息日 | ~1,620 kcal (=BMR) | ~550 kcal |
 
-- 蛋白质拉到 <redacted> g/kg = 140g
-- 阶段切换由 user 主动触发，写入 `config/thresholds.yaml` 的 `phase.current`
+- 蛋白质拉到 `{{protein_per_kg}}` g/kg = `{{protein_target_g}}`g
+- 阶段切换由 user 主动触发，写入 `data/user_profile.md` §0 的 `phase.current`
+  （2026-08-11 从 `config/thresholds.yaml` 迁出）
 
 ## 睡眠优化
 

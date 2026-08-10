@@ -328,7 +328,11 @@ This is the capability that fixes "草率" — don't answer with a one-off stock
    + 25–35% their existing stock picks.
 5. **Surface the high-value MY-specific moves** that are easy to miss: PRS RM3,000 tax relief (if marginal
    tax rate ≥ ~19%), and switching the core from US-listed ETFs to Ireland-domiciled UCITS (VWRA/CSPX).
-6. Tie it to their RM<redacted>/month cash flow (playbook §3 DCA) and a once-a-year rebalancing rule (§4).
+6. Tie it to their `{{monthly_cash_flow_rm}}`/month cash flow (playbook §3 DCA) and a once-a-year rebalancing
+   rule (§4). Resolve `{{monthly_cash_flow_rm}}` from `data/finance/portfolio.yaml` → `monthly_savings`;
+   if that file is unreadable, ask the user instead of assuming a figure.
+   (Note: the `RM3,000` in item 5 is the **public** PRS tax-relief cap, unrelated to their cash flow —
+   do not conflate the two, and do not templatize it.)
 
 Output a concrete, sequenced plan — not generic advice. Confirm assumptions you can't verify (marginal
 tax rate, Bumiputera status for ASB, whether they already hold a core) rather than guessing.

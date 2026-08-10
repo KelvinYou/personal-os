@@ -69,7 +69,8 @@ Read the following files to build situational awareness:
 1. **Recent daily logs** — Read the last 3 days of logs from `daily/` (including today if it exists).
    Use `ls -t daily/*.md | head -5` to find the most recent files.
 2. **Config** — Read `config/thresholds.yaml` for all threshold values and circuit breaker rules.
-3. **User profile** — Read `user_profile.md` for schedule baselines, dietary macros, fitness architecture.
+3. **User profile** — Read `data/user_profile.md` for schedule baselines, dietary macros, fitness architecture.
+   **Read its §0 first** — it resolves every `{{placeholder}}` used in this skill and its references.
 4. **Latest weekly report** — Read the most recent report from `reports/` (use `ls -t reports/*.md | head -1`).
    Extract P0/P1/P2 objectives, execution constraints, active circuit breaker restrictions, and training mode.
 5. **Previous week's report** — If generating a next-week plan, also check the prior week for trend context.
@@ -84,6 +85,20 @@ Read the following files to build situational awareness:
    ROM, frequency, tempo, cold water immersion, deload, BCAA/creatine. Use this to **avoid prescribing debunked
    conventional wisdom** (e.g., "train to failure", "60s static stretch warmup", "30-min anabolic window",
    "post-workout ice bath", "fixed deload every 4-6 weeks").
+
+### Placeholder resolution (do this before using any number)
+
+This skill and its `references/` files are stored in a **public** repository, so they contain no personal
+values — only `{{placeholder}}` tokens. Resolve them from `data/user_profile.md` §0 (a YAML block), except
+`{{monthly_cash_flow_rm}}` which comes from `data/finance/portfolio.yaml` → `monthly_savings`.
+
+Rules:
+
+- Resolve every placeholder **before** doing arithmetic or writing a plan. Never emit a literal `{{...}}` to
+  the user, and never substitute a value you remember from an earlier session.
+- If `data/user_profile.md` is missing or has no §0, **stop** and tell the user the `data/` submodule looks
+  uninitialized (`git submodule update --init data`). Do not proceed with guessed baselines.
+- If a placeholder has no entry in §0, ask the user for that one value and suggest adding it to §0.
 
 ### Step 2: Assess Current State
 
@@ -112,9 +127,11 @@ Not all data will always be available. When files are missing or incomplete:
 - **User's verbal report contradicts log data** (e.g., log says 7h sleep but user says "我昨晚睡得很差"):
   Trust the user's real-time account — the log might not be updated yet, or subjective quality matters
   beyond raw duration. Note the discrepancy and suggest updating the log.
-- **thresholds.yaml or user_profile.md unreadable**: Use the values you know from context (baseline sleep 7.5h,
-  protein target <redacted-protein-target> (recomp <redacted> g/kg @ <redacted-bodyweight>), shutdown 22:00, training 3-day full body Mon/Wed/Fri AM)
-  and tell the user you couldn't read the config file.
+- **thresholds.yaml or user_profile.md unreadable**: **Do not fall back to remembered values.** Stop and tell the
+  user which file you couldn't read, then ask them for only the numbers you need for this specific request.
+  Personal baselines (protein target, body weight, wake/shutdown times, training days) live exclusively in
+  `data/user_profile.md` §0 — see "Placeholder resolution" below. Guessing them silently produces a plan built on
+  stale numbers, which is worse than no plan.
 
 The goal is to never get stuck. Missing data means asking the user, not abandoning the plan.
 
