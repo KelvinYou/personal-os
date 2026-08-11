@@ -53,6 +53,15 @@ personal-os/
 ```bash
 # 首次克隆（含私有 data submodule）
 git clone --recurse-submodules https://github.com/KelvinYou/personal-os.git
+# ⚠️ data 是 private repo：无权限时这一步会对它报 repository not found。
+#    这是访问控制的预期行为，可忽略——仓库其余部分照常可用，只有 make wealth /
+#    make web 不可用。有权限但 data/ 仍是空目录时跑 make setup-private。
+
+# 建立 .venv 并安装依赖（见 requirements.txt）
+make setup
+
+# 环境自检：区分「坏了」与「按设计就不该有」
+make doctor
 
 # 生成今天的日志模板
 make today
@@ -197,7 +206,13 @@ graph TB
 
 ## 依赖
 
+依赖清单的唯一 owner 是 `requirements.txt`（PyYAML / python-dotenv / pydantic /
+pydantic-settings / Google Calendar 客户端）。不要手抄成一行 `pip install` ——
+那份清单已经漏过 pydantic 一次。
+
 ```bash
-pip install pyyaml python-dotenv
+make setup     # python3 -m venv .venv && pip install -r requirements.txt
+make doctor    # 验证 venv、私有数据、股价 pipeline、web 依赖
 # COROS 同步额外需要 coros_api (内部包)
+# 仪表盘另需 Node: cd web && npm i
 ```

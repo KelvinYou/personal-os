@@ -7,7 +7,39 @@ SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
 
-.PHONY: today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly wealth web help
+.PHONY: setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly wealth web help
+
+## 建立 .venv 并安装依赖 (public repo 即可跑)
+setup:
+	@python3 -m venv .venv
+	@.venv/bin/pip install --quiet --upgrade pip
+	@.venv/bin/pip install --quiet -r requirements.txt
+	@echo "[Status: OK] .venv 就位。下一步: make doctor"
+
+## checkout private data submodule (需 personal-os-data 权限)
+## 注意: 本机 .git/config 有 submodule.data.update=none（.gitmodules 里没有），
+## 直接 git submodule update --init data 只会输出 Skipping。这里显式覆盖，
+## 且只作用于本次命令，不写回 .git/config。
+setup-private:
+	@git -c submodule.data.update=checkout submodule update --init data
+	@echo "[Status: OK] data submodule 已 checkout。"
+
+## 环境自检 (区分 error / expected / warning)
+doctor:
+	@python3 $(SCRIPTS_DIR)/doctor.py
+
+## 同上，但把 web 依赖缺失视为 error (给 make web 用)
+doctor-web:
+	@python3 $(SCRIPTS_DIR)/doctor.py --web
+
+## 跑 Python 测试 + web typecheck
+test:
+	@$(PYTHON) -m unittest discover -s tests -t . -v
+	@if [ -d web/node_modules ]; then \
+		cd web && npm run --silent typecheck && echo "[Status: OK] web typecheck 通过"; \
+	else \
+		echo "[Status: Warning] 跳过 web typecheck — web/node_modules 缺失 (cd web && npm i)"; \
+	fi
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -66,13 +98,18 @@ decision-new:
 	@if [ -z "$(SLUG)" ]; then echo "用法: make decision-new SLUG=<slug>"; exit 1; fi
 	@$(PYTHON) $(SCRIPTS_DIR)/decision_new.py --slug $(SLUG)
 
-## 资产到期与利率监控 (FD/数字银行；不含股票与 NAV 产品)
+## Tracked Assets 监控: 现金/到期/利率 + 股票估值 (NAV 计价产品仍不含)
 ## 用法: make wealth 或 make wealth DATE=2026-09-01 (预演到期)
 wealth:
+	@if [ ! -x $(PYTHON) ] || [ ! -f data/finance/savings.yaml ]; then \
+		echo "[Status: Critical] wealth 前置条件不满足，跑 make doctor 看具体是哪一项："; \
+		$(MAKE) --no-print-directory doctor; exit 1; \
+	fi
 	@$(PYTHON) $(SCRIPTS_DIR)/wealth_check.py $(if $(DATE),--date $(DATE),) $(if $(JSON),--json,)
 
 ## 启动本地理财仪表盘 (localhost only，不部署)
 web:
+	@$(MAKE) --no-print-directory doctor-web || exit 1
 	@cd web && npm run dev
 
 ## 决策校准分析 (Brier score + 分布)
@@ -93,6 +130,10 @@ report: lint check weekly
 ## 显示帮助
 help:
 	@echo "Personal-OS Commands:"
+	@echo "  make setup              — 建立 .venv 并安装 requirements.txt"
+	@echo "  make setup-private      — checkout private data submodule (需权限)"
+	@echo "  make doctor             — 环境自检 (error / expected / warning)"
+	@echo "  make test               — Python 测试 + web typecheck"
 	@echo "  make today              — 生成今天的日志模板"
 	@echo "  make daily DATE=...     — 生成指定日期的日志模板"
 	@echo "  make lint               — 校验所有日志的 frontmatter schema"
@@ -105,7 +146,7 @@ help:
 	@echo "  make decisions-due      — 列出到期待 review 的决策"
 	@echo "  make decision-new SLUG= — 创建新决策条目"
 	@echo "  make calibration        — 决策校准分析 (Brier score)"
-	@echo "  make wealth             — 资产到期与估值监控 (可选: DATE=... / JSON=1)"
+	@echo "  make wealth             — Tracked Assets: 现金/到期/股票估值 (可选: DATE=... / JSON=1)"
 	@echo "  make web                — 启动本地理财仪表盘 (localhost)"
 	@echo "  make quarterly          — 季度身份审计 (可选: QUARTER=2026-Q1)"
 	@echo "  make help               — 显示本帮助"
