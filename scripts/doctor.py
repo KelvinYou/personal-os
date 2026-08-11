@@ -25,7 +25,10 @@ from pathlib import Path
 # 不指向它就没法证明「data 缺失被报成 expected 而不是 error」。
 ROOT = Path(os.environ.get("PERSONAL_OS_ROOT") or Path(__file__).resolve().parents[1])
 VENV_PY = ROOT / ".venv" / "bin" / "python3"
-FINANCE_FILES = ("savings.yaml", "interest_rates.yaml", "portfolio.yaml", "fx.yaml")
+# 私仓的持仓文件：无权限时缺席是 expected。
+FINANCE_FILES = ("savings.yaml", "portfolio.yaml", "policy.yaml")
+# public 的市场数据：任何 checkout 都该有，缺了就是 error（不再享受 data/ 的豁免）。
+MARKET_FILES = ("interest_rates.yaml", "fx.yaml")
 
 RULE = "─" * 66
 LABEL = {"ok": "OK", "error": "Error", "expected": "Expected", "warning": "Warning"}
@@ -90,6 +93,21 @@ def check_private_data(r: Report) -> bool:
         ],
     )
     return False
+
+
+def check_market_data(r: Report) -> None:
+    """market/ 是 public 的，没有"未 checkout"这种借口 —— 缺了就是 error。"""
+    market = ROOT / "market"
+    missing = [f for f in MARKET_FILES if not (market / f).is_file()]
+    if not missing:
+        r.add("ok", "Market data", "market/*.yaml 就位 (public，无需 private 权限)")
+        return
+    r.add(
+        "error",
+        "Market data",
+        f"market/ 缺 {', '.join(missing)}",
+        ["这些文件在 public 仓，不该缺失 —— 检查是否被误删或误移回 data/"],
+    )
 
 
 def check_pipeline_prices(r: Report) -> None:
@@ -174,6 +192,7 @@ def main() -> int:
     r = Report()
     check_python(r)
     data_available = check_private_data(r)
+    check_market_data(r)
     check_pipeline_prices(r)
     check_web(r, as_error=web_as_error)
     check_doc_paths(r, data_available)

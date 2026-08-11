@@ -26,13 +26,18 @@ personal-os/
 │   └── git-commit/            #   智能 commit message
 ├── config/
 │   └── thresholds.yaml        # 系统阈值配置 (睡眠基准、支出告警、评分权重等)
+├── market/                    # 🌐 外部市场事实 (public — 无个人信息)
+│   ├── interest_rates.yaml    #   银行/数字银行/MMF/FD 挂牌利率 catalog
+│   ├── fx.yaml                #   汇率观测 (每个 pair 自带 as_of)
+│   └── jobs/                  #   JobStreet/LinkedIn 公开 JD 抓取与频次汇总
 ├── data/                      # 🔒 Private submodule (personal-os-data)
 │   ├── daily/                 #   每日工程师日志 (YYYY-MM-DD.md)
 │   ├── decisions/             #   决策日志 (YYYY-MM-DD-slug.md)
 │   ├── fitness/               #   COROS 原始数据 (YYYY-MM-DD.yaml)
-│   ├── finance/
-│   │   ├── portfolio.yaml     #   投资组合配置 (资产配置、基金持仓)
-│   │   └── interest_rates.yaml #  利率参考数据 (定存、货币基金等)
+│   ├── finance/               #   只放持仓与个人目标，不放市场行情
+│   │   ├── savings.yaml       #   现金/FD/MMF 各账户余额与条件
+│   │   ├── portfolio.yaml     #   股票持仓 (shares / avg_cost)
+│   │   └── policy.yaml        #   个人理财目标 (应急金月数等)
 │   ├── reports/               #   生成的周报存档
 │   └── user_profile.md        #   全局用户画像 (作息/饮食/锻炼偏好)
 ├── templates/

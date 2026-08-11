@@ -14,7 +14,7 @@ JD 数据、用户已有经历、或公开的 best-practice 模式。
 
 ## 核心原则
 
-1. **数据优先于直觉**: 所有 skill / keyword 建议必须能引用回 `data/jobs/trends.json`。没有数据就
+1. **数据优先于直觉**: 所有 skill / keyword 建议必须能引用回 `market/jobs/trends.json`。没有数据就
    fail fast 让用户先跑 learning-agent，不要凭印象推荐。
 2. **用户已有 > 添加新的**: 优先把用户已经做过但没写出来的事情挖出来重写，而不是建议加
    "建议补一个 LeetCode 1000 题" 这种空头任务。
@@ -50,7 +50,7 @@ LinkedIn 的场景。可以直接 Read/Edit 这些文件，但改完要明确告
 ## 数据依赖检查（第二步永远要做）
 
 ```
-检查 data/jobs/trends.json 是否存在，且 mtime 在 30 天内。
+检查 market/jobs/trends.json 是否存在，且 mtime 在 30 天内。
 ```
 
 **如果不存在或过期**：
@@ -154,7 +154,7 @@ recruiter 的扫描习惯（数字在前）。
 ---
 date: YYYY-MM-DD
 target_role: "Senior Backend Engineer in fintech, SG"
-trends_source: data/jobs/trends.json
+trends_source: market/jobs/trends.json
 trends_age_days: 5
 profile_sources: [linkedin, jobstreet]
 reference_profiles_count: 0

@@ -46,7 +46,7 @@ Parse the user's query for:
   user's current role if not specified. If the user hints at a pivot (想转、想去),
   use the pivot target.
 - **Location** (MY, SG, or both) — default both.
-- **Archive freshness** — if `data/jobs/raw/` already has a file from today
+- **Archive freshness** — if `market/jobs/raw/` already has a file from today
   matching the query, skip fetching (the scripts enforce this automatically).
 
 If the query is ambiguous (e.g. "看看市场"), propose a scope and confirm with
@@ -63,18 +63,18 @@ python scripts/fetch_jobs.py \
   --location Singapore \
   --sources linkedin,indeed,google \
   --limit 30 \
-  --output data/jobs/raw/2026-04-24_sg_swe.json
+  --output market/jobs/raw/2026-04-24_sg_swe.json
 
 python scripts/fetch_jobs.py \
   --query "software engineer" \
   --location Malaysia \
   --sources linkedin,indeed,google \
   --limit 30 \
-  --output data/jobs/raw/2026-04-24_my_swe.json
+  --output market/jobs/raw/2026-04-24_my_swe.json
 
 python scripts/fetch_jobstreet.py \
   --query "software engineer" --country my --limit 30 \
-  --output data/jobs/raw/2026-04-24_jobstreet_my.json
+  --output market/jobs/raw/2026-04-24_jobstreet_my.json
 ```
 
 **If a scraper exits non-zero**, do not retry automatically — report the error
@@ -109,12 +109,12 @@ rather than one giant prompt. Keep each call under ~25k input tokens.
 ### Step 4 — Aggregate
 ```bash
 python scripts/aggregate_skills.py \
-  --archive-dir data/jobs/raw \
-  --output data/jobs/trends.json
+  --archive-dir market/jobs/raw \
+  --output market/jobs/trends.json
 ```
 
 Reads every enriched file ever written (archive grows over time), produces
-`data/jobs/trends.json` with:
+`market/jobs/trends.json` with:
 - `top_overall` — all-time frequency ranking
 - `top_by_location` — MY vs SG breakdown
 - `top_by_source` — which board demands which skills
@@ -169,7 +169,7 @@ prioritize").
 
 ## When to skip fetching entirely
 
-If `data/jobs/trends.json` exists and was regenerated within the last 48 hours,
+If `market/jobs/trends.json` exists and was regenerated within the last 48 hours,
 and the user's query doesn't demand fresh data (e.g., "summarize what we know"
 rather than "scan again"), you can produce the report from the existing digest
 alone. Note this in the TL;DR: "（数据来自 YYYY-MM-DD 的缓存，未重新抓取）".

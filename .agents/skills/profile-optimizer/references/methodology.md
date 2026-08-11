@@ -46,7 +46,7 @@
 
 输入：
 - `user_skills` — 从 profile 文本中提取的所有 skill 关键词（含 skills section、experience bullets、projects 描述）
-- `jd_top_skills` — `data/jobs/trends.json` 中目标方向的 top-30 频次
+- `jd_top_skills` — `market/jobs/trends.json` 中目标方向的 top-30 频次
 
 ### 归一化
 

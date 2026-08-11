@@ -1,0 +1,114 @@
+{
+  "query": "frontend engineer fintech",
+  "location": "Malaysia",
+  "sources": [
+    "linkedin",
+    "indeed",
+    "google"
+  ],
+  "limit": 30,
+  "hours_old": 168,
+  "fetched_at": "2026-04-25T13:50:15.287271+00:00",
+  "fetch_duration_sec": 7.5,
+  "query_hash": "d9441593",
+  "job_count": 4,
+  "jobs": [
+    {
+      "id": "in-2da6cce00a42c205",
+      "site": "indeed",
+      "title": "Senior Frontend Engineer",
+      "company": "Wahed",
+      "location": "Kuala Lumpur, M14, MY",
+      "job_url": "https://malaysia.indeed.com/viewjob?jk=2da6cce00a42c205",
+      "description": "**About Wahed:**\nThe global financial system wasn't built for everyone. For millions of people, its reliance on interest (riba) creates a barrier to managing money and building wealth without compromising their values.\n\nAt Wahed, we're changing that. We are a global fintech company on a mission to build a new financial system—one that is ethical, accessible, and entirely interest\\-free. From our offices across the globe, our team is building products that were once deemed impossible, from pioneering Shariah\\-compliant equity ETFs, creating true riba\\-free alternatives to high yield savings accounts, to creating no\\-leverage real estate investments for truly interest\\-free income producing assets. If you're driven to solve complex problems and believe finance should empower, not exclude, join us in building a more equitable financial future.  \n\n\n\n**Job Brief:**\nWe are looking for a Senior Frontend Engineer to join our Core development team. As a team member, you will play a role in building, maintaining, designing, and implementing new and current features primarily on the Wahed Platform, a React Native app. Building product and innovative features is a highly collaborative effort, and as such, a strong team player with a commitment to perfection is required. We are looking for candidates that are self\\-motivated and eager to learn new technologies, work well both within a team and on their own, and have an attention to detail.\n### **Job Description:**\n\n* Development of the React Native architecture including creating and maintaining core mobile components.\n* Work with other senior engineers to drive and deliver on our product roadmap, turning rough specs into features.\n* Provide leadership and mentorship to other frontend and mobile engineers on the team.\n* Find elegant solutions to usability problems. Build pixel\\-perfect, buttery smooth UIs across both all our frontend platforms.\n* Engineer new features that can work seamlessly across all of maintained web and mobile applications.\n* Leverage APIs for integrations with other platforms.\n\n### **Job Specification:**\n\n* At least 2 years of recent experience working with React Native.\n* At least 7 years of commercial experience with JavaScript and TypeScript and its nuances, including ES6\\+ syntax, React, React Native and GraphQL\n* Product minded: committed to building the best user experience.\n* Understand the trade\\-offs in employing different engineering solutions to a problem, valuing pragmatism over idealism.\n* Eager and open to learning.\n* General understanding of Swift, Objective\\-C and Java.\n* Experience with AWS.\n* Experience with Server\\-side JS e.g. Node JS.\n* Familiar with event\\-based and microservices architectures.\n* Understanding the standards and rules regulated by the Apple Developer/Connect system.\n* Have an app hosted publicly in the Google or Apple app store(s).\n\n\nWe may use artificial intelligence (AI) tools to support parts of the hiring process, such as reviewing applications, analyzing resumes, or assessing responses. These tools assist our recruitment team but do not replace human judgment. Final hiring decisions are ultimately made by humans. If you would like more information about how your data is processed, please contact us.",
+      "job_type": "fulltime",
+      "date_posted": "2026-04-24",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": null,
+      "is_remote": false,
+      "skills_extracted": [
+        "react native",
+        "javascript",
+        "typescript",
+        "frontend",
+        "mobile",
+        "fintech"
+      ]
+    },
+    {
+      "id": "in-af24f1597161289c",
+      "site": "indeed",
+      "title": "AI Agentic Developer",
+      "company": "ECOMMERCE CONSULTANTS PRIVATE LIMITED",
+      "location": "Kuala Lumpur, M14, MY",
+      "job_url": "https://malaysia.indeed.com/viewjob?jk=af24f1597161289c",
+      "description": "EC\\-Council is the world’s largest cyber security technical certification body. We operate in 145 countries globally and we are the owner and developer of various world\\-famous cyber security programs. We are proud to have trained and certified over 400,000 information security professionals globally that have influenced the cyber security mindset of countless organizations worldwide.\n\n**www.eccouncil.org**\n\n**Position Overview:**\n\nEC\\-Council is seeking a driven and technically capable Agentic AI Developer to join our growing AI Engineering team. In this mid\\-level role, you will contribute to the design and development of multi\\-agent systems, integrate agentic tooling into production pipelines, and help build intelligent automation solutions that power our next\\-generation cybersecurity and compliance platforms\n\n**Your Responsibilities:**\n\n* Develop and maintain agentic pipelines using LangChain and LangGraph, including tool\\-use chains, ReAct loops, and stateful multi\\-step reasoning workflows.\n* Build and extend Agent Harness components — defining tool schemas, agent personas, execution environments, and guardrail configurations.\n* Implement and maintain MCP (Model Context Protocol) server and client integrations for structured tool invocation across agent pipelines.\n* Develop Agent\\-to\\-Agent (A2A) communication flows — including task delegation, shared context management, and inter\\-agent messaging protocols.\n\n**Required Technical Skills:**\n\n* Agentic Framework — LangChain \\& LangGraph\n* LLM Integration — Claude SDK (Anthropic)\n* Agent Infrastructure — Agent Harness Design\n* Protocol — Model Context Protocol (MCP)\n* Multi\\-Agent Systems — Agent\\-to\\-Agent (A2A) Comms\n* Model Development — Fine\\-Tuning \\& Evaluation\n* Frontend — React \\& HTMX\n* Agentic Tooling — Tool Use, RAG, Function Calling\n\n**Required Experience:**\n\n* 2–4 years in software or AI/ML engineering, with at least 1 year on agentic or LLM\\-powered systems.\n* Hands\\-on experience building agent pipelines with LangChain, LangGraph, or equivalent.\n* Working knowledge of model fine\\-tuning using Hugging Face, OpenAI, Anthropic, or similar.\n* Familiarity with vector databases (Qdrant, Pinecone, Chroma) for agent memory and retrieval.\n* Proficiency in Python; basic TypeScript knowledge is a plus.\n\n**Nice to Have:**\n\n* Exposure to CrewAI, AutoGen, or other multi\\-agent orchestration frameworks.\n* Basic familiarity with graph databases such as Neo4j.\n* Understanding of cybersecurity concepts — VAPT, compliance, or threat modelling.\n* Experience with streaming LLM responses via SSE or WebSockets.\n* Interest in regulated industry deployments (fintech, healthcare, or government).\n\n**What You Will Build:**\n\nAs a mid\\-level developer at EC\\-Council Sdn. Bhd., you will contribute directly to AI\\-poweredcybersecurity platforms, compliance automation tools, and multi\\-agent orchestration systems —working alongside senior engineers to ship production\\-grade agentic solutions at enterprise scale.\n\n* Multi\\-agent orchestration workflows with supervisor, planner, executor, and validator agent roles.\n* MCP server integrations enabling structured, secure tool invocation across security and compliance workflows.\n* Fine\\-tuned models and retrieval\\-augmented generation (RAG) pipelines for domain\\-specific task performance.\n* React \\+ HTMX interfaces delivering real\\-time agentic interactions and streaming task outputs to end users.\n\n**About Our Culture:**\n\nEC\\-Council is driven by a mission to strengthen global cybersecurity capability and advance the profession of ethical hacking and information security. Our teams operate across regions and cultures, united by integrity, professionalism, and a commitment to meaningful impact. Continuous learning and accountability are encouraged, empowering individuals to take ownership of their contributions. Respect, trust, and ethical conduct guide how we work with colleagues, partners, and the global cybersecurity community.\n\n**Additional Information:**\n\nEC\\-Council is an equal opportunity workplace and an affirmative action employer. We are committed to providing equal employment opportunities regardless of race, color, ancestry, religion, sex, national origin, sexual orientation, age, citizenship, marital status, disability, gender identity, or veteran status. We do not discriminate based on these or any other characteristics protected by applicable laws or regulations in the locations where we operate.\n\nEC\\-Council is dedicated to working with and providing reasonable accommodations to individuals with disabilities. If you have a medical condition or disability that limits your ability to complete any part of the application process and require reasonable accommodation, please contact us at ecchr.sea@eccouncil.org and let us know how we can assist.\n\nTo be eligible for this position, candidates must be able to provide proof that they are either a citizen of the country or have legal authorization to work in the country where the position is posted and are currently residing there. EC\\-Council does not offer employment to ineligible candidates and reserves the right to revoke employment in case the candidate loses the authorization to work.\n\nIf, as part of the recruitment process, you are required to complete or submit any form of work, project, case study, or assignment, please note that such material will be considered the exclusive property of EC\\-Council. By submitting such work, you acknowledge that EC\\-Council retains all rights, title, and interest in the submitted content, including any intellectual property contained therein.\n\nCandidates further waive any intellectual property or moral rights in such submissions, confirm that the work is original and free of third\\-party infringement, and acknowledge that it is provided solely for evaluation purposes, with no ownership or other rights retained.\n\nOur Privacy Policy outlines how we collect, use, store, and protect your personal data during the recruitment process. This may include information such as your name, contact details, employment history, qualifications, and any other details you provide as part of your application. All data is handled in compliance with applicable data protection and privacy regulations.\n\nPlease review our policy here: EC\\-Council Privacy Policy – User and Company \\| EC\\-Council. Submission of your application will be considered as your acceptance of the terms stated above.\n\nBenefits:\n\n* Additional leave\n* Flexible schedule\n* Professional development\n\nApplication Question(s):\n\n* How long is your notice period?\n* How much is your current salary?\n* How much is your expected salary?\n\nWork Location: In person",
+      "job_type": "fulltime",
+      "date_posted": "2026-04-22",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": null,
+      "is_remote": false,
+      "skills_extracted": [
+        "langchain",
+        "langgraph",
+        "mcp",
+        "agentic ai",
+        "llm",
+        "python",
+        "ai engineering",
+        "multi-agent systems"
+      ]
+    },
+    {
+      "id": "li-4381557160",
+      "site": "linkedin",
+      "title": "Senior Software Engineer (Java)",
+      "company": "Hytech",
+      "location": "Federal Territory of Kuala Lumpur, Malaysia",
+      "job_url": "https://www.linkedin.com/jobs/view/4381557160",
+      "description": "**About Hytech**\n\n\n\n\n Hytech is a leading management consulting firm headquartered in Australia and Singapore, specialising in digital transformation for fintech and financial services organisations. We deliver end\\-to\\-end consulting services and provide robust middle\\- and back\\-office solutions that enable our clients to optimise operations, enhance efficiency, and stay ahead in a fast\\-evolving digital landscape.\n \n\n\n\n  \n\n\n\n\n\n With more than 2,000 professionals worldwide, Hytech has a strong and growing international presence, with offices across Australia, Singapore, Malaysia, Taiwan, the Philippines, Thailand, Morocco, Cyprus, Dubai, and beyond.\n \n\n\n\n  \n\n\n\n\n\n**About the Role**\n\n\n\n\n We are looking for a Principal Java Engineers (Financial Markets Market Data) to design and develop systems supporting global financial markets platforms with high concurrency requirements. In this role, you will be responsible for distributed system architecture design, core system development, performance optimization, and technical planning while working closely with product and testing teams.\n \n\n\n\n  \n\n\n\n\n\n Job Responsibilities\n \n\n\n* System Architecture: Lead the development of distributed architecture, multi\\-site active\\-active disaster recovery, and elastic scaling systems to support high\\-concurrency scenarios on a global platform, ensuring the system architecture meets business needs for the next 1\\-3 years.\n* Coding \\& Implementation: Collaborate with product and testing teams to break down requirements, conduct system architecture design, and take ownership of core/critical system code development to deliver high\\-quality results efficiently.\n* Technical Problem\\-Solving: Perform in\\-depth analysis of system bottlenecks, lead performance tuning efforts (JVM/Database/Middleware/Code), resolve complex technical challenges, and drive architectural evolution.\n* Technical Planning: Define and drive the mid\\-to\\-long\\-term technical architecture strategy for the business line, clarifying the evolution roadmap for core systems.\n* Technical Standards: Establish and promote unified technical standards, architectural best practices, and specifications to enhance overall R\\&D efficiency and quality.\n* Technology Foresight: Track cutting\\-edge technologies in fields such as Web3 and AI, promoting the implementation of technological innovations.\n\n\n\n  \n\n\n\n\n\n Job Requirements\n \n\n\n* Bachelor's degree or higher in Computer Science or a related field, with 5\\+ years of Java development experience, including experience in large\\-scale distributed system architecture.\n* Solid foundation in Java, proficient in multi\\-threading, collection frameworks, JVM tuning, and common performance optimization techniques.\n* Familiarity with mainstream middleware such as Spring Boot/Cloud, Dubbo, Kafka/RocketMQ, Redis, and Elasticsearch, with hands\\-on experience in usage and troubleshooting.\n* Understanding of microservice architecture and distributed system principles, familiar with stability assurance methods like service governance, rate limiting, circuit breaking, and disaster recovery/active\\-active.\n* Experience in developing or optimizing high\\-concurrency systems (1000\\+ TPS), with the ability to analyze and resolve performance bottlenecks.\n* Excellent communication, coordination, and teamwork skills.\n* Strong problem\\-solving abilities and a goal\\-oriented mindset, capable of working under pressure.\n\n\n\n  \n\n\n\n\n\n Preferred Qualifications\n \n\n\n* Experience with core systems of securities, futures contracts, or exchanges (e.g., order management, matching engine, market data, clearing).\n* Experience designing or implementing cross\\-regional multi\\-site active\\-active architectures.\n* Experience in toolchain development or configuration platform construction.\n* Contributions to open\\-source projects or a personal technical blog.\n* Proficiency in listening, speaking, reading, and writing Chinese to facilitate seamless cross\\-team communication.\n\n\n\n  \n\n\n\n\n\n**What We Offer**\n\n\n\n* Easy access to public transportation (LRT \\& KTM).\n* Transportation allowance.\n* Corporate insurance coverage, including dental, optical, and outpatient claims.\n* Gym and fitness claims.\n* Ongoing training and development opportunities.\n* Exposure to exciting projects that support career growth and professional development.",
+      "job_type": "fulltime",
+      "date_posted": "2026-04-24",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": null,
+      "is_remote": false,
+      "skills_extracted": [
+        "java",
+        "distributed systems",
+        "microservices",
+        "financial markets",
+        "fintech",
+        "high concurrency",
+        "performance optimization"
+      ]
+    },
+    {
+      "id": "li-4405604271",
+      "site": "linkedin",
+      "title": "Senior Software Engineer",
+      "company": "iPiD",
+      "location": "Kuala Lumpur, Federal Territory of Kuala Lumpur, Malaysia",
+      "job_url": "https://www.linkedin.com/jobs/view/4405604271",
+      "description": "**What are we looking for?**\n A Senior Software Engineer who has solid experience working with microservices architecture, is passionate about technology, commits to engineering best practices, and loves challenges and problem solving! You will develop back\\-end solutions based on requirements from the product managers, write tests such as unit tests, integration tests, and ensure that we are keeping our documentation up to date. Mentoring junior team members will also be a key part of your role, making impact every possible way.\n   \n\n  \n\n This is a full\\-time role reporting to the Tech Lead.\n   \n\n  \n\n**Core Responsibilities:**\n* Write high quality, testable and efficient code\n* Create and maintain our CI/CD pipeline\n* Collaborate with cross\\-functional teams to gather requirements and translate them into technical solutions\n* Conduct regular code reviews, ensuring adherence to best practices and high\\-quality standards\n* Provide technical guidance and mentorship to junior team members\n* Test and troubleshoot software; identify and resolve issues in a timely and efficient manner\n* Keep documentation accurate and up to date\n\n\n**Requirements**\n**Key Requirements:**\n* 6 years minimum working experience in software engineering\n* Strong proficiency with Typescript, Go, frameworks available for it such as Node.Js\n* Mastery of Agile methodology, microservices architecture, gRPC, containers, and Kubernetes is highly desirable\n* Experience working on cloud based technologies associated with Azure / AWS / GCP\n* Strong analytical skills, creative, detail oriented, and solid problem\\-solving skills\n* Ability to learn and work on new technologies or topics fast\n* Ability to work independently and as a team player\n* Excellent verbal and written English communication skills\n* Must have the authorisation to work in Malaysia \\*\\* \\*\\*Note: This position does not offer visa sponsorship\n* Able to working in the KL office (KL Eco City) 3 days a week\n\n\n**Benefits**\n**What do we offer?**\n You will work with a team of world\\-class fintech and payments veterans to shape up the future of payments, and will also have:\n   \n\n  \n\n* Excellent growth opportunities in global payment services technology\n* Flexible and collaborative work environment\n* Competitive salary\n* Employee Stock Options plan\n* Discretionary performance bonus\n* Medical insurance and wellness flexible spending fund\n* Laptop and accessories",
+      "job_type": "fulltime",
+      "date_posted": "2026-04-23",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": null,
+      "is_remote": false,
+      "skills_extracted": [
+        "typescript",
+        "go",
+        "node.js",
+        "microservices",
+        "grpc",
+        "ci/cd",
+        "agile",
+        "backend"
+      ]
+    }
+  ]
+}

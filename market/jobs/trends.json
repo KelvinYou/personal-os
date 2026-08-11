@@ -1,0 +1,828 @@
+{
+  "generated_at": "2026-04-25T13:55:58.053661+00:00",
+  "window_days": 30,
+  "source_files": 6,
+  "total_jobs": 123,
+  "jobs_with_skills": 123,
+  "top_overall": [
+    [
+      "javascript",
+      38
+    ],
+    [
+      "ai",
+      36
+    ],
+    [
+      "fintech",
+      36
+    ],
+    [
+      "python",
+      30
+    ],
+    [
+      "frontend",
+      29
+    ],
+    [
+      "machine learning",
+      28
+    ],
+    [
+      "llm",
+      24
+    ],
+    [
+      "backend",
+      24
+    ],
+    [
+      "ai engineering",
+      16
+    ],
+    [
+      "agentic ai",
+      15
+    ],
+    [
+      "payments",
+      14
+    ],
+    [
+      "java",
+      14
+    ],
+    [
+      "react",
+      12
+    ],
+    [
+      "blockchain",
+      12
+    ],
+    [
+      "banking",
+      11
+    ],
+    [
+      "fullstack",
+      11
+    ],
+    [
+      "typescript",
+      11
+    ],
+    [
+      "data engineering",
+      10
+    ],
+    [
+      "microservices",
+      9
+    ],
+    [
+      "sql",
+      8
+    ],
+    [
+      "automation",
+      7
+    ],
+    [
+      "css",
+      7
+    ],
+    [
+      "html",
+      7
+    ],
+    [
+      "crypto",
+      6
+    ],
+    [
+      "node.js",
+      6
+    ],
+    [
+      "api",
+      6
+    ],
+    [
+      "kotlin",
+      6
+    ],
+    [
+      "deployment",
+      5
+    ],
+    [
+      "cloud",
+      5
+    ],
+    [
+      "mobile",
+      5
+    ]
+  ],
+  "top_by_location": {
+    "Malaysia": [
+      [
+        "javascript",
+        29
+      ],
+      [
+        "ai",
+        26
+      ],
+      [
+        "frontend",
+        23
+      ],
+      [
+        "python",
+        21
+      ],
+      [
+        "machine learning",
+        16
+      ],
+      [
+        "llm",
+        8
+      ],
+      [
+        "fintech",
+        8
+      ],
+      [
+        "react",
+        8
+      ],
+      [
+        "backend",
+        8
+      ],
+      [
+        "automation",
+        7
+      ],
+      [
+        "fullstack",
+        7
+      ],
+      [
+        "css",
+        7
+      ],
+      [
+        "html",
+        7
+      ],
+      [
+        "data engineering",
+        5
+      ],
+      [
+        "vue.js",
+        5
+      ],
+      [
+        "node.js",
+        5
+      ],
+      [
+        "deployment",
+        4
+      ],
+      [
+        "agentic ai",
+        4
+      ],
+      [
+        "web",
+        4
+      ],
+      [
+        "mobile",
+        4
+      ]
+    ],
+    "Singapore": [
+      [
+        "fintech",
+        28
+      ],
+      [
+        "backend",
+        16
+      ],
+      [
+        "llm",
+        16
+      ],
+      [
+        "java",
+        13
+      ],
+      [
+        "ai engineering",
+        13
+      ],
+      [
+        "payments",
+        13
+      ],
+      [
+        "blockchain",
+        12
+      ],
+      [
+        "machine learning",
+        12
+      ],
+      [
+        "agentic ai",
+        11
+      ],
+      [
+        "ai",
+        10
+      ],
+      [
+        "python",
+        9
+      ],
+      [
+        "javascript",
+        9
+      ],
+      [
+        "banking",
+        8
+      ],
+      [
+        "typescript",
+        8
+      ],
+      [
+        "microservices",
+        7
+      ],
+      [
+        "kotlin",
+        6
+      ],
+      [
+        "frontend",
+        6
+      ],
+      [
+        "api",
+        5
+      ],
+      [
+        "crypto",
+        5
+      ],
+      [
+        "ai agent",
+        5
+      ]
+    ]
+  },
+  "top_by_source": {
+    "jobstreet-my": [
+      [
+        "javascript",
+        27
+      ],
+      [
+        "ai",
+        25
+      ],
+      [
+        "frontend",
+        21
+      ],
+      [
+        "python",
+        18
+      ],
+      [
+        "machine learning",
+        16
+      ],
+      [
+        "react",
+        8
+      ],
+      [
+        "automation",
+        7
+      ],
+      [
+        "css",
+        7
+      ],
+      [
+        "html",
+        7
+      ],
+      [
+        "backend",
+        7
+      ],
+      [
+        "fullstack",
+        6
+      ],
+      [
+        "llm",
+        5
+      ],
+      [
+        "data engineering",
+        5
+      ],
+      [
+        "vue.js",
+        5
+      ],
+      [
+        "deployment",
+        4
+      ]
+    ],
+    "indeed": [
+      [
+        "fintech",
+        10
+      ],
+      [
+        "llm",
+        7
+      ],
+      [
+        "agentic ai",
+        7
+      ],
+      [
+        "ai engineering",
+        5
+      ],
+      [
+        "backend",
+        5
+      ],
+      [
+        "blockchain",
+        5
+      ],
+      [
+        "banking",
+        4
+      ],
+      [
+        "java",
+        4
+      ],
+      [
+        "product management",
+        3
+      ],
+      [
+        "api",
+        3
+      ],
+      [
+        "react native",
+        2
+      ],
+      [
+        "typescript",
+        2
+      ],
+      [
+        "frontend",
+        2
+      ],
+      [
+        "javascript",
+        2
+      ],
+      [
+        "mobile",
+        2
+      ]
+    ],
+    "linkedin": [
+      [
+        "fintech",
+        24
+      ],
+      [
+        "llm",
+        12
+      ],
+      [
+        "backend",
+        12
+      ],
+      [
+        "ai engineering",
+        11
+      ],
+      [
+        "payments",
+        11
+      ],
+      [
+        "machine learning",
+        11
+      ],
+      [
+        "python",
+        10
+      ],
+      [
+        "java",
+        10
+      ],
+      [
+        "ai",
+        9
+      ],
+      [
+        "typescript",
+        9
+      ],
+      [
+        "javascript",
+        9
+      ],
+      [
+        "agentic ai",
+        7
+      ],
+      [
+        "microservices",
+        7
+      ],
+      [
+        "blockchain",
+        7
+      ],
+      [
+        "kotlin",
+        6
+      ]
+    ]
+  },
+  "deltas": [
+    {
+      "skill": "javascript",
+      "recent_count": 38,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ai",
+      "recent_count": 36,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "fintech",
+      "recent_count": 36,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "python",
+      "recent_count": 30,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "frontend",
+      "recent_count": 29,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "machine learning",
+      "recent_count": 28,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "llm",
+      "recent_count": 24,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "backend",
+      "recent_count": 24,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ai engineering",
+      "recent_count": 16,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "agentic ai",
+      "recent_count": 15,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "java",
+      "recent_count": 14,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "payments",
+      "recent_count": 14,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "react",
+      "recent_count": 12,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "blockchain",
+      "recent_count": 12,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "typescript",
+      "recent_count": 11,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "fullstack",
+      "recent_count": 11,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "banking",
+      "recent_count": 11,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "data engineering",
+      "recent_count": 10,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "microservices",
+      "recent_count": 9,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "sql",
+      "recent_count": 8,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "css",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "html",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "automation",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "crypto",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "kotlin",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "node.js",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "api",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "cloud",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "deployment",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "mobile",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "distributed systems",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "vue.js",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ai agent",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "generative ai",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ci/cd",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "web",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "web3",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "architecture",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "devops",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "multi-agent systems",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "langgraph",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "rest api",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "mcp",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "leadership",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "software engineering",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "product management",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "computer vision",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "angular",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "langchain",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    }
+  ]
+}

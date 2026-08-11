@@ -1,0 +1,97 @@
+# Interest Rates Tracker — 银行、数字银行、货币基金利率跟踪
+# 手动更新，反映当期市场行情 (MYR)
+# 数据基于最新市场推广与声明，不包括存款限额或其他复杂条款的详细说明，仅记录核心利率。
+#
+# ⚠️ 本文件在 **public** 仓（market/），不在 private submodule 里。
+# 只写"市场挂什么价"，绝不写"我在哪家放了多少钱" —— 后者属于
+# data/finance/savings.yaml。2026-08-12 搬迁前这条界限被破过两次
+# （notes 里写进过真实 FD 余额与实际到手利率），移出私仓正是为了让
+# 越界变得扎眼。写 notes 前先问：这句话换个人读还成立吗？
+
+schema_version: 1
+updated: 2026-08-12
+currency: MYR
+
+# ── 1. Digital Banks (数字银行) ──────────────────────────────────
+digital_banks:
+  gxbank:
+    base_rate: 2.00  # % p.a.
+    promo_rate: 3.55 # % p.a. (Bonus Pocket 6-month; 3-month tier is 3.18%)
+    promo_valid_until: 2026-12-31
+    tenure_months: 6
+    min_deposit: 1
+    # 2026-08-12 核实：4.00% 档已下架。既有 placement 若仍挂 4.00，
+    # `make wealth` 会报 catalog_conflict —— 那不是 typo，
+    # 是"合约利率所在的档位已经不在货架上"。
+    notes: "Bonus Pocket 3.18% (3M) / 3.55% (6M), RM12,500 per pocket, max 4 pockets = RM50k cap. Early withdrawal forfeits bonus, keeps 2.00% base. Interest credited daily (compounds). Campaign valid to 31 Dec 2026."
+  aeon_bank:
+    base_rate: 0.25  # % p.a. (Savings Account-i)
+    promo_rate: 3.00 # % p.a. (Savings Pots — extended from May to Aug 2026)
+    promo_valid_until: 2026-08-31
+    notes: "3.08% p.a. for 6-month Term Deposit-i. Savings Pot promo extended to 31 Aug 2026; no successor campaign announced yet."
+  boost_bank:
+    base_rate: 2.50  # % p.a.
+    promo_rate: 4.00 # % p.a. (BoostUP Jar — only first RM3,000, needs RM500 monthly wallet spend)
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
+    notes: "Basic Savings 2.50%; Savings Jars 3.00%; BoostUP Jar 4.00% capped at RM3,000 AND requires RM500/mo Boost Wallet spend (2026-06 verified) — so 4% is unreachable for balances above RM3,000. A ~3.30% rung is reachable in-app between Savings Jar (3.00%) and BoostUP Jar (4.00%) but is not published — catalog lacks it."
+  rize:
+    base_rate: 3.00  # % p.a.
+    promo_rate: 4.00 # % p.a. (First RM20k, requires collecting 5 stamps per month)
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
+    notes: "Offers 1.2% unlimited overseas cashback. NOTE: comparison sites still quote a '5.00% p.a. on first RM5,000' CMSA rate — traced to an Apr 2023 campaign that ended 31 Aug 2023. Do not treat as live without in-app confirmation."
+  ryt_bank:
+    base_rate: 2.05  # % p.a. (cut from 3.00% effective 18 Jun 2026 — verify)
+    promo_rate: 4.00 # % p.a. (first RM20k, now via new bonus-campaign structure, not automatic)
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
+    notes: "Base savings yield cut 3.00% → 2.05% (18 Jun 2026 in-app notice). Max still advertised at 4% but now requires opting into a bonus campaign, not automatic — confirm the campaign is active before assuming the 4% tier."
+
+# ── 2. Cash Management / MMFs (货币基金/现金管理) ────────────────────
+cash_management:
+  versa_cash:
+    base_rate: 3.48  # % p.a. (base nett return after fees, 2026-06 disclosure; Cash-i 3.09%)
+    promo_rate: 4.20 # % p.a. (Fixed Rate Quest, 210 days, conventional; 3.90% Cash-i)
+    promo_valid_until: 2026-08-31  # join deadline, NOT the rate's end — the 210-day window runs past it
+    min_deposit: 2000              # fresh funds, conventional (RM1,000 for Cash-i)
+    # 2026-08-12 核实：广告的 5.50% 是 **new-joiner only** Starter Quest（30 天窗口，
+    # 8 月版换皮成 "10% p.a. Auto Save Bonus for August New Joiners"）。用户是既有
+    # 用户，拿不到 —— 所以 promo_rate 记的是既有用户唯一够得着的 Fixed Rate Quest。
+    notes: "Backed by AHAM Enhanced Deposit Fund. 5.50%/5.00% headline is NEW-USER ONLY — not available to existing users. Existing-user ceiling is the Fixed Rate Quest: 4.20% p.a. fixed for 210 days, INVITE-ONLY (requires an in-app invitation push), join by 31 Aug 2026, fresh funds above your join-time baseline, reward capped at RM30,000/quest, must stay above baseline on day 210. Cash-in may happen any time inside the 210-day window, not just during the join period — so funds maturing after 31 Aug can still fund a quest joined in August."
+  kdi_save:
+    base_rate: 3.88  # % p.a. (Tier 1: up to RM50k; cut from 4.00% effective 16 Jun 2026)
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
+    notes: "Cut 4.00% → 3.88% on 16 Jun 2026. 3.5% p.a. for RM50k-RM200k, 3.0% above RM200k. No spend/salary conditions, t+1 liquidity — the default no-strings parking option. (Separate KDI Invest Deposit Programme advertises 6.5% but requires a robo-advisor investment.)"
+  stashaway_simple:
+    base_rate: 3.80  # % p.a. (projected net return, up slightly from 3.55%)
+    promo_rate: 3.80 # % p.a.
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
+    notes: "Invests in Principal Islamic Money Market Fund & AmIncome Fund. Fully Shariah-compliant, no minimum."
+  tng_go_plus:
+    base_rate: 3.30  # % p.a. (average daily return estimate)
+    promo_rate: 3.30 # % p.a.
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
+    notes: "Instant withdrawal to TNG eWallet. Max limit RM20k."
+
+# ── 3. Traditional Bank Fixed Deposits (传统银行定期存款) ──────────────
+traditional_fd_promos:
+  cimb_bank:
+    tenure_months: 3   # eFD-i Jul 2026 campaign covers 3 & 7 month tenors (down from 12mo Raya promo)
+    promo_rate: 3.60 # % p.a. (eFD-i campaign, runs 1 Jul – 3 Aug 2026)
+    promo_valid_until: 2026-08-03
+    min_deposit: 1000
+    notes: "EXPIRED 2026-08-03. Valid only for placements during 1 Jul–3 Aug 2026; no successor campaign announced as of 2026-08-12."
+  standard_chartered:
+    tenure_months: 12
+    promo_rate: 3.60 # % p.a. (down slightly from 3.68%, valid until 30 Sep 2026)
+    promo_valid_until: 2026-09-30
+    min_deposit: 60000  # raised from RM50,000
+    notes: "Fresh funds only. Exclusive to Wealth Assets clients. Min deposit raised to RM60k."
+  bank_of_china:
+    tenure_months: 12
+    promo_rate: 3.60 # % p.a. (MYR FD)
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
+    min_deposit: 1000
+    notes: "Requires BOCM Savings/Current Account."
+  general_board_rates:
+    tenure_months: 12
+    rate_range: "2.05% - 2.55% p.a."
+    notes: "Typical board rates without promotional campaigns. Separately: conditional current/savings accounts (RHB Smart 6.60%, StanChart Privilege$aver 6.30%, UOB One 5.65%) advertise far higher headlines, but the rate is tiered and gated on stacked monthly tasks (salary credit + spend + bill payments); effective yield on a passive parking balance lands well below these numbers. Not modelled here — the schema has no field for condition stacks."

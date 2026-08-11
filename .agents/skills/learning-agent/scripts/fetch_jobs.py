@@ -12,7 +12,7 @@ deterministic and fast to replay.
 
 Usage:
     python fetch_jobs.py --query "software engineer" --location "Singapore" \
-        --sources linkedin,indeed,google --limit 30 --output data/jobs/raw/sg.json
+        --sources linkedin,indeed,google --limit 30 --output market/jobs/raw/sg.json
 
 Cache behavior: if --output path already exists and was written today, exits
 without re-fetching (override with --force). Keeps archival cheap.

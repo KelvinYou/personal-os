@@ -105,9 +105,9 @@ AI 越强，这些"人类独有"的能力越稀缺。
 
 **核心流程概览**（执行前完整读一遍 reference）：
 1. 决定 scope（角色 + 地点）并和用户确认一句
-2. 调用 `scripts/fetch_jobs.py` 和 `scripts/fetch_jobstreet.py` 抓数据到 `data/jobs/raw/`
+2. 调用 `scripts/fetch_jobs.py` 和 `scripts/fetch_jobstreet.py` 抓数据到 `market/jobs/raw/`
 3. 对抓到的 JD 做**批量 LLM skill extraction**，把 `skills_extracted` 字段填回
-4. 调用 `scripts/aggregate_skills.py` 生成 `data/jobs/trends.json`
+4. 调用 `scripts/aggregate_skills.py` 生成 `market/jobs/trends.json`
 5. 按 reference 里的 "Job Market Scan" 模板输出报告
 
 **关键约定**：

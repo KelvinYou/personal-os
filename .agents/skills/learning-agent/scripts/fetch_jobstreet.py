@@ -18,7 +18,7 @@ Output schema matches fetch_jobs.py so aggregate_skills.py can read both.
 
 Usage:
     python fetch_jobstreet.py --query "software engineer" --country my \
-        --limit 30 --output data/jobs/raw/jobstreet_my.json
+        --limit 30 --output market/jobs/raw/jobstreet_my.json
 """
 from __future__ import annotations
 

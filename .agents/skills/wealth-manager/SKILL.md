@@ -22,8 +22,8 @@ where their cash sits across savings vehicles.
 |------|---------|--------------|
 | `data/finance/portfolio.yaml` | Holdings + avg cost **only** — no current prices (see Price Ownership) | Any portfolio/stock query |
 | `data/finance/savings.yaml` | Actual cash/FD/MMF positions, caps, lock dates, liabilities | Savings, net worth, maturity queries |
-| `data/finance/fx.yaml` | 汇率观测（每个 pair 自带 `as_of`） | 任何跨币种问题 |
-| `data/finance/interest_rates.yaml` | Digital banks, MMFs, FDs rates (market catalog, not holdings) | Savings allocation queries |
+| `market/fx.yaml` | 汇率观测（每个 pair 自带 `as_of`） | 任何跨币种问题 |
+| `market/interest_rates.yaml` | Digital banks, MMFs, FDs rates (market catalog, not holdings) | Savings allocation queries |
 | `config/thresholds.yaml` | Finance thresholds (savings target, spend alert) | Spending/savings analysis |
 | `references/investment-framework.md` | Single-stock + portfolio decision criteria (the "satellite" layer) | Stock analysis, buy/sell decisions, portfolio review |
 | `references/wealth-building-playbook.md` | Holistic plan: fund layering, asset allocation, core-satellite, DCA evidence, rebalancing, behavior | Any "where should my money go" / allocation / full-plan / net-worth-strategy question |
@@ -79,7 +79,7 @@ Financial data goes stale fast. Before using any data from YAML files, check the
 - **Interest rates** (`interest_rates.yaml`): Stale if >30 days old. Promo rates especially change
   frequently. If the user asks about savings allocation and rates are >2 weeks old, WebSearch for
   "[bank name] promo rate 2026" to verify before recommending.
-- **Exchange rate** (`data/finance/fx.yaml`): 有自己的 `as_of`，`make wealth` 按
+- **Exchange rate** (`market/fx.yaml`): 有自己的 `as_of`，`make wealth` 按
   `wealth.fx_stale_days`（默认 1 天）判定并在报告 `fx.stale` 里标出。
   过期就 WebSearch "USD MYR exchange rate"
   before any cross-currency calculation.
@@ -176,7 +176,7 @@ For sells, reduce share count accordingly. If fully sold, remove the entry.
 
 When the user asks where to park cash, or provides their savings allocation:
 
-1. Read `data/finance/interest_rates.yaml` — check if rates are fresh (see Data Freshness section)
+1. Read `market/interest_rates.yaml` — check if rates are fresh (see Data Freshness section)
 2. Read `references/malaysia-wealth-vehicles.md` for the MY tool landscape (digital banks, MMF, FD, ASNB)
    and the cash-layering table — and `references/wealth-building-playbook.md` §1 for the order of operations
 3. Consider constraints: promo conditions, minimum deposits, withdrawal flexibility
@@ -244,7 +244,7 @@ refresh prices:
    do not patch `portfolio.yaml`
 3. If a ticker has no pipeline coverage at all, either add it to the pipeline watchlist
    (preferred) or set `manual_price` + `manual_price_as_of` on that holding
-4. 汇率在 `data/finance/fx.yaml`（不再在 `portfolio.yaml` 里）：WebSearch 后
+4. 汇率在 `market/fx.yaml`（不再在 `portfolio.yaml` 里）：WebSearch 后
    **同时**更新 `rate` 与 `as_of`。只改 rate 不改 as_of 比不更新更糟——
    那是在给一个旧数字盖新章
 5. Show what changed
@@ -256,7 +256,7 @@ savings", "build me a plan", or any question that's about **structure rather tha
 This is the capability that fixes "草率" — don't answer with a one-off stock pick; give a layered plan.
 
 1. Read `references/wealth-building-playbook.md` (the plan backbone) and `references/malaysia-wealth-vehicles.md`
-   (MY tax + vehicle specifics). Read `data/finance/portfolio.yaml` + `data/finance/interest_rates.yaml` for current state.
+   (MY tax + vehicle specifics). Read `data/finance/portfolio.yaml` + `market/interest_rates.yaml` for current state.
 2. **Diagnose the current structure** against the playbook: Is there an index *core*, or is everything
    single-stock satellite? Is the emergency fund covered? Is excess cash sitting idle? Is PRS tax relief unused?
 3. **Walk the Financial Order of Operations** (playbook §1) and place the user on it — what's the next

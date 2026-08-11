@@ -2,7 +2,7 @@
 """
 Aggregate skill frequencies across archived job fetches.
 
-Reads every JSON file under data/jobs/raw/ that has the skills_extracted field
+Reads every JSON file under market/jobs/raw/ that has the skills_extracted field
 populated (see references/job-market-mode.md for how Claude fills that field),
 then computes:
   - Overall skill frequency ranking
@@ -11,13 +11,13 @@ then computes:
   - Recent-vs-prior delta: compares last 30 days vs the 30 days before that,
     flags "emerging" (>50% growth) and "fading" (<-30%) skills
 
-Output: data/jobs/trends.json, a compact digest Claude reads to produce the
+Output: market/jobs/trends.json, a compact digest Claude reads to produce the
 final report. This script is pure aggregation — no network, no LLM — so it's
 fast and deterministic.
 
 Usage:
-    python aggregate_skills.py --archive-dir data/jobs/raw \
-        --output data/jobs/trends.json
+    python aggregate_skills.py --archive-dir market/jobs/raw \
+        --output market/jobs/trends.json
 """
 from __future__ import annotations
 

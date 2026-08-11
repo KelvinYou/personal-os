@@ -1,0 +1,643 @@
+{
+  "query": "AI engineer fintech",
+  "location": "Malaysia",
+  "sources": [
+    "jobstreet-my"
+  ],
+  "limit": 30,
+  "fetched_at": "2026-04-25T13:50:20.649100+00:00",
+  "fetch_duration_sec": 0.4,
+  "query_hash": "387ec427",
+  "job_count": 30,
+  "jobs": [
+    {
+      "id": "91554915",
+      "site": "jobstreet-my",
+      "title": "Junior AI Engineer",
+      "company": "TalentSpark Recruitment Agency",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91554915",
+      "description": "Build & deploy AI automation for customer support. Work with senior engineers. Remote.",
+      "job_type": null,
+      "date_posted": "2026-04-16T04:26:05Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "automation",
+        "python",
+        "llm"
+      ]
+    },
+    {
+      "id": "91542364",
+      "site": "jobstreet-my",
+      "title": "AI Engineer Intern (AI Solutions Track)",
+      "company": "COS GREAT TRADING",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91542364",
+      "description": "Welcome AI Engineer Interns to join the AI and Automation projects by using latest technologies.",
+      "job_type": null,
+      "date_posted": "2026-04-15T15:24:30Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "automation",
+        "python",
+        "machine learning"
+      ]
+    },
+    {
+      "id": "91348801",
+      "site": "jobstreet-my",
+      "title": "Graduate AI Engineer",
+      "company": "FootfallCam",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91348801",
+      "description": "Join us now to build, deploy, and scale real-world AI solutions while learning from experienced AI professionals",
+      "job_type": null,
+      "date_posted": "2026-04-06T11:09:22Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning",
+        "python",
+        "deployment"
+      ]
+    },
+    {
+      "id": "91423777",
+      "site": "jobstreet-my",
+      "title": "AI Engineer – Machine Learning & Edge AI (Computer Vision)",
+      "company": "HT Consulting (Asia) Sdn. Bhd.",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91423777",
+      "description": "At HT Consulting, we build production-ready AI for real-world banking systems, and grow disciplined engineers into confident owners of AI solutions.",
+      "job_type": null,
+      "date_posted": "2026-04-09T09:14:25Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "machine learning",
+        "edge ai",
+        "computer vision",
+        "banking",
+        "python"
+      ]
+    },
+    {
+      "id": "91397216",
+      "site": "jobstreet-my",
+      "title": "Data Analyst & AI Data Engineer",
+      "company": "GSR TECHNOLOGY LIMITED",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91397216",
+      "description": "You will work closely with algorithm engineers, data scientists, and product teams.",
+      "job_type": null,
+      "date_posted": "2026-04-08T10:06:51Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "data engineering",
+        "ai",
+        "data analytics",
+        "python",
+        "sql"
+      ]
+    },
+    {
+      "id": "91469778",
+      "site": "jobstreet-my",
+      "title": "AI Engineer",
+      "company": "LEIGHTON ASIA PHILIPPINES INC.",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91469778",
+      "description": "The AI Engineer designs, builds, and deploys artificial intelligence systems to automate processes and solve complex business problems.",
+      "job_type": null,
+      "date_posted": "2026-04-13T01:57:31Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning",
+        "automation",
+        "python"
+      ]
+    },
+    {
+      "id": "91649360",
+      "site": "jobstreet-my",
+      "title": "Sr. Engineer (AI/ Full-stack/ Data), Credit Innovation Group",
+      "company": "AEON Credit Service (M) Bhd",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91649360",
+      "description": "Build AI-Driven solutions, prototype new ideas, and shape the future of Credit Operations in a fast-paced innovation lab.",
+      "job_type": null,
+      "date_posted": "2026-04-21T07:34:23Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "fullstack",
+        "data engineering",
+        "fintech",
+        "credit"
+      ]
+    },
+    {
+      "id": "91628876",
+      "site": "jobstreet-my",
+      "title": "AI Engineer",
+      "company": "ATC Surface Finishing Sdn Bhd",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91628876",
+      "description": "Drive AI-driven automation and intelligent reporting across Finance and Operations to streamline and automate reporting processes.",
+      "job_type": null,
+      "date_posted": "2026-04-20T14:00:21Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "automation",
+        "finance",
+        "reporting"
+      ]
+    },
+    {
+      "id": "91316284",
+      "site": "jobstreet-my",
+      "title": "AI ENGINEER",
+      "company": "Maruwa (Malaysia) Sdn Bhd",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91316284",
+      "description": "We are looking for a high-potential AI Engineer to help us build \"smart\" factory systems.",
+      "job_type": null,
+      "date_posted": "2026-04-02T09:56:53Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning",
+        "manufacturing"
+      ]
+    },
+    {
+      "id": "91480538",
+      "site": "jobstreet-my",
+      "title": "AI Solution Engineer",
+      "company": "SEFAR FABRICATION (M) SDN BHD",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91480538",
+      "description": "Shape the future with cutting-edge AI. Competitive salary, growth opportunities & flexible work arrangements await.",
+      "job_type": null,
+      "date_posted": "2026-04-13T06:47:17Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning"
+      ]
+    },
+    {
+      "id": "91338990",
+      "site": "jobstreet-my",
+      "title": "Junior AI Engineer (Hybrid)",
+      "company": "Data Flows Sdn Bhd",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91338990",
+      "description": "Fun environment with hybrid working mode",
+      "job_type": null,
+      "date_posted": "2026-04-06T02:49:34Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning",
+        "python"
+      ]
+    },
+    {
+      "id": "91448289",
+      "site": "jobstreet-my",
+      "title": "Data Automation Developer (Junior Executive)",
+      "company": "ENVISION DIGITAL TECHNOLOGIES SDN BHD",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91448289",
+      "description": "We are seeking Data Reconciliation Programmer to build Python scripts to extract, normalize and validate vendor data for reconciliation and reporting.",
+      "job_type": null,
+      "date_posted": "2026-04-10T08:20:34Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "python",
+        "data engineering",
+        "etl",
+        "automation",
+        "data validation"
+      ]
+    },
+    {
+      "id": "91449515",
+      "site": "jobstreet-my",
+      "title": "AI Engineer",
+      "company": "Verinon Technology Solutions Sdn Bhd",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91449515",
+      "description": "AI Applications, POCs, Production Solutions, Native AI",
+      "job_type": null,
+      "date_posted": "2026-04-10T09:06:31Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "llm",
+        "machine learning"
+      ]
+    },
+    {
+      "id": "91728268",
+      "site": "jobstreet-my",
+      "title": "Specialist - Data Science",
+      "company": "AIA Shared Services Sdn. Bhd.",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91728268",
+      "description": "To support the Innovation Office by assisting in the delivery of analytics, AI, automation, and continuous improvement initiatives.",
+      "job_type": null,
+      "date_posted": "2026-04-24T09:06:17Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "data science",
+        "ai",
+        "automation",
+        "analytics",
+        "insurance"
+      ]
+    },
+    {
+      "id": "91302078",
+      "site": "jobstreet-my",
+      "title": "AI Engineer",
+      "company": "SmartHire by SEEK",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91302078",
+      "description": "Our client \"TEIZA SDN BHD\" is seeking a AI Engineer to join their team!",
+      "job_type": null,
+      "date_posted": "2026-04-02T02:41:33Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning",
+        "python"
+      ]
+    },
+    {
+      "id": "91237681",
+      "site": "jobstreet-my",
+      "title": "Generative AI Engineer (AI Architect)",
+      "company": "Shenzhen Hexun Huagu Information Technology Co/ 深圳市和讯华谷信息技术有限公司",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91237681",
+      "description": "Design and deliver enterprise AI solutions using LLMs and RAG, driving real business impact.",
+      "job_type": null,
+      "date_posted": "2026-03-30T11:04:31Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "llm",
+        "rag",
+        "generative ai",
+        "ai architecture"
+      ]
+    },
+    {
+      "id": "90618868",
+      "site": "jobstreet-my",
+      "title": "AI Engineer - Cloud",
+      "company": "Private Advertiser",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/90618868",
+      "description": "Responsible for end-to-end delivery of cloud AI solutions, including requirements, deployment, troubleshooting, and operations.",
+      "job_type": null,
+      "date_posted": "2026-04-23T01:13:07Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "cloud",
+        "deployment",
+        "devops"
+      ]
+    },
+    {
+      "id": "91194876",
+      "site": "jobstreet-my",
+      "title": "AI Application Development (AI Skills) - CAMPUS HIRING",
+      "company": "Lenovo",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91194876",
+      "description": "Develop AI models and solutions using machine learning and deep learning while collaborating on data-driven projects in a dynamic environment.",
+      "job_type": null,
+      "date_posted": "2026-03-27T05:48:21Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "machine learning",
+        "deep learning",
+        "ai",
+        "python"
+      ]
+    },
+    {
+      "id": "91535053",
+      "site": "jobstreet-my",
+      "title": "AI Computer Vision Engineer",
+      "company": "FLEXTRONICS TECHNOLOGY (PENANG) SDN BHD",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91535053",
+      "description": ".",
+      "job_type": null,
+      "date_posted": "2026-04-15T07:21:44Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "computer vision",
+        "ai",
+        "machine learning"
+      ]
+    },
+    {
+      "id": "91717387",
+      "site": "jobstreet-my",
+      "title": "SENIOR AI ENGINEER",
+      "company": "Malvern Pathology Labs Sdn Bhd",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91717387",
+      "description": "We are seeking a Senior AI Engineer to design, build, deploy and operate scalable AI solutions across the enterprise.",
+      "job_type": null,
+      "date_posted": "2026-04-24T03:37:52Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning",
+        "deployment",
+        "scalable systems"
+      ]
+    },
+    {
+      "id": "91347112",
+      "site": "jobstreet-my",
+      "title": "Python - AI Engineer (Location Bangsar South)",
+      "company": "Lenovo Group Limited",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91347112",
+      "description": "Python - AI Engineer",
+      "job_type": null,
+      "date_posted": "2026-04-06T09:15:40Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "python",
+        "ai",
+        "machine learning"
+      ]
+    },
+    {
+      "id": "91534813",
+      "site": "jobstreet-my",
+      "title": "AI Data Engineer",
+      "company": "FLEXTRONICS TECHNOLOGY (PENANG) SDN BHD",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91534813",
+      "description": ".",
+      "job_type": null,
+      "date_posted": "2026-04-15T07:16:22Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "data engineering",
+        "ai",
+        "python",
+        "sql"
+      ]
+    },
+    {
+      "id": "91480001",
+      "site": "jobstreet-my",
+      "title": "AI Data Engineer",
+      "company": "SEFAR FABRICATION (M) SDN BHD",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91480001",
+      "description": "Drive innovation through AI & data. Competitive salary, career growth & wellness benefits await.",
+      "job_type": null,
+      "date_posted": "2026-04-13T06:33:27Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "data engineering",
+        "ai",
+        "python",
+        "sql"
+      ]
+    },
+    {
+      "id": "91554857",
+      "site": "jobstreet-my",
+      "title": "Senior AI Engineer",
+      "company": "TalentSpark Recruitment Agency",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91554857",
+      "description": "Own technical architecture for AI systems. Make final tech decisions. Set standards. 3+ years exp.",
+      "job_type": null,
+      "date_posted": "2026-04-16T04:24:42Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "architecture",
+        "leadership",
+        "machine learning"
+      ]
+    },
+    {
+      "id": "91232600",
+      "site": "jobstreet-my",
+      "title": "AI Quantitative Developer",
+      "company": "YWVISION PTE LTD",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91232600",
+      "description": "We are an AI startup building predictive models for stock and crypto markets. If you live and breathe AI, quantitative trading, and market data",
+      "job_type": null,
+      "date_posted": "2026-03-30T07:33:15Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "quantitative trading",
+        "python",
+        "machine learning",
+        "predictive modeling",
+        "crypto"
+      ]
+    },
+    {
+      "id": "91360026",
+      "site": "jobstreet-my",
+      "title": "AI APPLICATION ENGINEER",
+      "company": "SEAGULL COOLING TECHNOLOGIES (ASIA PACIFIC) SDN. BHD.",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91360026",
+      "description": "We are seeking a high-performing, hands-on AI Application Engineer to lead the design, development, and deployment of scalable AI-powered workflows.",
+      "job_type": null,
+      "date_posted": "2026-04-07T03:04:48Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "workflow automation",
+        "deployment",
+        "python"
+      ]
+    },
+    {
+      "id": "91161267",
+      "site": "jobstreet-my",
+      "title": "AI Engineer (R&D)",
+      "company": "Maistorage Technology Sdn. Bhd.",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91161267",
+      "description": "We're seeking a high-caliber AI Research Engineer to bridge the gap between cutting-edge algorithmic research & high-performance system implementation",
+      "job_type": null,
+      "date_posted": "2026-03-26T02:03:52Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "research",
+        "algorithms",
+        "python"
+      ]
+    },
+    {
+      "id": "91230331",
+      "site": "jobstreet-my",
+      "title": "AI Engineer (Junior)",
+      "company": "TechLab Security Sdn Bhd",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91230331",
+      "description": "Join our growing global team and accelerate your career with us. Apply today.",
+      "job_type": null,
+      "date_posted": "2026-03-30T06:34:54Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "ai",
+        "machine learning",
+        "python"
+      ]
+    },
+    {
+      "id": "91223382",
+      "site": "jobstreet-my",
+      "title": "Agentic AI Engineers (Junior/Mid/Senior)",
+      "company": "MODE FAIR SDN BHD",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91223382",
+      "description": "Focusing on rapid innovation and experimentation. It involves vibe coding, prompt engineering, and full-cycle prototyping—from ideation to deployment.",
+      "job_type": null,
+      "date_posted": "2026-03-30T03:12:36Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "agentic ai",
+        "prompt engineering",
+        "llm",
+        "python",
+        "rag"
+      ]
+    },
+    {
+      "id": "91653223",
+      "site": "jobstreet-my",
+      "title": "Generative AI Specialist",
+      "company": "SYNCRONETIX SDN. BHD.",
+      "location": null,
+      "job_url": "https://my.jobstreet.com/job/91653223",
+      "description": "AI Specialist/Engineer to apply AI technologies in real-world use cases, including content creation, automation, IT project, and workflow enhancement.",
+      "job_type": null,
+      "date_posted": "2026-04-21T09:37:16Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "skills_extracted": [
+        "generative ai",
+        "automation",
+        "llm",
+        "workflow"
+      ]
+    }
+  ]
+}

@@ -10,10 +10,11 @@
 > 本块由 `make doctor` 逐条 `test -e` 校验（data/ 未 checkout 时豁免其下条目）。
 > 改布局请同步改这里 —— 本文件每次会话强制注入，路径写错会让 agent 直接读错文件。
 ```
-/config/                  — 系统阈值与配置 (thresholds.yaml)
+/config/                  — 我的阈值设定 + 法规常量 (thresholds / wealth_rules.yaml)
+/market/                  — 外部可观测市场事实 (interest_rates / fx.yaml, jobs/)；public，无个人信息
 /data/                    — private submodule (personal-os-data)；无权限时不 checkout
 /data/daily/              — 每日工程师日志 (YYYY-MM-DD.md)
-/data/finance/            — 财务数据 (savings / portfolio / interest_rates / fx.yaml)
+/data/finance/            — 财务持仓 (savings / portfolio / policy.yaml)
 /data/reports/            — 生成的周报存档
 /data/user_profile.md     — 全局用户画像 (作息/饮食/锻炼偏好)
 /docs/                    — 长文档 (VISION / plan* / 审计记录)

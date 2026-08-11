@@ -1,0 +1,18 @@
+# FX Observations — 汇率观测
+#
+# 从 portfolio.yaml 拆出来（审计 §3.7）。原因：汇率和持仓共用一个 `updated`
+# 字段时，无法区分"持仓变了"和"汇率变了"，于是 SKILL.md 自己规定的
+# 「FX >1 天即 stale」根本无法执行 —— 等于没有 staleness 检查。
+#
+# 每个 pair 有自己的 as_of。阈值见 config/thresholds.yaml → wealth.fx_stale_days。
+# 仍是手工维护：WebSearch "USD MYR exchange rate" 后同时更新 rate 与 as_of。
+# 只改 rate 不改 as_of 比不更新更糟——那是在给一个旧数字盖新章。
+
+schema_version: 1
+base_currency: MYR
+
+pairs:
+  USD_MYR:
+    rate: 4.0806
+    as_of: 2026-08-11
+    source: "手工维护 (WebSearch)"
