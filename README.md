@@ -2,7 +2,7 @@
 
 个人管理系统 Repo，通过结构化日志、逻辑引擎与 AI Agent 实现数据驱动的自我管理。
 
-> 详细架构图见 [architecture.md](architecture.md) | 产品方向见 [VISION.md](VISION.md)
+> 详细架构见 [ARCHITECTURE.md](ARCHITECTURE.md) | 产品方向见 [docs/VISION.md](docs/VISION.md)
 
 ## 核心闭环
 
@@ -42,7 +42,9 @@ personal-os/
 │   ├── patch_coros.py         # 将 fitness yaml 写入日志 frontmatter
 │   ├── report_gen.py          # 逻辑引擎 — 规则告警检查器
 │   └── weekly_synthesis.py    # 周度数据聚合管道
+├── docs/                      # 长文档 (VISION / plan* / 审计记录)
 ├── Makefile                   # 一键自动化入口
+├── ARCHITECTURE.md            # 系统架构 + 不变量 (codemap)
 └── CLAUDE.md                  # AI 协作规范
 ```
 

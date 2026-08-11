@@ -868,7 +868,7 @@ A1 / A2 / A4 / A5 已完成。剩余 **A3**（`weekly_synthesis.py` 迁移 + bre
 7. **多人/团队化** —— 系统设计为 single-user，不做 multi-tenant
 8. **`make today` 自动触发 `sync-coros`** —— 副作用风险（网络慢、API 改动），用户手动双步更安全
 9. **LLM 直接改 daily.md frontmatter（绕过 daily-report skill）** —— 保持单一入口，避免字段漂移
-10. **把 `patch_coros.py` 改为"读取时合并"架构（single source: data/fitness/*.yaml）** —— 评估过，优点是消除双写，但牺牲 daily.md 自包含（grep/人读价值下降）。当前 sync+patch 模型已经够用，不 refactor（此决策已纳入 `architecture.md §5` 作为显式 tradeoff）
+10. **把 `patch_coros.py` 改为"读取时合并"架构（single source: data/fitness/*.yaml）** —— 评估过，优点是消除双写，但牺牲 daily.md 自包含（grep/人读价值下降）。当前 sync+patch 模型已经够用，不 refactor（此决策已纳入 `../ARCHITECTURE.md §5` 作为显式 tradeoff）
 11. ~~**pydantic / pytest 作为新依赖**~~ → **已接受 pydantic 作为 D1/D4/D6 必要依赖**；pytest 仍不用（D3 继续用 `unittest`）
 12. ~~**scoring rubric 进 config（D4）**~~ → **已接受，D4 promoted 为 P1**
 13. **SQLite / 任何 DB 做 source of truth** —— 破坏 "人类可读优先 + 手改 md 立即生效" 的核心体验；架构 doc §1 设计原则明确拒绝
@@ -883,7 +883,7 @@ A1 / A2 / A4 / A5 已完成。剩余 **A3**（`weekly_synthesis.py` 迁移 + bre
 
 - 本 plan.md 会随实施进度被**更新**（完成项 strike-through + 加 ✅ 标记）而不是删除，作为系统健康度的书面记录
 - **已入档**：Wave 1 A1/A2/A4/A5（commit f4b943e）、C3 sync_scale 归档、plan v2 修订（2026-04-23）
-- **已关联**：本 plan 的 Wave 2.5 D1/D4/D5/D6 均在 `architecture.md §9 Library Layer` 有对应章节；Wave 4 在 `architecture.md §9` 的"与 Agent Layer 分工"段提及。plan 与 architecture 共同演进，不分离维护
+- **已关联**：本 plan 的 Wave 2.5 D1/D4/D5/D6 均在 `../ARCHITECTURE.md §9 Library Layer` 有对应章节；Wave 4 在 `../ARCHITECTURE.md §9` 的"与 Agent Layer 分工"段提及。plan 与 architecture 共同演进，不分离维护
 - 用户确认本次修订后，按 §5 新 sequencing 执行：**Session A**（~3.5h，schema + library）+ **Session B**（~3h，skills + scoring + observability）；Wave 3 / Wave 4 另开 session。总工程量 ~10h + Wave 4 观察期 2-4 周
 - Commit 粒度见 §5（Session A 5 个 commit + Session B 7 个 commit）；遵循 `feedback-split-commits` 偏好
 - Pre-commit check 演进路径：

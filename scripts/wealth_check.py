@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Tracked Assets — maturity, valuation & rate monitor.
 
-See plan-wealth-dashboard.md Phases A/B. Deterministic; no LLM and no network.
+See docs/plan-wealth-dashboard.md Phases A/B. Deterministic; no LLM and no network.
 
 Both this text output and the web dashboard render from `build_report()`, so
 the valuation math has exactly one implementation.

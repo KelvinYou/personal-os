@@ -2,7 +2,7 @@
 
 > **Status**: **All phases implemented** · 2026-04-25 · v3
 > **Scope**: 在现有 daily/weekly/coach 三层之上，新增**判断追踪**与**自我审计**层
-> **Sibling docs**: `plan.md`（master roadmap）, `architecture.md`（系统不变量）
+> **Sibling docs**: `plan.md`（master roadmap）, `../ARCHITECTURE.md`（系统不变量）
 
 ---
 
@@ -142,7 +142,7 @@ lesson:                   # null | 1-2 句话
 
 ## 3. 与现有架构的契合
 
-### 3.1 不变量（architecture.md §8）合规性检查
+### 3.1 不变量（../ARCHITECTURE.md §8）合规性检查
 
 | 不变量 | L1 影响 | 处理 |
 |-------|--------|------|
@@ -201,7 +201,7 @@ decision-new:
 3. `scripts/decisions_due.py` — 扫描 `data/decisions/*.md`，输出 review_date <= today 且 status ∈ {open, pushed} 的列表
 4. `scripts/decision_new.py` — 从 template 创建新文件（slug + date 占位）
 5. `Makefile` — 加 `decisions-due` 和 `decision-new` 两个 target
-6. `architecture.md` — 在 §4 ER 图加 `DECISION` 实体；在 §8 加该实体的不变量
+6. `../ARCHITECTURE.md` — 在 §4 ER 图加 `DECISION` 实体；在 §8 加该实体的不变量
 7. `README.md` — 在快速命令加 `make decisions-due`
 
 ### Phase 1b — Decision-log skill（PR #2，~3h，Phase 1a 合入后）
@@ -265,7 +265,7 @@ AI 交互层，建在已验证的基础设施之上。
 | 与 weekly-review 关系 | **轻量耦合**：weekly_synthesis 输出决策计数（1 行） | 完全解耦 / 深度集成 | 完全解耦 → 决策日志隐形化；深度集成 → weekly-review 膨胀。1 行计数是最小可见度 |
 | L2/L3 现在做不做 | ~~冻结设计~~ → **已实施** Phase 3/4 | 一次性全做 | skill 已就绪，运行需要足够数据积累（L2: ≥4 周 timetable; L3: ≥12 周日志） |
 | coach-planner 归档时机 | **现在就做**（Phase 0，独立 PR） | 等 L2 启动时再做 | 数据积累不可追溯，晚一天少一天样本，且归档本身 ≤ 30 min |
-| 触发 review 的 UI | `make check` 输出 + `/decision-review` 主动调用 | 写 cron / 推送通知 | 与 Personal-OS "无 cron / 显式 make 触发" 原则一致（architecture.md §1） |
+| 触发 review 的 UI | `make check` 输出 + `/decision-review` 主动调用 | 写 cron / 推送通知 | 与 Personal-OS "无 cron / 显式 make 触发" 原则一致（../ARCHITECTURE.md §1） |
 
 ---
 

@@ -394,7 +394,7 @@ graph TD
 
 ## 9. Library Layer (proposed — Wave 2.5)
 
-当前 `scripts/report_gen.py` 与 `scripts/weekly_synthesis.py` **各自独立实现** frontmatter 解析、`safe_float`、Poor Sleep derivation、breaker 评估 —— 这是 Wave 1 schema drift 的结构性根因（plan.md §3.5）。Wave 2.5 引入共享 Library Layer，形成严格的单向依赖与 pydantic 类型化的 schema 边界。
+当前 `scripts/report_gen.py` 与 `scripts/weekly_synthesis.py` **各自独立实现** frontmatter 解析、`safe_float`、Poor Sleep derivation、breaker 评估 —— 这是 Wave 1 schema drift 的结构性根因（`docs/plan.md` §3.5）。Wave 2.5 引入共享 Library Layer，形成严格的单向依赖与 pydantic 类型化的 schema 边界。
 
 ```mermaid
 graph TB
