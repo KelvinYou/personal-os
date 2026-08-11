@@ -45,7 +45,7 @@ personal-os/
 ├── docs/                      # 长文档 (VISION / plan* / 审计记录)
 ├── Makefile                   # 一键自动化入口
 ├── ARCHITECTURE.md            # 系统架构 + 不变量 (codemap)
-└── CLAUDE.md                  # AI 协作规范
+└── AGENTS.md                  # AI 协作规范 (CLAUDE.md 仅 import 它)
 ```
 
 ## 快速开始
