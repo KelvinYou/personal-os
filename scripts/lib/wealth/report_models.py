@@ -157,6 +157,10 @@ class MaturityOut(BaseModel):
     lock_until: date
     days_left: int
     severity: Severity
+    # `rate` 是合约利率（到期即失效）；`renewal_rate` 是同产品今天的可得利率。
+    # 候选排名的门槛用后者 —— 消费者要展示"不动会掉到多少"就读这个。
+    renewal_rate: float | None
+    renewal_product: str | None
     candidates: list[CandidateOut]
 
 
@@ -173,7 +177,9 @@ class WealthReport(BaseModel):
     model_config = STRICT
     # 消费者（web dashboard / skill）据此判断自己读的是不是它认识的形状。
     # 改动字段含义就 bump 它；删/加字段由 tests/test_report_contract.py 守。
-    report_schema_version: int = 1
+    # v2 (2026-08-12): maturity[] 加 renewal_rate / renewal_product，候选门槛
+    # 从合约利率改为续做利率。
+    report_schema_version: int = 2
     as_of: date
     currency: str
     thresholds: WealthCfg

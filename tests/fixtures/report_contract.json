@@ -1,5 +1,5 @@
 {
-  "report_schema_version": 1,
+  "report_schema_version": 2,
   "as_of": "2026-09-05",
   "currency": "MYR",
   "thresholds": {
@@ -225,6 +225,8 @@
       "lock_until": "2026-08-20",
       "days_left": -16,
       "severity": "Critical",
+      "renewal_rate": null,
+      "renewal_product": null,
       "candidates": [
         {
           "category": "digital_banks",
@@ -269,7 +271,7 @@
           "eligible": false,
           "reasons": [
             "仅剩 headroom RM500.00 (cap RM20,000)，其余部分只拿 base rate",
-            "3.00% 低于现有 4.00% (-1.00%)"
+            "3.00% 低于门槛 4.00% (-1.00%)"
           ],
           "min_deposit": null,
           "tenure_months": null,
@@ -283,7 +285,7 @@
           "eligible": false,
           "reasons": [
             "promo 4.50% 已于 2026-07-01 过期，回落至 base 1.00%",
-            "1.00% 低于现有 4.00% (-3.00%)"
+            "1.00% 低于门槛 4.00% (-3.00%)"
           ],
           "min_deposit": null,
           "tenure_months": null,

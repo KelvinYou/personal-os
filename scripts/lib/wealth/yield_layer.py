@@ -10,10 +10,11 @@ from typing import Literal
 
 from ..schema import WealthCfg
 from .consistency import resolve_products
-from .files import RatesFile, SavingsFile
+from .files import RateEntry, RatesFile, SavingsFile
 
 
 Severity = Literal["OK", "Warning", "Critical"]
+Basis = Literal["promo", "base", "none"]
 
 
 @dataclass
@@ -24,6 +25,24 @@ class MaturityEvent:
     lock_until: date
     days_left: int
     severity: Severity
+    # 续做利率 —— 到期后同一产品**今天**实际给得出的利率，与 `rate` 无关。
+    # `rate` 是这笔 placement 的合约利率，到期即失效；拿它当"不换就有"的
+    # 基准会把所有比它低、但比续做高的去处全部误判为降级。
+    # None = 该账户没有 product_id，或 catalog 里排不出利率。
+    renewal_rate: float | None = None
+    renewal_product: str | None = None
+
+
+def effective_rate(entry: RateEntry, today: date) -> tuple[float | None, Basis]:
+    """Catalog 条目今天实际可得的利率：promo 未过期取 promo，否则回落 base。"""
+    promo_live = entry.promo_rate is not None and (
+        entry.promo_valid_until is None or entry.promo_valid_until >= today
+    )
+    if promo_live:
+        return entry.promo_rate, "promo"
+    if entry.base_rate is not None:
+        return entry.base_rate, "base"
+    return None, "none"
 
 
 @dataclass
@@ -50,13 +69,24 @@ class CapWarning:
 
 
 def maturity_events(
-    savings: SavingsFile, cfg: WealthCfg, today: date
+    savings: SavingsFile, rates: RatesFile, cfg: WealthCfg, today: date
 ) -> list[MaturityEvent]:
-    """Locked accounts with a lock_until inside the alert horizon (or past it)."""
+    """Locked accounts with a lock_until inside the alert horizon (or past it).
+
+    Also resolves each event's *renewal* rate from the catalog — see
+    ``MaturityEvent.renewal_rate`` for why the contract rate cannot serve as the
+    do-nothing baseline.
+    """
+    catalog = {key: entry for _, key, entry in rates.all_entries()}
+    products = resolve_products(savings, rates)
     events: list[MaturityEvent] = []
     for key, acct in savings.accounts.items():
         if acct.lock_until is None:
             continue
+        product = products.get(key)
+        renewal_rate = (
+            effective_rate(catalog[product], today)[0] if product is not None else None
+        )
         days_left = (acct.lock_until - today).days
         if days_left > cfg.maturity_alert_days:
             continue
@@ -71,6 +101,8 @@ def maturity_events(
                 lock_until=acct.lock_until,
                 days_left=days_left,
                 severity=severity,
+                renewal_rate=renewal_rate,
+                renewal_product=product,
             )
         )
     return sorted(events, key=lambda e: e.days_left)
@@ -80,11 +112,18 @@ def rollover_candidates(
     rates: RatesFile,
     savings: SavingsFile,
     amount: float,
-    current_rate: float,
+    hurdle_rate: float,
     cfg: WealthCfg,
     today: date,
+    incumbent: str | None = None,
 ) -> list[Candidate]:
     """Rank where a maturing amount could go.
+
+    ``hurdle_rate`` is the do-nothing baseline a move must beat — for a maturing
+    FD that is the *renewal* rate, not the expiring contract rate (see
+    ``MaturityEvent.renewal_rate``). ``incumbent`` is the catalog key the money
+    already sits in: it is exempt from the concentration penalty, because
+    renewing in place adds no new exposure.
 
     Eligibility is decided only from structured fields (promo_valid_until,
     min_deposit, and the user's own cap headroom in savings.yaml). Conditions
@@ -100,22 +139,17 @@ def rollover_candidates(
         for account, product in resolve_products(savings, rates).items()
     }
     for category, key, entry in rates.all_entries():
-        promo_live = entry.promo_rate is not None and (
-            entry.promo_valid_until is None or entry.promo_valid_until >= today
-        )
         eligible = True
         reasons: list[str] = []
 
-        if promo_live:
-            rate, basis = entry.promo_rate, "promo"
-        elif entry.base_rate is not None:
-            rate, basis = entry.base_rate, "base"
-        else:
+        rate, basis = effective_rate(entry, today)
+        promo_live = basis == "promo"
+        if rate is None:
             # Nothing rankable: an expired promo with no fallback base rate, or a
             # prose-only entry (general_board_rates). Emit it as ineligible rather
             # than dropping it — a silently missing candidate reads as "considered
             # and rejected" when it was never considered at all.
-            rate, basis, eligible = None, "none", False
+            eligible = False
             if entry.rate_range:
                 reasons.append(f"仅有 prose rate_range ({entry.rate_range})，无法排名")
             elif entry.promo_rate is None:
@@ -133,7 +167,7 @@ def rollover_candidates(
             reasons.append(f"min_deposit RM{entry.min_deposit:,.0f} > 可投 RM{amount:,.2f}")
 
         held = held_by.get(key)
-        if held is not None:
+        if held is not None and key != incumbent:
             if held.cap is not None:
                 headroom = held.cap - held.balance
                 if headroom <= 0:
@@ -148,14 +182,19 @@ def rollover_candidates(
                 reasons.append(f"已持有 RM{held.balance:,.2f}，迁入会加重集中度")
 
         if eligible and rate is not None:
-            edge = rate - current_rate
-            if edge < 0:
+            edge = rate - hurdle_rate
+            if key == incumbent:
+                # 门槛本身。既不是"可迁入的去处"，也不该被写成一条排除理由，
+                # 否则报告读起来像"续做被否决了"。
                 eligible = False
-                reasons.append(f"{rate:.2f}% 低于现有 {current_rate:.2f}% ({edge:+.2f}%)")
+                reasons.append(f"原地续做 {rate:.2f}% —— 本次比较的门槛，非迁移选项")
+            elif edge < 0:
+                eligible = False
+                reasons.append(f"{rate:.2f}% 低于门槛 {hurdle_rate:.2f}% ({edge:+.2f}%)")
             elif edge < cfg.rate_edge_min_pct:
                 eligible = False
                 reasons.append(
-                    f"相对现有 {current_rate:.2f}% 仅 {edge:+.2f}%，"
+                    f"相对门槛 {hurdle_rate:.2f}% 仅 {edge:+.2f}%，"
                     f"低于 rate_edge_min_pct {cfg.rate_edge_min_pct:.2f}%"
                 )
 

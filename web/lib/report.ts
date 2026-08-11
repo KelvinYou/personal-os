@@ -70,6 +70,13 @@ export interface MaturityEvent {
   lock_until: string;
   days_left: number;
   severity: Severity;
+  /**
+   * 同产品今天可得的续做利率；候选排名的门槛。null = catalog 排不出。
+   * 注意上面的 `rate` 是本笔 placement 的合约利率，到期即失效 ——
+   * 展示"不动会掉到多少"必须读 renewal_rate，不是 rate。
+   */
+  renewal_rate: number | null;
+  renewal_product: string | null;
   candidates: Candidate[];
 }
 

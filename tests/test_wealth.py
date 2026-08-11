@@ -66,25 +66,93 @@ class ThresholdsWiringTests(unittest.TestCase):
 
 class MaturityTests(unittest.TestCase):
     def test_locked_account_inside_window_is_flagged(self):
-        events = maturity_events(_savings(), _cfg(), TODAY)
+        events = maturity_events(_savings(), _rates(), _cfg(), TODAY)
         self.assertEqual([e.key for e in events], ["locked_fd"])
         self.assertEqual(events[0].days_left, 9)
         self.assertEqual(events[0].severity, "Warning")  # 9 > critical window (7)
 
     def test_severity_escalates_inside_critical_window(self):
         cfg = _cfg()
-        far = maturity_events(_savings(), cfg, date(2026, 8, 1))
+        far = maturity_events(_savings(), _rates(), cfg, date(2026, 8, 1))
         self.assertEqual(far[0].severity, "Warning")
-        near = maturity_events(_savings(), cfg, date(2026, 8, 18))
+        near = maturity_events(_savings(), _rates(), cfg, date(2026, 8, 18))
         self.assertEqual(near[0].severity, "Critical")
 
     def test_outside_window_is_silent(self):
-        self.assertEqual(maturity_events(_savings(), _cfg(), date(2026, 6, 1)), [])
+        self.assertEqual(maturity_events(_savings(), _rates(), _cfg(), date(2026, 6, 1)), [])
 
     def test_already_matured_still_reported(self):
-        events = maturity_events(_savings(), _cfg(), date(2026, 8, 25))
+        events = maturity_events(_savings(), _rates(), _cfg(), date(2026, 8, 25))
         self.assertEqual(events[0].days_left, -5)
         self.assertEqual(events[0].severity, "Critical")
+
+    def test_no_product_id_leaves_renewal_rate_unresolved(self):
+        # locked_fd 没有 product_id → catalog 排不出续做利率。必须是 None，
+        # 不能悄悄拿合约利率冒充"续做还有这么多"。
+        ev = maturity_events(_savings(), _rates(), _cfg(), TODAY)[0]
+        self.assertIsNone(ev.renewal_rate)
+        self.assertIsNone(ev.renewal_product)
+
+    def test_renewal_rate_comes_from_catalog_not_from_the_contract_rate(self):
+        savings = _savings()
+        # 合约 4.00%，但同产品今天只给得出 base 1.00%（promo 已过期）。
+        savings.accounts["locked_fd"].product_id = "expired_with_base"
+        ev = maturity_events(savings, _rates(), _cfg(), TODAY)[0]
+        self.assertEqual(ev.rate, 4.00)
+        self.assertEqual(ev.renewal_rate, 1.00)
+        self.assertEqual(ev.renewal_product, "expired_with_base")
+
+
+class RolloverHurdleTests(unittest.TestCase):
+    """到期比较的门槛是**续做利率**，不是即将失效的合约利率。
+
+    回归背景 (2026-08-12)：GXBank 的 4.00% FD 到期，同产品续做只剩 3.55%，
+    但引擎拿 4.00% 当门槛，把 3.88% 的 KDI Save 判成"低于现有"排除掉，
+    最后输出"默认动作 = 原地续做" —— 恰好推荐了候选池里第二差的选项。
+    """
+
+    def _setup(self):
+        savings = _savings()
+        savings.accounts["locked_fd"].product_id = "expired_with_base"  # 续做 1.00%
+        return savings
+
+    def test_candidate_between_renewal_and_contract_rate_is_eligible(self):
+        savings = self._setup()
+        # capped_mmf 3.00%：低于合约 4.00%，但远高于续做 1.00% → 必须可选。
+        cands = rollover_candidates(
+            _rates(), savings, 10000.0, 1.00, _cfg(), TODAY,
+            incumbent="expired_with_base",
+        )
+        c = next(x for x in cands if x.key == "capped_mmf")
+        self.assertTrue(c.eligible, f"应可选，实际被排除: {c.reasons}")
+
+    def test_incumbent_is_the_hurdle_not_a_concentration_reject(self):
+        savings = self._setup()
+        cands = rollover_candidates(
+            _rates(), savings, 10000.0, 1.00, _cfg(), TODAY,
+            incumbent="expired_with_base",
+        )
+        c = next(x for x in cands if x.key == "expired_with_base")
+        self.assertFalse(c.eligible)
+        self.assertTrue(any("原地续做" in r for r in c.reasons), c.reasons)
+        # 续做不是"迁入会加重集中度"——钱本来就在那儿。
+        self.assertFalse(any("集中度" in r for r in c.reasons), c.reasons)
+
+    def test_report_wires_renewal_rate_into_the_hurdle(self):
+        savings = self._setup()
+        report = build_report(
+            savings,
+            _rates(),
+            load_portfolio(FIXTURES / "portfolio.yaml"),
+            _fx(),
+            _cfg(),
+            TODAY,
+            STOCK_FIXTURES,
+        )
+        ev = report["maturity"][0]
+        self.assertEqual(ev["renewal_rate"], 1.00)
+        eligible = {c["key"] for c in ev["candidates"] if c["eligible"]}
+        self.assertIn("capped_mmf", eligible)
 
 
 class RolloverCandidateTests(unittest.TestCase):
@@ -141,9 +209,9 @@ class RolloverCandidateTests(unittest.TestCase):
         c = self._by_key("capped_mmf")
         self.assertTrue(any("headroom RM500.00" in r for r in c.reasons))
 
-    def test_rate_below_current_is_reported_as_below_not_as_thin_edge(self):
+    def test_rate_below_hurdle_is_reported_as_below_not_as_thin_edge(self):
         c = self._by_key("expired_with_base")
-        self.assertTrue(any("低于现有" in r for r in c.reasons))
+        self.assertTrue(any("低于门槛" in r for r in c.reasons))
         self.assertFalse(any("rate_edge_min_pct" in r for r in c.reasons))
 
     def test_thin_positive_edge_is_rejected_by_rate_edge(self):

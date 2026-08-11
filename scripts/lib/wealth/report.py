@@ -194,14 +194,23 @@ def build_report_model(
                 lock_until=ev.lock_until,
                 days_left=ev.days_left,
                 severity=ev.severity,
+                renewal_rate=ev.renewal_rate,
+                renewal_product=ev.renewal_product,
                 candidates=[
                     _candidate(c)
                     for c in rollover_candidates(
-                        rates, savings, ev.balance, ev.rate, cfg, today
+                        rates,
+                        savings,
+                        ev.balance,
+                        # 门槛是续做利率；catalog 排不出时才退回合约利率。
+                        ev.renewal_rate if ev.renewal_rate is not None else ev.rate,
+                        cfg,
+                        today,
+                        incumbent=ev.renewal_product,
                     )
                 ],
             )
-            for ev in maturity_events(savings, cfg, today)
+            for ev in maturity_events(savings, rates, cfg, today)
         ],
         caps=[
             CapOut(

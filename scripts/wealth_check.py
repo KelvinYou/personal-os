@@ -144,17 +144,28 @@ def render_text(r: dict) -> int:
         print(f"    到期日 {ev['lock_until']} ({when})")
         exit_code = max(exit_code, 2 if ev["severity"] == "Critical" else 1)
 
+        renewal = ev["renewal_rate"]
+        hurdle = renewal if renewal is not None else ev["rate"]
+        if renewal is None:
+            print(f"    ⚠ 无 catalog 对应产品，门槛退回合约利率 {_pct(ev['rate'])}")
+        elif abs(renewal - ev["rate"]) >= 0.005:
+            direction = "降至" if renewal < ev["rate"] else "升至"
+            print(
+                f"    ⚠ {_pct(ev['rate'])} 是本笔合约利率，到期即失效 —— "
+                f"同产品 ({ev['renewal_product']}) 续做{direction} {_pct(renewal)}"
+            )
+
         eligible = [c for c in ev["candidates"] if c["eligible"]]
         blocked = [c for c in ev["candidates"] if not c["eligible"]]
 
-        print(f"\n    到期资金去处 — 优于现有 {_pct(ev['rate'])} 且可投:")
+        print(f"\n    到期资金去处 — 优于续做门槛 {_pct(hurdle)} 且可投:")
         if not eligible:
-            print("      (无) 现有利率已是可及范围内最优，默认动作 = 原地续做")
+            print("      (无) 门槛已是可及范围内最优，默认动作 = 原地续做")
         for c in eligible:
             tenure = f", {c['tenure_months']}mo" if c["tenure_months"] else ""
             print(
                 f"      · {c['key']:<20} {_pct(c['rate'])} ({c['basis']}{tenure})  "
-                f"+{c['rate'] - ev['rate']:.2f}% vs 现有"
+                f"+{c['rate'] - hurdle:.2f}% vs 续做"
             )
             for reason in c["reasons"]:
                 print(f"          ⚠ {reason}")

@@ -49,11 +49,12 @@
 
   [Status: Critical] locked_fd — RM10,000.00 @ 4.00%
     到期日 2026-08-20 (16 天前已到期)
+    ⚠ 无 catalog 对应产品，门槛退回合约利率 4.00%
 
-    到期资金去处 — 优于现有 4.00% 且可投:
-      · high_promo_bank      5.50% (promo)  +1.50% vs 现有
+    到期资金去处 — 优于续做门槛 4.00% 且可投:
+      · high_promo_bank      5.50% (promo)  +1.50% vs 续做
           条件: New-user promo.
-      · fd_ok                4.50% (promo, 6mo)  +0.50% vs 现有
+      · fd_ok                4.50% (promo, 6mo)  +0.50% vs 续做
           条件: Fresh funds.
 
     已排除:
@@ -61,10 +62,10 @@
           ✗ min_deposit RM60,000 > 可投 RM10,000.00
       · capped_mmf           3.00% (promo)
           ✗ 仅剩 headroom RM500.00 (cap RM20,000)，其余部分只拿 base rate
-          ✗ 3.00% 低于现有 4.00% (-1.00%)
+          ✗ 3.00% 低于门槛 4.00% (-1.00%)
       · expired_with_base    1.00% (base)
           ✗ promo 4.50% 已于 2026-07-01 过期，回落至 base 1.00%
-          ✗ 1.00% 低于现有 4.00% (-3.00%)
+          ✗ 1.00% 低于门槛 4.00% (-3.00%)
       · expired_no_base        n/a (none)
           ✗ promo 4.90% 已于 2026-08-03 过期，且无 base rate 兜底
       · general_board_rates    n/a (none)
