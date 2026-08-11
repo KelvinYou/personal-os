@@ -88,14 +88,14 @@ v2 只点出了股票 current price 的双 owner 问题。实际范围更广，�
 1. **手写推导值**：`savings.yaml: summary.*` 四个字段（`total_cash` /
    `weighted_avg_rate` / `liquid_now` / `locked`）全部是可计算量，却靠注释
    「更新账户后请同步此处」维持。
-2. **跨文件手工同步**：`portfolio.yaml: total_savings: 63941.57`
-   ≡ `savings.yaml: summary.total_cash: 63941.57`。
+2. **跨文件手工同步**：`portfolio.yaml: total_savings` 与
+   `savings.yaml: summary.total_cash` 是同一个数字的两份手抄。
 3. **staleness skew 已发生**：`savings.yaml` 停在 06-02，另两个在 07-17。
 4. **分类与利率两边对不上**：`savings.yaml` 记 boost_bank 为 `type: mmf, rate: 3.30`；
    `interest_rates.yaml` 归其为 digital bank，`base 2.50 / promo 4.00`。
-5. **持仓数据泄漏进 rate catalog**：`interest_rates.yaml` 的 `ryt_bank.notes` 写着
-   *"user holds RM19,732.95 here assuming flat 4%; confirm the campaign is actually active"*
-   ——正是三层分离要治的病。**用它当 Phase 1 的验收用例。**
+5. **持仓数据泄漏进 rate catalog**：`interest_rates.yaml` 的 `ryt_bank.notes` 里
+   写着用户在该账户的具体持仓额，并据此断言"仍按 4% 计息"——市场利率表里
+   混进了持仓事实，正是三层分离要治的病。**用它当 Phase 1 的验收用例。**
 6. **股票 price 双 owner**（v2 已指出）：`portfolio.yaml` 内联 `current_price*`，
    `ai-stock-analysis/data/<TICKER>/` 也有价格。必须定唯一 owner。
 
@@ -133,7 +133,7 @@ v2 只点出了股票 current price 的双 owner 问题。实际范围更广，�
 
 叫 Net Worth 会给出"精确但错误"的总资产数字。除 v2 已列的理由外补一条硬约束：
 `savings.yaml` 的 liabilities 段**明确只记月供 + 结束日期，不追踪 outstanding 本金**
-（`monthly_debt_service: 1175`，房贷建期 454 + 车贷 721）。
+（只有 `monthly_debt_service` 一个月供合计，房贷建期利息 + 车贷分列，均无本金）。
 净资产**在数据层就算不出来**——这不是命名偏好问题。
 
 若日后坚持要用 Net Worth，必须先定义全部五项：base currency（建议 MYR）、
@@ -172,8 +172,9 @@ liabilities 与 excluded assets 的范围。
 2. **`cimb_bank` 只有 promo_rate、没有 base_rate**，promo 过期后会从候选列表里
    **静默消失**——读起来像"评估过后被拒"，实际是根本没参与评估。改为以
    `rate=None` 显式列出并说明原因。`general_board_rates`（只有 prose `rate_range`）同理。
-3. **cap headroom 交叉引用**：`ryt_bank` 4.00% 看似平配，实际 cap RM20,000 只剩
-   **RM267.05** headroom，迁入无意义。工具现在自动交叉核对 `savings.yaml` 的 cap。
+3. **cap headroom 交叉引用**：`ryt_bank` 4.00% 看似平配，实际余额已顶到
+   promo cap 的 98% 以上，剩余 headroom 不到 cap 的 2%，迁入无意义。
+   工具现在自动交叉核对 `savings.yaml` 的 cap。
 
 **已知限制**（留给 Phase B）：promo 的 spend 条件、stamp 数、tier 表仍是 prose，
 工具只能原样透传 `notes`，不做结构化判断。
