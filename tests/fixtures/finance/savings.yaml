@@ -1,5 +1,6 @@
 # Fixture for tests/test_wealth.py — 刻意与真实 data/finance/savings.yaml 解耦，
 # 这样更新真实持仓不会让测试变红。
+schema_version: 1
 updated: 2026-08-01
 currency: MYR
 
@@ -15,6 +16,7 @@ accounts:
     cap: null
 
   capped_mmf:
+    product_id: capped_mmf     # 显式指向 catalog，不再靠同名隐式 join
     balance: 19500.00
     rate: 3.00
     type: mmf
@@ -30,9 +32,3 @@ accounts:
     liquidity: instant
     locked: false
     cap: 20000                   # 2.5% → 不触发
-
-summary:
-  total_cash: 30000.00
-  weighted_avg_rate: 3.34
-  liquid_now: 20000.00
-  locked: 10000.00

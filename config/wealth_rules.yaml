@@ -1,0 +1,25 @@
+# Wealth Rules — 外部法规事实，不是个人策略
+#
+# 为什么单独一个文件（审计 §3.3）：Form 706-NA 的门槛是美国税法规定的，
+# 不是用户的偏好。让 policy.yaml 充当它的 owner，会让"法规变了"和
+# "用户改主意了"变成同一种修改，事后无法区分。
+#
+# 本文件是 public repo 的一部分（不含任何持仓），每条必须带 source + verified_at，
+# 并接受 freshness 检查：规则过期时报告显式降级可信度，而不是继续当权威引用。
+
+schema_version: 1
+
+us_estate:
+  # 非美国公民/非居民持有 US-situs 资产超过此额度时，需申报 Form 706-NA。
+  # 注意这是 *filing threshold*，不等于"一定要交税"——是否产生税额还取决于
+  # 遗产总额、条约与扣除项。报告只能说"tracked 持仓已越线"，不能说"必然产生税"。
+  form_706na_filing_threshold_usd: 60000
+  verified_at: 2026-08-11
+  source: https://www.irs.gov/businesses/small-businesses-self-employed/estate-tax-for-nonresidents-not-citizens-of-the-united-states
+
+prs:
+  # 私人退休计划的个人所得税 relief 上限（马来西亚）。
+  # 值不值得取决于边际税率，那是 policy.yaml 的事，不在这里判断。
+  annual_tax_relief_cap_myr: 3000
+  verified_at: 2026-08-11
+  source: https://www.hasil.gov.my/individual/individual-life-cycle/how-to-declare-income/tax-reliefs/

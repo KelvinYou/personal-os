@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.config import load_thresholds  # noqa: E402
 from lib.wealth import (  # noqa: E402
     build_report,
+    load_fx,
     load_portfolio,
     load_rates,
     load_savings,
@@ -52,14 +53,12 @@ def render_text(r: dict) -> int:
             )
         exit_code = max(exit_code, 1)
 
-    if r["summary_drift"]:
-        print("\n[Status: Warning] savings.yaml 的手写 summary 与推导值不一致")
-        for d in r["summary_drift"]:
-            delta = d["recorded"] - d["derived"]
-            print(
-                f"  - {d['field']}: 记录 {d['recorded']:,.2f} vs "
-                f"推导 {d['derived']:,.2f} (差 {delta:+,.2f})"
-            )
+    if r["fx"]["stale"]:
+        print(
+            f"\n[Status: Warning] 汇率过期 — {r['fx']['pair']} 记于 {r['fx']['as_of']}"
+            f"（{r['fx']['age_days']} 天前，阈值 {cfg['fx_stale_days']} 天）"
+        )
+        print("    → 所有 USD 持仓的 MYR 折算值都按这个汇率算，先更新 fx.yaml。")
         exit_code = max(exit_code, 1)
 
     if r["catalog_conflicts"]:
@@ -82,18 +81,18 @@ def render_text(r: dict) -> int:
     stocks = r["stocks"]
     print(
         f"\n■ 股票估值 (price owner: ai-stock-analysis pipeline, "
-        f"FX {stocks['fx_usd_myr']})"
+        f"FX {r['fx']['rate']} @ {r['fx']['as_of']})"
     )
     for p in stocks["positions"]:
         if p["price"] is None:
             print(f"  [Status: Warning] {p['symbol']:<9} 无价格 — 未计入合计")
             exit_code = max(exit_code, 1)
             continue
-        fx = stocks["fx_usd_myr"] if p["currency"] == "USD" else 1.0
+        # pnl_myr 由 build_report 算好 —— 渲染层不做算术（审计 §3.7）。
         print(
             f"  {p['symbol']:<9} {p['shares']:>6.0f} @ {p['price']:>8,.2f} {p['currency']}  "
             f"= RM{p['market_value_myr']:>10,.2f}  "
-            f"P&L {p['pnl'] * fx:>+10,.2f} ({p['pnl_pct']:>+6.1f}%)  "
+            f"P&L RM{p['pnl_myr']:>+10,.2f} ({p['pnl_pct']:>+6.1f}%)  "
             f"[{p['price_source']} {p['price_as_of']}]"
         )
 
@@ -115,9 +114,16 @@ def render_text(r: dict) -> int:
         exit_code = max(exit_code, 1)
 
     print("\n■ 资产配置 (按经济行为)")
-    for a in r["allocation"]:
+    for a in r["allocation"]["slices"]:
         bar = "█" * max(1, round(a["pct"] / 2))
         print(f"  {a['label']:<22} {a['pct']:>5.1f}%  RM{a['amount_myr']:>11,.2f}  {bar}")
+    if r["allocation"]["incomplete"]:
+        print(
+            "  [Status: Warning] 配置占比不完整 — 分母缺少无价持仓 "
+            f"({', '.join(r['allocation']['unpriced_symbols'])})，"
+        )
+        print("    每一栏的百分比都偏了，不要据此判断是否需要再平衡。")
+        exit_code = max(exit_code, 1)
 
     print(f"\n  跟踪资产合计  RM{r['tracked_total_myr']:>12,.2f}")
     print("  (不是 net worth — liabilities 只记月供，不追踪本金)")
@@ -197,7 +203,7 @@ def main() -> int:
     cfg = load_thresholds().wealth
     try:
         report = build_report(
-            load_savings(), load_rates(), load_portfolio(), cfg, today
+            load_savings(), load_rates(), load_portfolio(), load_fx(), cfg, today
         )
     except FileNotFoundError as exc:
         msg = f"找不到财务数据文件: {exc}"
@@ -205,10 +211,7 @@ def main() -> int:
             print(json.dumps({"error": msg}, ensure_ascii=False))
         else:
             print(f"[Status: Critical] {msg}", file=sys.stderr)
-            print(
-                "  data submodule 可能未 checkout: git submodule update --init data",
-                file=sys.stderr,
-            )
+            print("  跑 make doctor 确认是环境问题还是 data 未 checkout。", file=sys.stderr)
         return 1
 
     if args.json:

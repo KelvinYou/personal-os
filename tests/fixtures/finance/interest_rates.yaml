@@ -6,6 +6,7 @@ digital_banks:
   high_promo_bank:
     base_rate: 2.00
     promo_rate: 5.50            # 无 valid_until → 视为仍然有效
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
     notes: "New-user promo."
 
   expired_with_base:
@@ -14,9 +15,10 @@ digital_banks:
     promo_valid_until: 2026-07-01   # 已过期 → 回落 base 1.00
     notes: "Promo window closed."
 
-  capped_mmf:                    # key 与 savings.yaml 对应 → 触发 headroom 交叉检查
+  capped_mmf:                    # savings.yaml 用 product_id 显式指过来 → headroom 交叉检查
     base_rate: 3.00
     promo_rate: 3.00
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
     notes: "First RM20k only."
 
 cash_management:
@@ -29,12 +31,14 @@ traditional_fd_promos:
   fd_ok:
     tenure_months: 6
     promo_rate: 4.50
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
     min_deposit: 1000
     notes: "Fresh funds."
 
   big_min_fd:
     tenure_months: 12
     promo_rate: 4.80
+    ongoing: true      # catalog 未记录到期日；不等于银行承诺无限期，仍需核实
     min_deposit: 60000            # > 到期金额 → 不合资格
     notes: "Wealth clients only."
 

@@ -19,9 +19,3 @@ export function pct(value: number, digits = 1): string {
 export function signedPct(value: number, digits = 1): string {
   return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}%`;
 }
-
-export function daysAgo(iso: string | null, today: string): number | null {
-  if (!iso) return null;
-  const ms = Date.parse(today) - Date.parse(iso);
-  return Math.round(ms / 86_400_000);
-}

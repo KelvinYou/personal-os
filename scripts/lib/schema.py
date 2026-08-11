@@ -170,11 +170,15 @@ class FinanceCfg(BaseModel):
 
 
 class WealthCfg(BaseModel):
-    model_config = ConfigDict(extra="allow")
+    # extra="allow" 是撒谎的：web/lib/report.ts 把 thresholds 声明为
+    # Record<string, number>，而这里任何非 number 的值都能穿透（审计 §3.6 末）。
+    model_config = ConfigDict(extra="forbid")
     maturity_alert_days: int = 30
     maturity_critical_days: int = 7
     staleness_warn_days: int = 30
     price_stale_days: int = 7
+    # FX 比持仓变得快得多，所以它有自己的保质期，不跟 staleness_warn_days 混用。
+    fx_stale_days: int = 1
     rate_edge_min_pct: float = 0.25
     cap_utilization_warn: float = 0.90
 

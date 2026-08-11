@@ -1,6 +1,6 @@
 # Fixture for tests/test_wealth.py — holding facts only, no current prices.
+schema_version: 1
 updated: 2026-08-10
-usd_myr: 4.0000
 
 investor_profile:
   age: 25
@@ -14,7 +14,6 @@ us_holdings:
   - symbol: MANUALED             # pipeline 未覆盖 → 手工兜底
     shares: 10
     avg_cost_usd: 5.00
-    manual_price: 0              # 故意用错字段名，确认不会被误当成价格
     manual_price_usd: 6.00
     manual_price_as_of: 2026-07-01
 

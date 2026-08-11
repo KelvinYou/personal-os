@@ -11,7 +11,7 @@ const SCRIPT = path.join(REPO_ROOT, "scripts", "wealth_check.py");
 /**
  * The dashboard does not recompute anything.
  *
- * Valuation, maturity and eligibility math lives once, in scripts/lib/wealth.py.
+ * Valuation, maturity and eligibility math lives once, in scripts/lib/wealth/.
  * Reimplementing it in TypeScript would recreate exactly the dual-owner drift
  * that Phase B removed from the data files — just at the code layer instead.
  * So we shell out to the same script the CLI uses and render its JSON.
@@ -32,6 +32,8 @@ export interface Position {
   market_value: number | null;
   market_value_myr: number | null;
   pnl: number | null;
+  /** current-FX translated —— 不是真实本币回报（买入时 FX/手续费未记录）。 */
+  pnl_myr: number | null;
   pnl_pct: number | null;
 }
 
@@ -46,6 +48,7 @@ export interface Account {
   lock_until: string | null;
   rate_reason: string;
   rate_unverified: boolean;
+  product_id: string | null;
 }
 
 export interface Candidate {
@@ -77,12 +80,32 @@ export interface AllocationSlice {
   pct: number;
 }
 
+/**
+ * 有持仓无价时分母偏低，每一栏的 pct 都偏了 —— incomplete 不是装饰性标签，
+ * 是"别拿这些百分比做再平衡判断"的信号（审计 §3.11）。
+ */
+export interface Allocation {
+  incomplete: boolean;
+  unpriced_symbols: string[];
+  slices: AllocationSlice[];
+}
+
+/** FX 是独立观测，有自己的 as_of —— 它比持仓变得快得多（审计 §3.7）。 */
+export interface FxObservation {
+  pair: string;
+  rate: number;
+  as_of: string;
+  age_days: number;
+  stale: boolean;
+  source: string;
+}
+
 export interface Report {
+  report_schema_version: number;
   as_of: string;
   currency: string;
   thresholds: Record<string, number>;
   stale_files: { name: string; age_days: number }[];
-  summary_drift: { field: string; recorded: number; derived: number }[];
   catalog_conflicts: {
     key: string;
     held_rate: number;
@@ -96,6 +119,7 @@ export interface Report {
     locked: number;
     accounts: Account[];
   };
+  fx: FxObservation;
   stocks: {
     fx_usd_myr: number;
     total_myr: number;
@@ -104,7 +128,7 @@ export interface Report {
     positions: Position[];
     stale_prices: { symbol: string; age_days: number }[];
   };
-  allocation: AllocationSlice[];
+  allocation: Allocation;
   maturity: MaturityEvent[];
   caps: {
     key: string;

@@ -14,22 +14,26 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from pydantic import ValidationError  # noqa: E402
+
 from lib.config import load_thresholds  # noqa: E402
 from lib.schema import WealthCfg  # noqa: E402
 from lib.wealth import (  # noqa: E402
     build_report,
+    build_report_model,
     cap_warnings,
     catalog_conflicts,
     derive_summary,
+    load_fx,
     load_portfolio,
     load_rates,
     load_savings,
     maturity_events,
     resolve_positions,
+    resolve_products,
     rollover_candidates,
     stale_files,
     stale_prices,
-    summary_drift,
 )
 
 FIXTURES = Path(__file__).parent / "fixtures" / "finance"
@@ -47,6 +51,10 @@ def _savings():
 
 def _rates():
     return load_rates(FIXTURES / "interest_rates.yaml")
+
+
+def _fx():
+    return load_fx(FIXTURES / "fx.yaml")
 
 
 class ThresholdsWiringTests(unittest.TestCase):
@@ -177,16 +185,6 @@ class SummaryTests(unittest.TestCase):
             },
         )
 
-    def test_consistent_file_reports_no_drift(self):
-        self.assertEqual(summary_drift(_savings()), [])
-
-    def test_drift_is_detected(self):
-        savings = _savings()
-        savings.summary.total_cash = 31000.00
-        drifts = summary_drift(savings)
-        self.assertEqual([d.field_name for d in drifts], ["total_cash"])
-        self.assertAlmostEqual(drifts[0].delta, 1000.00)
-
 
 class PriceResolutionTests(unittest.TestCase):
     def _positions(self):
@@ -230,7 +228,6 @@ class PriceResolutionTests(unittest.TestCase):
         portfolio = PortfolioFile.model_validate(
             {
                 "updated": "2026-08-10",
-                "usd_myr": 4.0,
                 "us_holdings": [{"symbol": "BROKEN", "shares": 1, "avg_cost_usd": 10.0}],
             }
         )
@@ -280,6 +277,7 @@ class BuildReportTests(unittest.TestCase):
             _savings(),
             _rates(),
             load_portfolio(FIXTURES / "portfolio.yaml"),
+            _fx(),
             _cfg(),
             TODAY,
             STOCK_FIXTURES,
@@ -300,16 +298,18 @@ class BuildReportTests(unittest.TestCase):
     def test_allocation_buckets_follow_economic_behaviour(self):
         r = self._report()
         self.assertEqual(
-            {a["bucket"] for a in r["allocation"]},
+            {a["bucket"] for a in r["allocation"]["slices"]},
             {"stocks", "fd", "mmf", "wallet"},
         )
 
     def test_allocation_percentages_sum_to_100(self):
         r = self._report()
-        self.assertAlmostEqual(sum(a["pct"] for a in r["allocation"]), 100.0, places=1)
+        self.assertAlmostEqual(
+            sum(a["pct"] for a in r["allocation"]["slices"]), 100.0, places=1
+        )
 
     def test_allocation_is_sorted_largest_first(self):
-        amounts = [a["amount_myr"] for a in self._report()["allocation"]]
+        amounts = [a["amount_myr"] for a in self._report()["allocation"]["slices"]]
         self.assertEqual(amounts, sorted(amounts, reverse=True))
 
     def test_unpriced_holding_excluded_from_stock_total_but_still_listed(self):
@@ -327,17 +327,219 @@ class BuildReportTests(unittest.TestCase):
 
     def test_rate_unverified_flag_survives_into_the_report(self):
         savings = _savings()
-        savings.accounts["capped_mmf"].__pydantic_extra__["rate_unverified"] = True
+        savings.accounts["capped_mmf"].rate_unverified = True
         r = build_report(
             savings,
             _rates(),
             load_portfolio(FIXTURES / "portfolio.yaml"),
+            _fx(),
             _cfg(),
             TODAY,
             STOCK_FIXTURES,
         )
         flagged = {a["key"] for a in r["cash"]["accounts"] if a["rate_unverified"]}
         self.assertEqual(flagged, {"capped_mmf"})
+
+
+class ReportModelTests(unittest.TestCase):
+    """审计 §3.6 步骤 1：报告形状有一个可执行定义，dict 只是它的 dump。"""
+
+    def _args(self):
+        return (
+            _savings(),
+            _rates(),
+            load_portfolio(FIXTURES / "portfolio.yaml"),
+            _fx(),
+            _cfg(),
+            TODAY,
+            STOCK_FIXTURES,
+        )
+
+    def test_dict_wrapper_is_exactly_the_model_dump(self):
+        # 只有一份组装实现——wrapper 里不能偷偷再算一次。
+        self.assertEqual(
+            build_report(*self._args()),
+            build_report_model(*self._args()).model_dump(mode="json"),
+        )
+
+    def test_report_model_rejects_unknown_fields(self):
+        from lib.wealth import WealthReport
+
+        payload = build_report_model(*self._args()).model_dump()
+        WealthReport.model_validate(payload)  # sanity
+        with self.assertRaises(ValidationError):
+            WealthReport.model_validate({**payload, "tracked_total_myrr": 1.0})
+
+
+class SchemaStrictnessTests(unittest.TestCase):
+    """审计 §3.5：未知字段是启动即报错，不是运行时安静少一行告警。"""
+
+    def test_typo_in_savings_field_name_is_rejected(self):
+        from lib.wealth import SavingsAccount
+
+        good = {
+            "balance": 1.0,
+            "rate": 3.0,
+            "type": "mmf",
+            "liquidity": "t+1",
+        }
+        SavingsAccount.model_validate(good)  # sanity
+        with self.assertRaises(ValidationError):
+            # 这个 typo 此前会静默变成 False，dashboard 不再标"利率未核实"——
+            # 而那正是 ryt_bank 的 4% 是否仍生效的唯一提示。
+            SavingsAccount.model_validate({**good, "rate_unverfied": True})
+
+    def test_locked_account_without_maturity_date_is_rejected(self):
+        from lib.wealth import SavingsAccount
+
+        with self.assertRaises(ValidationError):
+            SavingsAccount.model_validate(
+                {
+                    "balance": 1.0,
+                    "rate": 3.0,
+                    "type": "fd",
+                    "liquidity": "locked",
+                    "locked": True,
+                }
+            )
+
+    def test_negative_balance_is_rejected(self):
+        from lib.wealth import SavingsAccount
+
+        with self.assertRaises(ValidationError):
+            SavingsAccount.model_validate(
+                {"balance": -1.0, "rate": 3.0, "type": "mmf", "liquidity": "t+1"}
+            )
+
+    def test_undated_manual_price_is_rejected(self):
+        from lib.wealth import MyHolding
+
+        with self.assertRaises(ValidationError):
+            MyHolding.model_validate(
+                {
+                    "symbol": "X",
+                    "code": "1",
+                    "shares": 1,
+                    "avg_cost": 1.0,
+                    "manual_price": 2.0,  # 没有 as_of
+                }
+            )
+
+    def test_promo_without_expiry_must_declare_ongoing(self):
+        from lib.wealth import RateEntry
+
+        with self.assertRaises(ValidationError):
+            RateEntry.model_validate({"promo_rate": 5.0})
+        RateEntry.model_validate({"promo_rate": 5.0, "ongoing": True})
+
+    def test_duplicate_ticker_is_rejected(self):
+        from lib.wealth import PortfolioFile
+
+        with self.assertRaises(ValidationError):
+            PortfolioFile.model_validate(
+                {
+                    "updated": "2026-08-10",
+                    "my_holdings": [
+                        {"symbol": "A", "code": "1", "shares": 1, "avg_cost": 1.0},
+                        {"symbol": "A", "code": "2", "shares": 1, "avg_cost": 1.0},
+                    ],
+                }
+            )
+
+
+class ProductIdTests(unittest.TestCase):
+    """审计 §3.5：catalog join 走显式 product_id，不再靠 YAML key 同名。"""
+
+    def test_declared_product_id_resolves(self):
+        self.assertEqual(resolve_products(_savings(), _rates()), {"capped_mmf": "capped_mmf"})
+
+    def test_account_without_product_id_is_not_joined(self):
+        # locked_fd / roomy_wallet 没写 product_id → 不做交叉检查，也不误报
+        savings = _savings()
+        savings.accounts["locked_fd"].rate = 99.0
+        self.assertEqual(catalog_conflicts(savings, _rates()), [])
+
+    def test_dangling_product_id_is_an_error_not_silence(self):
+        savings = _savings()
+        savings.accounts["capped_mmf"].product_id = "renamed_in_catalog"
+        with self.assertRaises(ValueError) as ctx:
+            resolve_products(savings, _rates())
+        self.assertIn("renamed_in_catalog", str(ctx.exception))
+
+
+class FxTests(unittest.TestCase):
+    """审计 §3.7：FX 是独立观测，换算发生在 report 层。"""
+
+    def _report(self, today):
+        return build_report(
+            _savings(),
+            _rates(),
+            load_portfolio(FIXTURES / "portfolio.yaml"),
+            _fx(),
+            _cfg(),
+            today,
+            STOCK_FIXTURES,
+        )
+
+    def test_fx_has_its_own_as_of_and_staleness(self):
+        fresh = self._report(TODAY)["fx"]
+        self.assertEqual((fresh["pair"], fresh["age_days"], fresh["stale"]), ("USD_MYR", 1, False))
+        old = self._report(date(2026, 8, 20))["fx"]
+        self.assertTrue(old["stale"])
+        self.assertEqual(old["age_days"], 10)
+
+    def test_pnl_myr_is_computed_in_the_report_not_the_renderer(self):
+        positions = {p["symbol"]: p for p in self._report(TODAY)["stocks"]["positions"]}
+        piped = positions["PIPED"]  # USD, pnl 100.0 @ fx 4.0
+        self.assertEqual(piped["pnl"], 100.0)
+        self.assertEqual(piped["pnl_myr"], 400.0)
+        bursa = positions["BURSA_OK"]  # 已是 MYR，不该再乘一次
+        self.assertEqual(bursa["pnl_myr"], bursa["pnl"])
+
+    def test_unpriced_position_has_no_pnl_myr(self):
+        positions = {p["symbol"]: p for p in self._report(TODAY)["stocks"]["positions"]}
+        self.assertIsNone(positions["NOPRICE"]["pnl_myr"])
+
+    def test_missing_pair_refuses_to_guess(self):
+        from lib.wealth import FxFile
+
+        with self.assertRaises(ValueError):
+            FxFile.model_validate({"pairs": {}}).pair("USD_MYR")
+
+
+class AllocationFailClosedTests(unittest.TestCase):
+    """审计 §3.11：有持仓无价时，每一栏 pct 都偏了 —— 必须显式说出来。"""
+
+    def _report(self, portfolio_path):
+        return build_report(
+            _savings(),
+            _rates(),
+            load_portfolio(portfolio_path),
+            _fx(),
+            _cfg(),
+            TODAY,
+            STOCK_FIXTURES,
+        )
+
+    def test_unpriced_holding_marks_allocation_incomplete(self):
+        alloc = self._report(FIXTURES / "portfolio.yaml")["allocation"]
+        self.assertTrue(alloc["incomplete"])
+        self.assertEqual(alloc["unpriced_symbols"], ["NOPRICE"])
+
+    def test_fully_priced_portfolio_is_complete(self):
+        from lib.wealth import PortfolioFile
+
+        portfolio = PortfolioFile.model_validate(
+            {
+                "updated": "2026-08-10",
+                "us_holdings": [{"symbol": "PIPED", "shares": 2, "avg_cost_usd": 100.0}],
+            }
+        )
+        alloc = build_report(
+            _savings(), _rates(), portfolio, _fx(), _cfg(), TODAY, STOCK_FIXTURES
+        )["allocation"]
+        self.assertFalse(alloc["incomplete"])
+        self.assertEqual(alloc["unpriced_symbols"], [])
 
 
 class StalenessTests(unittest.TestCase):

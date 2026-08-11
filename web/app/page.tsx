@@ -54,14 +54,15 @@ export default async function Page() {
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
           as of {r.as_of} · {r.currency} · 本地视图，不部署 ·
-          数字全部来自 <code>scripts/lib/wealth.py</code>，此页不重算
+          数字全部来自 <code>scripts/lib/wealth/</code>，此页不重算
         </p>
       </header>
 
       {/* Data-health first: every number below inherits these caveats. */}
       {(r.stale_files.length > 0 ||
         r.catalog_conflicts.length > 0 ||
-        r.summary_drift.length > 0) && (
+        r.fx.stale ||
+        r.allocation.incomplete) && (
         <SectionCard
           title="数据健康"
           description="以下问题会削弱本页所有结论的可信度"
@@ -88,14 +89,25 @@ export default async function Page() {
                 </span>
               </li>
             ))}
-            {r.summary_drift.map((d) => (
-              <li key={d.field} className="flex flex-wrap items-center gap-2">
-                <StatusBadge severity="Warning">汇总漂移</StatusBadge>
-                <span className="num text-muted-foreground">
-                  {d.field}: 记录 {d.recorded} vs 推导 {d.derived}
+            {r.fx.stale && (
+              <li className="flex flex-wrap items-center gap-2">
+                <StatusBadge severity="Warning">汇率过期</StatusBadge>
+                <span className="text-foreground">{r.fx.pair}</span>
+                <span className="text-muted-foreground">
+                  记于 {r.fx.as_of}（{r.fx.age_days} 天前，阈值{" "}
+                  {r.thresholds.fx_stale_days} 天）——所有 USD 持仓的 MYR 折算值都按它算
                 </span>
               </li>
-            ))}
+            )}
+            {r.allocation.incomplete && (
+              <li className="flex flex-wrap items-center gap-2">
+                <StatusBadge severity="Warning">占比不完整</StatusBadge>
+                <span className="text-muted-foreground">
+                  分母缺少无价持仓（{r.allocation.unpriced_symbols.join(", ")}）——
+                  每一栏百分比都偏了，不要据此判断是否需要再平衡
+                </span>
+              </li>
+            )}
           </ul>
         </SectionCard>
       )}
@@ -134,7 +146,7 @@ export default async function Page() {
         title="资产配置"
         description="按经济行为分类，不按 vehicle 品牌"
       >
-        <AllocationBar slices={r.allocation} />
+        <AllocationBar slices={r.allocation.slices} />
 
         <table className="mt-6 w-full text-sm">
           <thead>
@@ -145,7 +157,7 @@ export default async function Page() {
             </tr>
           </thead>
           <tbody>
-            {r.allocation.map((a) => (
+            {r.allocation.slices.map((a) => (
               <tr key={a.bucket} className="border-b last:border-0">
                 <td className="py-2 pr-3 text-foreground">{a.label}</td>
                 <td className="num py-2 pr-3 text-right">{myr(a.amount_myr)}</td>

@@ -155,7 +155,7 @@ liabilities 与 excluded assets 的范围。
 
 | 文件 | 作用 |
 |------|------|
-| `scripts/lib/wealth.py` | pydantic 模型 + 到期/候选/cap/drift/staleness 全部纯函数 |
+| `scripts/lib/wealth/` | pydantic 模型 + 到期/候选/cap/staleness 全部纯函数（审计 §3.9 拆包）|
 | `scripts/wealth_check.py` | CLI，`[Status: OK/Warning/Critical]` 输出 |
 | `config/thresholds.yaml` `wealth:` 块 | 5 个阈值，无硬编码魔法数字 |
 | `tests/test_wealth.py` + `tests/fixtures/finance/` | 23 tests；跑 fixture 而非真实持仓，更新持仓不会让测试变红 |
@@ -224,7 +224,7 @@ liabilities 与 excluded assets 的范围。
 所有数字来自 `scripts/wealth_check.py --json`——`make wealth` 用的同一份代码。
 在 TypeScript 里重写估值数学，等于把 Phase B 刚从数据文件里消灭的 dual-owner 漂移
 原样搬到代码层。`lib/report.ts` 只做三件事：起子进程、解析 JSON、渲染。
-改口径只改 `scripts/lib/wealth.py`，CLI 和网页一起变。
+改口径只改 `scripts/lib/wealth/report.py`，CLI 和网页一起变。
 
 为此给 CLI 加了 `--json`，并把渲染重构成 `build_report()` → `render_text()`
 两段——报告 dict 现在是 CLI 与网页共同的契约，有测试守着（JSON 可序列化、
@@ -233,9 +233,10 @@ liabilities 与 excluded assets 的范围。
 页面结构（按"先说数据可信度，再说数字"排）：
 数据健康 → KPI 行 → 资产配置（堆叠条 + 表）→ 到期监控 → 股票 → 现金与储蓄。
 
-**验收结果**：配置图跑出 MMF 53.0% / FD 26.3% / 股票 16.7% / 钱包 4.1%。
+**验收结果**：配置图跑出四个桶（MMF / FD / 股票 / 钱包），占比合 100%；
+具体百分比见 `make wealth` 输出，本文件是 public repo，不落实际配置数字。
 stale 与 unpriced 全部显式标记：`SIME` 标"手工兜底 + 过期 25 天"，
-`savings.yaml` 标"陈旧 70 天"，`ryt_bank` 标"未核实 + cap 98.7%"，
+`savings.yaml` 标"陈旧 70 天"，`ryt_bank` 标"未核实 + 接近 cap"，
 boost_bank 利率冲突单列一行。无价格持仓不计入合计，并写明"合计因此偏低而非静默补零"。
 
 配色按 dataviz 规范做了：分类色板 4 槽固定顺序（色相跟随类别而非排名），

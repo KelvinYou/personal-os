@@ -13,7 +13,7 @@
 /config/                  — 系统阈值与配置 (thresholds.yaml)
 /data/                    — private submodule (personal-os-data)；无权限时不 checkout
 /data/daily/              — 每日工程师日志 (YYYY-MM-DD.md)
-/data/finance/            — 财务数据 (savings.yaml, portfolio.yaml, interest_rates.yaml)
+/data/finance/            — 财务数据 (savings / portfolio / interest_rates / fx.yaml)
 /data/reports/            — 生成的周报存档
 /data/user_profile.md     — 全局用户画像 (作息/饮食/锻炼偏好)
 /docs/                    — 长文档 (VISION / plan* / 审计记录)
