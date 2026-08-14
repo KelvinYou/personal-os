@@ -1,0 +1,607 @@
+{
+  "query": "AI full-stack engineer",
+  "location": "Malaysia",
+  "sources": [
+    "jobstreet-my"
+  ],
+  "limit": 30,
+  "hours_old": 720,
+  "fetched_at": "2026-08-14T09:06:18.053688+00:00",
+  "query_hash": "live-curl-jobstreet",
+  "job_count": 30,
+  "jobs": [
+    {
+      "id": "93959547",
+      "site": "jobstreet-my",
+      "title": "Ai Engineer",
+      "company": "Inter Island Group Pte Ltd.",
+      "location": "Bandar Kinrara, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93959547",
+      "description": "*Minimum 4 years experience in Ai Engineering\n*Hybrid\n*MNC",
+      "job_type": "Full time",
+      "date_posted": "2026-08-13T08:38:25Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 7,000 – RM 10,000 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93906592",
+      "site": "jobstreet-my",
+      "title": "Software Engineer (Full Stack)",
+      "company": "Helixbyte Sdn Bhd",
+      "location": "Petaling Jaya, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93906592",
+      "description": "We dislike overtime, evenings and weekends are yours MacBook Pro provided, we don't hire good people and give them bad tools Claude Code paid for & used daily , we hire for judgment, not boilerplate No politics, no blame culture. Real tickets from factories & hospitals, Claude Code paid for, own a product area in year one. RM 5,500–8,000.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-11T09:24:17Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 5,500 – RM 8,000 per month",
+      "skills_extracted": [
+        "Full-stack"
+      ]
+    },
+    {
+      "id": "93420488",
+      "site": "jobstreet-my",
+      "title": "AI Full Stack Engineer (ERP & AI Automation)",
+      "company": "Houzs Century Sdn Bhd",
+      "location": "Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93420488",
+      "description": "We are looking for an AI-driven Full Stack Engineer to support the development, maintenance, and continuous improvement of our in-house ERP system.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-20T02:31:54Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 5,500 – RM 8,000 per month",
+      "skills_extracted": [
+        "AI",
+        "Full-stack",
+        "Automation"
+      ]
+    },
+    {
+      "id": "93962122",
+      "site": "jobstreet-my",
+      "title": "IT Full-Stack AI Developer - Shah Alam",
+      "company": "Sydney Cake House Sdn Bhd",
+      "location": "Shah Alam, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93962122",
+      "description": "You will be instrumental in building and maintaining the systems that power our commercial operations.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-13T10:31:31Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "Full-stack",
+        "AI"
+      ]
+    },
+    {
+      "id": "93907679",
+      "site": "jobstreet-my",
+      "title": "AI Solutions Engineer (Kuala Lumpur)",
+      "company": "Infinity 8",
+      "location": "Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93907679",
+      "description": "We are looking for our first AI Solutions Engineer to build intelligent systems that transform how we operate.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-11T09:45:10Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 8,000 – RM 10,000 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93566084",
+      "site": "jobstreet-my",
+      "title": "Software Engineer (Full Stack & AI Tools)",
+      "company": "Efiankey Solution Sdn. Bhd.",
+      "location": "Alam Damai, Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93566084",
+      "description": "EPF / SOCSO Opportunity for growth and career prospects Use AI tools to turn client requirements into UI/UX, specs, code, software delivery, and production support.\n",
+      "job_type": "Full time",
+      "date_posted": "2026-07-27T01:55:49Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 5,000 – RM 7,500 per month",
+      "skills_extracted": [
+        "Full-stack",
+        "AI"
+      ]
+    },
+    {
+      "id": "93834163",
+      "site": "jobstreet-my",
+      "title": "AI Engineer",
+      "company": "APEXNOVA GROUP SDN BHD",
+      "location": "Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93834163",
+      "description": "有明确的职业发展路径和培训机会。 年轻、有活力的团队，轻松愉快的工作氛围。 提供年终奖金、项目奖金，认可你的贡献。 我们是一家创新的公司，正在寻找一位经验丰富的高级软件开发工程师加入团队！如果你对编程有热情，喜欢解决问题和指导团队，这个机会就是为你准备的！",
+      "job_type": "Full time",
+      "date_posted": "2026-08-10T04:27:29Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 7,000 – RM 10,000 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93067088",
+      "site": "jobstreet-my",
+      "title": "AI-Native Full Stack Engineer (Java) – Remote",
+      "company": "HashWhale Pte.Ltd",
+      "location": "Bandar Malaysia, Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93067088",
+      "description": "Build the backend for a global crypto payments platform as an AI-Native Java Engineer. AI tools sponsored,Fully remote across APAC, English + Chinese.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-16T02:31:36Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 8,000 – RM 12,000 per month",
+      "skills_extracted": [
+        "AI",
+        "Full-stack",
+        "Java"
+      ]
+    },
+    {
+      "id": "93931340",
+      "site": "jobstreet-my",
+      "title": "Full Stack Developer - Mathematics Related Fresh Graduate",
+      "company": "AA Alive Sdn Bhd",
+      "location": "Batu Caves, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93931340",
+      "description": "No programming background needed Learn latest AI tools Grow and solve real world problems and applications Join our talented team as a Full Stack Developer and help develop cutting-edge math-related software solutions.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-12T08:22:14Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 4,500 – RM 5,500 per month",
+      "skills_extracted": [
+        "Full-stack",
+        "AI"
+      ]
+    },
+    {
+      "id": "93571240",
+      "site": "jobstreet-my",
+      "title": "AI Agent Engineer (LLM / Automation Systems)",
+      "company": "MHA Consultancy Services Sdn Bhd",
+      "location": "Cheras, Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93571240",
+      "description": "Competitive Salary & Benefits Package Office is accessible by MRT, within walking distance. Passionate, energetic & innovative work culture Design, build and deploy AI agents powered by LLMs to automate business operations, streamline workflows and reduce manual effort across teams.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-27T03:57:57Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 5,000 – RM 7,000 per month",
+      "skills_extracted": [
+        "AI",
+        "Agentic AI",
+        "LLM",
+        "Automation"
+      ]
+    },
+    {
+      "id": "93926915",
+      "site": "jobstreet-my",
+      "title": "AI Data Engineer",
+      "company": "SEFAR FABRICATION (M) SDN BHD",
+      "location": "Taman Desa Cemerlang, Johor",
+      "job_url": "https://my.jobstreet.com/job/93926915",
+      "description": "Drive innovation through AI & data. Competitive salary, career growth & wellness benefits await.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-12T05:47:44Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93927038",
+      "site": "jobstreet-my",
+      "title": "AI Solution Engineer",
+      "company": "SEFAR FABRICATION (M) SDN BHD",
+      "location": "Taman Desa Cemerlang, Johor",
+      "job_url": "https://my.jobstreet.com/job/93927038",
+      "description": "Shape the future with cutting-edge AI. Competitive salary, growth opportunities & flexible work arrangements await.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-12T05:52:18Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93435348",
+      "site": "jobstreet-my",
+      "title": "DevOps/AI Infra Engineers – Fresh Graduates Welcome",
+      "company": "GSR TECHNOLOGY LIMITED",
+      "location": "Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93435348",
+      "description": "We are hiring AI Infra and DevOps engineers to build and secure global-scale gaming and AI platforms. Grow your career with us!",
+      "job_type": "Full time",
+      "date_posted": "2026-07-20T09:33:38Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 6,000 – RM 8,000 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93376491",
+      "site": "jobstreet-my",
+      "title": "Senior Full Stack AI Engineer",
+      "company": "SEVEN STAR TECHNOLOGY ENTERPRISE",
+      "location": "Kuala Lumpur City Centre, Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93376491",
+      "description": "Build products from zero to launch with high ownership. Build AI products for global markets with a small expert team. Build AI products used by global customers. We're hiring a Senior Full Stack AI Engineer with strong full-stack and LLM experience.\n",
+      "job_type": "Full time",
+      "date_posted": "2026-07-16T16:23:58Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 10,000 – RM 15,000 per month",
+      "skills_extracted": [
+        "Full-stack",
+        "AI",
+        "LLM"
+      ]
+    },
+    {
+      "id": "93758923",
+      "site": "jobstreet-my",
+      "title": "AI Data Engineer",
+      "company": "FLEXTRONICS TECHNOLOGY (PENANG) SDN BHD",
+      "location": "Batu Kawan, Penang",
+      "job_url": "https://my.jobstreet.com/job/93758923",
+      "description": "Attractive compensation package Exposure to working with regional and global teams Excellent growth and advancement opportunities .",
+      "job_type": "Full time",
+      "date_posted": "2026-08-04T10:24:42Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93546866",
+      "site": "jobstreet-my",
+      "title": "Junior AI Engineer (Process Automation & AI Solutions)",
+      "company": "Kintetsu World Express (Malaysia) Sdn Bhd",
+      "location": "Kelana Jaya, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93546866",
+      "description": "Drive digital transformation in a leading logistics company. Build real-world AI solutions that improve business operations. Exposure and development in AI, digital innovation, and enterprise technology. Be part of our digital transformation journey by turn innovative AI ideas into real business solutions and shape the future of logistics.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-24T09:21:30Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 4,500 – RM 5,500 per month",
+      "skills_extracted": [
+        "AI",
+        "Automation"
+      ]
+    },
+    {
+      "id": "93495147",
+      "site": "jobstreet-my",
+      "title": "Senior AI Engineer/Full Stack Developer",
+      "company": "Aetherion Dataworks Sdn Bhd",
+      "location": "Kota Damansara, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93495147",
+      "description": "Training and Professional Development Remote Working Arrangement 13 Months Bonus + Performance Bonus Join our team as a Senior Full Stack Developer and build scalable AI-powered solutions using cutting-edge web technologies.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-22T09:29:48Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI",
+        "Full-stack"
+      ]
+    },
+    {
+      "id": "93491901",
+      "site": "jobstreet-my",
+      "title": "AI Software Engineer [12 Months contract]",
+      "company": "Experian Information Services Malaysia Sdn Bhd",
+      "location": "Mid Valley City, Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93491901",
+      "description": "Exciting career opportunity with Experian!",
+      "job_type": "Contract/Temp",
+      "date_posted": "2026-07-22T07:33:02Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93722469",
+      "site": "jobstreet-my",
+      "title": "AI (Artificial Intelligence) Developer",
+      "company": "SUMMER REGION SDN. BHD.",
+      "location": "Petaling Jaya, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93722469",
+      "description": "Build the Future with AI Hands-On AI Experience Fast-Track Your AI Career Growth Develop and deploy AI-powered applications using LLMs, AI agents, & open-source AI technologies to deliver practical solutions for enterprise systems.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-03T06:32:27Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI",
+        "LLM",
+        "Agentic AI"
+      ]
+    },
+    {
+      "id": "93946566",
+      "site": "jobstreet-my",
+      "title": "AI Operations Engineer",
+      "company": "Arvato Systems Malaysia Sdn Bhd",
+      "location": "Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93946566",
+      "description": "Hybrid Work Arrangement Learning & Development Insurance Coverage This role develops, integrates, and operates AI-based products and automation solutions for internal business processes and customer-facing workflows.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-13T02:28:52Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI",
+        "Automation"
+      ]
+    },
+    {
+      "id": "93369226",
+      "site": "jobstreet-my",
+      "title": "AI Engineer (Solution)",
+      "company": "Maistorage Technology Sdn. Bhd.",
+      "location": "Bandar Puteri Puchong, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93369226",
+      "description": "Looking for a versatile and results-driven Full Stack AI Engineer to design, build, and deploy intelligent business applications. ",
+      "job_type": "Full time",
+      "date_posted": "2026-07-16T08:20:46Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI",
+        "Full-stack"
+      ]
+    },
+    {
+      "id": "93151046",
+      "site": "jobstreet-my",
+      "title": "AI-Native Backend Engineer (AI, APIs & Agentic Systems)",
+      "company": "Mochi Technologies",
+      "location": "Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93151046",
+      "description": "Build next-generation AI agents and intelligent backend systems Work with LLMs, APIs, automation, and cloud technologies Own scalable AI infrastructure with real product impact Build AI-native backend systems powering agents, APIs, and workflows—design scalable intelligence infrastructure from the ground up.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-23T04:37:06Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 5,200 – RM 6,500 per month",
+      "skills_extracted": [
+        "AI",
+        "API",
+        "Agentic AI",
+        "LLM",
+        "Automation"
+      ]
+    },
+    {
+      "id": "93549930",
+      "site": "jobstreet-my",
+      "title": "AI Engineer",
+      "company": "Alphaeus Pte Ltd",
+      "location": "Petaling Jaya, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93549930",
+      "description": "We're looking for an experienced AI Engineer to design, build, and deploy AI-powered applications that solve real business problems.",
+      "job_type": "Contract/Temp",
+      "date_posted": "2026-07-24T14:01:02Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 8,000 – RM 11,500 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93369550",
+      "site": "jobstreet-my",
+      "title": "AI Engineer (R&D)",
+      "company": "Maistorage Technology Sdn. Bhd.",
+      "location": "Puchong, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93369550",
+      "description": "A member of Phison Group Fresh Graduate Welcome Competitive salary, performance bonus, and career growth opportunities. We're seeking a high-caliber AI Research Engineer to bridge the gap between cutting-edge algorithmic research & high-performance system implementation",
+      "job_type": "Full time",
+      "date_posted": "2026-07-16T08:19:58Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 6,000 – RM 8,000 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93576829",
+      "site": "jobstreet-my",
+      "title": "AI and Data Platform Engineer (Based KL)",
+      "company": "CLOUDENGINE DIGITAL SDN. BHD.",
+      "location": "Kuala Lumpur City Centre, Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93576829",
+      "description": "Career Growth (Regional Exposure) Monthly allowances Positive team culture Drive end-to-end AI and data projects, combining technical expertise, customer engagement, and solution delivery.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-27T07:33:39Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93911284",
+      "site": "jobstreet-my",
+      "title": "Graduate AI Engineer",
+      "company": "FootfallCam",
+      "location": "Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93911284",
+      "description": "Opportunity for professional growth and career advancement Competitive remuneration package and benefits for top talents Fast-paced, innovation-driven environment with ownership from day one Join us now to build, deploy, and scale real-world AI solutions while learning from experienced AI professionals",
+      "job_type": "Full time",
+      "date_posted": "2026-08-11T13:18:22Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 4,000 – RM 6,000 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93953892",
+      "site": "jobstreet-my",
+      "title": "Technical Support Engineer",
+      "company": "MVI TECHNOLOGIES (M) SDN. BHD.",
+      "location": "KL Eco City, Kuala Lumpur",
+      "job_url": "https://my.jobstreet.com/job/93953892",
+      "description": "Take ownership. Make an impact. Pioneer what's next. Grow your skills with hands-on exposure to cutting-edge AI and tech. No two days the same — infrastructure, benchmarking, R&D, and more. Power our infrastructure, pioneer emerging tech — join a team that values reliability, positivity, and growth.",
+      "job_type": "Full time",
+      "date_posted": "2026-08-13T05:45:15Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 4,500 – RM 4,900 per month",
+      "skills_extracted": [
+        "AI"
+      ]
+    },
+    {
+      "id": "93985372",
+      "site": "jobstreet-my",
+      "title": "Senior Full Stack Software Engineer",
+      "company": "Oxydata Software Sdn Bhd",
+      "location": "Petaling, Selangor",
+      "job_url": "https://my.jobstreet.com/job/93985372",
+      "description": "We are seeking an experienced Senior Full Stack Software Engineer to design, develop, and deliver impactful features for Opal, our AI-driven...",
+      "job_type": "Full time",
+      "date_posted": "2026-08-14T07:48:00Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": [
+        "Full-stack",
+        "AI"
+      ]
+    },
+    {
+      "id": "93560015",
+      "site": "jobstreet-my",
+      "title": "Full-Stack AI Engineer",
+      "company": "Pintar Mind Technology Sdn Bhd",
+      "location": "Johor Bahru, Johor",
+      "job_url": "https://my.jobstreet.com/job/93560015",
+      "description": "You must ship reliable software, integrate AI where it creates real value, and build a reusable technical foundation.",
+      "job_type": "Full time",
+      "date_posted": "2026-07-27T00:10:21Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "RM 10,000 – RM 15,000 per month",
+      "skills_extracted": [
+        "Full-stack",
+        "AI"
+      ]
+    },
+    {
+      "id": "93946692",
+      "site": "jobstreet-my",
+      "title": "Staff Engineer, Process Engineering (Data Analytics)",
+      "company": "OSRAM Opto Semiconductors (Malaysia) Sdn Bhd",
+      "location": "Bayan Lepas, Penang",
+      "job_url": "https://my.jobstreet.com/job/93946692",
+      "description": "Flexible and Hybrid Working Mode Global Collaboration Opportunities on New Exciting Projects Diversified, Rewarding & Supportive Workplace Come join ams OSRAM as Staff Engineer, Process Engineering (Data Analytics) !",
+      "job_type": "Full time",
+      "date_posted": "2026-08-13T02:31:51Z",
+      "min_amount": null,
+      "max_amount": null,
+      "currency": "MYR",
+      "is_remote": false,
+      "salary_label": "",
+      "skills_extracted": []
+    }
+  ],
+  "source_note": "Fetched via public JobStreet search endpoint with curl because Python httpx could not validate the local macOS trust chain."
+}
