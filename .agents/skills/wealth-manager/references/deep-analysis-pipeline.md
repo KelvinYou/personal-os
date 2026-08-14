@@ -8,7 +8,8 @@
 `repos/ai-stock-analysis` 是独立 submodule（[ai-stock-analysis](https://github.com/KelvinYou/ai-stock-analysis)）。
 它跑一个 4 层 multi-agent pipeline（Fundamentals/Sentiment/Technical/MacroFX → bull/bear 多轮 debate →
 conviction score + signal convergence），比单纯 WebSearch 出的一次性判断更结构化、更抗单边偏见。
-**这是持仓/正式候选股票分析的主信号源，WebSearch 只用来补最新新闻和做交叉核对，不再是唯一信息源。**
+**这是持仓/正式候选股票的研究信号源；portfolio valuation、concentration 和 sizing 仍由
+`personal-os` 自己处理。** WebSearch 只用来补最新新闻和做交叉核对，不再是唯一信息源。
 
 ### 何时触发完整 pipeline（而不只是读缓存）
 
@@ -87,8 +88,8 @@ Layer 1（数据抓取）和风险计算部分继续复用 repo 的真实代码�
 5. **Layer 4 风险计算（纯数学，不要自己心算，调真代码）**：把上面 3 步的 JSON 分别存成临时文件，
    跑 `.agents/skills/wealth-manager/scripts/finalize_briefing.py`（用
    `repos/ai-stock-analysis/.venv/bin/python` 执行，见脚本顶部 docstring 的用法）。这个脚本直接
-   import repo 真实的 `RiskChecker`（`synthesis/risk_checker.py`）和 Pydantic 模型来算仓位建议、
-   ATR 止损/止盈位、historical drawdown——这些是确定性数学，脚本算的结果和官方 CLI 跑出来的
+   import repo 真实的 `RiskChecker`（`synthesis/risk_checker.py`）和 Pydantic 模型来算
+   ATR 止损/止盈位、historical drawdown、risk/reward——这些是确定性数学，脚本算的结果和官方 CLI 跑出来的
    分毫不差，不要让 LLM 自己去估算这些数字。
 6. 脚本会把 `analyst_reports.json` / `debate_result.json` / `briefing.json` 写回
    `repos/ai-stock-analysis/data/<TICKER>/`，并打上 `"pipeline_mode": "in-session-claude-code"`

@@ -63,7 +63,8 @@ personal-os/web/                    ← 新增，local-only，不部署
 - 财务数据一行都不进公开仓库；`ai-stock-analysis` 继续作为作品集独立演进。
 - 股票与财务保持**两条独立读取路径**——正是 v2 Phase 2 想要的效果，
   这里作为架构副产品免费得到，不需要专门设计。
-- `ai-stock-analysis` 的 pipeline / UI 零改动。
+- `ai-stock-analysis` 继续作为公开的行情/研究数据源；它不读取 private holdings，
+  portfolio valuation、concentration 和 sizing 由 `personal-os` 自己负责。
 
 ---
 

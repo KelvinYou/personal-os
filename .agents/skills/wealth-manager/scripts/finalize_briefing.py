@@ -4,8 +4,8 @@ Used by the wealth-manager skill's "In-Session Pipeline" mode: Claude (via the A
 running in the current Claude Code session) produces the JSON for each layer instead of the
 official ai-stock-analysis CLI (which needs claude-agent-sdk + ANTHROPIC_API_KEY). This script
 plugs that JSON into the *actual* ai-stock-analysis Pydantic models and RiskChecker so the
-deterministic risk math (position sizing, ATR-based stop/target levels, volatility) is byte-for-byte
-identical to what the official pipeline would produce — no re-implementing that logic by hand.
+deterministic risk math (ATR-based stop/target levels, drawdown, and volatility) is identical to
+what the official research pipeline would produce — no re-implementing that logic by hand.
 
 Run with the repo's own venv:
     repos/ai-stock-analysis/.venv/bin/python \
@@ -109,7 +109,6 @@ def main():
         key_uncertainties=synthesis_raw["key_uncertainties"],
         catalysts_upcoming=synthesis_raw["catalysts_upcoming"],
         risk_assessment=RiskAssessment(
-            position_size_suggestion="pending",
             correlation_notes=[],
             max_drawdown_scenario="pending",
         ),
