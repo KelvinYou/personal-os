@@ -13,9 +13,11 @@
 /config/                  — 我的阈值设定 + 法规常量 (thresholds / wealth_rules.yaml)
 /market/                  — 外部可观测市场事实 (interest_rates / fx.yaml, jobs/)；public，无个人信息
 /data/                    — private submodule (personal-os-data)；无权限时不 checkout
-/data/daily/              — 每日工程师日志 (YYYY-MM-DD.md)
+/data/daily/              — 每日工程师日志 (YYYY-MM-DD.md)；热窗口 90 天，更旧的由 make archive 折叠
+/data/archive/            — 冷数据归档 (YYYY-Qn.md 周摘要 + body.csv 体成分全序列)
+/data/protocol/           — 常驻 protocol；standard_week.md 是唯一的时间表，每周不重排
 /data/finance/            — 财务持仓 (savings / portfolio / policy.yaml)
-/data/reports/            — 生成的周报存档
+/data/reports/            — 周报存档 + 周度 delta (仅在有例外时生成)
 /data/user_profile.md     — 全局用户画像 (作息/饮食/锻炼偏好)
 /docs/                    — 长文档 (VISION / plan* / 审计记录)
 /ARCHITECTURE.md          — 系统架构 + 不变量；改数据流/契约前先读它
