@@ -104,7 +104,7 @@ def _sync_protocol(dry_run: bool) -> None:
 
     calendar_name = data.get("calendar_name")
     if calendar_name:
-        calendar_id = gcal.resolve_calendar(calendar_name)
+        calendar_id = gcal.resolve_calendar(calendar_name, timezone)
         print(f"[Status: OK] 目标日历 「{calendar_name}」 → {calendar_id}")
     else:
         calendar_id = os.environ.get("GOOGLE_CALENDAR_ID", "primary")

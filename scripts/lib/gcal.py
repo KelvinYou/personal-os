@@ -28,6 +28,7 @@ lives in the user's head, and 20 recurring pings a day would be actively hostile
 """
 from __future__ import annotations
 
+import json
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -63,13 +64,20 @@ def _get_credentials() -> Credentials:
         )
     creds: Credentials | None = None
     if TOKEN_PATH.exists():
-        creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
-        # A cached token keeps whatever scopes it was granted. Refreshing one that
-        # predates a SCOPES widening yields a still-"valid" credential that 403s on
-        # the first call needing the new scope, so treat the shortfall as invalid.
-        if creds and not set(SCOPES).issubset(set(creds.scopes or [])):
-            print("[Status: Info] 已缓存的 token 缺少所需 scope，重新走一次授权。")
-            creds = None
+        # Read the *granted* scopes off the token file, not off the Credentials
+        # object: from_authorized_user_file(path, SCOPES) stamps the requested
+        # SCOPES onto creds.scopes regardless of what was actually granted, so
+        # comparing against creds.scopes always looks satisfied and the first
+        # call needing a newly-added scope 403s instead of re-consenting.
+        try:
+            granted = set(json.loads(TOKEN_PATH.read_text(encoding="utf-8")).get("scopes") or [])
+        except (json.JSONDecodeError, OSError):
+            granted = set()
+        if set(SCOPES).issubset(granted):
+            creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+        else:
+            missing = sorted(set(SCOPES) - granted)
+            print(f"[Status: Info] 已缓存的 token 缺少 scope {missing}，重新走一次授权。")
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -147,11 +155,17 @@ PROTOCOL_SCOPE = "protocol"
 _ICAL_DAYS = {"MO": 0, "TU": 1, "WE": 2, "TH": 3, "FR": 4, "SA": 5, "SU": 6}
 
 
-def resolve_calendar(name: str) -> str:
+def resolve_calendar(name: str, timezone: str | None = None) -> str:
     """Return the id of the calendar named `name`, creating it if absent.
 
     A dedicated calendar (rather than `primary`) so the whole protocol can be
     toggled off in one click when it would otherwise clutter a work day.
+
+    `timezone` is not cosmetic: a calendar created without one defaults to UTC,
+    and while the stored instants stay correct (events carry their own timeZone),
+    every readback normalizes to the calendar default — so 06:15 MYT reports as
+    22:15 the previous day. An existing calendar on the wrong zone is patched
+    rather than left to drift.
     """
     service = _service()
     page_token = None
@@ -159,11 +173,20 @@ def resolve_calendar(name: str) -> str:
         resp = service.calendarList().list(pageToken=page_token).execute()
         for item in resp.get("items", []):
             if item.get("summary") == name:
-                return item["id"]
+                cid = item["id"]
+                if timezone and item.get("timeZone") != timezone:
+                    service.calendars().patch(
+                        calendarId=cid, body={"timeZone": timezone}
+                    ).execute()
+                    print(f"[Status: OK] 日历时区 {item.get('timeZone')} → {timezone}")
+                return cid
         page_token = resp.get("nextPageToken")
         if not page_token:
             break
-    created = service.calendars().insert(body={"summary": name}).execute()
+    body: dict[str, Any] = {"summary": name}
+    if timezone:
+        body["timeZone"] = timezone
+    created = service.calendars().insert(body=body).execute()
     return created["id"]
 
 
