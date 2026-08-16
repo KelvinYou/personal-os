@@ -67,6 +67,31 @@ Thresholds live in `config/thresholds.yaml` under `scoring:` — treat that file
 as the source of truth. If you think a criterion should score differently than
 what the prompt shows, that is a rubric change, not an AI override.
 
+#### Baseline-filled fields — do NOT penalize them
+
+From W34 onward, unfilled manual fields resolve to `logging_defaults` in
+`config/thresholds.yaml`: **silence means the baseline was executed**, not that
+nothing happened. Before this, a missing field scored 0 without shrinking the
+denominator, so ~68 of the 100 points punished not-logging as if it were
+not-doing — which is what drove the logging to collapse in the first place.
+
+`weekly_report_prompt.md` carries a **Logging Coverage** section listing which
+fields were baseline-filled and on how many days. Your obligations:
+
+- **Never deduct points, never open a 扣分项, and never write a "记录纪律" scolding
+  for baseline-filled fields.** That is the exact behavior being removed.
+- Mark baseline-filled values in the 每日数据明细 table with a trailing `~`
+  (`8~`, `7~`) so the reader can tell measured from assumed at a glance.
+- If coverage is below `coverage_warn_ratio`, put `[Status: Low Confidence]`
+  under the score heading and say plainly that the score rests largely on
+  baselines. Lower confidence, not a lower score.
+- Subjective criteria still need evidence. With no narrative to judge, rate
+  `output_quality` / `crisis_handling` / `emotional_resilience` from whatever
+  real signal exists (COROS data, commits, the user's own account) — do not
+  invent events, and do not rate 0 merely because the log was quiet.
+- COROS blocks and `body.*` are never baseline-filled. A gap there is a real
+  gap and should be reported as one.
+
 #### Subjective criteria (AI fills; 0–1 input per criterion)
 
 For each criterion below, form a 0–1 rating from the week's narrative evidence
@@ -164,8 +189,9 @@ Split into:
 - Note any known schedule exceptions (meetings, events, travel)
 - Specify training mode: Normal / Deload / Recovery
 
-> **Note:** 时间表由 coach-planner agent 负责生成。完成周报后，用户可以对 coach-planner 说"排下周时间表"，
-> coach-planner 会读取本报告的 P0/P1/P2 目标和执行约束来生成精确排期。
+> **Note:** 排期由 coach-planner agent 负责。常驻时间表是 `data/protocol/standard_week.md`，每周不再重排；
+> coach-planner 只在有例外（日程冲突/熔断/加重量/P0-P2 挂载/单变量实验）时产出一份 ≤30 行的
+> `data/reports/YYYY-w##-delta.md`。没有例外的周直接跑常驻 protocol，不生成文件。
 
 ### 5. 每日数据明细 (Daily Breakdown)
 | 日期 | Energy | Deep Work | Sleep | Quality | Spend (RM) | Mental Load | Blocker |

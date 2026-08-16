@@ -189,6 +189,26 @@ class CaffeineCfg(BaseModel):
     late_cutoff_time: str
 
 
+class LoggingDefaultsCfg(BaseModel):
+    """Baselines used to resolve *unfilled manual* fields (config/thresholds.yaml).
+
+    Consumed by scripts/lib/defaults.py. Never applied to COROS blocks or body.*
+    (see the三条边界 comment in thresholds.yaml), and never applied on the breaker
+    path — alarms must fire on evidence, not on baselines.
+    """
+    model_config = ConfigDict(extra="forbid")
+    enabled: bool = True
+    effective_from: date | None = None
+    energy_level: int | None = None
+    mental_load: int | None = None
+    deep_work_hours: float | None = None
+    deep_work_hours_weekend: float | None = None
+    caffeine_cutoff: str | None = None
+    adherence: Literal["✅", "⚠️", "🔴"] | None = None
+    daily_spend: float | None = None
+    coverage_warn_ratio: float = 0.60
+
+
 class BreakerCondition(BaseModel):
     model_config = ConfigDict(extra="forbid")
     metric: str
@@ -244,6 +264,7 @@ class Thresholds(BaseModel):
     wealth: WealthCfg = Field(default_factory=WealthCfg)
     caffeine: CaffeineCfg
     readiness: ReadinessCfg | None = None
+    logging_defaults: LoggingDefaultsCfg = Field(default_factory=LoggingDefaultsCfg)
     circuit_breakers: list[Breaker] = Field(default_factory=list)
     scoring: Scoring
 

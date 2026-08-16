@@ -1,19 +1,27 @@
 ---
-# === 手填字段 (晚上 ~30s 完成；完美执行日只填 4-5 项) ===
-energy_level:                 # 1-10
-deep_work_hours:              # 不填默认 8（上班族 default）
-mental_load:                  # 1-7
-caffeine_cutoff:              # HH:MM；默认 14:00 内，超了才改
-adherence:
-  timetable:                  # ✅ 严格执行 / ⚠️ 小偏差 / 🔴 破坏 plan
-  deviation_note:             # 仅 ⚠️/🔴 时写一行根因
-primary_blocker:              # 仅 incident 当日写一行；否则留空
-daily_spend: []
-  # - item: 描述
-  #   amount: 0.0
-  #   category: food
+# ============================================================
+#  只记例外 (Exception-based logging) — W34 起
+#  完美执行日：只填 energy，其余全部留空。留空 = 按基线执行，不扣分。
+#  基线值见 config/thresholds.yaml 的 `logging_defaults`。
+# ============================================================
 
-# === 体测字段 (仅 Sun 体测日填) ===
+energy_level:           # 1-10；留空 = 7
+
+# --- 下面全部可选，只在**偏离基线**那天写 ---
+# deep_work_hours:      # 留空 = 工作日 8h / 周末 0h
+# mental_load:          # 留空 = 3
+# caffeine_cutoff:      # 留空 = 14:00 (合规)
+# adherence:
+#   timetable:          # 留空 = ✅ 按 standard_week 执行；偏离才写 ⚠️ / 🔴
+#   deviation_note:     # 写 ⚠️/🔴 时补一行根因
+# primary_blocker:      # 仅 incident 当日写一行
+# daily_spend:          # 留空 = 全自炊基线 RM25.9；有外食才逐项写
+#   - item: 描述
+#     amount: 0.0
+#     category: food
+
+# === 体测字段 (每 2 周一次，Sun 晨起空腹；无测量就整块留空) ===
+# 注意：body.* 不参与基线兜底 —— 没测就是没测，不会凭空造数
 body:
   weight:             # 体重 (kg)
   body_fat_pct:       # 体脂率 %
@@ -25,7 +33,7 @@ body:
   bone_mass_kg:       # 骨量 (kg)
   basal_metabolism:   # 基础代谢 (kcal)
 
-# === COROS 自动同步 (make sync-coros) — 不要手填 ===
+# === COROS 自动同步 (make sync-coros) — 不要手填，也不参与兜底 ===
 sleep:
   duration:           # 总睡眠时长 (小时, e.g. 7.65)
   deep_min:           # 深睡 (分钟)
@@ -51,14 +59,6 @@ training:
   vo2max:             # VO2max (缓慢更新)
   lthr:               # 乳酸阈心率 (bpm)
 activities: []
-  # - type: Running
-  #   name: Kuala Lumpur Run
-  #   duration_min: 41.0
-  #   distance_km: 5.02
-  #   avg_hr: 143
-  #   calories: 441
-  #   training_load: 130
 ---
 
-<!-- W22+ Lightweight 版（替代旧版 4 章叙事）— 仅 adherence.timetable != ✅ 时手填根因，
-     完美执行日整个 body 留空。COROS + frontmatter 已含全部 weekly-review 所需数据。 -->
+<!-- Body 留空即可。只有 adherence 是 ⚠️/🔴 或当天有 incident 时才写一行根因。 -->

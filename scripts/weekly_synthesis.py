@@ -20,6 +20,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from lib.breakers import evaluate  # noqa: E402
 from lib.config import load_thresholds  # noqa: E402
 from lib.daily_log import DAILY_DIR, iter_all, iter_week, week_bounds  # noqa: E402
+from lib.defaults import resolve, resolve_all  # noqa: E402
 from lib.logger import emit_event  # noqa: E402
 from lib.metrics import compute_weekly_aggregate, latest_metrics  # noqa: E402
 from lib.score import compute_base_score, format_breakdown_md  # noqa: E402
@@ -45,13 +46,22 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
 
     all_logs = list(iter_all())
     week_last = max(l.date for l in week_logs)
-    agg = compute_weekly_aggregate(week_logs, all_logs, sleep_baseline, cfg.sleep.debt_window_days, today=week_last)
+
+    # Unfilled manual fields fall back to thresholds.logging_defaults so that
+    # "didn't log" no longer scores as "didn't do it". Scoring path only —
+    # the breaker path below deliberately keeps reading the raw logs.
+    week_resolved, coverage = resolve_all(week_logs, cfg.logging_defaults)
+
+    agg = compute_weekly_aggregate(
+        week_resolved, all_logs, sleep_baseline, cfg.sleep.debt_window_days, today=week_last
+    )
     # Breaker eval uses logs up to the week's last day, so historic weeks
-    # get the breaker state that was relevant then.
+    # get the breaker state that was relevant then. Raw logs on purpose:
+    # an alarm must fire on evidence, never on a baseline fill.
     logs_up_to_week = [l for l in all_logs if l.date <= week_last]
     metrics = latest_metrics(logs_up_to_week, sleep_baseline, cfg.sleep.debt_window_days)
     tripped = evaluate(metrics, cfg.circuit_breakers)
-    base_score = compute_base_score(agg, week_logs, cfg.scoring)
+    base_score = compute_base_score(agg, week_resolved, cfg.scoring)
 
     # --- Summary ---
     print("=" * 50)
@@ -81,6 +91,10 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     for tb in tripped:
         print(f"    [TRIPPED] {tb.name}: {tb.metric}={tb.actual}")
     print("-" * 50)
+    print(f"  {coverage.summary_line()}")
+    if coverage.is_low(cfg.logging_defaults.coverage_warn_ratio):
+        print("  [Status: Low Confidence] 手填覆盖率偏低，分数按基线兜底 (未扣分)")
+    print("-" * 50)
     print(base_score.summary_line())
     print("=" * 50)
 
@@ -88,20 +102,28 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     profile_file = PROJECT_ROOT / "data" / "user_profile.md"
     profile_content = profile_file.read_text(encoding="utf-8") if profile_file.exists() else "未找到 user_profile.md。"
 
-    # Per-day slices
+    # Per-day slices. The dumped frontmatter is the *resolved* one (so it matches
+    # what was scored); `filled` names which of those values came from the
+    # baseline rather than from the user, and the report marks them `~`.
     logs_compiled: list[str] = []
     for log in week_logs:
+        resolved, filled = resolve(log, cfg.logging_defaults)
         fp = DAILY_DIR / f"{log.date.isoformat()}.md"
         body = _read_body(fp) if fp.exists() else ""
         snippet = body[:500] if body else "(空)"
         meta_dump = yaml.dump(
-            log.model_dump(exclude={"date"}, exclude_none=False),
+            resolved.model_dump(exclude={"date"}, exclude_none=False),
             allow_unicode=True,
             default_flow_style=False,
             sort_keys=False,
         ).strip()
+        marker = (
+            f"**基线兜底字段（报告里标 `~`，不算实测）**：{', '.join(filled)}\n"
+            if filled else ""
+        )
         logs_compiled.append(
             f"### {log.date.isoformat()}\n"
+            f"{marker}"
             f"```yaml\n{meta_dump}\n```\n"
             f"**核心摘录：**\n{snippet}...\n"
         )
@@ -180,6 +202,13 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     lines.append("")
     lines.append(format_breakdown_md(base_score))
     lines.append("")
+    lines.append(coverage.detail_md(cfg.logging_defaults.coverage_warn_ratio))
+    lines.append(
+        "> 兜底字段来自 `config/thresholds.yaml` 的 `logging_defaults`。"
+        "**不要因为字段是兜底的就扣分** —— 惩罚沉默正是这套机制要拆掉的东西。"
+        "覆盖率低时在报告顶部标 `[Status: Low Confidence]`，并在明细表把兜底值写成 `8~` 这种形式。"
+    )
+    lines.append("")
 
     # --- Decision Journal summary ---
     from decisions_due import DECISIONS_DIR, _parse_frontmatter, iter_due  # noqa: E402
@@ -223,6 +252,8 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
         "monday": monday.isoformat(),
         "iso_week": f"{iso_year}-W{iso_week:02d}",
         "days_logged": agg.days_logged,
+        "coverage_ratio": round(coverage.ratio, 3),
+        "coverage_defaulted": coverage.defaulted,
         "tripped_breakers": [tb.name for tb in tripped],
         "base_score_total": round(base_score.total, 2),
         "base_score": {

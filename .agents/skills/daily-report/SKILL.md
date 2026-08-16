@@ -23,29 +23,54 @@ $ARGUMENTS
 
 ## 提取规则
 
+### 核心原则：只记例外 (Exception-based)
+
+**Brain Dump 没提到的字段就留空，不要推断、不要回填、不要为了「填满」而编。**
+
+留空 = 按 `config/thresholds.yaml` 的 `logging_defaults` 基线执行，评分时自动兜底，不扣分。
+这是设计好的行为，不是数据缺失。真正的失败模式是反过来的：2026-08-09 那份日志被回填成
+`deep_work_hours: 0` + `adherence: ✅`，是 agent 猜的，既污染了数据集又和基线规则自相矛盾。
+**猜出来的值比空值有害得多** —— 空值系统知道该兜底，猜值系统会当成实测。
+
 ### YAML Metadata
-- `energy_level`: (1-10) 根据描述的情绪和精力打分
-- `deep_work_hours`: (float) 提取专注工作的小时数
-- `sleep.*` / `readiness.*` / `training.*` / `activities[]`: **COROS 自动填充**（`make sync-coros`），Brain Dump 无需处理；如果这些字段在现有文件中已有值，不要覆盖
-- `caffeine_cutoff`: (HH:MM) 下午最晚一次咖啡因摄入时间；无咖啡因摄入留空，不要写字符串
-- `primary_blocker`: 一句话概括今日最大效率阻碍
-- `daily_spend`: 提取所有消费记录，结构化为 `amount` (RM), `category`, `note`
-  - **重要**: 自炊也必须按食材实际单价估算成本，不能写 amount: 0
-- `mental_load`: (1-10) 心智负担和压力水平
-- `body.*`: 如用户提供体重/体脂等数据则填入，否则留空（走 Zepp Life 手填通道，不来自 COROS）
+
+只在 Brain Dump 里**实际提到**时才填：
+
+- `energy_level`: (1-10) 用户描述了精力/情绪才打分。没提 → 留空（基线 7）
+- `deep_work_hours`: (float) 用户明确说了时长才填。没提 → 留空（基线：工作日 8 / 周末 0）
+- `mental_load`: (1-7) 用户描述了压力才填。没提 → 留空（基线 3）
+- `caffeine_cutoff`: (HH:MM) **只在超过 14:00 时填**。正常/没提 → 留空（基线 14:00 合规）
+- `adherence.timetable`: **只在偏离 `data/protocol/standard_week.md` 时填** ⚠️ 或 🔴，并补一行
+  `deviation_note` 根因。按计划执行或没提 → 留空（基线 ✅）
+- `primary_blocker`: **只在当天真有 incident 时写一行**。日常牢骚（累、没睡好）不算 —— 那些
+  COROS 数据已经记录了。写进来会让归档脚本误判为需要保留原文的事件日
+- `daily_spend`: **只在有外食/额外消费时逐项写**。全自炊日留空（基线 RM25.9/天，来源见
+  `data/protocol/standard_week.md` §7 采购清单）。有外食就连自炊部分一起按单价估全
+- `body.*`: 用户提供了测量数据才填，否则留空。**不参与基线兜底** —— 没测就是没测
+- `sleep.*` / `readiness.*` / `training.*` / `activities[]`: **COROS 自动填充**（`make sync-coros`），
+  Brain Dump 无需处理；现有文件中已有值不要覆盖。同样不参与兜底
 
 ### Markdown Body
-- **今日核心产出 (Highlights)**: 分类提炼工作内容，涵盖公司+个人项目
-- **干扰与阻碍 (Interruptions & Blockers)**: 打断心流或令人不爽的事件
-- **明日规划 (Next Steps)**: 未完成或计划中的任务
+
+**默认整个 body 留空。** 只有下列内容值得写：
+
+- **今日核心产出 (Highlights)**: 当天确实交付了东西才写，分类涵盖公司+个人项目
+- **干扰与阻碍**: 只写真 incident，不写日常疲劳
+- 计划偏离的根因（`adherence` 是 ⚠️/🔴 时）
+
+平淡的一天就是空 body —— COROS + frontmatter 已经包含 weekly-review 需要的全部数据。
 
 ## 缺省处理
 
-如果 Brain Dump 中缺失重要数据（消费/睡眠时长等），在 YAML 中留空，并在日志末尾附加：
+**不要因为字段留空就发告警。** 留空是预期状态，`logging_defaults` 会兜底。
 
-```
-[Status: Warning] 提示：今日相关数据（消费/睡眠时长等）未检测到，建议手工补充完善数据库。
-```
+旧版会在日志末尾追加 `[Status: Warning] 今日相关数据未检测到，建议手工补充` —— 这句话
+已经删除。它把「按基线执行的一天」显示成一个待办事项，正是这套系统要拆掉的那种噪音。
+
+只有真正无法兜底的缺口才提示，且只提示一次：
+
+- COROS 数据缺失（`sleep.duration` 为空）→ `[Status: Warning] COROS 未同步，跑 make sync-coros`
+- 用户明确提到了某个数值但你没能解析出来 → 直接问用户，不要猜
 
 ## 输出要求
 

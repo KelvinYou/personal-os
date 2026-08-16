@@ -62,6 +62,34 @@ caffeine:
   cutoff_time: "14:00"         # 下午最晚咖啡因摄入时间
   late_cutoff_time: "16:00"    # 超过此时间视为严重违规，强关联失眠
 
+# === 记录基线 (Logging Defaults) — W34 起生效 ===
+# 语义翻转：**沉默 = 按基线执行**，而不是 = 失败。
+#
+# 背景：改之前 score.py 对缺失字段判 0 分且分母不缩，等于「没记 = 没做」。
+# 100 分里 ~68 分挂在手填字段上，于是不记录就掉分，掉分又逼着回填猜值
+# （2026-08-09 的 `deep_work_hours: 0` 就是 agent 猜的，还跟本表矛盾）。
+# 现在缺失字段由本表兜底，代价是报告里标 `~` + 打 coverage%。
+#
+# 三条边界，不要越：
+#   1. 只兜底**手填**字段。COROS 块（sleep/readiness/training/activities）和
+#      body.* 永远不兜底 —— 那些缺失是真缺失，兜底会凭空造生理数据。
+#   2. 只用于**评分**，不用于**熔断**。breakers 读 raw log（scripts/lib/metrics.py
+#      的 latest_metrics），无证据就不报警，绝不能用基线值把警报压下去。
+#   3. 日志文件不存在的那天不兜底 —— 那是 days_logged 的缺口，由 coverage 反映。
+logging_defaults:
+  enabled: true
+  effective_from: "2026-08-17"   # W34 Mon；此日之前的周报不回算（rubric change）
+  energy_level: 7                # 1-10；唯一建议手填的字段，兜底只为不惩罚沉默
+  mental_load: 3                 # 1-7
+  deep_work_hours: 8.0           # 工作日 —— 上班是 default
+  deep_work_hours_weekend: 0.0   # Sat/Sun，System Offline
+  caffeine_cutoff: "14:00"       # = caffeine.cutoff_time，合规不违规
+  adherence: "✅"                # 无偏离记录即视为按 standard_week 执行
+  daily_spend: 25.9              # RM/天，全自炊日；来源见 W33 采购清单 ~RM181/周
+  # coverage = 实测手填字段数 / 应填字段数。低于此值周报打 Low Confidence 标记，
+  # 但**不扣分** —— 惩罚沉默正是这次要拆掉的东西。
+  coverage_warn_ratio: 0.60
+
 # 作息 (Schedule) 已移至 data/user_profile.md §0 `schedule`
 
 # === 熔断规则 (Circuit Breakers) ===
