@@ -66,8 +66,15 @@ Deload, etc.). Match the user's language if they write in English.
 
 Read the following files to build situational awareness:
 
+0. **Standing protocol** — Read `data/protocol/standard_week.md` **first**. It is the baseline every plan is a
+   difference against: weekly rhythm, training gate, weight tables, exercise detail, the three diet rules, the
+   four day-type time blocks, protein rotation, grocery list. Do not re-derive any of that from scratch —
+   if you find yourself writing out a full day of meals, you have almost certainly skipped this file.
 1. **Recent daily logs** — Read the last 3 days of logs from `daily/` (including today if it exists).
    Use `ls -t daily/*.md | head -5` to find the most recent files.
+   Note: unfilled manual fields are **not** failures — `config/thresholds.yaml` `logging_defaults` defines the
+   baseline they resolve to (silence = executed to baseline). Never read an empty `energy_level` as "bad day",
+   and never scold the user for not logging.
 2. **Config** — Read `config/thresholds.yaml` for all threshold values and circuit breaker rules.
 3. **User profile** — Read `data/user_profile.md` for schedule baselines, dietary macros, fitness architecture.
    **Read its §0 first** — it resolves every `{{placeholder}}` used in this skill and its references.
@@ -141,7 +148,10 @@ The user's request will fall into one of these categories:
 
 #### A. Daily Timetable ("帮我排今天的时间表")
 
-Generate a time-blocked schedule for the day following the format in `references/schedule-rules.md`:
+**Start from the matching day-type in `data/protocol/standard_week.md` §6** (A = 非训练工作日 Mon/Wed/Fri,
+B = 训练工作日 Tue/Thu, C = Sat, D = Sun) and answer with what differs today — today's gate reading, today's
+Deep Work assignment, any exception. Reproducing the whole standing block back to the user is noise; they
+already have it. Only write out a full day when they ask for it or when today departs from its type wholesale.
 
 - Anchor to user_profile.md baselines
 - Include specific meal times with macro composition and cost estimates (from `references/meal-library.md`)
@@ -156,10 +166,22 @@ After presenting the draft, ask: **"这个安排有什么需要调整的吗？�
 
 Only after the user confirms should you present the final version.
 
-#### B. Next-Week Timetable ("排下周时间表" / "plan next week")
+#### B. Next-Week Plan ("排下周时间表" / "plan next week")
 
 This is the **primary handoff from weekly-review**. After the user generates a weekly report, they will ask you
 to produce the next-week schedule.
+
+> **默认输出不是一份 timetable，是一份 delta —— 或者什么都不输出。**
+>
+> `data/protocol/standard_week.md` 是常驻的那份时间表：周节奏、训练闸门、重量总表、
+> 三个训练日动作详表、饮食三规则、四种日型的时间块骨架、蛋白源轮换、采购清单，全在里面。
+> 逐周重排的旧做法产出 400+ 行，其中约 85% 每周原样照抄，真正在变的只有状态快照和当周目标 ——
+> 那点信息量撑不起每周重写一遍的成本，重写本身还会让不变量悄悄漂移。
+>
+> **标准周就跑 standard_week.md，不要生成任何文件。** 明确告诉用户「这周没有例外，跑常驻
+> protocol 就行」，这是正确且期望的结果，不是偷懒。
+
+**决策流程**
 
 0. **Freshness check before anything else**: confirm the latest file in `data/reports/*-weekly-report.md`
    actually covers the week that JUST ended (its date range should end the day before the week you're about
@@ -170,17 +192,46 @@ to produce the next-week schedule.
    produced the W30 timetable/report mismatch (it was written on W28 data before W29's report landed, the
    W29 report flagged it as needing revision, and that revision never happened — the stale plan just ran for
    the full week). Get it right at generation time or flag it; don't defer correctness to a future step.
-1. **Read the latest weekly report** — extract P0/P1/P2 objectives and execution constraints
-2. **Read recent daily logs** (last 3 days) for current state awareness
-3. **Read references** — `references/schedule-rules.md` for format and rhythm, `references/meal-library.md` for meals
-4. **Generate a 7-day time-blocked timetable** (Mon-Sun) following the weekly rhythm and format in schedule-rules.md:
-   - Map P0/P1/P2 objectives to specific Deep Work blocks across the week
-   - Specify exact meal times with macro composition and estimated cost
-   - Enforce all circuit breaker restrictions from the report
-5. Before presenting, scan for weekly-level optimization opportunities (rotating protein sources, new mobility
-   work, budget-friendly swaps) and present as **💡 本周优化建议** block
-6. Present as **Draft** and ask the user to confirm or adjust
-7. Once confirmed, save to `data/reports/YYYY-w##-timetable.md` (same week number as the report)
+1. **Read `data/protocol/standard_week.md`** — this is the baseline the whole week runs on. Read it first;
+   everything below is expressed as a difference against it.
+2. **Read the latest weekly report** — extract P0/P1/P2 objectives and execution constraints
+3. **Read recent daily logs** (last 3 days) for current state awareness
+4. **Ask the user about known exceptions**: "下周有没有饭局/出差/公共假期/加班？" — you cannot infer these
+   from data, and they are the single most common reason a delta is needed at all.
+5. **Decide: delta or nothing.** Write a delta only if at least one row of standard_week.md §8 fires:
+
+   | 触发 | delta 里写什么 |
+   |---|---|
+   | 日程例外（饭局/出差/加班/公共假期） | 哪天、影响哪个时间块、怎么补 |
+   | 熔断器触发 | 强制限制 + 本周训练模式（Normal/Deload/Recovery） |
+   | 加重量（double progression 达标） | 哪个动作进哪一档 → **同时回写 standard_week.md §3** |
+   | weekly-review 的 P0/P1/P2 | 各挂到具体哪一天的哪个时间块 |
+   | 一次性实验（改起床时间之类） | 改哪一个变量、下周的判据是什么 |
+
+   None of them fire → say so and stop. Do not manufacture a delta to look useful.
+
+6. **Keep the delta ≤30 lines.** It is a diff, not a plan. Never restate meal contents, exercise tables,
+   gate conditions, or time blocks that standard_week.md already carries — a delta that repeats the baseline
+   recreates the exact duplication this structure exists to remove. Reference sections instead
+   （"照 §6 日型 B，但 Thu 18:00 换成饭局"）.
+7. **One variable at a time.** If two experiments are queued, schedule one and say why the other waits —
+   changing both makes the weekend review unable to attribute the effect.
+8. Present as **Draft** and ask the user to confirm or adjust.
+9. Once confirmed, save to `data/reports/YYYY-w##-delta.md` (same week number as the report).
+
+**When to update standard_week.md instead of writing a delta**
+
+Architecture changes belong in the protocol, not in a weekly file: training architecture changes, phase
+switch (recomp→cut), a diet restructure, a wake-time baseline migration, or a weight progression that
+stuck. Edit the file and append a Changelog line at its end. Rule of thumb: if it will still be true in
+four weeks, it is a protocol change; if it expires on Sunday, it is a delta.
+
+**Full-timetable escape hatch**
+
+Only regenerate a complete 7-day timetable when the user explicitly asks for one, or when the protocol
+itself is being rewritten (a phase switch, say) and the user wants to see the new week in full before it
+becomes the standing baseline. In that case follow `references/schedule-rules.md` for format, and afterward
+fold the result back into `data/protocol/standard_week.md` rather than leaving it as a weekly file.
 
 #### C. Weekly Plan Adjustment ("这周计划需要调整")
 
@@ -228,13 +279,14 @@ When the user confirms a timetable:
 
 - **Daily timetable**: Append to or update the `## 3. 明日规划 (Next Steps)` section of today's daily log,
   or write to tomorrow's log if planning ahead. If the daily log doesn't exist yet, create it from `templates/daily.md`.
-- **Next-week timetable**: Save to `data/reports/YYYY-w##-timetable.md` (same week number as the weekly report
-  it's based on). This creates an archival copy for future plan-vs-actual analysis.
-  **Also write** `data/reports/YYYY-w##-calendar.yaml` — the structured Google Calendar sidecar
-  `scripts/sync_calendar.py` reads (schema + rationale in `references/schedule-rules.md`, section
-  "Google Calendar Sidecar"). This is not optional: the narrative timetable's format changes too often
-  for a parser to track, so the sidecar is the only reliable machine-readable copy. Regenerate and
-  overwrite it (don't append) any time the timetable itself is regenerated or revised mid-week.
+- **Next-week delta**: Save to `data/reports/YYYY-w##-delta.md` (same week number as the weekly report it's
+  based on), ≤30 lines, expressed purely as differences against `data/protocol/standard_week.md`. If no
+  exception fired, write nothing at all and tell the user the week runs on the standing protocol.
+  **Write `data/reports/YYYY-w##-calendar.yaml` only when a delta shifts actual time blocks** — the standing
+  week's blocks are stable, so re-pushing an identical calendar every week is churn. When a delta does move
+  something, regenerate the full sidecar (not just the changed events) so Calendar stays consistent —
+  `scripts/sync_calendar.py` reads it (schema + rationale in `references/schedule-rules.md`, section
+  "Google Calendar Sidecar"). Overwrite, never append.
 - **Weekly adjustment**: If there's no weekly report yet, note the adjusted plan in today's daily log.
   If a report exists, mention the adjustment but don't modify the report file.
 
