@@ -64,6 +64,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 **Scope**: derived from the primary area of change. Examples from this project: `daily`, `weekly`, `scripts`, `config`, `template`, `finance`, `prompts`.
 
 **Message rules**:
+- Always write the message in English, even if the repo's own content (docs, logs, comments) is in Chinese
 - Lowercase after the colon
 - No period at the end
 - Under 72 characters for the first line
