@@ -7,7 +7,7 @@ SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell date +%Y-%m-%d)
 
-.PHONY: archive setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly wealth web help
+.PHONY: archive sync-protocol setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly wealth web help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -79,10 +79,16 @@ weekly:
 sync-coros:
 	@$(PYTHON) $(SCRIPTS_DIR)/sync_coros.py $(if $(DATE),--date $(DATE),)
 
-## 把 timetable 的 calendar.yaml sidecar 推到 Google Calendar
+## 把某周 delta 的 calendar.yaml sidecar 推到 Google Calendar (一次性事件)
 ## 用法: make sync-calendar 或 make sync-calendar WEEK=2026-w31
 sync-calendar:
 	@$(PYTHON) $(SCRIPTS_DIR)/sync_calendar.py $(if $(WEEK),--week $(WEEK),)
+
+## 把 standard_week.yaml 的常驻锚点推成周期性事件 (建一次就一直重复)
+## 无提醒 + 标记 Free；推到独立日历 Personal-OS，可在侧边栏单独开关
+## 用法: make sync-protocol DRY=1 (预览) 或 make sync-protocol (真推)
+sync-protocol:
+	@$(PYTHON) $(SCRIPTS_DIR)/sync_calendar.py --protocol $(if $(DRY),--dry-run,)
 
 ## 归档冷日志 + 清理 COROS 暂存 (dry-run 默认；APPLY=1 真写)
 ## 90 天外的 daily 折叠成周行，30 天外已 patch 的 fitness 直接删
@@ -148,6 +154,7 @@ help:
 	@echo "  make weekly             — 聚合本周数据 (可选: DATE=2026-03-22)"
 	@echo "  make sync-coros         — 拉取昨日 COROS 数据 (可选: DATE=...)"
 	@echo "  make sync-calendar      — 推送 timetable calendar.yaml 到 Google Calendar (可选: WEEK=...)"
+	@echo "  make sync-protocol      — 推常驻周锚点到 Calendar (DRY=1 预览)"
 	@echo "  make archive            — 归档冷日志 + 清理 COROS 暂存 (APPLY=1 真写)"
 	@echo "  make migrate            — dry-run schema 迁移 (APPLY=1 真写)"
 	@echo "  make report             — 一键完整流程 (lint + check + weekly)"

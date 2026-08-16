@@ -7,11 +7,24 @@ One-time setup (do this yourself, in a browser, before first run):
 4. Run `make sync-calendar` once — it opens your browser for the OAuth consent screen and
    caches a token at `.credentials/google_calendar_token.json`. Subsequent runs are silent.
 
-Idempotency model: every event this script creates carries a private extended property
-`{source: personal-os, week: "2026-W31"}`. A sync for a given week always deletes every
-existing event tagged with that week before re-inserting from the yaml — so re-running
-after editing the sidecar (or a mid-week plan change) never duplicates or leaves stale
-events behind, at the cost of a full delete+recreate instead of a real diff.
+Two sync modes, because the data has two shapes:
+
+- **Week mode** (`sync_week`) — one-shot dated events from a `YYYY-w##-calendar.yaml`
+  sidecar. Used for weekly deltas: the exceptions that only apply to one week.
+- **Protocol mode** (`sync_protocol`) — weekly-recurring events (RRULE) from
+  `data/protocol/standard_week.yaml`. The standing week doesn't change, so pushing a
+  fresh copy of it every week would be churn; these are created once and just repeat.
+
+Idempotency model: every event carries private extended properties tagging its scope —
+`{source: personal-os, week: "2026-W31"}` for week mode, `{source: personal-os,
+scope: protocol}` for protocol mode. A sync always deletes everything carrying its own
+tag before re-inserting, so re-running after an edit never duplicates or strands events,
+at the cost of a full delete+recreate instead of a real diff. The two scopes are
+independent: re-pushing the protocol never touches a week's delta events, and vice versa.
+
+Reminders are explicitly disabled on every event (`useDefault: False`, no overrides).
+This calendar is a reference view, not a notification system — the timetable already
+lives in the user's head, and 20 recurring pings a day would be actively hostile.
 """
 from __future__ import annotations
 
@@ -30,7 +43,15 @@ CRED_DIR = ROOT / ".credentials"
 CLIENT_SECRET_PATH = CRED_DIR / "google_calendar_client.json"
 TOKEN_PATH = CRED_DIR / "google_calendar_token.json"
 
-SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
+# `calendar.events` alone cannot list or create calendars, which protocol mode needs
+# to resolve its dedicated "Personal-OS" calendar — that returns 403 insufficient scopes.
+# The broader `calendar` scope covers both. Widening this invalidates any cached token:
+# _get_credentials() detects the shortfall and re-runs consent rather than 403-ing at
+# the first API call.
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.events",
+]
 SOURCE_TAG = "personal-os"
 
 
@@ -43,6 +64,12 @@ def _get_credentials() -> Credentials:
     creds: Credentials | None = None
     if TOKEN_PATH.exists():
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+        # A cached token keeps whatever scopes it was granted. Refreshing one that
+        # predates a SCOPES widening yields a still-"valid" credential that 403s on
+        # the first call needing the new scope, so treat the shortfall as invalid.
+        if creds and not set(SCOPES).issubset(set(creds.scopes or [])):
+            print("[Status: Info] 已缓存的 token 缺少所需 scope，重新走一次授权。")
+            creds = None
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -106,9 +133,127 @@ def insert_events(week_tag: str, events: list[dict], timezone: str, calendar_id:
             "start": {"dateTime": f"{e['date']}T{e['start']}:00", "timeZone": timezone},
             "end": {"dateTime": f"{e['date']}T{e['end']}:00", "timeZone": timezone},
             "extendedProperties": {"private": {"source": SOURCE_TAG, "week": week_tag}},
+            "reminders": {"useDefault": False, "overrides": []},
         }
         service.events().insert(calendarId=calendar_id, body=body).execute()
     return len(events)
+
+
+# --------------------------------------------------------------------------
+# protocol mode — weekly-recurring anchors
+# --------------------------------------------------------------------------
+
+PROTOCOL_SCOPE = "protocol"
+_ICAL_DAYS = {"MO": 0, "TU": 1, "WE": 2, "TH": 3, "FR": 4, "SA": 5, "SU": 6}
+
+
+def resolve_calendar(name: str) -> str:
+    """Return the id of the calendar named `name`, creating it if absent.
+
+    A dedicated calendar (rather than `primary`) so the whole protocol can be
+    toggled off in one click when it would otherwise clutter a work day.
+    """
+    service = _service()
+    page_token = None
+    while True:
+        resp = service.calendarList().list(pageToken=page_token).execute()
+        for item in resp.get("items", []):
+            if item.get("summary") == name:
+                return item["id"]
+        page_token = resp.get("nextPageToken")
+        if not page_token:
+            break
+    created = service.calendars().insert(body={"summary": name}).execute()
+    return created["id"]
+
+
+def first_occurrence(days: list[str], start_date: date) -> date:
+    """Earliest date >= start_date falling on one of `days` (iCal weekday codes).
+
+    Google anchors a recurrence to its first instance, so this must land on a
+    weekday the rule actually includes — otherwise the series is offset by a day.
+    """
+    wanted = {_ICAL_DAYS[d] for d in days}
+    for offset in range(7):
+        d = start_date + timedelta(days=offset)
+        if d.weekday() in wanted:
+            return d
+    raise ValueError(f"no weekday in {days} resolves from {start_date}")
+
+
+def clear_protocol(calendar_id: str) -> int:
+    """Delete every recurring event previously pushed by protocol mode.
+
+    `singleEvents=False` is load-bearing: with expansion on, the API returns
+    individual instances, and deleting those cancels occurrences of a series
+    that stays alive. We need the masters.
+    """
+    service = _service()
+    deleted = 0
+    page_token = None
+    while True:
+        resp = (
+            service.events()
+            .list(
+                calendarId=calendar_id,
+                privateExtendedProperty=[f"source={SOURCE_TAG}", f"scope={PROTOCOL_SCOPE}"],
+                pageToken=page_token,
+                singleEvents=False,
+                showDeleted=False,
+            )
+            .execute()
+        )
+        for item in resp.get("items", []):
+            service.events().delete(calendarId=calendar_id, eventId=item["id"]).execute()
+            deleted += 1
+        page_token = resp.get("nextPageToken")
+        if not page_token:
+            break
+    return deleted
+
+
+def build_recurring_body(anchor: dict, timezone: str, start_date: date) -> dict[str, Any]:
+    """One anchor → a Google event body with a weekly RRULE."""
+    days = anchor["days"]
+    first = first_occurrence(days, start_date)
+    rrule = f"RRULE:FREQ=WEEKLY;BYDAY={','.join(days)}"
+    interval = anchor.get("interval", 1)
+    if interval != 1:
+        rrule += f";INTERVAL={interval}"
+    return {
+        "summary": anchor["title"],
+        "description": anchor.get("description", "").strip(),
+        "start": {"dateTime": f"{first.isoformat()}T{anchor['start']}:00", "timeZone": timezone},
+        "end": {"dateTime": f"{first.isoformat()}T{anchor['end']}:00", "timeZone": timezone},
+        "recurrence": [rrule],
+        "extendedProperties": {
+            "private": {
+                "source": SOURCE_TAG,
+                "scope": PROTOCOL_SCOPE,
+                "key": anchor.get("key", anchor["title"]),
+            }
+        },
+        "reminders": {"useDefault": False, "overrides": []},
+        "transparency": "transparent",  # shows as Free — a reference view must not block scheduling
+    }
+
+
+def insert_protocol(anchors: list[dict], timezone: str, start_date: date, calendar_id: str) -> int:
+    service = _service()
+    for a in anchors:
+        service.events().insert(
+            calendarId=calendar_id, body=build_recurring_body(a, timezone, start_date)
+        ).execute()
+    return len(anchors)
+
+
+def sync_protocol(
+    anchors: list[dict], timezone: str, start_date: date, calendar_id: str
+) -> tuple[int, int]:
+    """Replace the standing recurring set. Returns (deleted, inserted)."""
+    deleted = clear_protocol(calendar_id)
+    inserted = insert_protocol(anchors, timezone, start_date, calendar_id)
+    return deleted, inserted
 
 
 def sync_week(week_tag: str, events: list[dict], timezone: str, calendar_id: str) -> tuple[int, int]:
