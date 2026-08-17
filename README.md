@@ -141,13 +141,13 @@ graph TB
     COROS_HW[("⌚ COROS Watch")]
 
     subgraph Skills ["🤖 Claude Code Agent Skills"]
-        DR["/daily-report\nBrain Dump → 结构化日志"]
-        CP["/coach-planner\n排期 & 决策支持"]
-        WR["/weekly-review\n四维评分 & 周报"]
-        WM["/wealth-manager\n投资组合 & 净资产"]
-        LA["/learning-agent\n技能雷达 & 学习规划"]
-        DJL["/decision-log\n决策捕获 & 回顾"]
-        GC["/git-commit\nConventional Commits"]
+        DR["/daily-report<br/>Brain Dump → 结构化日志"]
+        CP["/coach-planner<br/>排期 & 决策支持"]
+        WR["/weekly-review<br/>四维评分 & 周报"]
+        WM["/wealth-manager<br/>投资组合 & 净资产"]
+        LA["/learning-agent<br/>技能雷达 & 学习规划"]
+        DJL["/decision-log<br/>决策捕获 & 回顾"]
+        GC["/git-commit<br/>Conventional Commits"]
     end
 
     subgraph Data ["📂 Data Layer (data/ submodule 🔒)"]
@@ -185,7 +185,7 @@ graph TB
     classDef data fill:#F5A623,stroke:#C77D0A,color:#fff
     classDef script fill:#7B68EE,stroke:#5A4CB5,color:#fff
     class DR,CP,WR,WM,LA,DJL,GC agent
-    class DL,FIT,RPT,FIN,CFG,UP data
+    class DL,DEC,FIT,RPT,FIN,CFG,UP data
     class SC,PC,RG,WS script
 ```
 
