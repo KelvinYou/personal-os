@@ -124,17 +124,9 @@ stateDiagram-v2
 
 ## 未来演进方向
 
-### Near-term
-- [ ] Logic engine 单元测试覆盖（pytest）
-- [ ] COROS / Zepp 数据自动导入（CSV / API）
-- [ ] 历史数据查询层（SQLite 替换 flat YAML）
+见 [ROADMAP.md](ROADMAP.md) —— 待办清单只在那里维护。
 
-### Mid-term
-- [ ] 睡眠债务预测模型（时序分析）
-- [ ] 训练负荷周期化（mesocycle 自动排期）
-- [ ] 支出燃烧率预警（月度 burn-rate projection）
-
-### Long-term
-- [ ] Mobile companion（时间表推送 + 快速 brain dump）
-- [ ] 穿戴设备实时流（心率 / HRV → 自动触发 breaker）
-- [ ] 多用户抽象（从 personal tool → 可复用框架）
+> 这里原本有一份 Near/Mid/Long-term checklist，已迁走。它同时是这类重复的活标本：
+> 其中「SQLite 替换 flat YAML」和「pytest 覆盖」两条，与
+> [DECISIONS.md §1](DECISIONS.md#1-明确不做避免旧话重提) 第 6、19 条**直接矛盾** ——
+> 一份被遗忘的愿望清单会在下一次会话里把已经拒过的方案重新提上桌。
