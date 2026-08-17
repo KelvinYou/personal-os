@@ -19,7 +19,7 @@
 /data/finance/            — 财务持仓 (savings / portfolio / policy.yaml)
 /data/reports/            — 周报存档 + 周度 delta (仅在有例外时生成)
 /data/user_profile.md     — 全局用户画像 (作息/饮食/锻炼偏好)
-/docs/                    — 长文档 (VISION / plan* / 审计记录)
+/docs/                    — 长文档；三个 owner：VISION(方向) / ROADMAP(待办) / DECISIONS(已决定不重提)
 /ARCHITECTURE.md          — 系统架构 + 不变量；改数据流/契约前先读它
 /templates/               — 空白模板文件
 /scripts/                 — 自动化脚本 (Python 3)

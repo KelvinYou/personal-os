@@ -246,7 +246,7 @@ flowchart LR
 | 方案 | 优点 | 缺点 | 决策 |
 |------|------|------|------|
 | **当前：yaml → patch → md（双写）** | daily.md 自包含，`cat 2026-04-22.md` 可见全部当日数据；grep 查询无需 join | COROS 数据两处存储，有 stale-copy 风险（用户手改 md 的 sleep 块会在下次 sync 被覆盖） | ✅ 采用 |
-| 替代：yaml 独占，md 只存 ref 指针，聚合时 join | 无双写；用户手改 md 不丢失 | daily.md 不再自包含；所有聚合 / 查询需 on-read merge；损失 grep 工作流 | ❌ 拒绝（见 plan `Out of Scope #10`） |
+| 替代：yaml 独占，md 只存 ref 指针，聚合时 join | 无双写；用户手改 md 不丢失 | daily.md 不再自包含；所有聚合 / 查询需 on-read merge；损失 grep 工作流 | ❌ 拒绝（见 `docs/DECISIONS.md` §1 第 11 条） |
 
 **用户契约**（与 §8.2 对齐）：`sleep.* / readiness.* / training.* / activities[]` 在 daily.md 中对**所有非 `patch_coros.py` 的 writer 只读**；若需手动修正，改 `data/fitness/*.yaml` 后重跑 `make sync-coros DATE=YYYY-MM-DD`，否则下次 sync 会覆盖。
 
@@ -324,7 +324,7 @@ graph TD
 ### 8.1 Schema 所有权
 
 - `templates/daily.md` 是 daily frontmatter 的 schema source of truth
-- 任何未在模板中声明的顶级 key 视为未知（Wave 2.5 D2 `make lint` 会拒绝）
+- 任何未在模板中声明的顶级 key 视为未知（`make lint` 会拒绝）
 - `config/thresholds.yaml` 是所有阈值 + breaker 规则的唯一来源；脚本内禁止硬编码数字
 - `user_profile.md` 是作息 / 饮食 / 训练偏好的唯一来源；skill 评分或排期涉及偏好时必须读这里
 
@@ -358,7 +358,7 @@ graph TD
 - **无状态**：每次 run 独立从日志重新 derive 所有 `latest_metrics`；不保留跨 run 状态
 - **无级联 / 无优先级**：多个 breaker 独立并行评估，同一 run 可同时 trip 多条
 - **Null-safe**（post-Wave 1）：`actual is None` → 跳过该 breaker；避免缺数据 default 0 产生 false positive
-- **Poor Sleep derivation**（Option P-d）：`duration < 6.5h OR (awake_min > 40 AND hrv < hrv_baseline × 0.9)`；Wave 2.5 D1 之后在 `scripts/lib/daily_log.py::derive_poor_sleep` 单一实现
+- **Poor Sleep derivation**（Option P-d）：`duration < 6.5h OR (awake_min > 40 AND hrv < hrv_baseline × 0.9)`；在 `scripts/lib/daily_log.py::derive_poor_sleep` 单一实现
 
 ### 8.5 时间 / 周界契约
 
@@ -377,8 +377,8 @@ graph TD
 | frontmatter YAML 解析失败 | 聚合脚本打印 warning，skip 该文件，不崩 |
 | 全 null HRV（COROS 未同步或用户未戴表） | HRV Recovery Alert 自动禁用（post-Wave 1 null-skip） |
 | `weekly_synthesis` 找到 0 日志 | 打印 warning，不产出 prompt 文件 |
-| 指标越界（如 `energy_level: 15`） | `safe_float` 强转 float，无范围校验；Wave 2.5 D2 `make lint` 会拒绝 |
-| schema 演进（如删除 `sleep.quality`） | 老日志字段保留为 frontmatter 冗余；通过 Wave 2.5 `scripts/lib/migrate.py` 一次性批量迁移 |
+| 指标越界（如 `energy_level: 15`） | `safe_float` 强转 float，无范围校验；`make lint` 会拒绝 |
+| schema 演进（如删除 `sleep.quality`） | 老日志字段保留为 frontmatter 冗余；通过 `scripts/lib/migrate.py` 一次性批量迁移 |
 | `data/decisions/*.md` YAML 解析失败 | `decisions_due.py` 打印 warning，skip 该文件，不崩 |
 
 ### 8.7 Decision Journal 不变量
@@ -392,9 +392,9 @@ graph TD
 
 ---
 
-## 9. Library Layer (proposed — Wave 2.5)
+## 9. Library Layer
 
-当前 `scripts/report_gen.py` 与 `scripts/weekly_synthesis.py` **各自独立实现** frontmatter 解析、`safe_float`、Poor Sleep derivation、breaker 评估 —— 这是 Wave 1 schema drift 的结构性根因（`docs/plan.md` §3.5）。Wave 2.5 引入共享 Library Layer，形成严格的单向依赖与 pydantic 类型化的 schema 边界。
+`scripts/report_gen.py` 与 `scripts/weekly_synthesis.py` 曾**各自独立实现** frontmatter 解析、`safe_float`、Poor Sleep derivation、breaker 评估 —— 那是历史上一轮 schema drift 的结构性根因：漂移不是失误，是缺一层共享库的必然结果。现已收敛为下面的 Library Layer，严格单向依赖 + pydantic 类型化的 schema 边界（取舍理由见 `docs/DECISIONS.md §2`）。
 
 ```mermaid
 graph TB
@@ -409,8 +409,8 @@ graph TB
         WS["weekly_synthesis.py"]
         SC["sync_coros.py"]
         PC["patch_coros.py"]
-        LD["lint_daily.py\nWave 2.5 D2"]
-        MG["migrate.py\nWave 2.5 D6"]
+        LD["lint_daily.py"]
+        MG["migrate.py"]
     end
 
     subgraph Library ["Library Layer (scripts/lib/) — 新增"]
@@ -418,9 +418,9 @@ graph TB
         DAILY["daily_log.py\nload / iter / save"]
         METRIC["metrics.py\nrolling aggregates"]
         BRK["breakers.py\nevaluate()"]
-        SCORE["score.py\ncompute_base_score()\nWave 2.5 D4"]
+        SCORE["score.py\ncompute_base_score()"]
         CFG["config.py\nThresholds model\n启动期 fail-fast"]
-        LOG["logger.py\nJSON lines\nWave 2.5 D5"]
+        LOG["logger.py\nJSON lines"]
     end
 
     subgraph Data ["Data Layer (data/)"]
@@ -452,20 +452,20 @@ graph TB
 
 ### Library 模块清单
 
-| 模块 | 职责 | 对应 plan 项 |
-|------|------|-------------|
-| `schema.py` | pydantic 模型：`DailyLog`, `Sleep`, `Readiness`, `Training`, `Activity`, `DailySpend`, `Body`, `Thresholds`, `Breaker` | Wave 2.5 D1 |
-| `daily_log.py` | `load(path) → DailyLog`, `iter_week(monday) → Iterator`, `save(log)`, `derive_poor_sleep(log) → bool` | D1 |
-| `metrics.py` | `rolling_7d_debt(logs, baseline)`, `avg_hrv(logs)`, `consecutive_poor(logs)` 等聚合 | D1 |
-| `breakers.py` | `evaluate(metrics, cfg) → list[TrippedBreaker]`；单一 breaker 判定入口 | D1 |
-| `score.py` | `compute_base_score(metrics, rubric) → ScoreBreakdown`；deterministic 四维打分 | D4（promoted to P1） |
-| `config.py` | 严格校验 `thresholds.yaml` / `user_profile.md` 结构；启动期 fail-fast | D1 |
-| `logger.py` | 每次 `make check` / `make weekly` append JSON line 到 `data/logs/engine-YYYY-MM-DD.jsonl` | D5 |
-| `migrate.py` | 字段批量迁移（schema 变更时回填老日志，如 `sleep.quality → derived Option P-d`） | D6 |
+| 模块 | 职责 |
+|------|------|
+| `schema.py` | pydantic 模型：`DailyLog`, `Sleep`, `Readiness`, `Training`, `Activity`, `DailySpend`, `Body`, `Thresholds`, `Breaker` |
+| `daily_log.py` | `load(path) → DailyLog`, `iter_week(monday) → Iterator`, `save(log)`, `derive_poor_sleep(log) → bool` |
+| `metrics.py` | `rolling_7d_debt(logs, baseline)`, `avg_hrv(logs)`, `consecutive_poor(logs)` 等聚合 |
+| `breakers.py` | `evaluate(metrics, cfg) → list[TrippedBreaker]`；单一 breaker 判定入口 |
+| `score.py` | `compute_base_score(metrics, rubric) → ScoreBreakdown`；deterministic 四维打分 |
+| `config.py` | 严格校验 `thresholds.yaml` / `user_profile.md` 结构；启动期 fail-fast |
+| `logger.py` | 每次 `make check` / `make weekly` append JSON line 到 `data/logs/engine-YYYY-MM-DD.jsonl` |
+| `migrate.py` | 字段批量迁移（schema 变更时回填老日志，如 `sleep.quality → derived Option P-d`） |
 
-### 与 Agent Layer 的分工（post-D4）
+### 与 Agent Layer 的分工
 
-Scoring 经过 Wave 2.5 D4 后，职责切分明确：
+Scoring 的职责切分：
 
 | 工作 | 归属 | 理由 |
 |------|------|------|
