@@ -1,0 +1,43 @@
+{
+  "skill_name": "repo-orchestrator",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "我刚在 repos/ai-stock-analysis 和 repos/portfolio-website 都做完一轮改动，personal-os 主仓库还没 bump。帮我做一次 integration preflight，列出安全的收尾顺序。只读检查，不要 commit、push、reset 或丢掉任何 dirty changes。",
+      "expected_output": "A read-only multi-repository preflight report that distinguishes parent gitlinks from actual child HEADs and dirty files, identifies the validation order, and gives safe next actions without mutating Git state.",
+      "files": [],
+      "expectations": [
+        "The response checks root status and submodule status separately.",
+        "The response distinguishes a recorded parent pointer from the child repository's actual HEAD and worktree state.",
+        "The response explicitly preserves dirty or untracked child changes and does not recommend reset, checkout, clean, or stash as an automatic repair.",
+        "The response proposes an ordered validation and pointer-update sequence.",
+        "The response follows the project's Status vocabulary and gives a structured integration report."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "这次改动同时碰了 scripts/lib/wealth、web/lib/report.ts、config/wealth_rules.yaml，还更新了 ai-stock-analysis。帮我判断能不能合并到主仓库，并列出必须检查的契约、测试和 public/private 边界。不要替我提交。",
+      "expected_output": "A contract-aware integration review covering Python ownership of valuation, the Python/TypeScript report contract, config freshness, submodule readiness, public/private separation, and focused verification gates.",
+      "files": [],
+      "expectations": [
+        "The response identifies Python as the owner of wealth valuation/report mathematics and TypeScript as a consumer.",
+        "The response calls for a Python-to-TypeScript report contract or fixture check.",
+        "The response checks config/wealth_rules freshness and source metadata rather than treating the YAML as unquestioned truth.",
+        "The response checks that private holdings and profile data do not cross into public market or public submodule paths.",
+        "The response lists focused tests and explicitly says no commit is performed."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "我只改了 .agents/skills/wealth-manager 和 docs/plan-wealth-dashboard.md，现在想 commit。先帮我做 repo preflight，并告诉我什么时候该交给 git-commit，什么时候不该交给它。",
+      "expected_output": "A focused single-root preflight that checks skill/doc references and trigger ownership, detects whether submodule or contract checks are unnecessary, and clearly hands off only after the user has explicitly requested a commit.",
+      "files": [],
+      "expectations": [
+        "The response scopes the change to skills and documentation instead of inventing unrelated submodule work.",
+        "The response checks skill frontmatter, referenced paths, privacy placeholders, and stale terminology or plan status.",
+        "The response distinguishes a preflight from the git-commit skill's staging and commit responsibilities.",
+        "The response does not stage or commit files during the preflight."
+      ]
+    }
+  ]
+}

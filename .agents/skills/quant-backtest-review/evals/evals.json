@@ -1,0 +1,23 @@
+{
+  "skill_name": "quant-backtest-review",
+  "evals": [
+    {
+      "id": "strategy-search",
+      "prompt": "I added a mean-reversion strategy to repos/ai-stock-analysis/src/stock_analysis/backtest/portfolio.py's simulate() function -- it's now in the default strategies list alongside the existing six. Can you check the backtest is sound before I trust its Sharpe ratio?",
+      "expected_output": "Flags that n_strategies_tested must include the new strategy so the DSR comparison widens correctly; points at _attach_selection_bias_metrics in portfolio.py; asks whether the new strategy was also parameter-swept (which would need to count as more than one entry). Should NOT approve the change without checking whether n_strategies_tested reflects the new count.",
+      "files": []
+    },
+    {
+      "id": "report-reading",
+      "prompt": "Here's a backtest report I just got:\n\n# Backtest Report\n- Horizon: 30 calendar days\n- Trials: 45 (45 completed, 0 errored)\n- Training cutoff: 2025-07-01 (driven by sonnet)\n\n## Headline metrics (all trials)\n- Overall directional hit rate: +58.00% (95% CI 43.2% - 71.5%) -- n=45 directional trials\n- Mean return, directional trials only: +1.20%\n- Per-trial Sharpe (directional, gross): +0.310\n- Costs not modelled -- all figures above are gross.\n\nAll 45 trials are pre-cutoff (before 2025-07-01). Is this signal real? Should I start trading on it?",
+      "expected_output": "Should flag: (1) the 95% CI spans 50%, so hit rate is not distinguishable from a coin flip, (2) all trials are pre-cutoff meaning potential model recall/training contamination rather than genuine forecast skill -- there's no clean out-of-sample slice here, (3) costs aren't modeled and the edge is thin enough that realistic costs could erase it, (4) answer should be a clear 'no, don't trade on this yet' not a hedge.",
+      "files": []
+    },
+    {
+      "id": "leakage-feature",
+      "prompt": "I'm adding analyst estimate revisions as a new feature to the technical analyst agent in repos/ai-stock-analysis -- pulling the latest revision value from the data provider as of each as_of_date during backtesting. Good to merge?",
+      "expected_output": "Should flag that 'latest revision as of as_of_date' from a data provider often reflects a value that was RESTATED/revised after the fact -- the provider's API may not expose what the revision value actually looked like on that historical date (point-in-time data), creating a lookahead leak distinct from the outcome-leakage guard in outcomes.py. Should ask whether the data source is point-in-time or just 'current snapshot queried with a historical parameter'. Should NOT simply approve as safe.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "skill_name": "contract-guardian",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "我想把 daily schema 里的 sleep.quality 改成 derived poor_sleep，并同步 templates/daily.md 和 scripts/lib/schema.py。帮我判断这次变更为什么还不能 merge，重点检查 weekly_synthesis.py、migrate、lint、旧日志兼容性和 tests。只读 review，不要改文件。",
+      "expected_output": "A contract review that maps the schema owner to every consumer, distinguishes an intended change from the current diff, requires migration/compatibility and focused tests, and blocks the change if any consumer or old-log path is not updated.",
+      "files": [],
+      "expectations": [
+        "The response distinguishes the user-described intended change from the actual current diff instead of treating history as pending work.",
+        "The response maps templates/daily.md -> schema model -> migration/compatibility -> weekly_synthesis/report consumers -> lint/tests.",
+        "The response explicitly checks old-log compatibility and does not accept a default value as a migration substitute.",
+        "The response identifies missing consumer, migration, fixture, or focused test coverage as a blocker when applicable.",
+        "The response is read-only and uses the project's Status vocabulary."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "这次要把 wealth report 的 allocation 从数组改成带 incomplete 和 unpriced_symbols 的对象，同时让 config/wealth_rules.yaml 的 verified_at/freshness 影响报告。帮我做 contract review：检查 Python、TS、fixture、schema version、freshness consumer，以及 public/private 边界。不要提交。",
+      "expected_output": "A cross-language contract review that keeps Python as the calculation owner, requires synchronized TS/fixture/version changes, verifies an executable wealth_rules freshness path, and blocks private data leakage or unconsumed claims.",
+      "files": [],
+      "expectations": [
+        "The response identifies the Python report builder as the canonical math owner and TypeScript as a consumer.",
+        "The response requires synchronized report fixture, TypeScript contract, consumers, and schema-version treatment for the allocation shape change.",
+        "The response checks for an actual wealth_rules loader/freshness consumer and does not treat verified_at metadata alone as enforcement.",
+        "The response checks incomplete/unpriced/null semantics and prevents silent zero-filling or net-worth overclaiming.",
+        "The response audits private finance data against public config, market, fixtures, and public submodule paths."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "我准备把一批 jobs 从 data/ 搬到 market/，并把 wealth-manager skill 里的个人 baseline 改成 placeholder；另外 docs/plan-wealth-dashboard.md 里有些 data checkout 状态可能已经过期。帮我 review 这次改动的隐私、skill reference、source-of-truth 和文档风险。不要静默修改历史 audit。",
+      "expected_output": "A public/private and documentation contract review that checks actual diff scope, prevents private facts in market/public paths, validates skill placeholders and references, and classifies stale historical versus live guidance without rewriting audit records.",
+      "files": [],
+      "expectations": [
+        "The response checks actual changed paths and does not assume the described move is present in the current diff.",
+        "The response distinguishes public market facts from private holdings/profile/policy and identifies prohibited leakage destinations.",
+        "The response checks .agents/skills source ownership, .claude links, placeholders, references, and stale field/path terminology.",
+        "The response distinguishes a stale historical/audit claim from a live instruction that can cause runtime harm.",
+        "The response preserves historical audit text and performs no silent edit, stage, or commit."
+      ]
+    }
+  ]
+}
