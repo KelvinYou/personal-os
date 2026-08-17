@@ -15,43 +15,22 @@ Brain Dump → /daily-report → 逻辑引擎告警 → /coach-planner → 每�
 
 ## 目录结构
 
-```
-personal-os/
-├── .agents/skills/            # Claude Code Agent Skills
-│   ├── coach-planner/         #   教练式每日排期生成
-│   ├── daily-report/          #   Brain Dump → 结构化日志
-│   ├── wealth-manager/        #   投资组合与资产分析
-│   ├── learning-agent/        #   技能雷达与学习规划
-│   ├── skill-creator/         #   技能创建与评测
-│   └── git-commit/            #   智能 commit message
-├── config/
-│   └── thresholds.yaml        # 系统阈值配置 (睡眠基准、支出告警、评分权重等)
-├── market/                    # 🌐 外部市场事实 (public — 无个人信息)
-│   ├── interest_rates.yaml    #   银行/数字银行/MMF/FD 挂牌利率 catalog
-│   ├── fx.yaml                #   汇率观测 (每个 pair 自带 as_of)
-│   └── jobs/                  #   JobStreet/LinkedIn 公开 JD 抓取与频次汇总
-├── data/                      # 🔒 Private submodule (personal-os-data)
-│   ├── daily/                 #   每日工程师日志 (YYYY-MM-DD.md)
-│   ├── decisions/             #   决策日志 (YYYY-MM-DD-slug.md)
-│   ├── fitness/               #   COROS 原始数据 (YYYY-MM-DD.yaml)
-│   ├── finance/               #   只放持仓与个人目标，不放市场行情
-│   │   ├── savings.yaml       #   现金/FD/MMF 各账户余额与条件
-│   │   ├── portfolio.yaml     #   股票持仓 (shares / avg_cost)
-│   │   └── policy.yaml        #   个人理财目标 (应急金月数等)
-│   ├── reports/               #   生成的周报存档
-│   └── user_profile.md        #   全局用户画像 (作息/饮食/锻炼偏好)
-├── templates/
-│   └── daily.md               # 标准空白日志模板
-├── scripts/
-│   ├── sync_coros.py          # COROS API 拉取 → data/fitness/
-│   ├── patch_coros.py         # 将 fitness yaml 写入日志 frontmatter
-│   ├── report_gen.py          # 逻辑引擎 — 规则告警检查器
-│   └── weekly_synthesis.py    # 周度数据聚合管道
-├── docs/                      # 长文档 (VISION / plan* / 审计记录)
-├── Makefile                   # 一键自动化入口
-├── ARCHITECTURE.md            # 系统架构 + 不变量 (codemap)
-└── AGENTS.md                  # AI 协作规范 (CLAUDE.md 仅 import 它)
-```
+完整目录树的唯一 owner 是 [AGENTS.md](AGENTS.md)（每条路径由 `make doctor` 逐条
+`test -e` 校验）。这里只给一张入口地图 —— 把树抄第二份，两边一定会漂移。
+
+| 位置 | 是什么 |
+|------|--------|
+| `.agents/skills/` | Agent skills（见下方 [Claude Code Skills](#claude-code-skills)） |
+| `config/` | 我的阈值设定 + 法规常量 |
+| `market/` | 外部可观测市场事实（利率 / 汇率 / JD 抓取）；public，无个人信息 |
+| `data/` | 🔒 private submodule —— 日志、决策、体能、财务、user_profile |
+| `scripts/` | Python 自动化（逻辑引擎、COROS 同步、周度聚合、doctor…） |
+| `web/` | 本地理财仪表盘（Next.js，localhost only） |
+| `repos/` | 外部项目 submodules（portfolio-website / ai-stock-analysis） |
+| `docs/` | 三个 owner：VISION（方向）/ ROADMAP（待办）/ DECISIONS（已决定不重提） |
+| `templates/` · `tests/` | 空白模板 / 单元测试（不读真实私有数据） |
+| `ARCHITECTURE.md` | 系统架构 + 不变量 (codemap) |
+| `AGENTS.md` | AI 协作规范 + 目录树（CLAUDE.md 仅 import 它） |
 
 ## 快速开始
 
@@ -74,6 +53,9 @@ make today
 # 同步 COROS 昨日数据 (睡眠/HRV/活动 → 自动写入日志)
 make sync-coros
 
+# 同步 Google Calendar 日程
+make sync-calendar
+
 # 填写完日志后，运行逻辑引擎检查
 make check
 
@@ -82,6 +64,19 @@ make weekly
 
 # 一键完整流程 (check + weekly)
 make report
+
+# 净资产：现金/到期/利率 + 股票估值
+make wealth
+
+# 本地理财仪表盘 (localhost only，不部署)
+make web
+
+# 单元测试 + web typecheck / 日志 lint
+make test
+make lint
+
+# 把 90 天热窗口之外的日志折叠进 data/archive/
+make archive
 
 # 列出到期待 review 的决策
 make decisions-due
@@ -207,6 +202,11 @@ graph TB
 | `/decision-review` | 决策回顾与校准 |
 | `/meta-coach` | 月度 agent 建议质量审计 |
 | `/identity-audit` | 季度行为 vs 声称身份审计 |
+| `/profile-optimizer` | 用 JD 数据改写 LinkedIn / portfolio 文案与排序 |
+| `/contract-guardian` | 跨层改动（schema / 脚本 / 文档）的语义契约审查 |
+| `/quant-backtest-review` | ai-stock-analysis 回测与信号代码的对抗式复核 |
+| `/repo-orchestrator` | 多仓库协作：submodule 同步、集成检查、提交前把关 |
+| `/skill-creator` | 技能创建、优化与 eval |
 | `/git-commit` | 智能 conventional commit |
 
 ## 依赖
