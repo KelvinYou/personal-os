@@ -7,10 +7,22 @@
 ## Status
 
 - [x] Resume (portfolio site + PDF export) — updated, build verified
-  - Unified title to `AI-native Full-stack Engineer (Frontend-focused)` (was 2 different strings across the site)
   - Added PTIB back into Selected Projects (was missing — the report's own P0 item)
   - Summary now cites 9,000+ users
   - Removed duplicate `Solidity` from core Languages, condensed old Techtics bullets, trimmed AMM project description
+- [x] **2026-08-17 second pass** — repositioning off frontend-only, driven by the
+      RM 11k band analysis in [ROADMAP.md §4](ROADMAP.md#4-技能缺口2026-08-17-招聘数据复盘):
+  - Title is now `AI-native Full-stack Engineer · Fintech Payments & Agent Systems`
+    in all three locales. **`(Frontend-focused)` was dropped on purpose** — every
+    RM 10-15k posting in `market/jobs/` is titled full-stack, and the qualifier
+    was arguing against the thing being applied for.
+  - dtcpay bullet 1 is now the Kotlin backend work (FX quote lock,
+    largest-remainder allocation, CAS-on-status duplicate guard), with the two
+    Kotlin blog posts linked from the experience card
+  - Skills gained a `Cloud & Delivery` group; Kotlin and React Native were only
+    in experience data and invisible to ATS
+  - Stock Analysis card now carries measured backtest numbers instead of
+    architecture counts
 - [ ] LinkedIn headline
 - [ ] LinkedIn About
 - [ ] LinkedIn Experience — DTCPay bullets
@@ -23,14 +35,18 @@
 Use the same string on both platforms:
 
 ```
-AI-native Full-stack Engineer (frontend-focused) | React, TypeScript, Python, LLMs, MCP | Fintech
+AI-native Full-stack Engineer | React, TypeScript, Kotlin, Python, LLMs, MCP | Fintech Payments
 ```
 
 JobStreet has a shorter headline field on some templates — if it truncates, use:
 
 ```
-AI-native Full-stack Engineer (Frontend-focused) | React, TypeScript, Python, LLMs
+AI-native Full-stack Engineer | React, TypeScript, Kotlin, Python, LLMs
 ```
+
+> Kotlin is in the headline deliberately: it is the only backend language with
+> production evidence behind it, and backend ownership shows up in 58% of the
+> MY job descriptions for the target band.
 
 ## 2. About / Summary
 
