@@ -22,11 +22,11 @@
 
 ---
 
-## Pre-workout 10min 窗口的特殊说明
+## Short pre-workout window 的特殊说明
 
-用户场景：05:50 吃 → 06:00 练（窗口仅 10 分钟）。
+当 private profile/protocol 给出的 pre-workout window 很短时，食物在训练
+开始时几乎还未进入循环——但这不是白吃的理由：
 
-食物训练**开始时**几乎还未进入循环——但这不是白吃的理由：
 - Whey 氨基酸在训练 20-30min 后供应 → 覆盖训练中后段
 - 快碳（香蕉 / 白饭）在训练 15-25min 后升血糖 → 支撑最后几组
 - 作用不是"立即提能"，而是**营养定时到位**
@@ -35,8 +35,8 @@
 
 ## 排期建议
 
-- 继续保留 pre-workout snack（半勺 whey + 快碳 + 5g creatine），不要切成空腹训练。
-- **香蕉缺货替代**：白饭 100g（熟）最佳；一片全麦面包亦可，不需加蜂蜜。
+- 是否保留 pre-workout snack、组成和剂量由 private profile/protocol 决定；不要从本文件推断个人执行规则。
+- 缺货替代也从 meal-library 与当前库存选择，不要把示例食物写成固定 baseline。
 - 全麦面包 GI ~69-74（中高 GI），不是"慢碳"，民间误解。
 
 ---

@@ -1,236 +1,106 @@
 # Schedule Rules Quick Reference
 
-Coach-planner 排期时的约束规则速查。主 SKILL.md 定义工作流，本文件存放具体排期细节。
+Coach-planner 的公共规则速查。个人时间、训练日型、餐单、器械、成本和
+睡眠 baseline 不属于本文件；它们必须从 private runtime data 读取。
 
-## 作息锚点 (Daily Anchors)
+## Ownership
 
-**当前架构 (W20+): 3 天 Full Body — Tue/Thu/Sat AM 训练 · Mon/Wed Z2 walk · Fri/Sun 休**
+- `data/protocol/standard_week.md`：standing timetable 的唯一人类可读 owner。
+- `data/protocol/standard_week.yaml`：standing timetable 的 Calendar anchors projection。
+- `data/user_profile.md`：个人作息、饮食、训练偏好与阶段目标。
+- `config/thresholds.yaml`：睡眠、HRV、训练与熔断阈值。
+- `data/reports/YYYY-w##-delta.md`：只记录例外周相对 standing protocol 的变化。
 
-**AM 训练日模式 (Tue/Thu/Sat)**:
+每次排期先读 `data/protocol/standard_week.md`，再读 profile、daily logs 和 weekly
+report。不要从本文件推断个人 baseline，也不要把本文件改成第二份 timetable。
 
-| 时间 | 事项 | 备注 |
-|------|------|------|
-| **05:45** | 起床 + 温水 + 黑咖啡 + 看 COROS HRV | 双闹钟 05:40 + 05:45；HRV 决定全量/降级 |
-| 05:50 | Pre-workout shake | 半勺 whey + 1 香蕉 + 5g creatine |
-| **06:00–07:10** | AM 训练 (Full Body A/B/C) | 含 8-10min 升级热身（4 级 ramp） |
-| 07:15 | 常温水澡 | 训练日避免冷水（保护 mTOR） |
-| 07:30 | Post-workout 早餐 | 2 蛋 + 150g 白饭(熟) + 200g Greek Yogurt (~37g P) |
-| 08:20 | 出门通勤 | |
-| 09:00–18:00 | 核心工作时间 | 上午脑力最充沛，优先排 Deep Work |
-| **12:00** | **午餐** | 蛋白源 150-200g(生) + 蔬菜 + 糙米 100-150g(熟) (~52g P，~RM4.00) |
-| **16:30** | **晚餐**(公司解决) | 蛋白源 150-200g(生) + 蔬菜 + 慢碳水 (~50g P，~RM4.20) |
-| ~19:30 | 到家 | |
-| 20:00 | Wind down | 拉伸 / 阅读 / 不刷短视频 |
-| 21:00 | 调暗灯 + Magnesium | 200mg Magnesium Glycinate |
-| **22:00** | **🔴 灯灭** | **7.75h 睡眠窗口 (22:00→05:45)** |
+## Planning rules
 
-**Z2 Walk 日模式 (Mon/Wed)**:
+- 标准周直接执行 standing protocol；没有例外时不生成 weekly timetable、delta 或 calendar sidecar。
+- 只有日程例外、熔断限制、目标挂载或一次性实验改变实际时间块时，才生成 dated delta。
+- 例外周的 delta 必须表达“相对哪一段 protocol 改了什么”，不要复制完整餐单、训练表或时间表。
+- 训练 gate 使用 `config/thresholds.yaml` 和最新日志证据；缺数据时保留不确定性，不猜测 baseline。
+- 训练结束与 lights-out 之间至少保留项目 protocol/证据要求的恢复间隔；具体时间从 private data 解析。
+- 训练重量、动作架构和 day type 只从 `standard_week.md` 读取；不要在 public reference 维护器械清单。
+- 餐点时间、份量、蛋白目标和成本从 `data/user_profile.md` 与 `meal-library.md` 解析；不要在本文件写个人数值。
 
-| 时间 | 事项 | 备注 |
-|------|------|------|
-| 06:00 | 起床 | 比训练日多睡 15min |
-| 06:30 | 户外 Z2 walk 30min | HR ≤ 137bpm；累可跳过 |
-| 07:15 | 早餐 | 3 蛋 + 1 片全麦 + 100g GY + matcha (~31g P) |
-| 08:20 | 出门通勤 | |
-| 09:00–18:00 | 核心工作时间 | |
-| **12:00** | **午餐** | 蛋白源 150-200g(生) + 蔬菜 + 糙米 100-150g(熟) (~52g P，~RM4.00) |
-| **16:30** | **晚餐**(公司解决) | 蛋白源 150-200g(生) + 蔬菜 + 慢碳水 (~50g P，~RM4.20) |
-| ~19:30 | 到家 | |
-| 22:00 | **灯灭** | 保持一致 |
+## Google Calendar sidecar
 
-**休息日模式 — Fri(仍上班，只是无训练)**:
+`scripts/sync_calendar.py` 有两个独立模式：
 
-| 时间 | 事项 | 备注 |
-|------|------|------|
-| 07:30 | 自然醒 | 体成分测量窗口（空腹，测完再吃早餐） |
-| 07:45 | 早餐 | 3 蛋 + 1 片全麦 + 100g GY + matcha (~31g P) |
-| 08:20 | 出门通勤 | |
-| 09:00–18:00 | 核心工作时间 | |
-| **12:00** | **午餐** | 蛋白源 150-200g(生) + 蔬菜 + 糙米 100-150g(熟) (~52g P，~RM4.00) |
-| **16:30** | **晚餐**(公司解决) | 蛋白源 150-200g(生) + 蔬菜 + 慢碳水 (~50g P，~RM4.20) |
-| ~19:30 | 到家 | |
-| 22:00 | **灯灭** | 保持一致 |
+- `--protocol`：读取 `data/protocol/standard_week.yaml`，同步 recurring anchors。
+- `--week`：读取 `data/reports/YYYY-w##-calendar.yaml`，同步某一例外周的 dated events。
 
-**休息日模式 — Sun(无训练也无工作，规划+备餐)**:
+例外周 sidecar schema：
 
-| 时间 | 事项 | 备注 |
-|------|------|------|
-| 07:30–08:00 | 自然醒 | 不设强制早起 |
-| 08:00 | 早餐 | 3 蛋 + 1 片全麦 + 100g GY + matcha (~31g P) |
-| 上午 | 周报复盘 / 下周排期 | 或自由安排 |
-| **12:00** | **午餐** | 蛋白源 150-200g(生) + 蔬菜 + 糙米 100-150g(熟) (~52g P，~RM4.00) |
-| 下午 | 食材采购 + meal prep | 为下周备餐 |
-| **16:30** | **晚餐** | 蛋白源 150-200g(生) + 蔬菜 + 慢碳水 (~50g P，~RM4.20) |
-| 22:00 | **灯灭** | 保持一致 |
-
-> **Sat 训练日变体**: 沿用「AM 训练日模式」的起床/训练/早餐段，但去掉 08:20 通勤与 09:00-18:00 核心工作时间——周六是 System Offline，不排 Deep Work / 产出目标，训练后直接进入自由活动，午晚餐时间不变。
-
-## Google Calendar Sidecar (calendar.yaml) — MANDATORY 与 timetable 同步生成
-
-`scripts/sync_calendar.py` 靠这份结构化文件把 timetable 推到 Google Calendar，**不会去解析叙事版 Markdown**（那份格式几乎每周都在变，解析器会不断碎掉）。所以每次保存 `data/reports/YYYY-w##-timetable.md` 时，**必须同时**写一份 `data/reports/YYYY-w##-calendar.yaml`。
-
-**Schema**（顶层 3 个必需字段 + events 数组，每个 event 4 个必需字段）：
 ```yaml
-week: "2026-W31"                # ISO 周编号，脚本用它做同名事件的清空重建 tag
-timezone: "Asia/Kuala_Lumpur"   # IANA tz name
-calendar_id: "primary"          # 可省略，省略则读 .env 的 GOOGLE_CALENDAR_ID
+week: "YYYY-W##"
+timezone: "<IANA timezone>"
+calendar_id: "primary" # optional; defaults to GOOGLE_CALENDAR_ID
 events:
-  - date: "2026-07-27"          # YYYY-MM-DD
-    start: "07:00"              # HH:MM，24h，当地时区
-    end: "07:15"                # 必须显式给出，不要留给脚本猜测时长
-    title: "查 HRV + 决定恢复日模式"
-    description: "Sleep Critical 触发日；HRV<30 升级 System Offline"   # 可省略
+  - date: "YYYY-MM-DD"
+    start: "HH:MM"
+    end: "HH:MM"
+    title: "Calendar event"
+    description: "Optional context"
 ```
 
-**取舍粒度**: 每个 event 对应叙事版 timetable 里"值得上日历"的一个时间块——起床/训练/三餐/Deep Work 段/wind-down/断电，不必逐行照抄备注列的每一个细节；条件分支（如"HRV<30 则改为…"）写进 description，不要因为分支而拆成多个事件。
+同步按 `week` 做 delete-then-insert，sidecar 必须整份覆盖生成，不能追加单个 event。
+无时间块变化的周不生成 sidecar；需要发布 Calendar 时才写入
+`data/reports/YYYY-w##-calendar.yaml`。OAuth 与权限说明见 `scripts/lib/gcal.py`。
 
-**同步规则**: 脚本按 `week` 字段做"先删除该周所有已同步事件、再整批插入"，所以：
-- 每次重新生成/修订这周的 timetable，calendar.yaml 也要重新生成并覆盖保存（不是追加）
-- `make sync-calendar` 默认读 `data/reports/` 里最新的 `*-calendar.yaml`；也可以 `make sync-calendar WEEK=2026-w31` 指定
-- 首次使用需要用户自己完成一次性 OAuth 设置，见 `scripts/lib/gcal.py` 文件顶部注释
+## Weekly delta output
 
-> **Pre-sleep casein 已移除**（per user feedback）— Trommelen 2023；改为午晚餐放大版替代。
+```markdown
+# YYYY-W## Delta
 
-## 训练时间窗口
+> 基线：`data/protocol/standard_week.md`
 
-- **Z2 Cardio (Mon/Wed walk)**: 06:30–07:00 户外，30min
-  - **Cardio 必须放 AM 或周末**，晚做对 cortisol/arousal 影响远大于阻力训练（Frontiers Physiology 2024）
-  - 心率目标 Zone 2 (≤137bpm，能完整说话)
-  - **NEAT 工具，非训练**；累可跳过，不进入 RPE 区间
-- **抗阻训练 (Strength) — Tue/Thu/Sat Full Body AM**:
-  - **AM 06:00–07:10**（W20+ 3 天 Full Body 架构）。距前晚睡 7h+，距当晚睡 14h，零睡眠干扰。**长期 EV 最高**。
-  - AM 力量初期下降 ~2-10%，**2-3 周适应后追平 PM 峰值**
-  - AM 热身必须 **≥8-10min**（含 4 级递增 ramp），PM 可 6min
-  - 训练日用**常温水澡**（冷水抑制 mTOR → 降肌肥大 ~10-15%）
-  - 工作日在家 DB 训练，周末可去 gym 大重量日
-  - **PM 19:45–21:00 晚训模式**（backup）：需灯灭推迟到 23:00（保 2h 间隔）
-  - **详细 evidence**: 见 `references/training-timing-evidence.md`
+## Exceptions
+- YYYY-MM-DD：哪个时间块改变，以及如何补偿
 
-## 哑铃档位约束 (Home Gym DB Increments)
-
-**家中哑铃可用重量 (kg/each)**: 2.5 / 3.5 / 4.5 / 5.5 / 6.5 / 8 / 9 / 10 / 11.5 / 13.5 / 16 / 18 / 20.5 / 22.5 / 24
-
-- **排重量必须从此列表选**，不要写 7kg / 12kg / 15kg / 17kg 等不存在档位
-- 档间距不均匀：低段 1kg（2.5→6.5），中段 1.5-2kg（8→13.5），高段 2-2.5kg（16→24）
-- 上限 24kg/each（双手动作如 Goblet/RDL 可达 48kg total）
-- Ramp 选档示例: 6.5→9→11.5→13.5→16→18 (递增 ~20-25%)
-
-## 周节奏 (Weekly Rhythm)
-
-| 日 | 主题 | 说明 |
-|----|------|------|
-| 周一–周五 | 工作日 | 上班是 default，deep_work_hours 不提默认 8h |
-| 周六 | System Offline | **禁止编程和产出目标** — 目的是强制心理恢复，防止 burnout。长期不休息会导致创造力和决策质量下降，一天的产出损失远小于持续疲劳的累积代价。如用户有紧急情况需要破例，建议限定时间窗口（如最多 2h）并次日补偿 |
-| 周日 | 规划 + 备餐 | 周报复盘、下周排期、食材采购与 meal prep |
-
-## 练后营养分档
-
-| 训练类型 | Pre-workout | Post-workout | 理由 |
-|----------|-------------|-------------|------|
-| **AM 重训（当前模式）** | 半勺 whey + 1 香蕉 + 5g creatine | 2 蛋 + 150g 白饭 + 150g Greek Yogurt (~32g P) | whey 前移填氨基酸池；post 用高 GI 白饭回补糖原 |
-| 周末 Gym 大重量日 | 同上 | 200g Greek Yogurt + 1 勺蛋白粉 (~44g P) | 高强度训练糖原消耗大 |
-| 工作日徒手训练 | 同上（可选） | 200g Greek Yogurt alone (~20g P) | 糖原消耗低 |
-| 晨跑 Zone 2 | 无需 | 正常早餐覆盖 | |
-
-## 热量管理 (Recomp 期间 — 当前)
-
-| 日类型 | 热量目标 | Deficit | 说明 |
-|--------|---------|---------|------|
-| 训练日 | **~1,900 kcal** | ~300 kcal | 碳水围绕训练窗口；recomp 黄金区间 |
-| 休息日 | **~1,700 kcal** | ~500 kcal | 高于 BMR 1,620 底线 |
-
-- 周累计 deficit 目标: **-2,000 至 -3,500 kcal/周**（避免日均 > -500 kcal 切到 cut 模式）
-- 周减体重控制在 <0.5% BW（按 `{{body_weight_kg}}`kg 计算），recomp 不追求快速减重
-- 蛋白质: **`{{protein_target_g}}`g/天 (`{{protein_per_kg}}` g/kg)** — 从 `data/user_profile.md` §0 解析
-- 脂肪: ≥`{{fat_floor_g}}`g (0.7 g/kg 底线，维持激素)
-- 餐间隔: 3-5h（持续触发 MPS）
-- **Pre-sleep casein 已移除** — 改午晚餐放大版（晚餐蛋白源 130g → 200g 生重）
-
-### Cut 阶段回退档 (体脂率 < 12% 时切换)
-
-| 日类型 | 热量目标 | Deficit |
-|--------|---------|---------|
-| 训练日 | ~1,800 kcal | ~600 kcal |
-| 休息日 | ~1,620 kcal (=BMR) | ~550 kcal |
-
-- 蛋白质拉到 `{{protein_per_kg}}` g/kg = `{{protein_target_g}}`g
-- 阶段切换由 user 主动触发，写入 `data/user_profile.md` §0 的 `phase.current`
-  （2026-08-11 从 `config/thresholds.yaml` 迁出）
-
-## 睡眠优化
-
-- **8h 窗口**: 21:30 灯灭 → 05:30 起床 = ~7.5-7.75h 实际睡眠
-- 7.5h 是最低安全线（一晚剥夺 → MPS -18%、睾酮 -24%）
-- 21:00 服用 200mg Magnesium Glycinate（助深睡 + 肌肉放松）
-- 20:00 开始 wind down：拉伸/阅读，不刷短视频不看屏幕
-- **21:30 灯灭是整个系统的 single point of failure** — 不灭 = 次日训练质量直接砸
-
-## 排期格式模板
-
-### 单日
+## Constraints
+- active breaker / objective / experiment
 ```
+
+保存前先以 Draft 呈现并等待用户确认。确认后才写入
+`data/reports/YYYY-w##-delta.md`；若没有例外，明确说明无需写文件。
+
+## Timetable output templates
+
+### Daily
+
+```markdown
 ## [Day] MM-DD 时间表 (Draft)
 
-> 状态快照: 睡眠 Xh (Quality) | 精力 X/10 | 熔断: [None / breaker names]
+> 状态快照：睡眠 Xh | 精力 X/10 | 熔断：[None / breaker names]
 
 | 时间 | 行动 | 备注 |
 |------|------|------|
-| HH:MM | Action | Details (macros, cost, project name) |
+| HH:MM | Action | Details from private protocol/profile |
 | ... | ... | ... |
-| 22:00 | **[强制断电]** | 准备入睡 |
-
-> 预估支出: ~RMX.XX | Deep Work 目标: Xh
+| HH:MM | [强制断电] | lights-out from private protocol/profile |
 ```
 
-### 周计划总览 Header（精简版）
-```
-# 工程师周计划: YYYY-W## 时间表 (MM-DD ~ MM-DD)
+### Weekly delta
 
-> **状态快照**: 熔断状态一行(如 🔴 Sleep Debt L2 / 🟢 全绿) · 训练模式 · 数据质量一行
-> **本周主线**: P0/P1/P2 目标详见 `data/reports/YYYY-w##-weekly-report.md`，此处只列本周新增/变化的重点，
->   不要把上一份周报已经写过的约束、背景叙事再复述一遍——已知信息一句话链接过去即可。
-```
-> 状态快照 + 主线加起来控制在 4-6 行以内。凡是上一份周报里逐字存在的内容（执行约束、黑障周数、体成分逾期天数等），
-> 不重新叙述，直接引用"详见 W## 报告"。这是 W30 复盘发现的第二大冗余来源。
+```markdown
+## YYYY-W## Delta (Draft)
 
-### 周计划中的每日
-```
-### Day MM-DD (Theme)
-> 训练模式: Normal / Deload / Recovery | 目标 Deep Work: Xh
+> 只写相对 `data/protocol/standard_week.md` 的变化。
 
-| 时间 | 行动 | 备注 |
-|------|------|------|
-| 06:30 | 起床 | ... |
-| ... | ... | ... |
-| 22:00 | **[强制断电]** | 准备入睡 |
-
-> 预估支出: ~RMX.XX
+| 日期 | Protocol block | Change | Reason |
+|------|----------------|--------|--------|
+| YYYY-MM-DD | section/time block | exception | report / user input |
 ```
 
-## 🏋️ 训练详表是强制要求 (Training Detail — MANDATORY)
+## Training detail
 
-> **用户偏好 (2026-06)**: 训练资料必须详细、方便观看，和过往 timetable 一致。
-> 每日时间表里的训练 row 只写概要（`FB X — N 主动作 · 详表见下方`），**真正的细节放在文末统一的「🏋️ 训练详表」区**。
+包含训练日时，日程 row 只写概要；详细区应包含：
 
-每份含训练日的 timetable（单日或周计划）**必须**包含以下三段：
+1. HRV / sleep gate：阈值来自 `config/thresholds.yaml`，不要复制数字。
+2. Weight table：重量来自 private `standard_week.md` 的器械档位；未变化时引用上一份已确认 protocol。
+3. 每个训练日的动作、组次、tempo、组间休息、执行 cue 和降档条件。
 
-1. **HRV / Sleep 起床条件分支表** — 三档决策（全量 / fallback -30% / 取消），列明 HRV baseline 阈值（0.85× / 0.95×）和 sleep 红线（<6.5h 不以 HRV override，per Thu 05-28 教训）。
-2. **重量总表** — 列：动作 / 默认(全量) / HRV-fallback -30% / Session / 组×次。
-   - 重量**必须从哑铃档位表选**（2.5/3.5/4.5/5.5/6.5/8/9/10/11.5/13.5/16/18/20.5/22.5/24 kg/each），不写不存在的档位。
-   - **不要整段复制上一份 timetable 的重量总表**。先读上一份含训练详表的 timetable，若本周所有动作重量都未变，只写一行
-     `> 重量沿用 [W##]，未变，详见该文件`；只有实际调整过的动作才在本周表里单独列出（标注涨/降了多少），
-     没有变化的动作不重复整行。这是 W30 复盘发现的主要冗余来源（每周整段抄贴 15-18 行）。
-3. **每个训练日一个 `### 💪 [Day] MM-DD — FB X` 详细块**，含：
-   - **Warm-up 8min**（含 4 级 ramp，列具体重量递增）
-   - 动作表，列：`# / 动作 / 组×次 / 重量 / Tempo / 组间 / 要点`（要点写动作执行 cue + 升降档触发条件）
-   - **保险阀** 一行（哪些动作 RPE 超标降档、疲劳可跳过）
-
-详表 row 模板：
-```
-| # | 动作 | 组×次 | 重量 | Tempo | 组间 | 要点 |
-|---|------|-------|------|-------|------|------|
-| ① | **DB Front Squat** | 4×8 | 16/each | 3-1-1 | 120s | racking 不适回退 Goblet 24kg |
-```
-
-> 参考实现: `data/reports/2026-w21-timetable.md`、`2026-w23-timetable.md` 的训练详表区。
-> Deload / Recovery 模式下同样保留详表结构，只是「默认」列填降载后的重量。
+若用户要求完整 timetable，仍须先读 standing protocol，再把 profile、daily state、weekly objectives
+和临时例外合并；完整输出是 escape hatch，不应成为每周默认产物。

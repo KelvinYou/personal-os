@@ -8,7 +8,7 @@
 #
 # 个人基线（体重、蛋白/热量目标、训练架构、体成分护栏、作息时间）**不在此处**，
 # 一律放 data/user_profile.md §0。原因：那些值从未被 Python 消费，却是个人数据 +
-# 第二事实源，曾与 user_profile.md 分叉 5 个值。详见 user_profile.md §0 的变更说明。
+# 第二事实源，曾与 data/user_profile.md 分叉 5 个值。详见 profile §0 的变更说明。
 
 # === 产出与工作 (Output & Work) ===
 deep_work:

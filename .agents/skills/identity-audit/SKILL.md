@@ -1,7 +1,7 @@
 ---
 name: identity-audit
 description: >
-  季度身份审计：从行为数据反推"过去一季最重视的 3 件事"，与 user_profile.md 的声明对比。
+  季度身份审计：从行为数据反推"过去一季最重视的 3 件事"，与 data/user_profile.md 的声明对比。
   当用户说"季度审计"、"identity audit"、"我这个季度活成了什么样"、"quarterly review"、
   "行为 vs 声称"时触发。需要 ≥ 12 周日志数据。
 argument-hint: [可选: 指定季度 YYYY-Q# 或留空分析最近一季]
@@ -22,7 +22,7 @@ allowed-tools: Read, Bash, Grep, Glob, Write
 
 - ≥ 12 周 daily logs（一个完整季度）
 - ≥ 3 份 weekly reports
-- `user_profile.md`（作为"声称的我"来源）
+- `data/user_profile.md`（作为"声称的我"来源）
 - 决策日志（如有）
 
 ## 工作流程
@@ -33,7 +33,7 @@ allowed-tools: Read, Bash, Grep, Glob, Write
 
 1. **所有 daily logs** in range — 提取 frontmatter
 2. **Weekly reports** in range — 提取 P0/P1/P2 目标 + 评分
-3. **user_profile.md** — 提取声称的优先级、生活方式、目标
+3. **data/user_profile.md** — 提取声称的优先级、生活方式、目标
 4. **Decision journal** — 提取 category 分布、decision_type 分布
 5. **Spend data** — 从 daily_spend 聚合消费类目
 
@@ -66,7 +66,7 @@ allowed-tools: Read, Bash, Grep, Glob, Write
 
 ### Step 3: 对比与差距分析
 
-读取 `user_profile.md` 中的声明（作息偏好、训练目标、饮食目标、长期方向），与行为数据对比：
+读取 `data/user_profile.md` 中的声明（作息偏好、训练目标、饮食目标、长期方向），与行为数据对比：
 
 - "声称重视健康" vs 实际训练频率/睡眠负债/HRV 趋势
 - "声称在控制支出" vs 实际消费模式
@@ -84,7 +84,7 @@ allowed-tools: Read, Bash, Grep, Glob, Write
 2. ...
 3. ...
 
-## user_profile.md 声称的优先级
+## data/user_profile.md 声称的优先级
 1. ...
 2. ...
 3. ...
@@ -108,7 +108,7 @@ allowed-tools: Read, Bash, Grep, Glob, Write
 
 ## 不评价、不建议
 以上数据仅供参考。差距不等于问题——可能反映优先级的自然演化。
-如果差距令你不舒服，考虑更新 user_profile.md 或调整行为。
+如果差距令你不舒服，考虑更新 data/user_profile.md 或调整行为。
 ```
 
 ## 不做的事
@@ -116,4 +116,4 @@ allowed-tools: Read, Bash, Grep, Glob, Write
 - ❌ 不打分
 - ❌ 不建议改变（只呈现差距）
 - ❌ 不读用户的日记/情绪内容——只用结构化数据
-- ❌ 不修改 user_profile.md（用户自己决定是否更新）
+- ❌ 不修改 data/user_profile.md（用户自己决定是否更新）

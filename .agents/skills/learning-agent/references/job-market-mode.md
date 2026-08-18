@@ -36,7 +36,7 @@ MY). Cap at 30 results per source to stay under rate-limit thresholds.
 ## Workflow
 
 ### Step 0 — Read user context
-Same as trend-research mode. Load `user_profile.md` and the last 3-5 daily logs
+Same as trend-research mode. Load `data/user_profile.md` and the last 3-5 daily logs
 so the final report is phrased against the user's actual trajectory rather than
 a generic SWE profile.
 

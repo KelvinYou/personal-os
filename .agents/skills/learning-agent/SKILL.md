@@ -38,7 +38,7 @@ allowed-tools: Read, Write, Edit, WebSearch, WebFetch, Glob, Grep, Bash
 ### Step 1: 了解用户背景（所有模式共用）
 
 读取 Personal-OS 中的上下文：
-- `user_profile.md` — 职业背景和技术栈
+- `data/user_profile.md` — 职业背景和技术栈
 - 最近的 daily logs（最新 3-5 篇，从 `data/daily/` 时间倒序取）— 近期在做什么项目、用什么技术
 - 记忆系统中的用户信息 — 已知偏好、目标转型方向
 

@@ -6,17 +6,17 @@ Wealth-manager 做投资分析和建议时的决策框架。主 SKILL.md 定义�
 > 再平衡、DCA 证据——见 `wealth-building-playbook.md`；MY 税务/工具/UCITS ETF 见 `malaysia-wealth-vehicles.md`。
 > 做个股建议时务必同时看组合是否已有 index core，别让用户只堆 satellite。
 
-## 用户投资哲学
+## Investor Profile Inputs
 
-用户是 25 岁成长型投资者，核心理念是**用时间换复利**：
+This framework does not embed a personal age, broker, cash balance, income, or risk tolerance. Read those from the
+runtime finance files and user profile before applying the framework. The relevant trade-offs are:
 
-- **为什么选 growth**：25 岁意味着 30+ 年的投资周期。时间足够长，波动会被摊平，
-  所以值得承受短期回撤来换取更高的长期回报。这不是追求刺激，而是数学上的最优选择。
-- **为什么选 moderate risk（不是 aggressive）**：用户有稳定月薪但总资本不大（~RM50k 存款），
-  一次重大亏损的心理冲击可能导致恐慌卖出，反而破坏长期策略。moderate 意味着能承受
-  单只股票 -20% 但不能接受组合整体 -30%。
-- **为什么 buy the dip 而非 momentum**：用户的现金流是每月 RM3000 定量流入，不适合
-  追涨（追涨需要大资金快速建仓）。逢低买入天然适配定期小额投入的节奏。
+- **Long horizon / growth**: a long, verified horizon can justify tolerating short-term drawdowns for higher expected
+  return; a short horizon or near-term liability should lower equity risk.
+- **Risk capacity vs. risk tolerance**: stable cash flow and a sufficient emergency reserve may support volatility,
+  but the allocation must still be one the investor can hold through a drawdown.
+- **Buy-the-dip vs. momentum**: match the decision to verified cash-flow cadence and portfolio policy, not a baked-in
+  monthly amount.
 
 ## 单股分析框架
 
@@ -66,7 +66,7 @@ Wealth-manager 做投资分析和建议时的决策框架。主 SKILL.md 定义�
 
 ## 仓位管理 — DCA 策略
 
-用户每月 RM3000 存款的建议分配逻辑：
+按 `data/finance/portfolio.yaml` 或 policy 中已验证的可投资现金流制定分批逻辑：
 
 - **基础原则**：不要一次 all-in，用 2-3 个月的资金分批建仓
 - **市场正常时**：按月定投到目标标的

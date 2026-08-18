@@ -15,7 +15,7 @@
 /data/                    — private submodule (personal-os-data)；无权限时不 checkout
 /data/daily/              — 每日工程师日志 (YYYY-MM-DD.md)；热窗口 90 天，更旧的由 make archive 折叠
 /data/archive/            — 冷数据归档 (YYYY-Qn.md 周摘要 + body.csv 体成分全序列)
-/data/protocol/           — 常驻 protocol；standard_week.md 是唯一的时间表，每周不重排
+/data/protocol/           — 常驻 protocol；standard_week.md 是唯一的人类时间表，每周不重排；standard_week.yaml 仅为 Calendar anchors projection
 /data/finance/            — 财务持仓 (savings / portfolio / policy.yaml)
 /data/reports/            — 周报存档 + 周度 delta (仅在有例外时生成)
 /data/user_profile.md     — 全局用户画像 (作息/饮食/锻炼偏好)

@@ -29,7 +29,7 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 
 - 旧 evidence (Snijders 2015 等) 是在**白天蛋白质摄入不足**的背景下做的实验。当总摄入 ≥1.6g/kg 且分布合理时，pre-sleep casein 的边际增益接近零
 - **Trommelen 2023 直接颠覆**了"夜间 MPS 缺口"假设 — 一份 100g 大餐能撑 12h+，根本不需要单独的 pre-sleep dose
-- **本人执行规则** (见 feedback memory): 默认跳过 pre-sleep casein，把 30-40g 重分配到午晚餐放大版（如午餐蛋白源加到 200g、晚餐加蛋）
+- **执行规则由 private profile/protocol 决定**：若不安排 pre-sleep casein，可把对应蛋白分配到其他餐；不要从本文件推断用户偏好
 - 例外：晚训日 + 训后到睡眠 <2h，可补 20-30g whey（不是 casein）作为后训餐
 
 ### 蛋白质分布 vs 总量
@@ -111,43 +111,26 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 
 蛋白目标 = `{{body_weight_kg}}` kg × `{{protein_per_kg}}` g/kg = `{{protein_target_g}}`g。
 
-| 时间 | 内容 | Protein | Carbs | Fat | kcal |
+| Meal slot | 内容 | Protein | Carbs | Fat | kcal |
 |------|------|---------|-------|-----|------|
-| 05:50 | 半勺 whey + 1 香蕉 + 5g creatine | 13g | 29g | 1g | ~176 |
-| 07:30 | 2 蛋 + 150g 白饭(cooked) + 100g Greek Yogurt | 27g | 64g | 13g | ~490 |
-| 12:00 | 蛋白源200g(生) + 糙米150g(cooked) + 蔬菜 + 1 苹果 | 52g | 60g | 9g | ~530 |
-| 15:00 | 甜品段: 45g 燕麦 + chia + 可可粉 + 蓝莓 + 20g 核桃 | 11g | 52g | 26g | ~460 |
-| 18:00 | 瘦蛋白150g(生) + 蔬菜1份 | 38g | 6g | 5g | ~215 |
-| **合计** | | **~141g** | **~211g** | **~54g** | **~1,871** |
+| Pre-workout | 轻量、易消化的碳水/蛋白组合 | 按 profile | 按 profile | 按 profile | 按 profile |
+| Post-workout breakfast | 高蛋白早餐 + 训练后碳水 | 按 profile | 按 profile | 按 profile | 按 profile |
+| Lunch | 蛋白源 + 蔬菜 + 主食 | 按 profile | 按 profile | 按 profile | 按 profile |
+| Snack | 按当天目标补足蛋白或碳水/脂肪 | 按 profile | 按 profile | 按 profile | 按 profile |
+| Dinner | 瘦蛋白 + 蔬菜；是否加主食由 profile 决定 | 按 profile | 按 profile | 按 profile | 按 profile |
+| **合计** | 以 `data/user_profile.md` §0 的 phase target 为准 | `{{protein_target_g}}` | — | — | `{{kcal_training_day}}` |
 
-相对旧版（蛋白目标下调前）的三处改动，均由 `data/user_profile.md` 的硬约束推导：
-
-1. **07:30 Greek Yogurt 200g → 100g**（−10g P）—— 蛋白目标下调后 post-workout 不需要 37g。
-2. **20g 核桃从晚餐移到 15:00**（不改总量）—— §2 GERD 条款明确禁止坚果/高脂放晚餐，
-   高脂一律排到 15:00 及之前。旧版把核桃放在 16:30 晚餐位，与该条款冲突。
-3. **晚餐 200g → 150g 生重 + 取消 19:30 兜底**（−12g / −9g P）—— §2 规定晚餐（18:00，当日
-   最后一餐）只放「瘦蛋白 150g + 蔬菜1份」，且 18:00 后不再进食。旧版的 16:30 时间与
-   19:30 兜底都是 2026-08-09 调整前的遗留。
-
-> **kcal 缺口**：本表 ~1,871 kcal，低于 `{{kcal_training_day}}` 目标约 330 kcal。缺口应由
-> **碳水/脂肪**补足（不要加蛋白，否则破 `{{protein_target_g}}`g）：12:00 加 100g 熟糙米
-> (~+130)、15:00 燕麦 45→70g (~+95)、07:30 加 1 片全麦 (~+80) 即可补齐。未直接写进表里，
-> 因为具体补法取决于当天食材库存。
-
-> Pre-sleep casein 已移除 (per Trommelen 2023 + user feedback)；蛋白由午餐放大版承接。
+具体时间、份量、禁忌、库存和补足方式必须从 private profile/protocol 解析；本公共表不保存个人版本差异。
 
 ### 休息日餐食模板 (目标 `{{protein_target_g}}`g P / `{{kcal_rest_day}}` kcal)
 
-| 时间 | 内容 | Protein | Carbs | Fat | kcal |
+| Meal slot | 内容 | Protein | Carbs | Fat | kcal |
 |------|------|---------|-------|-----|------|
-| 07:15 | 3 蛋 + 1 全麦 + 150g Greek Yogurt + matcha | 36g | 38g | 17g | ~465 |
-| 12:00 | 蛋白源200g(生) + 糙米150g(cooked) + 蔬菜 + 1 苹果 | 52g | 60g | 9g | ~530 |
-| 15:00 | 甜品段: 45g 燕麦 + chia + 可可粉 + 蓝莓 + 20g 核桃 + 15g 杏仁 | 13g | 50g | 30g | ~490 |
-| 18:00 | 瘦蛋白150g(生) + 蔬菜1份 | 38g | 6g | 5g | ~215 |
-| **合计** | | **~139g** | **~154g** | **~61g** | **~1,700** |
-
-改动与训练日同源（坚果移出晚餐、晚餐降到 150g 生重、取消 19:30），另把早餐 Greek Yogurt
-100g → 150g 补回 5g 蛋白，使总量落在 `{{protein_target_g}}`g 的 ±5g 容差内。
+| Breakfast | 蛋白质早餐 + 适量碳水/脂肪 | 按 profile | 按 profile | 按 profile | 按 profile |
+| Lunch | 蛋白源 + 蔬菜 + 主食 | 按 profile | 按 profile | 按 profile | 按 profile |
+| Snack | 按当天目标补足营养 | 按 profile | 按 profile | 按 profile | 按 profile |
+| Dinner | 瘦蛋白 + 蔬菜；是否加主食由 profile 决定 | 按 profile | 按 profile | 按 profile | 按 profile |
+| **合计** | 以 `data/user_profile.md` §0 的 phase target 为准 | `{{protein_target_g}}` | — | — | `{{kcal_rest_day}}` |
 
 > 休息日仍高于 BMR 底线 (`{{bmr_floor_kcal}}` kcal)。距 `{{kcal_rest_day}}` 目标约 300 kcal 缺口，
 > 同训练日：用碳水/脂肪补，不加蛋白。
@@ -169,7 +152,7 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
   `data/user_profile.md` §0 解析。训练日/休息日统一，不再分开。
 - 排餐后应快速加总蛋白质，确认接近 `{{protein_target_g}}`g（±5-10g 容差即可，不必卡死）
 - **总量 > 分布**: 凑到日总量优先，单餐 30-50g 即可，不需要刻意堆量
-- **Pre-sleep casein 不强制 — 用户已默认跳过**，晚餐仍是当日最后一餐(18:00)
+- **Pre-sleep casein 是否安排由 private profile/protocol 决定**；本文件不假定最后一餐时间
 
 ### 阶段切换映射
 
@@ -184,7 +167,7 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 | 休息日 kcal | `nutrition.<phase.current>.rest_day_kcal` |
 
 > 历史注记：本表曾为 recomp / cut / bulk 各内联一套蛋白与热量数值，与
-> `config/thresholds.yaml` 和 `user_profile.md` 构成三个事实源并已分叉。
+> `data/user_profile.md` 构成多个事实源并已分叉。
 > 2026-08-11 起统一由 §0 下发；bulk 档如需启用，在 §0 的 `nutrition` 下新增即可。
 
 ## 食材单价表 (MYR)
@@ -228,9 +211,9 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 
 - 大复合动作日（Leg Day / 超大训练量日）**前 2 小时内**，避免大体积慢碳水与高脂食物 — 防范消化负荷引发血管迷走反应。训练前 1h 可摄入轻食（香蕉、饭团等快碳）
 - 咖啡因截止时间: 14:00（超过 16:00 视为严重违规，强关联失眠）
-- **热量底线**: 休息日摄入 ≥ BMR (1,620 kcal)，低于 BMR 触发肌肉分解供糖新生
-- **脂肪底线**: ≥0.7g/kg (49g)，维持激素功能
-- **周减体重**: 不超过 1% BW (0.7kg)，超过则掉肌肉概率大增
+- **热量底线**: 休息日摄入 ≥ `{{bmr_floor_kcal}}`，具体值从 private profile 解析
+- **脂肪底线**: ≥ `{{fat_floor_g}}`，具体值从 private profile 解析
+- **周减体重**: 遵守 private profile 中的体重变化护栏，不在本文件复制个人数值
 
 ## 弹性饮食规则
 
@@ -243,4 +226,4 @@ Coach-planner 排餐时的营养参考。包含常用餐食模板和食材单价
 | 补剂 | 剂量 | 时机 | 证据等级 | 月成本 |
 |------|------|------|---------|--------|
 | **Creatine Monohydrate** | 5g/天 | Pre-workout shake 一起 | A（最强循证补剂，力量 +5-10%） | ~RM40 |
-| **Magnesium Glycinate** | 200mg/天 | 21:00 pre-sleep | B（改善深睡质量 + 肌肉放松） | ~RM25 |
+| **Magnesium Glycinate** | 按 profile/protocol | pre-sleep slot from private protocol | B（改善深睡质量 + 肌肉放松） | market estimate |

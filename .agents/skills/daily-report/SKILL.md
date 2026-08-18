@@ -12,7 +12,7 @@ allowed-tools: Read, Write, Grep, Glob
 ## 工作流程
 
 1. **读取模板**: 先读取 `templates/daily.md` 获取最新的 YAML 字段结构。
-2. **读取用户画像**: 读取 `user_profile.md` 了解用户的作息/饮食偏好，辅助判断。
+2. **读取用户画像**: 读取 `data/user_profile.md` 了解用户的作息/饮食偏好，辅助判断。
 3. **读取食材单价**: 读取记忆中的食材单价信息，用于估算自炊成本。
 4. **提取元数据**: 从 Brain Dump 中提取所有 YAML 字段。
 5. **生成日志**: 输出符合规范的完整日志文件。

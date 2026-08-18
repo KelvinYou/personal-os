@@ -32,9 +32,10 @@ doctor:
 doctor-web:
 	@python3 $(SCRIPTS_DIR)/doctor.py --web
 
-## 跑 Python 测试 + web typecheck
+## 跑 Python 测试 + mermaid 渲染检查 + web typecheck
 test:
 	@$(PYTHON) -m unittest discover -s tests -t . -v
+	@python3 $(SCRIPTS_DIR)/check_mermaid.py
 	@if [ -d web/node_modules ]; then \
 		cd web && npm run --silent typecheck && echo "[Status: OK] web typecheck 通过"; \
 	else \
