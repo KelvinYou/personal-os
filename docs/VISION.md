@@ -40,7 +40,7 @@ stateDiagram-v2
             state "Deep Work ≥ 4h" as dw_ok
             state "Energy ≥ 6" as en_ok
             state "Sleep Debt < 5h" as sd_ok
-            state "Spend < RM200/wk" as sp_ok
+            state "Spend < RM120/wk" as sp_ok
         }
 
         state "🟡 Warning" as Warning {
