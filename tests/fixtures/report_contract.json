@@ -1,5 +1,5 @@
 {
-  "report_schema_version": 2,
+  "report_schema_version": 3,
   "as_of": "2026-09-05",
   "currency": "MYR",
   "thresholds": {
@@ -8,6 +8,7 @@
     "staleness_warn_days": 30,
     "price_stale_days": 7,
     "fx_stale_days": 1,
+    "regulatory_rules_stale_days": 365,
     "rate_edge_min_pct": 0.25,
     "cap_utilization_warn": 0.9
   },
@@ -329,5 +330,10 @@
       "overflow": 0.0
     }
   ],
+  "wealth_rules": {
+    "schema_version": 1,
+    "stale": false,
+    "stale_facts": []
+  },
   "tracked_total_myr": 31990.0
 }

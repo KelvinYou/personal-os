@@ -58,6 +58,7 @@ wealth:
   price_stale_days: 7            # 股价 as_of 超过 N 天视为过期 (pipeline 每日跑，>7 说明没跑)
   rate_edge_min_pct: 0.25        # 候选去处需比现有利率高出至少此值 (% p.a.) 才值得迁移
   cap_utilization_warn: 0.90     # 账户余额达 cap 的此比例时提示，超出部分只拿 base rate
+  regulatory_rules_stale_days: 365 # wealth_rules.yaml 的法规事实超过此天数即降级可信度
 
 # === 咖啡因 (Caffeine) ===
 caffeine:

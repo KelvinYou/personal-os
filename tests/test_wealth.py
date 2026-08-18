@@ -28,12 +28,14 @@ from lib.wealth import (  # noqa: E402
     load_portfolio,
     load_rates,
     load_savings,
+    load_wealth_rules,
     maturity_events,
     resolve_positions,
     resolve_products,
     rollover_candidates,
     stale_files,
     stale_prices,
+    stale_rule_facts,
 )
 
 FIXTURES = Path(__file__).parent / "fixtures" / "finance"
@@ -62,6 +64,16 @@ class ThresholdsWiringTests(unittest.TestCase):
         cfg = load_thresholds().wealth
         self.assertGreater(cfg.maturity_alert_days, cfg.maturity_critical_days)
         self.assertGreater(cfg.rate_edge_min_pct, 0)
+
+    def test_regulatory_rule_freshness_is_configured_and_deterministic(self):
+        rules = load_wealth_rules()
+        self.assertEqual(
+            stale_rule_facts(rules, date(2027, 8, 12), max_age_days=365),
+            [
+                "prs.annual_tax_relief_cap_myr",
+                "us_estate.form_706na_filing_threshold_usd",
+            ],
+        )
 
 
 class MaturityTests(unittest.TestCase):
@@ -407,6 +419,12 @@ class BuildReportTests(unittest.TestCase):
         )
         flagged = {a["key"] for a in r["cash"]["accounts"] if a["rate_unverified"]}
         self.assertEqual(flagged, {"capped_mmf"})
+
+    def test_report_surfaces_regulatory_rules_freshness(self):
+        r = self._report()
+        self.assertEqual(r["wealth_rules"]["schema_version"], 1)
+        self.assertFalse(r["wealth_rules"]["stale"])
+        self.assertEqual(r["wealth_rules"]["stale_facts"], [])
 
 
 class ReportModelTests(unittest.TestCase):

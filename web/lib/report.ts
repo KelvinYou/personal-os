@@ -144,8 +144,15 @@ export interface Report {
     utilization: number;
     overflow: number;
   }[];
+  wealth_rules: {
+    schema_version: number;
+    stale: boolean;
+    stale_facts: string[];
+  };
   tracked_total_myr: number;
 }
+
+const SUPPORTED_REPORT_SCHEMA_VERSION = 3;
 
 export type LoadResult =
   | { ok: true; report: Report }
@@ -160,6 +167,12 @@ export async function loadReport(): Promise<LoadResult> {
     const parsed = JSON.parse(stdout);
     if (parsed.error) {
       return { ok: false, message: parsed.error };
+    }
+    if (parsed.report_schema_version !== SUPPORTED_REPORT_SCHEMA_VERSION) {
+      return {
+        ok: false,
+        message: `报告版本 ${String(parsed.report_schema_version)} 不受此 dashboard 支持`,
+      };
     }
     return { ok: true, report: parsed as Report };
   } catch (err) {

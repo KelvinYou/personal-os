@@ -15,6 +15,7 @@ from ..schema import WealthCfg
 from .consistency import catalog_conflicts, check_currencies, stale_files
 from .files import FxFile, PortfolioFile, RatesFile, SavingsFile
 from .market_layer import resolve_positions, stale_prices
+from .rules import load_wealth_rules, stale_rule_facts
 from .report_models import (
     AllocationSection,
     AllocationSlice,
@@ -73,6 +74,10 @@ def build_report_model(
     data_dir: Path | None = None,
 ) -> WealthReport:
     check_currencies(savings, rates)
+    wealth_rules = load_wealth_rules()
+    stale_facts = stale_rule_facts(
+        wealth_rules, today, cfg.regulatory_rules_stale_days
+    )
     cash = derive_summary(savings)
     positions = resolve_positions(portfolio, data_dir)
     priced = [p for p in positions if p.priced]
@@ -222,6 +227,11 @@ def build_report_model(
             )
             for w in cap_warnings(savings, cfg)
         ],
+        wealth_rules={
+            "schema_version": wealth_rules.schema_version,
+            "stale": bool(stale_facts),
+            "stale_facts": stale_facts,
+        },
         tracked_total_myr=round(stock_total + cash["total_cash"], 2),
     )
 

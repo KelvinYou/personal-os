@@ -1,7 +1,7 @@
 """render_text() 的 golden 快照 + --strict 退出码语义（审计 §3.11）。
 
 为什么要测这个：`wealth_check.py` 里 142 行格式化逻辑此前零覆盖，而
-`--strict` 的退出码（0=OK / 1=Warning / 2=Critical）是给 cron 用的——
+`--strict` 的退出码（0=OK / 1=Warning / 2=Critical）是给自动化/CI 用的——
 错了不会有人发现，只会安静地不再告警。
 
 快照跑的是 tests/test_report_contract.py 的同一个「所有 section 都非空」场景，
@@ -102,7 +102,7 @@ class RenderGoldenTests(unittest.TestCase):
 
 
 class StrictExitCodeTests(unittest.TestCase):
-    """退出码语义 —— cron 靠它判断要不要吵醒用户。"""
+    """退出码语义 —— 自动化/CI 靠它判断要不要提示用户。"""
 
     def test_clean_report_exits_zero(self):
         _, code = _render(_quiet_report())

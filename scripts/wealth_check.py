@@ -62,6 +62,15 @@ def render_text(r: dict) -> int:
         print("    → 所有 USD 持仓的 MYR 折算值都按这个汇率算，先更新 fx.yaml。")
         exit_code = max(exit_code, 1)
 
+    if r["wealth_rules"]["stale"]:
+        print("\n[Status: Warning] 外部法规事实已过期 — 相关税务判断仅供人工复核")
+        for fact in r["wealth_rules"]["stale_facts"]:
+            print(f"  - {fact}")
+        print(
+            f"    → 复核 config/wealth_rules.yaml（阈值 {cfg['regulatory_rules_stale_days']} 天）"
+        )
+        exit_code = max(exit_code, 1)
+
     if r["catalog_conflicts"]:
         print("\n[Status: Warning] savings.yaml 记录的利率在 rate catalog 中找不到对应档位")
         for c in r["catalog_conflicts"]:

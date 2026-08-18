@@ -58,6 +58,7 @@ from .market_layer import (
 )
 from .report import BUCKET_LABELS, build_report, build_report_model
 from .report_models import WealthReport
+from .rules import WealthRules, load_wealth_rules, stale_rule_facts
 from .yield_layer import (
     Candidate,
     CapWarning,
@@ -97,6 +98,7 @@ __all__ = [
     "Severity",
     "UsHolding",
     "WealthReport",
+    "WealthRules",
     "build_report",
     "build_report_model",
     "cap_warnings",
@@ -107,10 +109,12 @@ __all__ = [
     "load_portfolio",
     "load_rates",
     "load_savings",
+    "load_wealth_rules",
     "maturity_events",
     "resolve_positions",
     "resolve_products",
     "rollover_candidates",
     "stale_files",
     "stale_prices",
+    "stale_rule_facts",
 ]

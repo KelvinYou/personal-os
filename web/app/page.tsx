@@ -39,9 +39,15 @@ export default async function Page() {
   const unpriced = r.stocks.positions.filter((p) => p.price === null);
   const worstSeverity = r.maturity.some((m) => m.severity === "Critical")
     ? "Critical"
-    : r.maturity.length > 0
+    : r.maturity.length > 0 || r.wealth_rules.stale
       ? "Warning"
       : "OK";
+  const dataHealthWarning =
+    r.stale_files.length > 0 ||
+    r.catalog_conflicts.length > 0 ||
+    r.fx.stale ||
+    r.allocation.incomplete ||
+    r.wealth_rules.stale;
 
   return (
     <main className="container max-w-5xl space-y-10 py-10 md:py-14">
@@ -59,10 +65,7 @@ export default async function Page() {
       </header>
 
       {/* Data-health first: every number below inherits these caveats. */}
-      {(r.stale_files.length > 0 ||
-        r.catalog_conflicts.length > 0 ||
-        r.fx.stale ||
-        r.allocation.incomplete) && (
+      {dataHealthWarning && (
         <SectionCard
           title="数据健康"
           description="以下问题会削弱本页所有结论的可信度"
@@ -105,6 +108,14 @@ export default async function Page() {
                 <span className="text-muted-foreground">
                   分母缺少无价持仓（{r.allocation.unpriced_symbols.join(", ")}）——
                   每一栏百分比都偏了，不要据此判断是否需要再平衡
+                </span>
+              </li>
+            )}
+            {r.wealth_rules.stale && (
+              <li className="flex flex-wrap items-center gap-2">
+                <StatusBadge severity="Warning">法规事实过期</StatusBadge>
+                <span className="text-muted-foreground">
+                  {r.wealth_rules.stale_facts.join(", ")}——请先复核 config/wealth_rules.yaml
                 </span>
               </li>
             )}

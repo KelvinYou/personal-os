@@ -173,13 +173,21 @@ class CapOut(BaseModel):
     overflow: float
 
 
+class WealthRulesHealth(BaseModel):
+    model_config = STRICT
+    schema_version: int
+    stale: bool
+    stale_facts: list[str]
+
+
 class WealthReport(BaseModel):
     model_config = STRICT
     # 消费者（web dashboard / skill）据此判断自己读的是不是它认识的形状。
     # 改动字段含义就 bump 它；删/加字段由 tests/test_report_contract.py 守。
+    # v3 (2026-08-18): expose validated regulatory-rule freshness health.
     # v2 (2026-08-12): maturity[] 加 renewal_rate / renewal_product，候选门槛
     # 从合约利率改为续做利率。
-    report_schema_version: int = 2
+    report_schema_version: int = 3
     as_of: date
     currency: str
     thresholds: WealthCfg
@@ -191,5 +199,6 @@ class WealthReport(BaseModel):
     allocation: AllocationSection
     maturity: list[MaturityOut]
     caps: list[CapOut]
+    wealth_rules: WealthRulesHealth
     # 不是 net worth：liabilities 只记月供不追踪本金，NAV 计价产品也不在内。
     tracked_total_myr: float

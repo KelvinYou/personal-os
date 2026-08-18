@@ -181,6 +181,7 @@ class WealthCfg(BaseModel):
     price_stale_days: int = 7
     # FX 比持仓变得快得多，所以它有自己的保质期，不跟 staleness_warn_days 混用。
     fx_stale_days: int = 1
+    regulatory_rules_stale_days: int = 365
     rate_edge_min_pct: float = 0.25
     cap_utilization_warn: float = 0.90
 
