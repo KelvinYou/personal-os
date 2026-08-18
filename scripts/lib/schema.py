@@ -92,7 +92,7 @@ class DailyLog(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     date: date  # derived from filename, not stored in frontmatter
-    energy_level: int | None = None
+    energy_level: int | None = Field(default=None, ge=1, le=10)
     deep_work_hours: float | None = None
     sleep: Sleep = Field(default_factory=Sleep)
     readiness: Readiness = Field(default_factory=Readiness)
@@ -101,7 +101,7 @@ class DailyLog(BaseModel):
     caffeine_cutoff: str | None = None
     primary_blocker: str | None = None
     daily_spend: list[DailySpend] = Field(default_factory=list)
-    mental_load: int | None = None
+    mental_load: int | None = Field(default=None, ge=1, le=7)
     body: Body = Field(default_factory=Body)
     adherence: Adherence = Field(default_factory=Adherence)
 

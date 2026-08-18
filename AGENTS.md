@@ -33,7 +33,7 @@
 
 ## 关键约定
 - 每日日志文件名格式: `YYYY-MM-DD.md`
-- YAML frontmatter 必须包含完整字段集 (见 templates/daily.md)
+- YAML frontmatter 必须通过 `scripts/lib/schema.py` 校验；字段清单与模板保持 parity（可选字段允许留空）
 - 所有阈值从 `config/thresholds.yaml` 读取，脚本中禁止硬编码魔法数字
 - 脚本使用 Python 3，依赖见 `requirements.txt`（`make setup` 安装到 `.venv/`）
 - 输出全量符合 CommonMark 标准
