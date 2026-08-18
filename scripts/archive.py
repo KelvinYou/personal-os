@@ -188,6 +188,31 @@ def body_rows(logs: list[DailyLog]) -> list[dict]:
     return rows
 
 
+def merge_body_rows(body_csv: Path, current_rows: list[dict]) -> list[dict]:
+    """Preserve archived body points while refreshing rows from live daily logs.
+
+    Cold daily files are deleted after they are folded into the archive.  On a
+    later run, ``current_rows`` therefore cannot contain the already-archived
+    measurements.  Keep the existing CSV as the historical source and let a
+    currently present daily log replace the row for the same date.
+    """
+    by_date: dict[str, dict] = {}
+    if body_csv.is_file():
+        with body_csv.open(newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                day = row.get("date")
+                if day:
+                    by_date[day] = {
+                        "date": day,
+                        **{field: row.get(field, "") for field in BODY_FIELDS},
+                    }
+
+    for row in current_rows:
+        by_date[str(row["date"])] = row
+
+    return [by_date[day] for day in sorted(by_date)]
+
+
 # --------------------------------------------------------------------------
 # fitness staging buffer
 # --------------------------------------------------------------------------
@@ -290,16 +315,19 @@ def run(hot_days: int, fitness_days: int, apply: bool, today: date | None = None
     # --- 3. body.csv (全历史，跨热冷窗口) ---
     brows = body_rows(all_logs)
     body_csv = ARCHIVE_DIR / "body.csv"
-    print(f"\n[3/4] 体成分测点: {len(brows)} → {_rel(body_csv)}")
+    merged_brows = merge_body_rows(body_csv, brows)
+    print(f"\n[3/4] 体成分测点: {len(merged_brows)} → {_rel(body_csv)}")
     if apply and brows:
         ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
         with body_csv.open("w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=["date", *BODY_FIELDS])
             w.writeheader()
-            w.writerows(brows)
+            w.writerows(merged_brows)
 
     # --- 4. quarterly digests + prune ---
-    digests = build_digests(digestible, cfg.sleep.baseline_hours)
+    digests = build_digests(
+        digestible, cfg.sleep.baseline_hours, cfg.sleep
+    )
     print(f"\n[4/4] 季度归档: {len(digests)} 个文件")
     for q, (rows, events) in sorted(digests.items()):
         path = ARCHIVE_DIR / f"{q}.md"

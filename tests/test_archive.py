@@ -120,7 +120,8 @@ class ApplyTests(ArchiveSandbox):
         self.assertIn("会议挤掉下午 block", q)
 
         # body.csv spans the whole history, including the folded day
-        rows = list(csv.DictReader((self.arch / "body.csv").open(encoding="utf-8")))
+        with (self.arch / "body.csv").open(encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
         self.assertEqual(rows[0]["date"], cold.isoformat())
         self.assertEqual(rows[0]["weight"], "71.5")
 
@@ -171,15 +172,32 @@ class ApplyTests(ArchiveSandbox):
         self.assertFalse(self.arch.exists())
 
     def test_idempotent(self):
-        """Re-running must not re-fold already-archived weeks or crash."""
+        """Re-running must preserve body points already moved to the archive."""
         cold = TODAY - timedelta(days=200)
-        self.write_day(cold, energy_level=7, sleep={"duration": 7.2})
+        hot = TODAY - timedelta(days=10)
+        self.write_day(
+            cold,
+            energy_level=7,
+            sleep={"duration": 7.2},
+            body={"weight": 71.5},
+        )
+        self.write_day(
+            hot,
+            energy_level=7,
+            sleep={"duration": 7.2},
+            body={"weight": 70.5},
+        )
         archive.run(hot_days=90, fitness_days=30, apply=True, today=TODAY)
-        first = (self.arch / "2026-Q1.md").read_text(encoding="utf-8")
+        body_csv = self.arch / "body.csv"
+        with body_csv.open(encoding="utf-8") as f:
+            first_rows = list(csv.DictReader(f))
+        first_dates = [row["date"] for row in first_rows]
+        self.assertEqual(first_dates, [cold.isoformat(), hot.isoformat()])
+
         archive.run(hot_days=90, fitness_days=30, apply=True, today=TODAY)
-        self.assertTrue((self.arch / "2026-Q1.md").exists())
-        # second pass has nothing left to fold, so it must not blank the file
-        self.assertIn("2026-W05", first)
+        with body_csv.open(encoding="utf-8") as f:
+            second_rows = list(csv.DictReader(f))
+        self.assertEqual(second_rows, first_rows)
 
 
 if __name__ == "__main__":
