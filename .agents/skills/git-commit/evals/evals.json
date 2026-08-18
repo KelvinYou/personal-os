@@ -1,0 +1,66 @@
+{
+  "skill_name": "git-commit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Commit everything changed in this workspace.",
+      "expected_output": "The agent scans the parent repository and initialized submodules, creates separate atomic groups by repository and intent, and does not collapse the entire workspace into one commit.",
+      "expectations": [
+        "The response includes a commit plan before execution.",
+        "No commit group contains paths from two repositories.",
+        "The response distinguishes attributable and unattributed dirty files."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Commit the web feature and its tests, then update the parent submodule pointer.",
+      "expected_output": "The child repository is committed first, the parent gitlink is refreshed and committed afterward, and the two commits are reported separately.",
+      "expectations": [
+        "The child commit appears before the parent pointer commit.",
+        "The parent commit stages only the intended gitlink unless parent-owned files are explicitly planned.",
+        "Final verification checks the child HEAD against the parent pointer."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Commit the current changes; I did not specify how to split them.",
+      "expected_output": "The agent applies the default split-by-repository-and-intent policy and asks one consolidated question only if ownership or grouping is genuinely ambiguous.",
+      "expectations": [
+        "The agent does not interpret unspecified splitting as permission for one giant batch commit.",
+        "Implementation and necessary tests may share a group, while unrelated docs/data/config changes are separated.",
+        "Ambiguous changes are not silently committed."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Commit the staged changes and leave anything else alone.",
+      "expected_output": "The agent treats the existing index as the user's explicit boundary, does not unstage or add files, and reports remaining work.",
+      "expectations": [
+        "The staged diff is inspected before committing.",
+        "Unstaged and untracked files are not added automatically.",
+        "Mixed staged intent causes a clarification instead of a silent regrouping."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Commit all changes, including the submodules.",
+      "expected_output": "The agent recursively inspects initialized submodules, commits attributable child changes before parent pointers, reports unavailable submodules, and never stages secret candidates.",
+      "expectations": [
+        "The response includes a repository map or equivalent graph-aware status.",
+        "Child repositories are committed before their parent gitlinks.",
+        "Missing or uninitialized submodules are reported without running submodule update.",
+        "Secret-like paths are excluded and surfaced as a warning."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Commit the changes in the current submodule.",
+      "expected_output": "The agent scopes the operation to the current repository and its ancestors unless the user requests sibling repositories, and warns if the child is on detached HEAD.",
+      "expectations": [
+        "Sibling repositories are not committed merely because they are dirty.",
+        "The parent pointer is handled only after the child commit.",
+        "Detached HEAD is reported as a sharing/push warning rather than silently fixed."
+      ]
+    }
+  ]
+}
