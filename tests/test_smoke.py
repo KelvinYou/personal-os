@@ -3,8 +3,14 @@ from __future__ import annotations
 
 import sys
 import unittest
+import re
+from contextlib import redirect_stderr
 from datetime import date
 from pathlib import Path
+from tempfile import TemporaryDirectory
+from io import StringIO
+
+from pydantic import ValidationError
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -49,6 +55,58 @@ class PoorSleepDerivationTests(unittest.TestCase):
         log = DailyLog(date=date(2026, 1, 9))
         self.assertFalse(derive_poor_sleep(log))
 
+    def test_uses_sleep_thresholds_from_config(self):
+        from lib.schema import DailyLog, Readiness, Sleep
+
+        cfg = load_thresholds().sleep.model_copy(
+            update={
+                "poor_sleep_duration_hours": 7.0,
+                "poor_sleep_hrv_ratio": 0.95,
+            }
+        )
+        log = DailyLog(
+            date=date(2026, 1, 9),
+            sleep=Sleep(duration=7.2, awake_min=50),
+            readiness=Readiness(hrv=50, hrv_baseline=54),
+        )
+        self.assertTrue(derive_poor_sleep(log, cfg))
+
+
+class DailySchemaBoundaryTests(unittest.TestCase):
+    def test_manual_ranges_are_enforced(self):
+        from lib.schema import DailyLog
+
+        with self.assertRaises(ValidationError):
+            DailyLog(date=date(2026, 1, 9), energy_level=11)
+        with self.assertRaises(ValidationError):
+            DailyLog(date=date(2026, 1, 9), mental_load=8)
+
+    def test_template_mentions_every_runtime_frontmatter_field(self):
+        from lib.schema import DailyLog
+
+        template = (ROOT / "templates" / "daily.md").read_text(encoding="utf-8")
+        for field in DailyLog.model_fields:
+            if field == "date":
+                continue
+            self.assertRegex(
+                template,
+                rf"(?m)^\s*#?\s*{re.escape(field)}\s*:",
+                msg=f"templates/daily.md 缺少 schema 字段 {field}",
+            )
+
+
+class DailyLogWarningTests(unittest.TestCase):
+    def test_iter_all_surfaces_malformed_logs(self):
+        from lib.daily_log import iter_all
+
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "2026-01-09.md"
+            path.write_text("not frontmatter", encoding="utf-8")
+            stderr = StringIO()
+            with redirect_stderr(stderr):
+                self.assertEqual(list(iter_all(Path(tmp))), [])
+            self.assertIn("[Status: Warning]", stderr.getvalue())
+
 
 class RollingDebtTests(FixtureHelpers):
     def test_rolling_debt_matches_manual(self):
@@ -88,6 +146,14 @@ class BreakerEvalTests(FixtureHelpers):
         m = latest_metrics(logs, cfg.sleep.baseline_hours)
         tripped = {t.name for t in evaluate(m, cfg.circuit_breakers)}
         self.assertIn("Overtraining Warning", tripped)
+
+    def test_spending_surge_trips_on_latest_day_transaction(self):
+        logs = self._fixtures()
+        cfg = load_thresholds()
+        m = latest_metrics(logs, cfg.sleep.baseline_hours)
+        self.assertEqual(m["single_transaction"], 35.0)
+        tripped = {t.name for t in evaluate(m, cfg.circuit_breakers)}
+        self.assertIn("Spending Surge", tripped)
 
     def test_missing_metric_does_not_false_positive(self):
         # Empty metrics snapshot should never trip any breaker.
@@ -146,7 +212,7 @@ class ProductionLogValidationTests(unittest.TestCase):
         if not daily_dir.exists():
             self.skipTest("data/daily not present")
         logs = list(iter_all(daily_dir))
-        # iter_all swallows errors; validate by re-loading each file strictly.
+        # iter_all warns and skips errors; validate by re-loading each file strictly.
         for fp in sorted(daily_dir.glob("*.md")):
             with self.subTest(file=fp.name):
                 load(fp)  # raises on failure

@@ -21,6 +21,10 @@ from dotenv import load_dotenv
 import coros_api
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from lib.clock import today_kl  # noqa: E402
+
 FITNESS_DIR = ROOT / "data" / "fitness"
 DAILY_DIR = ROOT / "data" / "daily"
 
@@ -29,7 +33,7 @@ def _parse_args() -> date:
     p = argparse.ArgumentParser()
     p.add_argument("--date", help="YYYY-MM-DD (default: yesterday)")
     args = p.parse_args()
-    return date.fromisoformat(args.date) if args.date else date.today() - timedelta(days=1)
+    return date.fromisoformat(args.date) if args.date else today_kl() - timedelta(days=1)
 
 
 def _r(x, n=1):

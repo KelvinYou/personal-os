@@ -8,6 +8,10 @@ from datetime import date, timedelta
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+
+from lib.clock import today_kl  # noqa: E402
+
 TEMPLATE_PATH = PROJECT_ROOT / "templates" / "decision.md"
 DECISIONS_DIR = PROJECT_ROOT / "data" / "decisions"
 
@@ -20,7 +24,7 @@ def main() -> None:
     parser.add_argument("--date", default=None, help="Decision date (YYYY-MM-DD, default today)")
     args = parser.parse_args()
 
-    decided = date.fromisoformat(args.date) if args.date else date.today()
+    decided = date.fromisoformat(args.date) if args.date else today_kl()
     decision_id = f"{decided.isoformat()}-{args.slug}"
     filename = f"{decision_id}.md"
     out_path = DECISIONS_DIR / filename

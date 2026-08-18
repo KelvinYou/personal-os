@@ -5,9 +5,9 @@ PYTHON := .venv/bin/python3
 DAILY_DIR := data/daily
 SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
-TODAY := $(shell date +%Y-%m-%d)
+TODAY := $(shell TZ=Asia/Kuala_Lumpur date +%Y-%m-%d)
 
-.PHONY: archive sync-protocol setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint migrate decisions-due decision-new calibration quarterly wealth web help
+.PHONY: archive sync-protocol setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:

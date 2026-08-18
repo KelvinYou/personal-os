@@ -6,6 +6,8 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
+from .clock import now_kl, today_kl
+
 ROOT = Path(__file__).resolve().parents[2]
 LOG_DIR = ROOT / "data" / "logs"
 
@@ -31,9 +33,9 @@ def emit_event(event_type: str, payload: dict | None = None) -> None:
     """
     try:
         LOG_DIR.mkdir(parents=True, exist_ok=True)
-        fname = f"engine-{date.today().isoformat()}.jsonl"
+        fname = f"engine-{today_kl().isoformat()}.jsonl"
         record = {
-            "ts": datetime.now().isoformat(timespec="seconds"),
+            "ts": now_kl().isoformat(timespec="seconds"),
             "event": event_type,
             "payload": _json_safe(payload or {}),
         }

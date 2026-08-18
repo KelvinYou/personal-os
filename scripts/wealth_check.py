@@ -22,6 +22,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib.config import load_thresholds  # noqa: E402
+from lib.clock import today_kl  # noqa: E402
 from lib.wealth import (  # noqa: E402
     build_report,
     load_fx,
@@ -205,11 +206,11 @@ def main() -> int:
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="以严重度作为退出码 (1=Warning, 2=Critical)，供 cron/CI 使用。"
+        help="以严重度作为退出码 (1=Warning, 2=Critical)，供自动化/CI 使用。"
         "默认退出 0——本命令是信息性报告，warning 不代表运行失败。",
     )
     args = parser.parse_args()
-    today = date.fromisoformat(args.date) if args.date else date.today()
+    today = date.fromisoformat(args.date) if args.date else today_kl()
 
     cfg = load_thresholds().wealth
     try:

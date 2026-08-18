@@ -61,7 +61,9 @@ def run_checks() -> list[str]:
             if spend.amount is not None:
                 total_spend += spend.amount
 
-    metrics = latest_metrics(logs, sleep_baseline, cfg.sleep.debt_window_days)
+    metrics = latest_metrics(
+        logs, sleep_baseline, cfg.sleep.debt_window_days, sleep_cfg=cfg.sleep
+    )
     tripped = evaluate(metrics, cfg.circuit_breakers)
     for tb in tripped:
         actions_str = " / ".join(tb.actions)
@@ -72,7 +74,7 @@ def run_checks() -> list[str]:
     # 连续 Poor 睡眠告警 (aggregate rule — emits on every day that crosses the threshold)
     poor_count = 0
     for log in logs:
-        if derive_poor_sleep(log):
+        if derive_poor_sleep(log, cfg.sleep):
             poor_count += 1
             if poor_count >= poor_streak:
                 alerts.append(

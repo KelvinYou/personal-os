@@ -13,7 +13,8 @@ from datetime import date, timedelta
 from typing import Iterable
 
 from .daily_log import derive_poor_sleep
-from .schema import DailyLog
+from .clock import today_kl
+from .schema import DailyLog, SleepCfg
 
 
 def _avg(values: list[float]) -> float:
@@ -57,6 +58,7 @@ def compute_weekly_aggregate(
     sleep_baseline: float,
     debt_window_days: int = 7,
     today: date | None = None,
+    sleep_cfg: SleepCfg | None = None,
 ) -> WeeklyAggregate:
     """Aggregate week-of-Mon logs + compute rolling-7d debt across `all_logs`.
 
@@ -67,7 +69,7 @@ def compute_weekly_aggregate(
     week_logs = list(week_logs)
     week_logs.sort(key=lambda l: l.date)
     if not week_logs:
-        return WeeklyAggregate(monday=_monday_of(today or date.today()))
+        return WeeklyAggregate(monday=_monday_of(today or today_kl()))
 
     monday = _monday_of(week_logs[0].date)
 
@@ -101,7 +103,7 @@ def compute_weekly_aggregate(
             debt = sleep_baseline - log.sleep.duration
             if debt > 0:
                 agg.total_sleep_debt += debt
-        if derive_poor_sleep(log):
+        if derive_poor_sleep(log, sleep_cfg):
             agg.poor_sleep_days += 1
 
         if log.training.today_load is not None:
@@ -130,11 +132,11 @@ def compute_weekly_aggregate(
     agg.avg_load_ratio = _avg(load_ratios)
     agg.avg_mental_load = _avg(mental)
 
-    ref = today or max((l.date for l in week_logs), default=date.today())
+    ref = today or max((l.date for l in week_logs), default=today_kl())
     agg.rolling_7d_sleep_debt = compute_rolling_debt(
         all_logs, sleep_baseline, ref=ref, window_days=debt_window_days
     )
-    agg.consecutive_poor = _consec_poor_up_to(all_logs, ref)
+    agg.consecutive_poor = _consec_poor_up_to(all_logs, ref, sleep_cfg)
     return agg
 
 
@@ -157,11 +159,13 @@ def compute_rolling_debt(
     return total
 
 
-def _consec_poor_up_to(logs: Iterable[DailyLog], ref: date) -> int:
+def _consec_poor_up_to(
+    logs: Iterable[DailyLog], ref: date, sleep_cfg: SleepCfg | None = None
+) -> int:
     ordered = sorted((l for l in logs if l.date <= ref), key=lambda l: l.date, reverse=True)
     count = 0
     for log in ordered:
-        if derive_poor_sleep(log):
+        if derive_poor_sleep(log, sleep_cfg):
             count += 1
         else:
             break
@@ -172,13 +176,16 @@ def latest_metrics(
     logs: list[DailyLog],
     sleep_baseline: float,
     debt_window_days: int = 7,
+    sleep_cfg: SleepCfg | None = None,
 ) -> dict:
     """Snapshot of metrics used for breaker evaluation.
 
     For per-day metrics, walks logs in reverse and takes the first non-None
     value — so an empty template day at the head doesn't mask yesterday's data.
-    Rolling metrics span the full list. Missing values are omitted; the
-    breaker evaluator None-guards separately.
+    Rolling metrics span the full list. ``single_transaction`` is the maximum
+    spend on the latest day only, so an old purchase does not keep tripping a
+    current-snapshot breaker. Missing values are omitted; the breaker evaluator
+    None-guards separately.
     """
     if not logs:
         return {}
@@ -201,11 +208,22 @@ def latest_metrics(
     take("load_ratio", lambda l: l.readiness.load_ratio)
     take("tired_rate", lambda l: l.readiness.tired_rate)
 
+    # Spending Surge is a current-snapshot breaker. Only the latest day with
+    # an observed spend contributes, so an old purchase does not keep tripping
+    # the breaker after a newer day has been logged.
+    latest_spends = [
+        float(s.amount)
+        for s in ordered[-1].daily_spend
+        if s.amount is not None
+    ]
+    if latest_spends:
+        metrics["single_transaction"] = max(latest_spends)
+
     ref = ordered[-1].date
     metrics["rolling_7d_sleep_debt"] = compute_rolling_debt(
         ordered, sleep_baseline, ref=ref, window_days=debt_window_days
     )
-    metrics["consecutive_poor_sleep"] = _consec_poor_up_to(ordered, ref)
+    metrics["consecutive_poor_sleep"] = _consec_poor_up_to(ordered, ref, sleep_cfg)
     return metrics
 
 

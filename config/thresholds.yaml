@@ -17,6 +17,8 @@ deep_work:
 # === 睡眠与健康 (Sleep & Health) ===
 sleep:
   baseline_hours: 7.5         # 睡眠基准时长，低于此值计入睡眠负债 (与 ideal_range 下沿对齐)
+  poor_sleep_duration_hours: 6.5 # Option P-d：低于此时长直接判 Poor Sleep
+  poor_sleep_hrv_ratio: 0.90   # Option P-d：awake 超标时，HRV 低于 baseline × 此比例判 Poor
   debt_window_days: 7          # 滚动窗口天数，仅计算近 N 天的负债 (旧数据自动衰减)
   debt_recovery_streak: 3      # 连续 N 天 ≥ baseline 即可解锁 Level 1 运动限制
   ideal_range: [7.5, 8.5]     # 理想睡眠时长区间
@@ -100,6 +102,7 @@ circuit_breakers:
     condition:
       metric: sleep_duration
       operator: "<"
+      # Intentionally mirrors sleep.poor_sleep_duration_hours (6.5h); duration-only breaker, separate from Poor Sleep's awake/HRV branch.
       value: 6.5
     actions:
       - "禁止晨跑，改为低心率快走或完全休息"

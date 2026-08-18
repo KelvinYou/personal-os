@@ -33,7 +33,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 from stock_analysis.data.us_market import USMarketFetcher
@@ -100,7 +101,7 @@ def main():
 
     briefing = Briefing(
         ticker=ticker,
-        date=date.today().isoformat(),
+        date=datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).date().isoformat(),
         overall_signal=signal,
         conviction=conviction,
         executive_summary=synthesis_raw["executive_summary"],

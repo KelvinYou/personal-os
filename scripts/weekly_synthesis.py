@@ -53,13 +53,23 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     week_resolved, coverage = resolve_all(week_logs, cfg.logging_defaults)
 
     agg = compute_weekly_aggregate(
-        week_resolved, all_logs, sleep_baseline, cfg.sleep.debt_window_days, today=week_last
+        week_resolved,
+        all_logs,
+        sleep_baseline,
+        cfg.sleep.debt_window_days,
+        today=week_last,
+        sleep_cfg=cfg.sleep,
     )
     # Breaker eval uses logs up to the week's last day, so historic weeks
     # get the breaker state that was relevant then. Raw logs on purpose:
     # an alarm must fire on evidence, never on a baseline fill.
     logs_up_to_week = [l for l in all_logs if l.date <= week_last]
-    metrics = latest_metrics(logs_up_to_week, sleep_baseline, cfg.sleep.debt_window_days)
+    metrics = latest_metrics(
+        logs_up_to_week,
+        sleep_baseline,
+        cfg.sleep.debt_window_days,
+        sleep_cfg=cfg.sleep,
+    )
     tripped = evaluate(metrics, cfg.circuit_breakers)
     base_score = compute_base_score(agg, week_resolved, cfg.scoring)
 
@@ -100,7 +110,7 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
 
     # --- Prompt assembly ---
     profile_file = PROJECT_ROOT / "data" / "user_profile.md"
-    profile_content = profile_file.read_text(encoding="utf-8") if profile_file.exists() else "未找到 user_profile.md。"
+    profile_content = profile_file.read_text(encoding="utf-8") if profile_file.exists() else "未找到 data/user_profile.md。"
 
     # Per-day slices. The dumped frontmatter is the *resolved* one (so it matches
     # what was scored); `filled` names which of those values came from the
@@ -143,7 +153,7 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     lines.append(f"- 有效记录天数：{agg.days_logged} 天")
     lines.append(f"- 总专注工作时长：{agg.total_deep_work:.1f} 小时")
     lines.append(f"- 平均精力值：{agg.avg_energy:.1f}/10")
-    lines.append(f"- 平均心智负荷：{agg.avg_mental_load:.1f}/10")
+    lines.append(f"- 平均心智负荷：{agg.avg_mental_load:.1f}/7")
     lines.append("- **睡眠结构 (COROS)**:")
     lines.append(f"  - 平均睡眠时长：{agg.avg_sleep:.2f}h")
     lines.append(f"  - 平均深睡：{agg.avg_deep_min:.0f} min")

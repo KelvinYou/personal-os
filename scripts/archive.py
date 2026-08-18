@@ -37,6 +37,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 from lib.config import load_thresholds  # noqa: E402
+from lib.clock import today_kl  # noqa: E402
 from lib.daily_log import derive_poor_sleep, load_safe  # noqa: E402
 from lib.defaults import measured_fields  # noqa: E402
 from lib.logger import emit_event  # noqa: E402
@@ -106,7 +107,12 @@ def _avg(xs: list[float]) -> float | None:
     return sum(xs) / len(xs) if xs else None
 
 
-def week_digest_row(monday: date, logs: list[DailyLog], sleep_baseline: float) -> str:
+def week_digest_row(
+    monday: date,
+    logs: list[DailyLog],
+    sleep_baseline: float,
+    sleep_cfg=None,
+) -> str:
     """One markdown row summarizing an ISO week of cold logs."""
     iso_year, iso_week, _ = monday.isocalendar()
     energies = [float(l.energy_level) for l in logs if l.energy_level is not None]
@@ -116,7 +122,7 @@ def week_digest_row(monday: date, logs: list[DailyLog], sleep_baseline: float) -
     spend = sum(s.amount for l in logs for s in l.daily_spend if s.amount is not None)
     load = sum(l.training.today_load for l in logs if l.training.today_load is not None)
     sessions = sum(len(l.activities) for l in logs)
-    poor = sum(1 for l in logs if derive_poor_sleep(l))
+    poor = sum(1 for l in logs if derive_poor_sleep(l, sleep_cfg))
     debt = sum(max(0.0, sleep_baseline - float(l.sleep.duration)) for l in logs if l.sleep.duration is not None)
     weights = [float(l.body.weight) for l in logs if l.body.weight is not None]
     blockers = sum(1 for l in logs if l.primary_blocker and str(l.primary_blocker).strip())
@@ -154,7 +160,9 @@ def quarter_of(d: date) -> str:
     return f"{d.year}-Q{(d.month - 1) // 3 + 1}"
 
 
-def build_digests(cold: list[DailyLog], sleep_baseline: float) -> dict[str, tuple[list[str], list[str]]]:
+def build_digests(
+    cold: list[DailyLog], sleep_baseline: float, sleep_cfg=None
+) -> dict[str, tuple[list[str], list[str]]]:
     """Group cold logs by ISO week, bucket by quarter → (digest rows, event lines)."""
     by_week: dict[date, list[DailyLog]] = defaultdict(list)
     for log in cold:
@@ -165,7 +173,7 @@ def build_digests(cold: list[DailyLog], sleep_baseline: float) -> dict[str, tupl
     for monday in sorted(by_week):
         week = sorted(by_week[monday], key=lambda l: l.date)
         q = quarter_of(monday)
-        rows[q].append(week_digest_row(monday, week, sleep_baseline))
+        rows[q].append(week_digest_row(monday, week, sleep_baseline, sleep_cfg))
         events[q].extend(event_lines(week))
     return {q: (rows[q], events[q]) for q in rows}
 
@@ -239,7 +247,7 @@ def run(hot_days: int, fitness_days: int, apply: bool, today: date | None = None
         return 0
 
     cfg = load_thresholds()
-    ref = today or date.today()
+    ref = today or today_kl()
     hot_cutoff = ref - timedelta(days=hot_days)
     fit_cutoff = ref - timedelta(days=fitness_days)
 

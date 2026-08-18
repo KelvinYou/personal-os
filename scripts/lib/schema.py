@@ -138,6 +138,8 @@ class DeepWorkCfg(BaseModel):
 class SleepCfg(BaseModel):
     model_config = ConfigDict(extra="allow")  # tolerate supplementary keys
     baseline_hours: float
+    poor_sleep_duration_hours: float
+    poor_sleep_hrv_ratio: float
     debt_window_days: int = 7
     debt_recovery_streak: int = 3
     ideal_range: list[float]
