@@ -65,6 +65,11 @@ daily:
 lint:
 	@$(PYTHON) $(SCRIPTS_DIR)/lint_daily.py
 
+## 检查所有 Markdown 里的 mermaid 图能否在 GitHub 上正确渲染
+## 不依赖 node —— 查的是「语法合法但渲染错」的那几类 bug (literal \n / 未声明 classDef)
+check-mermaid:
+	@python3 $(SCRIPTS_DIR)/check_mermaid.py
+
 ## 运行逻辑引擎检查 (Logic Engine)
 check:
 	@$(PYTHON) $(SCRIPTS_DIR)/report_gen.py
@@ -84,7 +89,7 @@ sync-coros:
 sync-calendar:
 	@$(PYTHON) $(SCRIPTS_DIR)/sync_calendar.py $(if $(WEEK),--week $(WEEK),)
 
-## 把 standard_week.yaml 的常驻锚点推成周期性事件 (建一次就一直重复)
+## 把 standard_week.yaml 的 Calendar anchors projection 推成周期性事件 (建一次就一直重复)
 ## 无提醒 + 标记 Free；推到独立日历 Personal-OS，可在侧边栏单独开关
 ## 用法: make sync-protocol DRY=1 (预览) 或 make sync-protocol (真推)
 sync-protocol:

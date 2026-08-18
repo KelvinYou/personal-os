@@ -53,35 +53,35 @@ stateDiagram-v2
         state "🔴 Critical" as Critical {
             state "Energy < 4" as en_c
             state "Sleep < 6.5h" as sl_c
-            state "Sleep Debt ≥ 10h" as sd_c
+            state "Sleep Debt > 8h" as sd_c
             state "Mental Load ≥ 7" as ml_c
         }
 
         state "⛔ BREAKER (5 types)" as BREAKER {
-            state "Sleep Critical\n< 6.5h → Deload" as B1
-            state "Sleep Debt ≥ 5h\n→ Restrict Training" as B2
-            state "Energy Collapse < 4\n→ DW Cap 2h" as B3
-            state "Mental Overload ≥ 7\n→ Single-task" as B4
-            state "Poor Sleep ×2+\n→ System Offline" as B5
+            state "Sleep Critical<br/>< 6.5h → Deload" as B1
+            state "Sleep Debt ≥ 5h<br/>→ Restrict Training" as B2
+            state "Energy Collapse < 4<br/>→ DW Cap 2h" as B3
+            state "Mental Overload ≥ 7<br/>→ Single-task" as B4
+            state "Poor Sleep ×2+<br/>→ System Offline" as B5
         }
     }
 
     state "📊 Weekly Review (Report Agent)" as weekly {
         state "4D Scoring" as scoring {
-            state "Output 40pt\nDeep Work hours + quality" as S1
-            state "Health 30pt\nSleep + Energy + Exercise" as S2
-            state "Mental 20pt\nResilience + Breaker wisdom" as S3
-            state "Habits 10pt\nSpend + Micro-habits" as S4
+            state "Output 40pt<br/>Deep Work hours + quality" as S1
+            state "Health 30pt<br/>Sleep + Energy + Exercise" as S2
+            state "Mental 20pt<br/>Resilience + Breaker wisdom" as S3
+            state "Habits 10pt<br/>Spend + Micro-habits" as S4
         }
-        state "Trend Compare\nWoW delta" as trend
-        state "P0/P1/P2 Objectives\n+ Constraints" as objectives
+        state "Trend Compare<br/>WoW delta" as trend
+        state "P0/P1/P2 Objectives<br/>+ Constraints" as objectives
         scoring --> trend
         trend --> objectives
     }
 
     state "🎯 Coach-Planner (Schedule Agent)" as coach {
-        state "Read Objectives\nfrom Report" as read_obj
-        state "Assess Current State\nLogs + Breakers" as assess
+        state "Read Objectives<br/>from Report" as read_obj
+        state "Assess Current State<br/>Logs + Breakers" as assess
         state "Next-day Schedule" as sched
         state "Next-week Timetable" as timetable
         state "Decision Support" as decision
