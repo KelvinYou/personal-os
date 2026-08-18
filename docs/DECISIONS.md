@@ -66,6 +66,15 @@
 | Sleep debt 双变量 | display 用本周累计，breaker fill 用 rolling 7d | 两者语义本来就不同，强行统一会让其中一个失真 |
 | `signal_convergence`（ai-stock-analysis） | 确定性计算，丢弃 LLM 自报值 | 它 gate 了 RiskChecker 是否报精确价位；LLM 自报等于让模型说服自己开仓 |
 
+### 连续 Poor Sleep 的缺日语义（2026-08-18）
+
+| 决策 | 选择 | 替代方案 | 拒绝理由 |
+|---|---|---|---|
+| streak 的连续性 | 按**已存在的日志记录**连续计数；缺失日期视为未知，不算恢复；已有日志但不满足 Poor 条件才会打断 streak | 把缺失日期当作健康日，或要求日历日期严格相邻 | 没有日志不能证明睡眠恢复；把沉默当作恢复会低估风险，同时也不改变现有日志的明确语义 |
+
+该语义适用于 `scripts/lib/metrics.py::_consec_poor_up_to` 与逻辑引擎的连续 Poor
+告警；若未来要改成严格日历连续，必须同时更新这两个 owner 及回归测试。
+
 ---
 
 ## 3. Kill criteria —— decision journal 三级熔断
