@@ -1,6 +1,6 @@
 # Tracked Assets — 本地理财仪表盘
 
-**Local only. 不部署。** 本应用读取 private submodule `data/` 里的净资产数据；
+**Local only. 不部署。** 本应用读取 private submodule `data/` 里的 Tracked Assets 数据（不是完整净资产）；
 `repos/ai-stock-analysis` 是 public repo，两者的隔离是有意为之
 （见 `../docs/plan-wealth-dashboard.md` §1.2）。任何形式的部署都要先解决
 private 数据的托管边界。
