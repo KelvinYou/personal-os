@@ -30,6 +30,7 @@ CFG = LoggingDefaultsCfg(
     adherence="✅",
     daily_spend=25.9,
     coverage_warn_ratio=0.60,
+    adherence_drift_days=3,
 )
 
 # 2026-08-18 is a Tuesday, 2026-08-22 a Saturday — both after effective_from.

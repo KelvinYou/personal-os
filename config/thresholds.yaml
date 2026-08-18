@@ -92,6 +92,7 @@ logging_defaults:
   # coverage = 实测手填字段数 / 应填字段数。低于此值周报打 Low Confidence 标记，
   # 但**不扣分** —— 惩罚沉默正是这次要拆掉的东西。
   coverage_warn_ratio: 0.60
+  adherence_drift_days: 3        # 连续偏离 standard_week 的天数才触发重排告警
 
 # 作息 (Schedule) 已移至 data/user_profile.md §0 `schedule`
 

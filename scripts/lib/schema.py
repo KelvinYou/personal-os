@@ -210,6 +210,7 @@ class LoggingDefaultsCfg(BaseModel):
     adherence: Literal["✅", "⚠️", "🔴"] | None = None
     daily_spend: float | None = None
     coverage_warn_ratio: float = 0.60
+    adherence_drift_days: int
 
 
 class BreakerCondition(BaseModel):

@@ -84,8 +84,8 @@ def run_checks() -> list[str]:
             poor_count = 0
 
     # --- Rule 7: Adherence drift (W22+ lightweight log) ---
-    # 3+ 连续 ⚠️/🔴 → timetable 与 reality 系统性偏离，coach-planner 需重排
-    ADHERENCE_DRIFT_THRESHOLD = 3
+    # configured consecutive ⚠️/🔴 days → timetable 与 reality 系统性偏离，coach-planner 需重排
+    adherence_drift_days = cfg.logging_defaults.adherence_drift_days
     adh_streak = 0
     adh_start: str | None = None
     for log in sorted(logs, key=lambda l: l.date):
@@ -94,7 +94,7 @@ def run_checks() -> list[str]:
             if adh_streak == 0:
                 adh_start = log.date.isoformat()
             adh_streak += 1
-            if adh_streak == ADHERENCE_DRIFT_THRESHOLD:
+            if adh_streak == adherence_drift_days:
                 alerts.append(
                     f"[Warning] {adh_start} → {log.date}: {adh_streak} consecutive adherence drift days. "
                     f"Timetable 与 reality 系统性偏离，下次 coach-planner 排期需调整。"
