@@ -32,7 +32,9 @@ single-repository commit writing.
 - Use `tdd`, `diagnose`, or `improve-codebase-architecture` for implementation
   work when those skills are applicable.
 - When the user explicitly asks to commit, hand the clean, verified change set
-  to `git-commit`; do not silently stage, commit, amend, or push here.
+  to `git-commit`; do not silently stage, commit, amend, or push here. Do not
+  run the full integration gate first on that path: `git-commit` owns the
+  bounded `quick`/explicit `full` choice.
 
 ## Operating contract
 
@@ -123,7 +125,7 @@ Use recent commit subjects and path-level diffs to infer intent; do not rely on
 the submodule bump message alone. A data refresh, a pipeline change, and a web
 redesign have different verification needs even if all end as one gitlink.
 
-### 3. Check Personal-OS contracts
+### 3. Check Personal-OS contracts (standalone integration/release path)
 
 Before proposing a parent bump, check the relevant invariants:
 
@@ -153,7 +155,13 @@ the source-of-truth chain, impacted consumers, fixtures, and required tests.
 Prefer narrow, local gates based on changed paths. Do not run a costly or
 networked pipeline merely because a repository exists.
 
-#### Root Personal-OS
+These gates apply when the user asks for a standalone integration, release, or
+submodule preflight. For an explicit commit request, stop after the smallest
+integration map needed for handoff and let `git-commit` run its default
+10-second quick lane; only run the full gates when the user requested full
+validation or selected it after a quick-lane timeout.
+
+#### Root Personal-OS (standalone integration/release path)
 
 - General root/config/scripts change: `make doctor` and `make test`.
 - Daily schema, thresholds, logging, archive, or migration change: add
