@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Coordinate safe, atomic Git commits across the current repository and its parent/submodule graph. Use whenever the user asks to commit, save work to Git, prepare commits, split changes into commits, update submodule pointers, or write a commit message. Inspect all relevant repositories, build a commit plan, commit child repositories before parents, and verify the final state.
+description: Coordinate safe, atomic Git commits across the current repository and its parent/submodule graph. Use whenever the user asks to commit, save work to Git, prepare commits, split changes into commits, update submodule pointers, or write a commit message. Default to a bounded quick preflight of about 10 seconds; use full validation only when requested or selected after a timeout. Inspect all relevant repositories, build a commit plan, commit child repositories before parents, and verify the final state.
 allowed-tools: Bash, Read, Glob, Grep
 ---
 
@@ -19,6 +19,8 @@ the user explicitly asks to commit.
 ## Operating contract
 
 - Default to `split=auto`, `scope=reachable repositories`, and `push=never`.
+- Default to `check_mode=quick` with a 10-second wall-clock budget. Do not
+  silently turn a normal commit into a full test/build pipeline.
 - Interpret “commit everything” as “commit every attributable change using the
   normal split policy,” not as permission to collapse unrelated work into one
   commit.
@@ -39,6 +41,47 @@ the user explicitly asks to commit.
 - Write every commit message in English only, including its subject, body, and
   any manually supplied trailers. Do not use Chinese or other non-English prose
   in commit messages.
+
+## Check modes and latency budget
+
+The commit path has two deliberately different guarantees:
+
+| Mode | Default | What it checks | When to use |
+|---|---:|---|---|
+| `quick` | yes | repository graph, status, staged whitespace, secret-like paths, and pointer state | normal local commits; target about 10 seconds |
+| `full` | no | quick checks plus relevant instructions, semantic diff review, tests, lint, typecheck, build, and final recursive verification | release, risky changes, explicit `full`/`strict` request, or user selection after timeout |
+
+Run the bounded quick lane with the bundled read-only preflight:
+
+```bash
+python3 <git-commit-skill>/scripts/preflight.py <path> --scope workspace --budget 10
+```
+
+Replace `workspace` with `ancestors` or `current` when the scope rules call for
+it.
+
+The quick lane is a safety gate, not a claim that project tests passed. In
+quick mode, skip expensive `make test`, web builds, full-history reads, and
+unrelated sibling-repository instruction loading unless the change map shows
+that repository is dirty or selected. A quick preflight warning still needs
+inspection; it is not permission to stage a secret candidate or ambiguous
+change.
+
+Classify known boundaries instead of escalating them unnecessarily: an
+unavailable private `data/` checkout can be `[Status: Expected]` when it is not
+needed, and a child `HEAD` differing from the parent gitlink can be part of the
+planned child-before-parent sequence. Unresolved ownership, protected paths,
+conflicts, or pointer state outside the plan still stop the commit.
+
+If the preflight returns `status=timeout` or `status=error`, stop before
+staging or committing and report the completed checks and elapsed time. Ask the
+user to choose exactly one of: continue with `full`, continue with the
+completed `quick` checks while explicitly accepting skipped validation, or
+cancel. Never infer that timeout means approval to bypass checks.
+
+Users may request `full` before the workflow starts. A request for `release`,
+`strict`, `audit`, or CI-equivalent validation also selects `full`; otherwise
+the default remains `quick`.
 
 ## Scope rules
 
@@ -64,9 +107,15 @@ the operation to one repository.
 
 ## Workflow
 
-### 1. Scan before touching the index
+### 1. Run the bounded preflight before touching the index
 
-Run the scanner or equivalent read-only commands for every in-scope repository:
+In `quick` mode, run `preflight.py` once before staging. It emits a JSON
+snapshot and uses one shared wall-clock deadline, so a slow Git command cannot
+silently expand the latency budget. Then use its repository map to identify
+the exact changed paths and any warnings.
+
+In `full` mode, run the scanner or equivalent read-only commands for every
+in-scope repository:
 
 ```bash
 git status --short --branch --untracked-files=normal
@@ -91,8 +140,11 @@ For each repository record:
 | Recent style | Recent commit subjects and local instructions |
 
 Read the applicable `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, and package
-instructions before choosing validation commands or commit conventions. Do not
-assume that the current repository's commit style applies to every child.
+instructions before choosing validation commands or commit conventions. In
+quick mode, load instructions only for the current repository and dirty or
+selected child repositories; clean siblings do not justify a full instruction
+walk. Do not assume that the current repository's commit style applies to
+every child.
 
 ### 2. Build a change map
 
@@ -144,8 +196,11 @@ and the plan is unambiguous, continue after presenting the plan.
 - If files are already staged, inspect `git diff --cached`; treat that set as
   the user's boundary and stop if it contains multiple unclear intents.
 - Run `git diff --cached --check` before committing.
-- Run the narrowest relevant test, typecheck, lint, build, or data/schema check
-  documented by the repository. Report skipped expensive checks explicitly.
+- In `quick` mode, do not run project tests, typechecks, lints, or builds by
+  default. Report them as `[Status: Expected] skipped in quick mode`.
+- In `full` mode, run the narrowest relevant test, typecheck, lint, build, or
+  data/schema check documented by the repository. Report skipped expensive
+  checks explicitly.
 - Re-read the staged diff and confirm that every staged path belongs to the
   planned group and no protected path is present.
 
@@ -188,7 +243,9 @@ git submodule status --recursive
 git log --oneline -n <number-of-new-commits>
 ```
 
-Run the bundled pointer verifier when available:
+In `quick` mode, rerun the bounded preflight for the affected repositories and
+inspect the final `git status`/gitlink state. In `full` mode, also run the
+bundled pointer verifier when available:
 
 ```bash
 python3 <git-commit-skill>/scripts/verify_submodule_pointers.py <path>
@@ -219,7 +276,7 @@ Return a compact report in this order:
 - `<repo>` `<hash>` `<subject>`
 
 ## Verification
-- [Status: OK/Warning/Critical] ...
+- [Status: OK/Warning/Critical/Expected] `check_mode=quick|full`; ...
 
 ## Remaining work
 - none, or exact repository/path and reason
@@ -242,3 +299,7 @@ commit. If the request was only for a plan, stop after `Commit plan`.
   rewrite branches automatically.
 - **Wrong commit style:** inspect that repository's recent log instead of using
   the Personal-OS convention everywhere.
+- **Quick lane becomes a hidden full pipeline:** keep tests and builds behind
+  explicit `full`; the 10-second budget is for structural preflight only.
+- **Timeout treated as approval:** stop before staging and ask whether to run
+  full validation, accept the quick-only risk, or cancel.

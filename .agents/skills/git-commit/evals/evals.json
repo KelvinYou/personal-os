@@ -61,6 +61,36 @@
         "The parent pointer is handled only after the child commit.",
         "Detached HEAD is reported as a sharing/push warning rather than silently fixed."
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "Commit the current changes quickly; keep the preflight around 10 seconds and do not run the full test/build pipeline unless I ask for it.",
+      "expected_output": "The agent uses the bounded quick preflight, preserves repository and secret checks, makes an atomic plan, and reports expensive validation as intentionally skipped instead of running it by default.",
+      "expectations": [
+        "The response selects quick mode with a 10-second budget.",
+        "The response distinguishes structural quick checks from project tests/builds.",
+        "The response reports skipped expensive checks as expected rather than claiming they passed."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Commit these changes, but if the quick checks take more than 10 seconds, stop and let me choose what to do.",
+      "expected_output": "The agent uses a real bounded quick preflight and, on timeout or error, stops before staging/committing and asks whether to continue full, accept the completed quick checks with skipped validation, or cancel.",
+      "expectations": [
+        "A quick preflight timeout is treated as an incomplete check, not as permission to bypass checks.",
+        "The response reports completed checks and elapsed/budget information.",
+        "The response offers full, quick-only-with-explicit-risk, and cancel as the next actions."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Run a full, strict validation before committing the schema change and its tests.",
+      "expected_output": "The agent explicitly selects full mode, runs the relevant contract/schema gates, and does not downgrade them to the quick lane.",
+      "expectations": [
+        "The response selects full mode because the user explicitly requested strict validation.",
+        "The response includes the relevant schema/test validation rather than only Git status checks.",
+        "The response still preserves repository boundaries and exact-path staging."
+      ]
     }
   ]
 }
