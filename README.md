@@ -34,6 +34,11 @@ Brain Dump → /daily-report → 逻辑引擎告警 → /coach-planner → 每�
 
 ## 快速开始
 
+> 第一次进这个仓库、或者想让 agent 带着配：读 [SETUP.md](SETUP.md)。
+> 它顶部的注释块是给 agent 的交互式 bootstrap 脚本（逐阶段提问 + 跑命令 +
+> 报结果），下面是给人看的阶段说明。本节只是命令清单。
+
+
 ```bash
 # 首次克隆（含私有 data submodule）
 git clone --recurse-submodules https://github.com/KelvinYou/personal-os.git
