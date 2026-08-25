@@ -75,6 +75,43 @@
 该语义适用于 `scripts/lib/metrics.py::_consec_poor_up_to` 与逻辑引擎的连续 Poor
 告警；若未来要改成严格日历连续，必须同时更新这两个 owner 及回归测试。
 
+### Session eval —— 审计 agent 自己（2026-08-24）
+
+`make eval` 把 Claude Code 的 transcript 转成 `data/reports/evals/` 里一条记录。
+动机：Personal-OS 的每一条回路（daily / breakers / weekly / identity-audit）审计的
+都是**我**，没有任何东西审计 **agent**。会话跑砸时，证据是 `~/.claude/projects` 里
+一堆没人会打开的 JSONL，于是同一个失败模式反复发生，而 AGENTS.md 什么都学不到。
+
+| 决策 | 选择 | 拒绝的替代 | 理由 |
+|---|---|---|---|
+| 谁填 `judgement` / `notes` | 生成时**一律写 null**，由 `/meta-coach` 或人事后填 | 让生成器顺手给这次会话打个分 | 自己给自己打分的 auditor，等于对被审计对象有写权限 —— 与 `decision-log` 里那个坑同源。脚本只产出事实与机械 signal，每条 signal 附「什么证据能推翻它」 |
+| signal 阈值放哪 | 脚本内一个具名常量块，**不进** `config/thresholds.yaml` | 与其它阈值统一收进 YAML | 那份 YAML 经 pydantic 校验、要走 `.venv`。而 eval 最该能跑的时刻，正是 `.venv` 本身坏掉的时候 |
+| 依赖 | stdlib-only（含 `lib/transcript.py`） | 复用现有 lib 层 | 同上：故障期可用性优先于代码复用 |
+| 重新生成的语义 | 覆盖 facts 块，但**拒绝**覆盖已填的 review 字段（除非 `--force`） | 幂等重写整份文件 | 人填的判断比机器采的事实贵，不能被一次手滑的 `make eval` 抹掉 |
+| 证据单位 | 单条 eval 不作数，看 `make eval-rollup` 的月度分布 | 逐条 review | 同一个 signal 一个月内命中过半 → 那是 AGENTS.md 的 bug，不是那次会话的 bug。这是 kill criteria 的同一套逻辑 |
+
+当前 11 个 signal：`write-before-read` / `unverified-mutation` / `verified-mutation` /
+`tool-error-loop` / `recovered-from-error` / `user-correction` / `high-tool-churn` /
+`context-gathered` / `review-first` / `ended-on-question` / `looks-clean`。
+
+---
+
+### 阈值调参三则（2026-08-24 从 ROADMAP §5 结案）
+
+这三条曾长期挂在 ROADMAP「待拍板」表里，但代码其实早已按建议实现 —— 只是没人回头
+删表。结案记录在此，ROADMAP 侧已移除。
+
+| # | 问题 | 决定 | 落点 |
+|---|---|---|---|
+| Q1 | HRV threshold 用绝对值还是相对 baseline | **两者都要**：绝对 30 作红线（触发熔断），`hrv_rel_baseline_min: 0.85` 作黄线（只 log 不熔断）。baseline 54 时 HRV 45 就值得注意，远早于跌到 30 | `config/thresholds.yaml` `sleep.hrv_warning_low` / `readiness.hrv_rel_baseline_min` |
+| Q2 | `awake_min_max: 20` 太严 | 放宽到 40，并改名 `awake_min_warning`（它是预警不是硬上限）。实测 70min 那晚睡 7.65h、HRV 50，不算差 | `config/thresholds.yaml` `sleep.awake_min_warning` |
+| Q3 | `migrate.py --apply` 要不要改 `data/` git 历史 | **不做 filter-branch**。单开分支批量 rewrite frontmatter，人审 diff，一次 `chore(data): migrate schema` commit。`--apply` 已实现为 dry-run by default | `scripts/lib/migrate.py` |
+
+教训与 §4 同源：**「待拍板」表也需要执行「做完就删」的规则**。一个决策落地后留在待决
+清单里，成本不是磁盘空间，是每次 review 都要重新判断一遍它到底做没做。
+
+---
+
 ---
 
 ## 3. Kill criteria —— decision journal 三级熔断
@@ -103,11 +140,25 @@ proactive ≥ 30%（否则日志只记录了被迫应对）。
 | `data/` submodule 未初始化，目录空且无 `.git` | 已 checkout 到 `heads/main`，内含 daily/ decisions/ finance/ fitness/ jobs/ |
 | 隐私隔离靠本机 `.git/config` 的 `submodule.data.update = none` | **该配置不存在**。真正的隔离机制是 `personal-os-data` remote 为 private |
 | `.venv` 不存在，`make report` 在 lint 环节就失败 | `.venv` 存在。假绿的真实条件是「`.venv` 就绪 + 当周无日志」 |
-| 配置里的 `/Users/kelvin/...` 是旧用户名旧路径 | 用户名和路径都是当前值。真问题是**不可移植**，以及 `.codex/hooks/` 确实不存在 |
+| 配置里的 `/Users/kelvin/...` 是旧用户名旧路径 | ~~用户名和路径都是当前值~~ **这条撤回本身是错的（2026-08-24 复核）**：真实身份是 `kelvin.you`，真实路径是 `~/Documents/dev/personal-os`，`/Users/kelvin` 目录不存在。原审计结论正确，hook 是死的。详见下方补记 |
 
-**元教训**：这比任何单条技术债都值得先修 —— 它决定整份报告的可信度上限。对应动作是
-[ROADMAP §1](ROADMAP.md#1-小项无前置依赖随时可做) 的 `make audit-env`：**环境事实由脚本采集，
-不手写**，审计报告的环境节直接贴它的输出。
+**元教训**：这比任何单条技术债都值得先修 —— 它决定整份报告的可信度上限。
+**环境事实由脚本采集，不手写**，审计报告的环境节直接贴脚本输出；要加检查就扩
+`make doctor`，不要新开 make target（原计划的 `make audit-env` 已从 ROADMAP 撤掉，
+理由见 [ROADMAP §3](ROADMAP.md#3-没有时钟的--想做就做不做也不亏)）。
+
+**2026-08-24 补记 —— 这条元教训第二次被自己验证。** 上表第 4 行的「撤回」是手写的
+环境观测，而它是错的：`.codex/hooks.json` 里写的是 `/Users/kelvin/Documents/coding/
+personal-os`，实际是 `/Users/kelvin.you/Documents/dev/personal-os`，`/Users/kelvin`
+根本不存在。也就是说，一份以「不要手写环境事实」为教训的文档，用手写环境事实撤销了
+一条**正确**的发现，并让那个坏掉的 hook 多活了一段时间。
+
+**处置**：`.codex/hooks.json` 已整体删除 —— 它唯一的内容就是那个坏掉的 SessionStart
+hook，指向的 `.codex/hooks/` 目录从未存在过，所以没有「修好」这个选项，只有删。
+`.codex/config.toml` 与此无关，保留。同批补上了 `tests/test_logic_engine.py`：
+逻辑引擎此前一条断言都没有，而它恰好是「坏了也不报错、只是安静地不告警」的类型。
+
+撤回一条结论所需的证据强度，不低于当初提出它所需的强度。
 
 另外三条方法论修正，值得在下次审计时记住：
 

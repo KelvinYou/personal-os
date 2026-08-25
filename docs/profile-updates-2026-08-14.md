@@ -11,7 +11,7 @@
   - Summary now cites 9,000+ users
   - Removed duplicate `Solidity` from core Languages, condensed old Techtics bullets, trimmed AMM project description
 - [x] **2026-08-17 second pass** — repositioning off frontend-only, driven by the
-      RM 11k band analysis in [ROADMAP.md §4](ROADMAP.md#4-技能缺口2026-08-17-招聘数据复盘):
+      RM 11k band analysis in [ROADMAP.md §1](ROADMAP.md#1-有外部时钟的--拖延本身就是成本):
   - Title is now `AI-native Full-stack Engineer · Fintech Payments & Agent Systems`
     in all three locales. **`(Frontend-focused)` was dropped on purpose** — every
     RM 10-15k posting in `market/jobs/` is titled full-stack, and the qualifier
