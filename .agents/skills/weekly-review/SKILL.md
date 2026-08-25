@@ -4,10 +4,10 @@ description: >
   Generate a comprehensive weekly review report for Personal-OS: aggregate daily logs, score across 4 dimensions
   (Output/Health/Mental/Habits), enforce circuit breakers, compare week-over-week trends, and output next-week
   P0/P1/P2 objectives (but NOT timetables — timetable generation is coach-planner's job).
-  Use this skill whenever the user mentions weekly review, weekly report, 周报,
+  Use this skill whenever the user mentions weekly review, weekly report,
   week summary, "how was my week", wants to review their week, or says
   "make report" / "make weekly". Also trigger when the user asks about weekly scores, trends, sleep debt trajectory,
-  or wants to generate a W## report. Do NOT trigger for "排下周时间表" or schedule requests — those go to coach-planner.
+  or wants to generate a W## report. Do NOT trigger for "schedule next week" or schedule requests — those go to coach-planner.
 ---
 
 # Weekly Review Agent — Personal-OS
@@ -77,9 +77,9 @@ not-doing — which is what drove the logging to collapse in the first place.
 `weekly_report_prompt.md` carries a **Logging Coverage** section listing which
 fields were baseline-filled and on how many days. Your obligations:
 
-- **Never deduct points, never open a 扣分项, and never write a "记录纪律" scolding
+- **Never deduct points, never open a penalty item, and never write a "logging discipline" scolding
   for baseline-filled fields.** That is the exact behavior being removed.
-- Mark baseline-filled values in the 每日数据明细 table with a trailing `~`
+- Mark baseline-filled values in the Daily Breakdown table with a trailing `~`
   (`8~`, `7~`) so the reader can tell measured from assumed at a glance.
 - If coverage is below `coverage_warn_ratio`, put `[Status: Low Confidence]`
   under the score heading and say plainly that the score rests largely on
@@ -95,7 +95,7 @@ fields were baseline-filled and on how many days. Your obligations:
 
 For each criterion below, form a 0–1 rating from the week's narrative evidence
 and multiply into the criterion's max points (rubric's `max_points` field).
-Cite the evidence in the final report under "加分/扣分项".
+Cite the evidence in the final report under "Bonuses/Penalties".
 
 - `output_quality` [max 10]: shipped features, research depth, knowledge sharing
 - `blocker_management` [max 5]: blockers identified early, resolved efficiently
@@ -120,28 +120,28 @@ Every bonus/penalty must cite the specific day and event.
 Produce the report in this exact structure:
 
 ```markdown
-# 工程师周报: YYYY-W## 核心数据分析与系统诊断
+# Engineering Weekly Report: YYYY-W## Core Data Analysis & System Diagnosis
 
-> 统计周期: YYYY-MM-DD (Mon) ~ YYYY-MM-DD (Sun) | 有效记录: N/7 天
+> Period: YYYY-MM-DD (Mon) ~ YYYY-MM-DD (Sun) | Valid records: N/7 days
 
-## 宏观遥测数据 (Aggregated Telemetry)
-| 指标 | 本周 | 上周 | 变化 | 状态 |
+## Aggregated Telemetry
+| Metric | This Week | Last Week | Change | Status |
 |------|------|------|------|------|
 (Include: Deep Work total, Avg Energy, Poor Sleep days, Sleep Debt, Total Spend,
 Avg HRV, Caffeine compliance rate, Avg Mental Load)
 
-If no previous week data, omit the 上周 and 变化 columns.
+If no previous week data, omit the Last Week and Change columns.
 
 ---
 
-### 0. System Alerts (熔断状态)
+### 0. System Alerts (Circuit Breaker Status)
 List all tripped circuit breakers with their metric values and enforced actions.
-If none: `[All Clear] 所有熔断器正常。`
+If none: `[All Clear] All circuit breakers normal.`
 
-### 1. 本周系统多维度得分: XX/100
+### 1. Weekly Multi-Dimensional Score: XX/100
 
 **Deterministic base (from code):**
-- 产出 XX/40 · 健康 XX/30 · 心智 XX/20 · 习惯 XX/10 = XX/100
+- Output XX/40 · Health XX/30 · Mental XX/20 · Habits XX/10 = XX/100
 
 **Subjective criteria (AI-filled, 0-1 per criterion):**
 - output_quality: N/10 — [evidence]
@@ -151,49 +151,50 @@ If none: `[All Clear] 所有熔断器正常。`
 - crisis_handling: N/5 — [evidence]
 - emotional_resilience: N/5 — [evidence]
 
-**加分项:**
+**Bonuses:**
 - (+N) [Specific event with date]
 
-**扣分项:**
+**Penalties:**
 - (-N) [Specific event with date, root cause analysis]
 - (-3) per tripped breaker (list each)
 
 **Final total: XX/100**
 
-### 2. 系统核心产出盘点
+### 2. Core Output Inventory
 Split into:
-**公司项目 (Company):**
+**Company projects:**
 - [Tag: Feature/Bug/Research/Ops] Description with time invested
 
-**个人项目 (Personal):**
+**Personal projects:**
 - [Tag] Description with time invested
 
-### 3. 上周目标达成回顾
+### 3. Last Week's Objectives Review
 (Only if previous week report exists)
-| 目标 | 状态 | 备注 |
+| Objective | Status | Notes |
 |------|------|------|
 | [Last week's objective 1] | Done/Partial/Miss | [Evidence] |
 | [Last week's objective 2] | Done/Partial/Miss | [Evidence] |
 | [Last week's objective 3] | Done/Partial/Miss | [Evidence] |
 
-### 4. 下周目标 (Next Week Objectives)
+### 4. Next Week Objectives
 
-**核心目标:**
+**Core objectives:**
 1. [P0] [Objective derived from this week's biggest gap — with specific metric target]
 2. [P1] [Objective for ongoing project progress — with deliverable]
 3. [P2] [Objective for habit/financial correction — with measurable criteria]
 
-**执行约束 (Constraints for Planner):**
+**Constraints for Planner:**
 - List all active circuit breaker restrictions that must carry into next week
 - Note any known schedule exceptions (meetings, events, travel)
 - Specify training mode: Normal / Deload / Recovery
 
-> **Note:** 排期由 coach-planner agent 负责。常驻时间表是 `data/protocol/standard_week.md`，每周不再重排；
-> coach-planner 只在有例外（日程冲突/熔断/加重量/P0-P2 挂载/单变量实验）时产出一份 ≤30 行的
-> `data/reports/YYYY-w##-delta.md`。没有例外的周直接跑常驻 protocol，不生成文件。
+> **Note:** Scheduling is owned by the coach-planner agent. The standing timetable is `data/protocol/standard_week.md`, and it is not
+> re-scheduled every week; coach-planner only produces a ≤30-line
+> `data/reports/YYYY-w##-delta.md` when there's an actual exception (schedule conflict/breaker/load increase/P0-P2 mounting/single-variable experiment).
+> A week with no exceptions just runs the standing protocol, with no file generated.
 
-### 5. 每日数据明细 (Daily Breakdown)
-| 日期 | Energy | Deep Work | Sleep | Quality | Spend (RM) | Mental Load | Blocker |
+### 5. Daily Breakdown
+| Date | Energy | Deep Work | Sleep | Quality | Spend (RM) | Mental Load | Blocker |
 |------|--------|-----------|-------|---------|-------------|-------------|---------|
 (One row per day logged)
 ```
@@ -213,6 +214,6 @@ Tell the user the file path and give a 2-3 sentence executive summary of the wee
 - **Data over narrative**: Every claim in the report must be backed by a specific metric or log entry. No vague "you did well" — always cite the number.
 - **Root cause, not symptoms**: When identifying problems, trace the causal chain. "Poor sleep on Wed" isn't the root cause — "Tuesday funeral → late return → compressed sleep → Wed cascade" is.
 - **Circuit breakers are non-negotiable**: If a breaker is tripped, the next week's timetable MUST enforce its restrictions even if it means lower output targets. Health debt compounds; output debt doesn't.
-- **Chinese as primary language, technical terms in English**: Write the report in Chinese, keeping terms like Deep Work, Circuit Breaker, HRV, COROS, Zepp Life, Root Cause in English.
-- **Engineering voice**: Use status markers like `[Status: OK/Warning/Critical]`, think in systems terms (负债/熔断/恢复/链式崩塌), and maintain the analytical tone of a post-incident review.
+- **Write in English**: keep terms like Deep Work, Circuit Breaker, HRV, COROS, Zepp Life, Root Cause as-is.
+- **Engineering voice**: Use status markers like `[Status: OK/Warning/Critical]`, think in systems terms (debt/circuit breaker/recovery/cascading collapse), and maintain the analytical tone of a post-incident review.
 - **Timetable must be actionable**: Every time block should be specific enough that someone could follow it without additional context. "Work on project" is bad; "Deep Work: Personal-OS circuit breaker logic refactor (scripts/report_gen.py)" is good.

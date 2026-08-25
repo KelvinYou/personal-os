@@ -1,10 +1,14 @@
 # Investment Decision Framework
 
-Wealth-manager 做投资分析和建议时的决策框架。主 SKILL.md 定义工作流，本文件存放投资哲学和判断准则。
+The decision framework wealth-manager uses when doing investment analysis and giving
+recommendations. The main SKILL.md defines the workflow; this file holds the investment
+philosophy and judgment criteria.
 
-> **本文件只覆盖 satellite 层（个股选择）。** 整体方案骨架——资金分层、资产配置、core-satellite、
-> 再平衡、DCA 证据——见 `wealth-building-playbook.md`；MY 税务/工具/UCITS ETF 见 `malaysia-wealth-vehicles.md`。
-> 做个股建议时务必同时看组合是否已有 index core，别让用户只堆 satellite。
+> **This file only covers the satellite layer (single-stock selection).** For the overall plan
+> backbone — fund layering, asset allocation, core-satellite, rebalancing, DCA evidence — see
+> `wealth-building-playbook.md`; for MY tax/vehicles/UCITS ETFs see `malaysia-wealth-vehicles.md`.
+> When making single-stock recommendations, always also check whether the portfolio already has
+> an index core — don't let the user just keep piling up satellite.
 
 ## Investor Profile Inputs
 
@@ -18,58 +22,70 @@ runtime finance files and user profile before applying the framework. The releva
 - **Buy-the-dip vs. momentum**: match the decision to verified cash-flow cadence and portfolio policy, not a baked-in
   monthly amount.
 
-## 单股分析框架
+## Single-Stock Analysis Framework
 
-### Buy 条件（至少满足 2/4）
-1. **估值折扣**：P/E 低于行业平均 or 低于自身 5 年均值
-2. **价格位置**：距 52 周高点 >15%，且在技术支撑位附近
-3. **基本面完好**：最近一季营收/利润同比增长，无重大负面事件
-4. **催化剂**：有明确的价值释放事件（财报、新产品、政策利好）
+### Buy conditions (at least 2 of 4)
+1. **Valuation discount**: P/E below the industry average or below its own 5-year average
+2. **Price position**: >15% off the 52-week high, and near a technical support level
+3. **Sound fundamentals**: revenue/profit grew year-over-year in the most recent quarter, no major negative events
+4. **Catalyst**: a clear value-unlocking event (earnings, new product, favorable policy)
 
-### Watch 条件
-- 基本面好但价格还没到位（距支撑位还有 >5% 空间）
-- 或者有不确定因素待解（财报即将公布、监管审查中）
+### Watch conditions
+- Fundamentals are good but the price hasn't reached the entry zone (still >5% above the support level)
+- Or there's an unresolved uncertainty (upcoming earnings, ongoing regulatory review)
 
-### Hold 条件
-- 已持有，基本面未恶化，但价格不在加仓区间
+### Hold conditions
+- Already held, fundamentals haven't deteriorated, but the price is not in the add-to-position zone
 
-### Avoid / 考虑止损的信号
-- **基本面恶化**：连续 2 季营收下滑、管理层变动、行业结构性逆风
-- **技术破位**：跌破关键支撑且无反弹迹象
-- 注意区分"暂时性回撤"和"基本面恶化"——前者是买入机会，后者是止损信号。
-  判断标准：导致下跌的原因是**一次性事件**（关税、短期供应链问题）还是**结构性变化**
-  （市场份额持续流失、技术路线被颠覆）
+### Avoid / stop-loss signals
+- **Deteriorating fundamentals**: revenue decline for 2 consecutive quarters, management turnover,
+  structural sector headwinds
+- **Technical breakdown**: breaks below a key support level with no sign of a rebound
+- Take care to distinguish "temporary pullback" from "deteriorating fundamentals" — the former is
+  a buying opportunity, the latter is a stop-loss signal.
+  Judgment criterion: is the cause of the decline a **one-off event** (tariffs, short-term supply-chain
+  issues) or a **structural change** (sustained market-share loss, technology roadmap disruption)?
 
-### 止损纪律
-- 单只股票亏损 >25% 且基本面恶化 → 强制 review，倾向止损
-- 单只股票亏损 >25% 但基本面完好 → 视为加仓机会，但需确认不是在"接飞刀"
-  （检查：下跌是否有明确底部支撑？同行是否也在跌？机构是否在增持？）
+### Stop-loss discipline
+- A single stock down >25% with deteriorating fundamentals → force a review, lean toward stop-loss
+- A single stock down >25% but fundamentals intact → treat as an add-to-position opportunity, but
+  confirm you're not "catching a falling knife"
+  (check: is there a clear bottom support level? are peers also declining? are institutions
+  accumulating?)
 
-## 组合层面分析
+## Portfolio-Level Analysis
 
-每次做 stock analysis 时，除了分析单只股票，还应评估组合整体健康度：
+Every time you do a stock analysis, besides analyzing the individual stock, also assess the
+portfolio's overall health:
 
-### 集中度风险
-- 单只股票不应超过组合总值的 30% — 因为即使基本面好，单一公司的黑天鹅事件
-  （财务造假、突发监管）无法预测，分散是唯一的免费午餐
-- 单一行业不应超过 50% — 行业轮动是常态，过度集中会放大周期性波动
+### Concentration risk
+- A single stock should not exceed 30% of total portfolio value — because even with good
+  fundamentals, a single company's black-swan event (accounting fraud, sudden regulatory action)
+  is unpredictable, and diversification is the only free lunch
+- A single sector should not exceed 50% — sector rotation is normal, and overconcentration
+  amplifies cyclical swings
 
-### 地域/货币分布
-- 美股持仓按 USD 计价，受 USD/MYR 汇率影响
-- 当美元走强时，美股的 MYR 回报会被放大；反之亦然
-- 分析时应同时展示 USD 原始回报和 MYR 折算回报，让用户看到真实的本币收益
+### Geographic/currency distribution
+- US-stock holdings are denominated in USD, and are affected by the USD/MYR exchange rate
+- When the USD strengthens, the MYR return on US stocks gets amplified, and vice versa
+- Analysis should show both the raw USD return and the MYR-converted return, so the user sees the
+  real home-currency gain
 
-### 行业相关性
-- 如果多只持仓高度相关（如 MSFT/NVDA/META 都是美国大型科技股），
-  要明确提示"这些股票在大盘回调时会同步下跌，分散效果有限"
-- 建议时考虑与现有持仓的互补性（不同行业、不同市场、不同风格）
+### Sector correlation
+- If multiple holdings are highly correlated (e.g. MSFT/NVDA/META are all US large-cap tech),
+  explicitly flag that "these stocks will decline together in a broad market pullback, so
+  diversification benefit is limited"
+- When recommending, consider complementarity with existing holdings (different sector, different
+  market, different style)
 
-## 仓位管理 — DCA 策略
+## Position Management — DCA Strategy
 
-按 `data/finance/portfolio.yaml` 或 policy 中已验证的可投资现金流制定分批逻辑：
+Build the tranching logic based on the verified investable cash flow in `data/finance/portfolio.yaml`
+or policy:
 
-- **基础原则**：不要一次 all-in，用 2-3 个月的资金分批建仓
-- **市场正常时**：按月定投到目标标的
-- **明显低估时**（指数级别回调 >10%）：可以加速投入（把 2-3 个月的额度集中使用），
-  但仍保留至少 1 个月的现金缓冲
-- **估值偏高时**：减缓投入，积累现金等待机会
+- **Base principle**: don't go all-in at once — build the position in tranches over 2-3 months
+- **When the market is normal**: dollar-cost-average monthly into the target
+- **When clearly undervalued** (an index-level pullback >10%): can accelerate deployment
+  (concentrate the 2-3 months' allocation), but still keep at least 1 month of cash buffer
+- **When valuation is elevated**: slow down deployment and accumulate cash while waiting for an
+  opportunity

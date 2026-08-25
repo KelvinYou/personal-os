@@ -1,88 +1,85 @@
-# Personal-OS — AI Agent 协作规范
+# Personal-OS — AI Agent Collaboration Protocol
 
-> 本文件是所有 harness（Claude Code / Codex / …）协作规范的**唯一 owner**。
-> `CLAUDE.md` 只是 import 本文件，不要在那边另写内容。
+> This file is the single owner of collaboration conventions for all harnesses (Claude Code / Codex / …).
+> `CLAUDE.md` only imports this file — do not add content there.
 
-## 项目概述
-个人管理系统，通过结构化日志 + AI Agent 实现数据驱动的自我管理。核心闭环：每日记录 → 逻辑引擎告警 → 周度综合分析 → 下周排期。
+## Project Overview
+A personal management system that drives data-driven self-management through structured logs + AI agents. Core loop: daily logging → logic-engine alerts → weekly synthesis analysis → next-week scheduling.
 
-## 目录结构
-> 本块由 `make doctor` 逐条 `test -e` 校验（data/ 未 checkout 时豁免其下条目）。
-> 改布局请同步改这里 —— 本文件每次会话强制注入，路径写错会让 agent 直接读错文件。
+## Directory Structure
+> This block is validated line-by-line via `test -e` by `make doctor` (entries under `data/` are exempt when it isn't checked out).
+> If you change the layout, update this too — this file is force-injected into every session, and a wrong path here makes an agent read the wrong file outright.
 ```
-/config/                  — 我的阈值设定 + 法规常量 (thresholds / wealth_rules.yaml)
-/market/                  — 外部可观测市场事实 (interest_rates / fx.yaml, jobs/)；public，无个人信息
-/data/                    — private submodule (personal-os-data)；无权限时不 checkout
-/data/daily/              — 每日工程师日志 (YYYY-MM-DD.md)；热窗口 90 天，更旧的由 make archive 折叠
-/data/archive/            — 冷数据归档 (YYYY-Qn.md 周摘要 + body.csv 体成分全序列)
-/data/protocol/           — 常驻 protocol；standard_week.md 是唯一的人类时间表，每周不重排；standard_week.yaml 仅为 Calendar anchors projection
-/data/finance/            — 财务持仓 (savings / portfolio / policy.yaml)
-/data/reports/            — 周报存档 + 周度 delta (仅在有例外时生成)
-/data/reports/evals/      — session eval 记录 (make eval 产出；审计 agent 自己，不是审计我)
-/data/user_profile.md     — 全局用户画像 (作息/饮食/锻炼偏好)
-/docs/                    — 长文档；三个 owner：VISION(方向) / ROADMAP(待办) / DECISIONS(已决定不重提)
-/docs/voice-guide.md      — 我的写作声音 (从 34 篇已发布 blog 反推)；写任何对外文字前先读
-/ARCHITECTURE.md          — 系统架构 + 不变量；改数据流/契约前先读它
-/SETUP.md                 — 首次 bootstrap 流程；顶部注释块是给 agent 的交互式脚本
-/templates/               — 空白模板文件
-/scripts/                 — 自动化脚本 (Python 3)
-/tests/                   — 单元测试 + fixtures (不读真实私有数据)
-/web/                     — 本地理财仪表盘 (Next.js, localhost only)
-/.agents/skills/          — AI Agent skills (weekly-review / wealth-manager / ...)
-/repos/                   — 外部项目 submodules，统一管理 + 供 skills 读取
-/repos/portfolio-website  — 个人网站 (career 相关统一入口)
-/repos/ai-stock-analysis  — 股票分析工具；亦是股价的唯一 owner
-/repos/kelvinyou-notes    — 公共笔记 submodule；nutrition 数据集的唯一 owner
-/scripts/nutrition.py     — nutrition 查询 adapter（读 repos/kelvinyou-notes，见 docs/plan-public-knowledge-integration.md）
-/scripts/lib/nutrition/   — nutrition adapter 的共享实现（basis 换算、macro/成本推导）
+/config/                  — my threshold settings + regulatory constants (thresholds / wealth_rules.yaml)
+/market/                  — externally observable market facts (interest_rates / fx.yaml, jobs/); public, no personal info
+/data/                    — private submodule (personal-os-data); not checked out without permission
+/data/daily/              — daily engineer logs (YYYY-MM-DD.md); 90-day hot window, older entries folded by make archive
+/data/archive/            — cold-data archive (YYYY-Qn.md weekly summaries + body.csv full body-composition series)
+/data/protocol/           — standing protocol; standard_week.md is the single human-readable schedule, not re-shuffled weekly; standard_week.yaml is only a Calendar-anchors projection
+/data/finance/            — financial holdings (savings / portfolio / policy.yaml)
+/data/reports/            — weekly report archive + weekly delta (only generated when there are exceptions)
+/data/reports/evals/      — session eval records (produced by make eval; audits the agent itself, not me)
+/data/user_profile.md     — global user profile (routine/diet/training preferences)
+/docs/                    — long-form docs; three owners: VISION (direction) / ROADMAP (to-do) / DECISIONS (decided, not revisited)
+/docs/voice-guide.md      — my writing voice (reverse-engineered from 34 published blog posts); read before writing any outward-facing text
+/ARCHITECTURE.md          — system architecture + invariants; read before changing data flow/contracts
+/SETUP.md                 — first-time bootstrap flow; the top comment block is an interactive script for the agent
+/templates/               — blank template files
+/scripts/                 — automation scripts (Python 3)
+/tests/                   — unit tests + fixtures (never read real private data)
+/web/                     — local wealth dashboard (Next.js, localhost only)
+/.agents/skills/          — AI agent skills (weekly-review / wealth-manager / ...)
+/repos/                   — external project submodules, managed centrally + read by skills
+/repos/portfolio-website  — personal website (unified entry point for career-related content)
+/repos/ai-stock-analysis  — stock analysis tool; also the sole owner of stock price data
+/repos/notes    — public notes submodule; sole owner of the nutrition dataset
+/scripts/nutrition.py     — nutrition query adapter (reads repos/notes; see docs/plan-public-knowledge-integration.md)
+/scripts/lib/nutrition/   — shared implementation for the nutrition adapter (basis conversion, macro/cost derivation)
 ```
 
-## 关键约定
-- 每日日志文件名格式: `YYYY-MM-DD.md`
-- YAML frontmatter 必须通过 `scripts/lib/schema.py` 校验；字段清单与模板保持 parity（可选字段允许留空）
-- 所有阈值从 `config/thresholds.yaml` 读取，脚本中禁止硬编码魔法数字
-- 脚本使用 Python 3，依赖见 `requirements.txt`（`make setup` 安装到 `.venv/`）
-- 输出全量符合 CommonMark 标准
+## Key Conventions
+- Daily log filename format: `YYYY-MM-DD.md`
+- YAML frontmatter must validate against `scripts/lib/schema.py`; the field list must stay in parity with the template (optional fields may be left blank)
+- All thresholds are read from `config/thresholds.yaml` — no hardcoded magic numbers in scripts
+- Scripts use Python 3, dependencies in `requirements.txt` (`make setup` installs into `.venv/`)
+- All output must conform to the CommonMark standard
 
-## 常用命令
-- `make setup` — 建立 `.venv` 并安装依赖
-- `make setup-private` — checkout private `data` submodule（需仓库权限）
-- `make doctor` — 环境自检；区分 error / expected（如无权限时 data 未 checkout）/ warning
-- `make test` — Python 测试 + web typecheck
-- `make today` — 生成今天的日志模板
-- `make check` — 运行逻辑引擎检查所有日志
-- `make weekly` — 聚合本周数据，生成周报 prompt
-- `make report` — 一键生成完整周报 (聚合 + 调用 AI)
-- `make wealth` — Tracked Assets: 现金/到期/利率 + 股票估值（NAV 计价产品仍不含）
-- `make eval` — 把最近一次 Claude Code session 转成 eval 记录（`SESSION=recent-3` 指定）
-- `make eval-rollup` — 月度 agent signal 汇总；`/meta-coach` 读这份，不读单条 eval
+## Common Commands
+- `make setup` — create `.venv` and install dependencies
+- `make setup-private` — check out the private `data` submodule (requires repo permission)
+- `make doctor` — environment self-check; distinguishes error / expected (e.g. data not checked out due to missing permission) / warning
+- `make test` — Python tests + web typecheck
+- `make today` — generate today's log template
+- `make check` — run the logic engine against all logs
+- `make weekly` — aggregate this week's data, generate the weekly-report prompt
+- `make report` — one-shot full weekly report (aggregate + call AI)
+- `make wealth` — Tracked Assets: cash/maturities/rates + stock valuation (NAV-priced products still excluded)
+- `make eval` — convert the most recent Claude Code session into an eval record (`SESSION=recent-3` to select one)
+- `make eval-rollup` — monthly agent-signal rollup; `/meta-coach` reads this, not individual evals
 
-## AI Agent 协作须知
-- 生成排期时必须参考 `data/user_profile.md` 中的作息/饮食偏好
-- 评分框架使用四维度权重 (产出40/健康30/心智20/习惯10)
-- 日志风格: 工程师视角，使用 `[Status: OK/Warning/Critical]` 标记
-- 中文为主，技术术语保留英文原文
-- 写任何**对外文字**（blog / LinkedIn / README 散文 / commit body）前先读
-  `docs/voice-guide.md`。仓库内部报告不受它管，继续用 `[Status: ...]` 那套。
+## AI Agent Collaboration Notes
+- When generating a schedule, always reference the routine/diet preferences in `data/user_profile.md`
+- The scoring framework uses four weighted dimensions (Output 40 / Health 30 / Mental 20 / Habits 10)
+- Log style: engineer's-eye view, marked with `[Status: OK/Warning/Critical]`
+- All content — logs, reports, and skills alike — is written in English
+- Read `docs/voice-guide.md` before writing any **outward-facing text** (blog / LinkedIn / README prose / commit body). Internal repo reports are not governed by it — keep using the `[Status: ...]` convention.
 
-## 收尾时给三个下一步
-答完一个请求后，主动给 3 个可选的下一步，不要问「还需要什么吗」：
-- **第 1 个必须是我想不到但会觉得有用的** —— 从这次上下文里看出来的机会，
-  不是把我刚说的话重述一遍。
-- 第 2、3 个是自然的后续（跑什么命令、改哪个文件）。
-- 每个一行，带上具体命令或路径。看不懂就别猜。
+## Give Three Next Steps When Wrapping Up
+After answering a request, proactively offer 3 optional next steps — don't ask "anything else you need?":
+- **The first one must be something I wouldn't have thought of but would find useful** — an opportunity visible from this context, not a restatement of what I just said.
+- The 2nd and 3rd are natural follow-ups (what command to run, which file to change).
+- One line each, with a concrete command or path. If you can't figure it out, don't guess.
 
-例外，此时跳过：我在连续快速下指令（说明我心里有序列，插建议是打断）；
-或者这一轮本身就是我在回答你的问题。
+Exceptions — skip this when: I'm issuing rapid consecutive instructions (meaning I already have a sequence in mind, and inserting suggestions would interrupt); or this turn is itself me answering your question.
 
-## 会话结束后审计 agent 自己
-`make eval` 把 transcript 转成 `data/reports/evals/` 里一条记录：事实 + 机械
-signal（write-before-read / unverified-mutation / tool-error-loop / user-correction …），
-每条 signal 都写了「什么证据能推翻它」。
+## Audit the Agent Itself After a Session Ends
+`make eval` converts a transcript into a record under `data/reports/evals/`: facts + mechanical
+signals (write-before-read / unverified-mutation / tool-error-loop / user-correction …),
+each signal annotated with "what evidence would falsify it."
 
-- `judgement` / `agents_md_change` / `notes` 三个字段**生成时一律为 null**。
-  自己给自己打分的 auditor 等于对被审计对象有写权限 —— 那是 `/decision-log`
-  里同一个坑。人或 `/meta-coach` 事后填。
-- 重新生成不会覆盖已填的 review 字段（除非 `--force`）。
-- 单条 eval 证明不了什么；`make eval-rollup` 的分布才是证据。同一个 signal 在
-  一个月里命中过半 → 那是 AGENTS.md 的 bug，不是那次会话的 bug。
+- The `judgement` / `agents_md_change` / `notes` fields are **always null at generation time**.
+  An auditor that scores itself is equivalent to giving the audited party write access —
+  that's the same pitfall as in `/decision-log`. A human or `/meta-coach` fills these in afterward.
+- Regenerating never overwrites already-filled review fields (unless `--force`).
+- A single eval proves nothing; the distribution from `make eval-rollup` is the evidence. If the
+  same signal fires in over half the sessions in a month → that's a bug in AGENTS.md, not in that session.

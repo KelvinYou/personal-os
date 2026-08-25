@@ -60,11 +60,11 @@ single-repository commit writing.
 
 Trigger for requests such as:
 
-- "帮我检查这次改动能不能提交"
-- "同步 / bump submodule"
-- "我在两个 repo 都改了，帮我收尾"
+- "check whether this change is safe to commit"
+- "sync / bump submodule"
+- "I've made changes in two repos, help me wrap it up"
 - "prepare the release / integration check"
-- "检查 parent pointer 是否正确"
+- "check whether the parent pointer is correct"
 - "run a preflight before commit"
 - "why is the main repo dirty after the submodule change?"
 

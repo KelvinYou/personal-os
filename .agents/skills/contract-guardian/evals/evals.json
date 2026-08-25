@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "我想把 daily schema 里的 sleep.quality 改成 derived poor_sleep，并同步 templates/daily.md 和 scripts/lib/schema.py。帮我判断这次变更为什么还不能 merge，重点检查 weekly_synthesis.py、migrate、lint、旧日志兼容性和 tests。只读 review，不要改文件。",
+      "prompt": "I want to change sleep.quality in the daily schema to a derived poor_sleep field, and sync templates/daily.md and scripts/lib/schema.py. Help me figure out why this change still can't be merged, focusing on weekly_synthesis.py, migrate, lint, old-log compatibility, and tests. Read-only review, don't change any files.",
       "expected_output": "A contract review that maps the schema owner to every consumer, distinguishes an intended change from the current diff, requires migration/compatibility and focused tests, and blocks the change if any consumer or old-log path is not updated.",
       "files": [],
       "expectations": [
@@ -16,7 +16,7 @@
     },
     {
       "id": 1,
-      "prompt": "这次要把 wealth report 的 allocation 从数组改成带 incomplete 和 unpriced_symbols 的对象，同时让 config/wealth_rules.yaml 的 verified_at/freshness 影响报告。帮我做 contract review：检查 Python、TS、fixture、schema version、freshness consumer，以及 public/private 边界。不要提交。",
+      "prompt": "This change turns the wealth report's allocation from an array into an object with incomplete and unpriced_symbols, and lets config/wealth_rules.yaml's verified_at/freshness affect the report. Help me do a contract review: check Python, TS, fixture, schema version, freshness consumer, and the public/private boundary. Don't commit.",
       "expected_output": "A cross-language contract review that keeps Python as the calculation owner, requires synchronized TS/fixture/version changes, verifies an executable wealth_rules freshness path, and blocks private data leakage or unconsumed claims.",
       "files": [],
       "expectations": [
@@ -29,7 +29,7 @@
     },
     {
       "id": 2,
-      "prompt": "我准备把一批 jobs 从 data/ 搬到 market/，并把 wealth-manager skill 里的个人 baseline 改成 placeholder；另外 docs/plan-wealth-dashboard.md 里有些 data checkout 状态可能已经过期。帮我 review 这次改动的隐私、skill reference、source-of-truth 和文档风险。不要静默修改历史 audit。",
+      "prompt": "I'm about to move a batch of jobs from data/ to market/, and change the personal baseline in the wealth-manager skill to a placeholder; also some data-checkout status notes in docs/plan-wealth-dashboard.md may be stale. Help me review the privacy, skill reference, source-of-truth, and documentation risk of this change. Don't silently rewrite historical audit records.",
       "expected_output": "A public/private and documentation contract review that checks actual diff scope, prevents private facts in market/public paths, validates skill placeholders and references, and classifies stale historical versus live guidance without rewriting audit records.",
       "files": [],
       "expectations": [

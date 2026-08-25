@@ -1,48 +1,59 @@
-# 空腹 vs 进食晨练：科学证据速查
+# Fasted vs Fed Morning Training: Scientific Evidence Quick Reference
 
-## 结论
+## Conclusion
 
-**Recomp 目标下推荐进食后训练。** "空腹练燃脂更多"是民间传说，已被 Meta-Analysis 拆穿。
-
----
-
-## 证据
-
-### 力量训练
-- **2025 系统综述 + Meta-Analysis（PubMed/ScienceDirect）**：空腹 vs 进食状态做阻力训练，**长期肌肉量、体成分、力量增长无显著差异**——前提是全天总蛋白和热量相同。
-- Fed 状态下急性表现更好（多几个 rep，峰值力量稍高）→ 对 Recomp 累积机械张力有间接价值。
-
-### 脂肪燃烧（有氧）
-- 多篇 2024-2025 Meta-Analysis 一致：空腹有氧 vs 进食有氧，体脂变化效应量 **trivial to small（可忽略）**。
-- "空腹先燃脂库"机制真实，但 24h 内脂肪氧化率会补偿，等热量赤字下无净优势。
-
-### 皮质醇 / MPS
-- 真正空腹重训 → 皮质醇峰值更高 → 慢性高皮质醇是 Recomp 肌肉保留的主要风险。
-- 训练前摄入蛋白质会提前启动 MPS 信号，氨基酸在训练中段（约 20-30min 后）到位，正好覆盖最需要的阶段。
+**Under a Recomp goal, training fed is recommended.** "Fasted training burns more fat" is folk wisdom that has
+been debunked by meta-analysis.
 
 ---
 
-## Short pre-workout window 的特殊说明
+## Evidence
 
-当 private profile/protocol 给出的 pre-workout window 很短时，食物在训练
-开始时几乎还未进入循环——但这不是白吃的理由：
+### Resistance training
+- **2025 systematic review + meta-analysis (PubMed/ScienceDirect)**: fasted vs fed resistance training shows
+  **no significant difference in long-term muscle mass, body composition, or strength gains** — provided total
+  daily protein and calories are equal.
+- Acute performance is better in the fed state (a few more reps, slightly higher peak strength) → indirectly
+  valuable for Recomp's cumulative mechanical tension.
 
-- Whey 氨基酸在训练 20-30min 后供应 → 覆盖训练中后段
-- 快碳（香蕉 / 白饭）在训练 15-25min 后升血糖 → 支撑最后几组
-- 作用不是"立即提能"，而是**营养定时到位**
+### Fat burning (cardio)
+- Multiple 2024-2025 meta-analyses agree: fasted vs fed cardio produces a **trivial to small (negligible)**
+  effect size on body fat change.
+- The "fasted state taps fat stores first" mechanism is real, but fat oxidation rates compensate within 24h,
+  so there's no net advantage under the same caloric deficit.
+
+### Cortisol / MPS
+- True fasted heavy training → higher cortisol peaks → chronically high cortisol is a major risk to muscle
+  retention during Recomp.
+- Consuming protein before training pre-triggers MPS signaling, with amino acids arriving mid-workout
+  (around 20-30 min in) — right when they're needed most.
 
 ---
 
-## 排期建议
+## A note on short pre-workout windows
 
-- 是否保留 pre-workout snack、组成和剂量由 private profile/protocol 决定；不要从本文件推断个人执行规则。
-- 缺货替代用 `scripts/nutrition.py food <id>` 逐个核对 + 当前库存选择，不要把示例食物写成固定 baseline。
-- 全麦面包 GI ~69-74（中高 GI），不是"慢碳"，民间误解。
+When the private profile/protocol specifies a very short pre-workout window, the food eaten has barely entered
+circulation by the time training starts — but that's not a reason to skip it:
+
+- Whey amino acids become available 20-30min into training → covering the mid-to-late portion
+- Fast carbs (banana / white rice) raise blood sugar 15-25min into training → supporting the final sets
+- The point isn't "immediate energy" — it's **nutrient timing landing when needed**
 
 ---
 
-## 来源
+## Scheduling recommendations
+
+- Whether to keep a pre-workout snack, its composition, and dosage are decided by the private profile/protocol;
+  don't infer personal execution rules from this file.
+- When an item is out of stock, cross-check substitutes one at a time via `scripts/nutrition.py food <id>` and
+  current inventory — don't hardcode example foods as a fixed baseline.
+- Wholemeal bread has a GI of ~69-74 (medium-high GI), not a "slow carb" as commonly believed.
+
+---
+
+## Sources
 - PubMed 2025: Resistance training fasted vs fed — systematic review & meta-analysis (ScienceDirect)
 - Frontiers in Nutrition 2024: Protein timing & body composition in resistance-trained males
 - PMC 2025-2026: Intermittent fasting + exercise performance meta-analyses
 - YouTube: Dr. Stacy Sims "Should You Train Fasted or Fueled?" (73K views)
+</content>

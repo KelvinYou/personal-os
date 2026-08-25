@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "我刚在 repos/ai-stock-analysis 和 repos/portfolio-website 都做完一轮改动，personal-os 主仓库还没 bump。帮我做一次 integration preflight，列出安全的收尾顺序。只读检查，不要 commit、push、reset 或丢掉任何 dirty changes。",
+      "prompt": "I just finished a round of changes in both repos/ai-stock-analysis and repos/portfolio-website, and the personal-os main repo hasn't been bumped yet. Please run an integration preflight and list a safe order for wrapping this up. Read-only checks only — do not commit, push, reset, or discard any dirty changes.",
       "expected_output": "A read-only multi-repository preflight report that distinguishes parent gitlinks from actual child HEADs and dirty files, identifies the validation order, and gives safe next actions without mutating Git state.",
       "files": [],
       "expectations": [
@@ -16,7 +16,7 @@
     },
     {
       "id": 1,
-      "prompt": "这次改动同时碰了 scripts/lib/wealth、web/lib/report.ts、config/wealth_rules.yaml，还更新了 ai-stock-analysis。帮我判断能不能合并到主仓库，并列出必须检查的契约、测试和 public/private 边界。不要替我提交。",
+      "prompt": "This change touches scripts/lib/wealth, web/lib/report.ts, and config/wealth_rules.yaml, and also updates ai-stock-analysis. Help me judge whether it can be merged into the main repo, and list the contracts, tests, and public/private boundaries that must be checked. Do not commit on my behalf.",
       "expected_output": "A contract-aware integration review covering Python ownership of valuation, the Python/TypeScript report contract, config freshness, submodule readiness, public/private separation, and focused verification gates.",
       "files": [],
       "expectations": [
@@ -29,7 +29,7 @@
     },
     {
       "id": 2,
-      "prompt": "我只改了 .agents/skills/wealth-manager 和 docs/plan-wealth-dashboard.md，现在想 commit。先帮我做 repo preflight，并告诉我什么时候该交给 git-commit，什么时候不该交给它。",
+      "prompt": "I only changed .agents/skills/wealth-manager and docs/plan-wealth-dashboard.md, and now I want to commit. First do a repo preflight for me, and tell me when it should be handed off to git-commit and when it shouldn't be.",
       "expected_output": "A focused single-root preflight that checks skill/doc references and trigger ownership, detects whether submodule or contract checks are unnecessary, and clearly hands off only after the user has explicitly requested a commit.",
       "files": [],
       "expectations": [

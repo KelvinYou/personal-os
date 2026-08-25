@@ -2,7 +2,7 @@
 
 This document is the execution guide for the **job-market** and **hybrid** modes
 of the learning-agent skill. It is loaded only when the user's query touches real
-hiring-market signals (招聘需求 / JD / 薪资 / specific role scans) rather than
+hiring-market signals (hiring demand / JD / salary / specific role scans) rather than
 pure trend research.
 
 ## Why this mode exists
@@ -43,13 +43,13 @@ a generic SWE profile.
 ### Step 1 — Decide scope
 Parse the user's query for:
 - **Role** (e.g. "Senior SWE", "AI engineer", "Staff engineer") — defaults to the
-  user's current role if not specified. If the user hints at a pivot (想转、想去),
-  use the pivot target.
+  user's current role if not specified. If the user hints at a pivot ("want to move to",
+  "want to go into"), use the pivot target.
 - **Location** (MY, SG, or both) — default both.
 - **Archive freshness** — if `market/jobs/raw/` already has a file from today
   matching the query, skip fetching (the scripts enforce this automatically).
 
-If the query is ambiguous (e.g. "看看市场"), propose a scope and confirm with
+If the query is ambiguous (e.g. "check the market"), propose a scope and confirm with
 one sentence before running scrapers. The scrapers take 1-3 minutes and
 we don't want to burn rate-limit budget on the wrong search.
 
@@ -131,37 +131,37 @@ Output structure for **job-market mode**:
 # Job Market Scan — [YYYY-MM-DD]
 
 ## TL;DR
-> 一句话：MY/SG [角色] 岗位里最被反复要求的 3 个 skill 是 X/Y/Z，[新出现/消退] 的信号是 …
+> One sentence: the 3 skills most repeatedly required for [role] roles in MY/SG are X/Y/Z, and the [emerging/fading] signal is …
 
-## 数据盘点
-- 扫描范围: [sources] × [locations]
-- 样本量: N 个 JDs (filter: 过去 7 天发布)
-- 数据缺口: [any source that failed, any location that's underrepresented]
+## Data inventory
+- Scan scope: [sources] × [locations]
+- Sample size: N JDs (filter: posted in the past 7 days)
+- Data gaps: [any source that failed, any location that's underrepresented]
 
-## 🔥 高频 Skill Top 15
-| Rank | Skill | 出现次数 | 覆盖率 | 备注 |
+## 🔥 Top 15 high-frequency skills
+| Rank | Skill | Occurrences | Coverage | Notes |
 |------|-------|---------|--------|------|
-| 1 | ... | ... | N/total | (optional: 在哪些职级出现最多) |
+| 1 | ... | ... | N/total | (optional: which seniority levels it appears most in) |
 
-## 📍 MY vs SG 对比
-[2 列 table 或并列 list，突出差异]
+## 📍 MY vs SG comparison
+[2-column table or side-by-side list, highlighting differences]
 
-## 📈 新兴 vs 消退（如果有 delta 数据）
+## 📈 Emerging vs fading (if delta data exists)
 - 🆕 Emerging: [skill] (+X%)
 - 📉 Fading: [skill] (-Y%)
 
-## 💰 薪资带（如果抓到薪资字段）
-[按角色/级别的薪资范围；注明数据源、样本量]
+## 💰 Salary bands (if salary fields were captured)
+[Salary range by role/level; note data source and sample size]
 
-## 🎯 对你的建议
-基于 user_profile 和最近 daily logs：
-- 你已经掌握的高需求 skill: [...]
-- 你缺的、但在 top 10 频繁出现的: [...]
-- 窗口期建议: [什么现在学 ROI 最高]
+## 🎯 Recommendations for you
+Based on user_profile and recent daily logs:
+- High-demand skills you already have: [...]
+- Skills you're missing that appear frequently in the top 10: [...]
+- Window recommendation: [what has the highest ROI to learn right now]
 ```
 
 **Hybrid mode** additionally runs the trend-research pass (`references/trend-research-mode.md`
-workflow) and includes a final section called `## 🔀 交叉验证` — where market
+workflow) and includes a final section called `## 🔀 Cross-validation` — where market
 signal agrees with web trends, it's a strong buy; where they disagree, note
 which side the user should weight and why (e.g., "blog chatter on Rust is hot
 but MY/SG JDs show only 3 mentions in 100 samples — keep on watchlist, don't
@@ -172,15 +172,15 @@ prioritize").
 If `market/jobs/trends.json` exists and was regenerated within the last 48 hours,
 and the user's query doesn't demand fresh data (e.g., "summarize what we know"
 rather than "scan again"), you can produce the report from the existing digest
-alone. Note this in the TL;DR: "（数据来自 YYYY-MM-DD 的缓存，未重新抓取）".
+alone. Note this in the TL;DR: "(data is from the YYYY-MM-DD cache, not re-fetched)".
 
 ## Failure modes to flag honestly
 
-- **LinkedIn 返回空**: likely rate-limited. Report "LinkedIn 未返回数据，仅用
-  Indeed/JobStreet 样本。" Don't pretend the dataset is complete.
-- **JobStreet 脚本返回非 0**: API schema changed. Tell the user the scraper
+- **LinkedIn returns empty**: likely rate-limited. Report "LinkedIn returned no
+  data, using only Indeed/JobStreet samples." Don't pretend the dataset is complete.
+- **JobStreet script returns non-zero**: API schema changed. Tell the user the scraper
   needs upgrading, run analysis on what's available, and flag MY data as
   potentially under-sampled.
-- **skills_extracted 为空**: LLM extraction failed or returned malformed JSON.
+- **skills_extracted is empty**: LLM extraction failed or returned malformed JSON.
   Re-run extraction once; if still broken, report without the skill aggregation
   and ask the user whether to retry.

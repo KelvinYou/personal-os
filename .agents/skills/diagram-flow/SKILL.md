@@ -8,8 +8,9 @@ description: >
   graph, or Mermaid block; when a diagram renders wrong or renders differently on
   GitHub than locally; when deciding whether a diagram needs a structured source of
   truth instead of hand-written Mermaid; or when setting up diagram validation in CI.
-  Also trigger on "图渲染坏了"、"加一张流程图"、"这个 mermaid 怎么不显示"、
-  "统一一下图的画法". Diagram correctness and portability only — it does not own
+  Also trigger on "the diagram rendering is broken", "add a flowchart",
+  "why doesn't this mermaid diagram show up", "let's unify how we draw diagrams".
+  Diagram correctness and portability only — it does not own
   commit writing (git-commit) or submodule integration (repo-orchestrator).
 allowed-tools: Bash, Read, Glob, Grep, Edit, Write
 ---

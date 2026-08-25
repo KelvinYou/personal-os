@@ -1,21 +1,21 @@
 # Profile Optimization Methodology
 
-详细方法论。SKILL.md 在 Step 3-5 引用本文档。
+Detailed methodology. SKILL.md references this document in Steps 3-5.
 
-## 1. XYZ Formula（Bullet 重写核心）
+## 1. XYZ Formula (core of bullet rewriting)
 
-来源：Google recruiter 的公开建议，被 SEA fintech / 大厂招聘普遍接受。
+Source: public advice from Google recruiters, widely adopted by SEA fintech / big-company hiring.
 
 > **Accomplished [X], as measured by [Y], by doing [Z].**
 
-- **X (What)**: 你做出的具体成果（不是 task，是 outcome）
-- **Y (Measure)**: 量化指标——百分比、绝对数、时间节省、用户量、GMV 等
-- **Z (How)**: 关键技术决策或方法（让人能判断你是 senior/junior）
+- **X (What)**: the concrete result you produced (not a task, an outcome)
+- **Y (Measure)**: the quantified metric — percentage, absolute number, time saved, user count, GMV, etc.
+- **Z (How)**: the key technical decision or method (lets people judge whether you're senior/junior)
 
-### 好坏对照
+### Good vs. bad comparison
 
 ❌ "Worked on the payment system to improve performance."
-- 没有 X（improve 多少？），没有 Y（measured by 什么？），Z 太泛
+- No X (improved by how much?), no Y (measured by what?), Z is too vague
 
 ✅ "Reduced p99 payment API latency from 800ms to 180ms (-77%) by introducing
    request coalescing and replacing SQL N+1 with a single JOIN."
@@ -23,202 +23,211 @@
 - Y: 800ms → 180ms (-77%)
 - Z: request coalescing + SQL refactor
 
-### 当用户没有量化数据时
+### When the user has no quantified data
 
-不要瞎编。在重写候选里**留 placeholder**，明确告诉用户要补什么：
+Don't make numbers up. In the rewrite candidates, **leave a placeholder** and explicitly tell the user what
+to fill in:
 
 > "Reduced checkout drop-off by **[X%]** via Stripe + local PSP integration with
-> idempotent retry layer. **请补充：drop-off 改善的具体百分比，或换用户量等其他指标。**"
+> idempotent retry layer. **Please provide: the specific percentage improvement in drop-off, or another
+> metric such as user count.**"
 
-宁可留 `[X%]` 让用户自己填，也不要写 "significantly improved"。
+Better to leave `[X%]` for the user to fill in themselves than to write "significantly improved."
 
-### XYZ 的三种变体（按场景选）
+### Three variants of XYZ (pick by scenario)
 
-1. **XYZ-strict**: 三段都齐，适合 senior 关键 bullet。
-2. **Outcome-first**: 把 X+Y 提到句首，Z 用介词短语带过。适合需要前 6 秒抓眼球的
-   top 3 bullet。
-3. **Tech-emphasis**: Z 在前，X+Y 在后。适合目标岗位非常 tech-heavy（如 ML infra、
-   distributed systems），recruiter 是 tech lead 而不是 HR 的场景。
+1. **XYZ-strict**: all three parts present, suits senior key bullets.
+2. **Outcome-first**: bring X+Y to the front of the sentence, Z trails as a prepositional phrase. Suits the
+   top 3 bullets that need to grab attention in the first 6 seconds.
+3. **Tech-emphasis**: Z first, X+Y after. Suits target roles that are very tech-heavy (e.g. ML infra,
+   distributed systems), where the recruiter is a tech lead rather than HR.
 
 ---
 
-## 2. Skill Gap 三色分类规则
+## 2. Skill Gap three-color classification rules
 
-输入：
-- `user_skills` — 从 profile 文本中提取的所有 skill 关键词（含 skills section、experience bullets、projects 描述）
-- `jd_top_skills` — `market/jobs/trends.json` 中目标方向的 top-30 频次
+Inputs:
+- `user_skills` — all skill keywords extracted from the profile text (including the skills section,
+  experience bullets, and project descriptions)
+- `jd_top_skills` — the top-30 frequency list for the target direction from `market/jobs/trends.json`
 
-### 归一化
+### Normalization
 
-合并以下变体到一个 canonical 名：
+Merge the following variants into one canonical name:
 - "Postgres" / "PostgreSQL" / "psql" → `PostgreSQL`
 - "k8s" / "Kubernetes" → `Kubernetes`
 - "JS" / "JavaScript" / "ECMAScript" → `JavaScript`
-- "AWS" 单独算一类，但 "AWS Lambda" / "AWS S3" 单独算（细粒度服务）
+- "AWS" counts as its own category, but "AWS Lambda" / "AWS S3" count separately (fine-grained services)
 
-归一化表维护在脚本里（如果未来抽出脚本），现在 LLM 自己判断。
+The normalization table is maintained in the script (if one is factored out in the future); for now the LLM
+judges it itself.
 
-### 分类阈值
+### Classification thresholds
 
-| 类别 | JD 频次（占样本%）| 用户 profile 出现 | 行动 |
+| Category | JD frequency (% of sample) | Appears in user profile | Action |
 |------|------------------|-------------------|------|
-| ✅ Hit | ≥ 30% | 是 | 保留；检查 phrasing 是否和 JD 主流一致 |
-| ⚠️ Gap | ≥ 30% | 否 | **重点关注**：你会但没写？不会但该学？标记给用户 |
-| 🟡 Niche-strength | < 30% 但 > 10% | 是 | 保留作为差异化卖点 |
-| ❌ Dead-weight | < 5% | 是 | 评估下沉/删除 |
+| ✅ Hit | ≥ 30% | Yes | Keep; check whether phrasing matches JD mainstream |
+| ⚠️ Gap | ≥ 30% | No | **Focus here**: do you have it but didn't write it? Or don't have it and should learn it? Flag for the user |
+| 🟡 Niche-strength | < 30% but > 10% | Yes | Keep as a differentiating selling point |
+| ❌ Dead-weight | < 5% | Yes | Evaluate demoting/removing |
 
-频次的"占样本%"指：在抓到的 N 条 JD 中，有多少条提到了这个 skill。
-样本 < 30 条时**不可靠**，在报告里明确标注。
+Frequency's "% of sample" means: of the N JDs fetched, how many mention this skill.
+A sample < 30 is **unreliable** — flag this explicitly in the report.
 
-### 高频但用户没写时的两类区分
+### Two sub-types when high-frequency but not written
 
-⚠️ Gap 区里要进一步分：
+Within the ⚠️ Gap category, split further:
 
-- **Type A: 会但没写** — 用户其他 bullet / project 里有暗示（例如做过 backend 但 skills section 没写 SQL）。建议加进 skills section 或在某条 bullet 显式提一下。
-- **Type B: 不会** — 完全没出现过任何相关信号。建议要么去学（如果是核心 skill），要么放弃这个方向。
+- **Type A: has it but didn't write it** — other bullets/projects imply it (e.g. did backend work but the
+  skills section doesn't list SQL). Recommend adding it to the skills section or mentioning it explicitly in
+  a bullet.
+- **Type B: doesn't have it** — no related signal appears anywhere. Recommend either learning it (if it's a
+  core skill) or abandoning this direction.
 
-不要混为一谈给同一种行动建议。
+Don't conflate the two and give them the same action recommendation.
 
 ---
 
-## 3. Section 排序启发式
+## 3. Section ordering heuristics
 
-### Experience 默认排序
+### Default Experience ordering
 
-时间倒序是行业标准，**不要颠倒**。但可以：
-- 在 summary / about 里 "spotlight" 一条更早但更相关的经历
-- 在 skills section 把目标方向的关键 skill 放最前
+Reverse chronological is industry standard, **don't invert it**. But you can:
+- "Spotlight" an earlier but more relevant role in the summary/about section
+- Put the target direction's key skills first in the skills section
 
-### Projects 排序公式
+### Projects ordering formula
 
-打分 = `JD_keyword_match_count × outcome_strength`
+Score = `JD_keyword_match_count × outcome_strength`
 
-- `JD_keyword_match_count`: 这个 project 描述里出现 top-30 JD 关键词的数量
-- `outcome_strength`: 0-3 分
-  - 0: 没量化数据
-  - 1: 有定性 outcome（"shipped to production"）
-  - 2: 有量化指标但范围小（个人 project）
-  - 3: 有量化指标且影响范围大（团队/公司/用户量）
+- `JD_keyword_match_count`: number of top-30 JD keywords that appear in this project's description
+- `outcome_strength`: 0-3 points
+  - 0: no quantified data
+  - 1: qualitative outcome ("shipped to production")
+  - 2: quantified metric but small scope (personal project)
+  - 3: quantified metric with large-scale impact (team/company/user count)
 
-按总分排序，给前 3 名标 "lead with this"。
+Sort by total score, mark the top 3 "lead with this".
 
-### Lead bullet 选择
+### Lead bullet selection
 
-每个 experience 的第一条 bullet 决定了 recruiter 是否继续读。第一条必须：
-- 满足 XYZ-strict 或 Outcome-first
-- 包含目标 JD 的 ≥ 2 个高频关键词
-- 数字在句子前 1/3
+The first bullet under each experience entry determines whether the recruiter keeps reading. The first bullet must:
+- Satisfy XYZ-strict or Outcome-first
+- Contain ≥ 2 high-frequency keywords from the target JD
+- Put the number within the first third of the sentence
 
-### 删减阈值
+### Trimming thresholds
 
-下沉到次要 section 或删除的候选：
+Candidates for demotion to a secondary section or deletion:
 
-| 信号 | 处理 |
+| Signal | Treatment |
 |------|------|
-| 与目标方向无关的 skill | 删除或下沉到 "其他技能" 折叠区 |
-| > 5 年前的非高分经历（非 FAANG / 非顶级项目）| 缩短到 1-2 行 |
-| 重复在两个 role 都写的同类 bullet | 合并到一个 role，另一个删掉 |
-| Skills section > 30 个 tag | 砍到 ≤ 20，按目标方向排序 |
-| Self-promotional 形容词（"passionate"、"results-driven"）| 全删，没人看 |
+| Skill unrelated to target direction | Delete or demote to a collapsed "Other skills" section |
+| Non-differentiating experience older than 5 years (non-FAANG / non-top-tier project) | Shorten to 1-2 lines |
+| Duplicate bullet of the same kind of work written under two roles | Merge into one role, delete from the other |
+| Skills section has > 30 tags | Cut to ≤ 20, sorted by target direction |
+| Self-promotional adjectives ("passionate", "results-driven") | Delete entirely, nobody reads them |
 
 ---
 
-## 4. 标杆 Profile 模式抽取
+## 4. Benchmark profile pattern extraction
 
-当用户粘贴了 1-3 个标杆 profile，**抽模式不抄词**。要看的维度：
+When the user pastes 1-3 benchmark profiles, **extract patterns, don't copy words**. Dimensions to examine:
 
-### Headline（一行）
+### Headline (one line)
 
-- 长度（10-15 词最常见）
-- 切入角度：经验年数 / 解决的问题 / 公司+职级 / mission statement
-- 是否带数字（如 "Built ML systems serving 100M+ users"）
+- Length (10-15 words is most common)
+- Angle of approach: years of experience / problem solved / company + title / mission statement
+- Whether it includes a number (e.g. "Built ML systems serving 100M+ users")
 
-### Summary 第一句
+### Summary's first sentence
 
-第一句决定打开率。常见钩子模式：
+The first sentence determines the open rate. Common hook patterns:
 - **Numbers hook**: "10 years building payments infrastructure for SEA fintech."
 - **Problem hook**: "I help fintech companies cut payment failure rates."
 - **Identity hook**: "Backend engineer specializing in idempotent distributed systems."
 - **Story hook**: "Started as a self-taught dev, now leading a team of 8..."
 
-判断标杆用了哪种，对照用户最贴合哪种（基于他实际背景，不要硬套）。
+Determine which one the benchmark used, and check which one best fits the user (based on their actual
+background — don't force a fit).
 
-### 量化数字的写法
+### How quantified numbers are phrased
 
-- 用户量 / 客户量 / GMV
-- 性能改进百分比
-- 团队规模 / 跨团队协作数量
-- 成本节省 / 收入增长
+- User count / customer count / GMV
+- Percentage performance improvement
+- Team size / cross-team collaboration count
+- Cost savings / revenue growth
 
-记下标杆用了什么类型的指标，因为不同岗位偏好不同。
-（产品经理偏 GMV/用户量，infra eng 偏延迟/可用性。）
+Note which type of metric the benchmark used, since different roles favor different metrics.
+(Product managers lean toward GMV/user count, infra engineers lean toward latency/availability.)
 
-### Project 描述结构
+### Project description structure
 
-- 长度：3-5 行 vs 1 段 vs 1 句
-- 是否带 link（GitHub、demo、博客）
-- 是否带 tech stack tag
+- Length: 3-5 lines vs. one paragraph vs. one sentence
+- Whether a link is included (GitHub, demo, blog)
+- Whether a tech stack tag is included
 
-### Skills 分组方式
+### How skills are grouped
 
-- 按技术栈分（Languages / Frameworks / Tools / Cloud）
-- 按能力域分（Backend / Distributed Systems / DevOps）
-- 完全不分组（一长串 tag）
+- By tech stack (Languages / Frameworks / Tools / Cloud)
+- By competency domain (Backend / Distributed Systems / DevOps)
+- Not grouped at all (one long list of tags)
 
-### 输出格式
+### Output format
 
 ```markdown
-## 标杆对照
+## Benchmark comparison
 
-**标杆**: [name or "Profile A"]
-**模式**: [抽取的具体模式]
-**你目前**: [用户当前的对应做法]
-**建议**: [基于你已有经历的具体改法，不要造新内容]
-**理由**: [为什么这个模式适合 / 不适合你]
+**Benchmark**: [name or "Profile A"]
+**Pattern**: [the specific pattern extracted]
+**You currently**: [the user's current corresponding approach]
+**Recommendation**: [a concrete change based on experience the user already has, don't invent new content]
+**Rationale**: [why this pattern fits / doesn't fit the user]
 ```
 
-### 严格禁止
+### Strictly forbidden
 
-- 抄标杆原句
-- 套用标杆的虚假人设（标杆 staff eng，你不能自称 staff eng）
-- 推荐标杆用了但你没相关经历支撑的 framing
+- Copying the benchmark's exact sentences
+- Adopting the benchmark's fabricated persona (benchmark is staff eng, you can't call yourself staff eng)
+- Recommending framing the benchmark used but that the user has no experience to support
 
 ---
 
-## 5. 报告写作规范
+## 5. Report writing conventions
 
-### TL;DR 模板
+### TL;DR template
 
 ```
-**Top gap**: [一句话，最关键的 skill / framing 缺口]
-**Top rewrite**: [一条 bullet，原文 → 重写后]
-**Top reorder**: [一个 section 调整，最大影响]
+**Top gap**: [one sentence, the most critical skill/framing gap]
+**Top rewrite**: [one bullet, original → rewritten]
+**Top reorder**: [one section adjustment, biggest impact]
 ```
 
-3 行。不要 4 行。
+3 lines. Not 4.
 
-### 行动清单格式
+### Action list format
 
-每条：
-- 优先级标 P0 / P1 / P2
-- 预计耗时（必须 < 30 分钟，否则拆）
-- 具体可执行（不要 "improve your bullets"，要 "把 dtcpay role 第一条 bullet 改成 [具体内容]"）
+Each item:
+- Priority marked P0 / P1 / P2
+- Estimated time (must be < 30 minutes, otherwise split it up)
+- Concrete and actionable (not "improve your bullets", but "change the first bullet of the dtcpay role to
+  [specific content]")
 
-### 报告长度上限
+### Report length cap
 
-- TL;DR + Skill gap 表 + 前 5 条 bullet 重写 + 排序建议 + 行动清单
-- 全文 ≤ 1500 行 markdown
-- 超过就分两份：`-part1.md` 优先建议，`-part2.md` 次要细节
+- TL;DR + Skill gap table + first 5 bullet rewrites + ordering recommendations + action list
+- Full text ≤ 1500 lines of markdown
+- If it exceeds this, split into two: `-part1.md` for priority recommendations, `-part2.md` for secondary detail
 
 ---
 
-## 6. 常见反模式（在报告里看到要警告用户）
+## 6. Common anti-patterns (flag to the user when seen in the report)
 
-- **"Passionate"、"results-driven"、"team player"** — 全是空话，删
-- **"Responsible for"、"Worked on"、"Helped with"** — 没有 ownership 信号，重写
-- **罗列工作内容而不是 outcome** — "Wrote APIs, did code review, attended standups" 这种
-- **过长的 summary（> 5 段）** — recruiter 不读，砍到 2 段
-- **重复使用同一个动词** — 整个 profile 用 5 次 "developed"，换词
-- **隐藏关键 skill 在文末** — 把目标方向的核心 skill 提到 skills section 最前
-- **公司没人听过却没解释**: 加一句 "(SEA fintech, 200K MAU)" 这种 context
-- **Project 没 link** — GitHub / demo / blog 至少要一个，否则可信度低
+- **"Passionate", "results-driven", "team player"** — all filler, delete
+- **"Responsible for", "Worked on", "Helped with"** — no ownership signal, rewrite
+- **Listing job duties instead of outcomes** — things like "Wrote APIs, did code review, attended standups"
+- **Overly long summary (> 5 paragraphs)** — recruiters won't read it, cut to 2 paragraphs
+- **Overusing the same verb** — using "developed" 5 times across the whole profile, vary the wording
+- **Hiding a key skill at the very end** — move the target direction's core skills to the front of the skills section
+- **Company nobody's heard of, with no explanation**: add a line like "(SEA fintech, 200K MAU)" for context
+- **Project has no link** — GitHub / demo / blog, at least one, otherwise credibility is low

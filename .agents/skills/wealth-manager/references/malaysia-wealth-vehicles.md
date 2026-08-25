@@ -1,94 +1,119 @@
-# Malaysia Wealth Vehicles & Tax — 本地化方案
+# Malaysia Wealth Vehicles & Tax — Localized Playbook
 
-> wealth-manager 在做储蓄分配、税务优化、ETF 选择时的 MY 本地知识库。
-> 美国博客讲的 401k/Roth IRA/HSA 对马来西亚人无效——本文件是这些概念的 MY 对应物。
+> wealth-manager's MY-local knowledge base for savings allocation, tax optimization, and ETF
+> selection.
+> The 401k/Roth IRA/HSA discussed in US blogs don't apply to Malaysians — this file is the MY
+> equivalent of those concepts.
 >
-> **最后研究日期: 2026-06-02。** 税务额度按 YA 2025（2026 报税）；利率随时变。
-> 引用具体利率/额度前务必 WebSearch 核对（见 SKILL.md Data Freshness 节）。
+> **Last researched: 2026-06-02.** Tax relief amounts follow YA 2025 (2026 filing); interest rates
+> change at any time.
+> Always WebSearch to verify before citing a specific rate/allowance (see SKILL.md's Data
+> Freshness section).
 
 ---
 
-## 1. 税务优惠额度 — Malaysia 版的"税优账户"
+## 1. Tax Relief Allowances — Malaysia's version of a "tax-advantaged account"
 
-马来西亚没有 Roth IRA，但有几项 individual tax relief 能直接降低应税收入。对边际税率已确认的纳税人，
-**用满适用 relief 可能是确定性最高的一笔回报**；不要从年龄或月储蓄额推断税率。
+Malaysia has no Roth IRA, but has several individual tax reliefs that directly lower taxable
+income. For a taxpayer whose marginal tax rate has been confirmed,
+**maxing out the applicable relief may be the single most certain return available**; don't infer
+the tax rate from age or monthly savings amount.
 
-| Relief | 上限 (YA2025) | 对用户的意义 | 备注 |
+| Relief | Cap (YA2025) | What it means for the user | Notes |
 |--------|--------------|-------------|------|
-| **EPF / KWSP** | RM4,000（与人寿险合计上限 RM7,000） | 月薪 ≥ RM36,364/年 时，11% 强制缴款已自动顶满 | 多半已自动达标，无需额外动作 |
-| **PRS（私人退休金）** | RM3,000，**独立于 EPF** | ⭐ 最值得主动做的一步：21–24% 税率下，存 RM3,000 当年省税约 RM630–720 | relief 延长至 YA2030；55 岁前提取受限/被罚税 |
-| 人寿/Takaful 保费 | 与 EPF 合计 RM7,000 内 RM3,000 | 有保单才用得上 | |
-| 医疗/教育保险 | RM3,000 | 商业医疗卡保费可计 | |
-| Lifestyle（书/电子/健身/上网） | RM2,500 | 顺手即可，不为省税专门消费 | |
-| SSPN（子女教育储蓄） | 净存款 RM8,000 | 仅在有合资格子女且用户确认适用时考虑 | YA2025 起每孩仅一位家长可claim |
+| **EPF / KWSP** | RM4,000 (combined cap RM7,000 with life insurance) | At monthly salary ≥ RM36,364/year, the mandatory 11% contribution already maxes this out automatically | Usually already met automatically, no extra action needed |
+| **PRS (Private Retirement Scheme)** | RM3,000, **independent of EPF** | ⭐ The most worthwhile proactive step: at a 21–24% tax rate, contributing RM3,000 saves about RM630–720 in tax that year | Relief extended through YA2030; withdrawal before age 55 is restricted/penalized |
+| Life/Takaful premiums | RM3,000 within the combined RM7,000 cap with EPF | Only usable if you already have a policy | |
+| Medical/education insurance | RM3,000 | Commercial medical card premiums count | |
+| Lifestyle (books/electronics/gym/internet) | RM2,500 | Claim it on the side, don't spend specifically to save tax | |
+| SSPN (child education savings) | Net deposit RM8,000 | Only relevant if there's an eligible child and the user confirms applicability | From YA2025, only one parent per child can claim |
 
-**PRS 的正确定位**：它的钱锁到 55 岁、且基金选择有限、费用高于自购 ETF。所以**不要**把 PRS 当成
-股票 core 的替代品。把它当作组合里"税务优化的防御/退休 sleeve"——用 RM3,000/年 换确定的税务回报，
-仅此而已，余下资金仍走指数 core（§3）。给建议时要明确这个 trade-off，别让用户为省税牺牲流动性与成长。
+**PRS's correct role**: the money is locked until age 55, fund choice is limited, and fees are
+higher than buying ETFs directly. So **don't** treat PRS as a substitute for the stock core. Treat
+it as a "tax-optimization defensive/retirement sleeve" in the portfolio — trading RM3,000/year for
+a certain tax return, nothing more; the rest of the money still goes into the index core (§3). Be
+explicit about this trade-off when giving advice — don't let the user sacrifice liquidity and
+growth to save on tax.
 
-> 决策口径：先确认用户的边际税率（问年收入或看 daily 日志推算）。若边际税率 ≥ 19%，PRS RM3,000 值得做；
-> 若还在免税/3% 档（年应税 < RM35k），税务回报太小，不如把这笔钱直接投指数 core。
+> Decision rule: first confirm the user's marginal tax rate (ask about annual income or infer from
+> daily logs). If the marginal rate ≥ 19%, the PRS RM3,000 is worth doing; if still in the
+> tax-free/3% bracket (annual taxable income < RM35k), the tax return is too small — better to
+> invest that money directly into the index core instead.
 
 ---
 
-## 2. 现金 / 储蓄分层 — MY 工具落地（2026 行情）
+## 2. Cash / Savings Layering — MY tools in practice (2026 landscape)
 
-呼应 playbook §1 的应急金与专项目标。具体工具（**利率会变，引用前核对 interest_rates.yaml + WebSearch**）：
+Echoes playbook §1's emergency fund and earmarked goals. Specific tools (**rates change — verify
+against interest_rates.yaml + WebSearch before citing**):
 
-| 层级 | 用途 | 2026 大致行情 | MY 工具示例 |
+| Tier | Purpose | Approx. 2026 rate | MY tool examples |
 |------|------|--------------|-------------|
-| 即时流动 | 日常 + 起步应急 | 0–2% | TNG GO+、传统活期 |
-| 高息活期/数字银行 | 完整应急金（要随取随用） | 2–4% | GXBank（~2%，每日计息）、Ryt（高息储蓄可达 ~4%/pots ~3%）、Boost、AEON |
-| 货币基金 MMF | 短期停泊（<6 月）、收益略高于活期 | ~3–3.7% | 各家 cash management（如券商 MMF）；非 Bumi 可用作 ASB 替代 |
-| 定存 FD | 锁定期可接受的中期资金（6–12 月） | 标准 2.6–3.3%；promo（fresh fund）3.5–4.0% | 各行 promo，盯 rates.my 比价 |
-| ASB / ASNB | 长期保本增值 | ASB 历史派息 5.5%+（**仅限 Bumiputera**） | 非 Bumi → ASNB 固定价格基金 / MMF 替代 |
+| Instant liquidity | Daily spending + starter emergency fund | 0–2% | TNG GO+, traditional current account |
+| High-yield current/digital bank | Full emergency fund (needs to be available on demand) | 2–4% | GXBank (~2%, daily interest), Ryt (high-yield savings up to ~4%/pots ~3%), Boost, AEON |
+| Money market fund (MMF) | Short-term parking (<6 months), yield slightly above current account | ~3–3.7% | Various cash-management products (e.g. broker MMFs); usable as an ASB substitute for non-Bumiputera |
+| Fixed deposit (FD) | Medium-term money that can accept a lock-in (6–12 months) | Standard 2.6–3.3%; promo (fresh fund) 3.5–4.0% | Various bank promos, compare on rates.my |
+| ASB / ASNB | Long-term capital-preserving growth | ASB historical dividend 5.5%+ (**Bumiputera only**) | Non-Bumi → ASNB fixed-price fund / MMF as substitute |
 
-要点：
-- **应急金别锁 FD**——要随取随用，放数字银行高息活期。
-- **过剩现金别长期躺活期**——长期被通胀蚀本金，按 playbook §3 部署进 core。
-- 用户档案：非 Bumiputera 的话 ASB 用不了，对应替代是 ASNB 固定价格基金或 MMF；这点在建议里要先确认。
+Key points:
+- **Don't lock the emergency fund in an FD** — it needs to be available on demand, so put it in a
+  high-yield digital-bank current account.
+- **Don't let excess cash sit idle in a current account long-term** — it erodes to inflation over
+  time; deploy it into the core per playbook §3.
+- User profile: if not Bumiputera, ASB isn't usable — the substitute is an ASNB fixed-price fund or
+  an MMF; confirm this before making a recommendation.
 
 ---
 
-## 3. 全球指数 ETF — Malaysian 投资者的正确买法（重要）
+## 3. Global Index ETFs — The Right Way for a Malaysian Investor to Buy (Important)
 
-若投资者通过券商直接买**美国上市**的美股/ETF，这有两个常被忽略的税务陷阱，长期会侵蚀回报。
-给 core 选标的时，**优先推荐爱尔兰注册（Ireland-domiciled）UCITS ETF**，而非美国上市 ETF：
+If an investor buys **US-listed** stocks/ETFs directly through a broker, there are two often
+overlooked tax traps that erode returns over the long run. When picking core holdings, **prefer
+Ireland-domiciled UCITS ETFs** over US-listed ETFs:
 
-### 陷阱 A — 股息预扣税 30% vs 15%
-- 非美国人直接持美国上市 ETF/股票，股息被预扣 **30%**。
-- 通过爱尔兰注册 UCITS ETF 持有同样的底层资产，凭爱尔兰—美国税收协定，基金层面预扣降到 **15%**。
-- 对长期复利，这 15% 的差额逐年累积，非常可观。
+### Trap A — 30% vs. 15% dividend withholding tax
+- A non-US person holding US-listed ETFs/stocks directly has dividends withheld at **30%**.
+- Holding the same underlying assets via an Ireland-domiciled UCITS ETF reduces the fund-level
+  withholding to **15%**, under the Ireland–US tax treaty.
+- Over long-term compounding, this 15% difference accumulates year after year into something
+  significant.
 
-### 陷阱 B — 美国遗产税（estate tax）40% 的尾部风险
-- 非美国居民直接持有的"美国 situs 资产"（含**美国上市股票/ETF**），超过 **USD 60,000** 免税额的部分，
-  身故时面临最高 **40%** 的美国遗产税。
-- **关键**：通过外国券商持有**不改变** situs——美国上市股票仍算美国资产，仍受此约束。
-- 爱尔兰注册 UCITS 基金**不是**美国 situs 资产 → 这层风险直接消失。
-- 这正是"任何认真投全球股票的马来西亚人都应通过 UCITS 而非美国上市基金"的核心理由。
+### Trap B — the tail risk of the 40% US estate tax
+- A "US situs asset" (including **US-listed stocks/ETFs**) held directly by a non-US resident faces
+  up to **40%** US estate tax on the amount above the **USD 60,000** exemption, upon death.
+- **Key point**: holding through a foreign broker does **not** change the situs — a US-listed stock
+  is still a US asset and is still subject to this.
+- An Ireland-domiciled UCITS fund is **not** a US situs asset → this risk disappears entirely.
+- This is exactly the core reason why "any Malaysian seriously investing in global stocks should go
+  through UCITS rather than US-listed funds."
 
-### 推荐 core 标的（爱尔兰注册 UCITS, Acc 累积型，自动再投资）
-| Ticker | 跟踪 | TER | 说明 |
+### Recommended core holdings (Ireland-domiciled UCITS, Acc accumulating, auto-reinvesting)
+| Ticker | Tracks | TER | Notes |
 |--------|------|-----|------|
-| `VWRA` | FTSE All-World（全球发达+新兴） | 0.22% | 一只全球分散，core 首选 |
-| `CSPX` | S&P 500 | 0.07% | 只要美国大盘、费用更低 |
-| `VUAA` | S&P 500 | 0.07% | CSPX 的 Vanguard 等价物 |
+| `VWRA` | FTSE All-World (global developed + emerging) | 0.22% | One fund, globally diversified — the core default |
+| `CSPX` | S&P 500 | 0.07% | US large-cap only, lower fee |
+| `VUAA` | S&P 500 | 0.07% | Vanguard equivalent of CSPX |
 
-操作要点：
-- 开户时填 **W-8BEN**，券商会自动按 15% 处理预扣。
-- 选 **Acc（accumulating）**版本——股息自动再投资，省去手动复投，也利于 MY 投资者（无需处理派息）。
-- 这些 ETF 多在 LSE（伦敦）等交易所以 USD 交易；确认当前券商是否支持，或使用支持 LSE 的券商。
+Operational notes:
+- Fill in **W-8BEN** when opening the account; the broker will automatically apply the 15%
+  withholding.
+- Choose the **Acc (accumulating)** share class — dividends auto-reinvest, saving manual
+  reinvestment, and also convenient for MY investors (no need to handle dividend payouts).
+- Most of these ETFs trade in USD on exchanges like the LSE (London); confirm whether the current
+  broker supports this, or use a broker that supports the LSE.
 
-> 注意：满足 satellite 里的个股偏好（如想直接持 NVDA/特定美股）时，直接持美国上市股仍可以——
-> 只是要让用户知道这部分有 30% 股息预扣 + 遗产税敞口，所以 core（大头）走 UCITS 更优。
+> Note: to satisfy a satellite preference for a specific single stock (e.g. wanting to hold NVDA
+> directly), holding the US-listed stock directly is still fine — just make sure the user knows
+> this portion carries the 30% dividend withholding + estate-tax exposure, so the core (the bulk)
+> is better off in UCITS.
 
 ---
 
-## Sources（2026-06 检索，定期复核）
+## Sources (retrieved 2026-06, review periodically)
 
-- RinggitPlus — 2026 报税 tax relief 全清单: https://ringgitplus.com/en/blog/tax/everything-you-can-claim-as-income-tax-relief-in-malaysia-2026-filing-for-ya-2025.html
-- LHDN/HASIL 官方 tax reliefs: https://www.hasil.gov.my/en/individual/individual-life-cycle/income-declaration/tax-reliefs/
-- EPF vs PRS 对比: https://emasgold.com.my/comparing-epf-and-prs-contributions-for-effective-retirement-planning-in-malaysia-2026-13/
-- 数字银行/FD 行情: https://wise.com/my/blog/best-digital-bank-malaysia ; https://ringgitwise.co/blog/best-fixed-deposit-rate-malaysia-2026 ; https://rates.my/
-- 爱尔兰注册 ETF 降预扣税: https://www.ziet.co/investing/ireland-domiciled-etf/ ; https://www.bogleheads.org/wiki/Nonresident_alien_investors_and_Ireland_domiciled_ETFs
-- 美国遗产税（非居民 USD 60k 门槛）: https://www.irs.gov/businesses/small-businesses-self-employed/estate-tax-for-nonresidents-not-citizens-of-the-united-states ; https://www.bogleheads.org/wiki/Nonresident_alien_taxation
+- RinggitPlus — full list of 2026 filing tax reliefs: https://ringgitplus.com/en/blog/tax/everything-you-can-claim-as-income-tax-relief-in-malaysia-2026-filing-for-ya-2025.html
+- LHDN/HASIL official tax reliefs: https://www.hasil.gov.my/en/individual/individual-life-cycle/income-declaration/tax-reliefs/
+- EPF vs PRS comparison: https://emasgold.com.my/comparing-epf-and-prs-contributions-for-effective-retirement-planning-in-malaysia-2026-13/
+- Digital bank/FD rates: https://wise.com/my/blog/best-digital-bank-malaysia ; https://ringgitwise.co/blog/best-fixed-deposit-rate-malaysia-2026 ; https://rates.my/
+- Ireland-domiciled ETFs lowering withholding tax: https://www.ziet.co/investing/ireland-domiciled-etf/ ; https://www.bogleheads.org/wiki/Nonresident_alien_investors_and_Ireland_domiciled_ETFs
+- US estate tax (non-resident USD 60k threshold): https://www.irs.gov/businesses/small-businesses-self-employed/estate-tax-for-nonresidents-not-citizens-of-the-united-states ; https://www.bogleheads.org/wiki/Nonresident_alien_taxation

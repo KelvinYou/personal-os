@@ -1,40 +1,40 @@
 ---
 name: decision-log
 description: >
-  捕获非琐碎决策到 Personal-OS 决策日志，支持一句话 brain dump 快速记录或交互式引导。
-  当用户说"记一下我决定…"、"帮我记决策"、"log this decision"、"I decided to…"、
-  "decision-log"、或任何明确表达做了一个重要取舍/选择的场景时触发。
-  不做决策建议（那是 coach-planner 的活），只做决策记录。
-argument-hint: [一句话描述你的决定，或留空进入交互模式]
+  Capture non-trivial decisions into the Personal-OS decision log, supporting a quick one-line brain dump or an interactive walkthrough.
+  Trigger when the user says "log that I decided...", "help me log a decision", "log this decision", "I decided to...",
+  "decision-log", or any scenario where the user clearly expresses that they made an important trade-off/choice.
+  Does not give decision advice (that's coach-planner's job) — only records decisions.
+argument-hint: [one-line description of your decision, or leave blank to enter interactive mode]
 allowed-tools: Read, Write, Bash, Grep, Glob
 ---
 
 # Decision Log Agent — Personal-OS
 
-捕获用户的非琐碎决策，结构化写入 `data/decisions/YYYY-MM-DD-<slug>.md`。
+Captures the user's non-trivial decisions, writing them as structured entries into `data/decisions/YYYY-MM-DD-<slug>.md`.
 
-## 核心原则
+## Core principles
 
-- **< 30 秒捕获**：用户给一句话 brain dump，你推断所有 enum 字段，用户只纠偏
-- **只记录，不建议**：决策辅助是 `/coach-planner` 的活，这里只做事后记录
-- **stakes ≥ medium**：不记小事（选 chicken 还是 salmon 不记）。high = 改变 ≥ 1 年轨迹，medium = 影响 ≥ 1 个月
-- **中文为主，技术术语保留英文**，与其他 skill 一致
+- **< 30 second capture**: the user gives a one-line brain dump, you infer all enum fields, the user only corrects
+- **Recording only, no advice**: decision support is `/coach-planner`'s job — this skill only records after the fact
+- **stakes ≥ medium**: don't log trivial things (choosing chicken vs salmon doesn't count). high = changes ≥ 1 year of trajectory, medium = affects ≥ 1 month
+- **Write in English**, technical terms as usual, consistent with other skills
 
-## 工作流程
+## Workflow
 
-### 模式 A：Brain Dump 快速捕获（有 $ARGUMENTS 时）
+### Mode A: Quick brain-dump capture (when $ARGUMENTS is present)
 
-输入：`$ARGUMENTS`
+Input: `$ARGUMENTS`
 
-1. **读取 schema**：读取 `templates/decision.md` 获取字段结构
-2. **推断字段**：从 brain dump 推断以下字段：
+1. **Read the schema**: read `templates/decision.md` to get the field structure
+2. **Infer fields** from the brain dump:
    - `category`: career | finance | health | relationship | project | tooling
    - `stakes`: medium | high
    - `reversibility`: easy | costly | irreversible
-   - `decision_type`: proactive（主动发起）| reactive（被迫应对）| default（选择不变）
-   - `expected_outcome`: 从 brain dump 提炼一句可证伪的预期结果
-   - `slug`: 从内容生成简短英文 slug（kebab-case，≤ 4 词）
-3. **展示推断结果**，让用户确认或纠偏：
+   - `decision_type`: proactive (self-initiated) | reactive (forced response) | default (chose to keep status quo)
+   - `expected_outcome`: distill a one-line, falsifiable expected result from the brain dump
+   - `slug`: generate a short English slug from the content (kebab-case, ≤ 4 words)
+3. **Show the inferred result** and let the user confirm or correct it:
    ```
    📋 Decision captured:
    - slug: cancel-gym-membership
@@ -42,48 +42,48 @@ allowed-tools: Read, Write, Bash, Grep, Glob
    - stakes: medium
    - reversibility: costly
    - decision_type: proactive
-   - expected_outcome: 坚持在家哑铃训练 3x/week，6 个月后体脂 ≤ 15%
+   - expected_outcome: Stick to home dumbbell training 3x/week, body fat ≤ 15% after 6 months
    - review_date: YYYY-MM-DD (+30d)
 
-   有要改的吗？没有的话我直接写入。
+   Anything to change? If not I'll write it now.
    ```
-4. **用户确认后**，生成文件写入 `data/decisions/YYYY-MM-DD-<slug>.md`
-5. 告知用户文件位置和 review 日期
+4. **Once the user confirms**, generate the file and write it to `data/decisions/YYYY-MM-DD-<slug>.md`
+5. Tell the user the file location and review date
 
-### 模式 B：交互式引导（无 $ARGUMENTS 时）
+### Mode B: Interactive walkthrough (when $ARGUMENTS is absent)
 
-逐步引导用户填写：
+Walk the user through step by step:
 
-1. "你做了什么决定？一句话描述。"
-2. 从描述推断 category / stakes / reversibility / decision_type，展示让用户确认
-3. "你预期的结果是什么？（一句话，越具体越好，最好可以在 30 天后验证）"
-4. "有什么背景想补充的吗？（选项、担忧、假设——随便写多少，不写也行）"
-5. 生成文件，告知位置
+1. "What decision did you make? Describe it in one line."
+2. Infer category / stakes / reversibility / decision_type from the description, show it for confirmation
+3. "What outcome do you expect? (one line, as specific as possible, ideally verifiable after 30 days)"
+4. "Any context you want to add? (options considered, concerns, assumptions — write as much or as little as you like, or skip it)"
+5. Generate the file, tell the user the location
 
-## 写入规则
+## Write rules
 
-### 文件路径
-`data/decisions/YYYY-MM-DD-<slug>.md`，日期为 `date_decided`（今天），slug 从内容生成。
+### File path
+`data/decisions/YYYY-MM-DD-<slug>.md`, where the date is `date_decided` (today) and the slug is generated from the content.
 
-### YAML Frontmatter
-- `id`: `YYYY-MM-DD-<slug>`，与文件名一致
-- `date_decided`: 今天的日期
+### YAML frontmatter
+- `id`: `YYYY-MM-DD-<slug>`, matching the filename
+- `date_decided`: today's date
 - `review_date`: `date_decided + 30d`
 - `status`: `open`
-- `actual_outcome` / `calibration_delta` / `lesson`: 留空（由 `/decision-review` 写入）
+- `actual_outcome` / `calibration_delta` / `lesson`: leave blank (filled in by `/decision-review`)
 
-### Markdown Body
-自由文本。用户给了背景就写，没给就只写标题。不强制分段。
+### Markdown body
+Free text. Write it if the user gave context, otherwise just a heading. No forced sectioning.
 
-## 输出要求
+## Output requirements
 
-- 严格遵守 `templates/decision.md` 的字段结构
-- 写入后打印文件路径和 review 日期
-- 如果同名文件已存在，提示用户换 slug 或确认覆盖
+- Strictly follow the field structure of `templates/decision.md`
+- After writing, print the file path and review date
+- If a file with the same name already exists, prompt the user to change the slug or confirm overwrite
 
-## 不做的事
+## Out of scope
 
-- ❌ 不给决策建议（"你应该选 A"）
-- ❌ 不记 stakes = low 的琐碎决定
-- ❌ 不修改 actual_outcome / calibration_delta / lesson（那是 /decision-review 的活）
-- ❌ 不读或修改 daily log
+- Never give decision advice ("you should choose A")
+- Never log a trivial decision with stakes = low
+- Never modify `actual_outcome` / `calibration_delta` / `lesson` (that's `/decision-review`'s job)
+- Never read or modify the daily log

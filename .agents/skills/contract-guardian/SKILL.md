@@ -63,14 +63,14 @@ domain recommendations.
 
 Trigger for requests such as:
 
-- "这个 schema 改动会不会破坏旧日志？"
-- "帮我检查 Python 和 TS 的 report contract"
-- "这个字段 rename 需要改哪些地方？"
-- "这份 market data 能不能放 public repo？"
-- "architecture / plan / code 哪个才是对的？"
-- "帮我 review 这个 skill 是否会泄漏个人 baseline"
-- "这次改动有没有漏 migration / fixture / test？"
-- "这个 YAML 真的被系统消费了吗？"
+- "Will this schema change break old logs?"
+- "Help me check the Python/TS report contract"
+- "What needs to change for this field rename?"
+- "Can this market data go in the public repo?"
+- "Which one is right: architecture, plan, or code?"
+- "Help me review whether this skill leaks a personal baseline"
+- "Did this change miss a migration / fixture / test?"
+- "Is this YAML actually consumed by the system?"
 
 Do not trigger for an isolated prose edit, a pure timetable request, or a
 normal one-repo commit where no schema, ownership, privacy, or cross-layer
