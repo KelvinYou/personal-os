@@ -7,7 +7,7 @@ SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell TZ=Asia/Kuala_Lumpur date +%Y-%m-%d)
 
-.PHONY: archive sync-protocol setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web help
+.PHONY: archive sync-protocol setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web eval evals evals-list eval-rollup help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -135,6 +135,26 @@ web:
 calibration:
 	@$(PYTHON) $(SCRIPTS_DIR)/calibration.py
 
+## 把最近一次 Claude Code session 转成 eval 记录 (审计 agent，不是审计我)
+## 用法: make eval 或 make eval SESSION=recent-3 / SESSION=<session-id 前缀>
+## 刻意用系统 python3: eval 最该能跑的时刻正是 .venv 坏掉的时候
+eval:
+	@python3 $(SCRIPTS_DIR)/session_eval.py $(if $(SESSION),--session $(SESSION),) $(if $(FORCE),--force,)
+
+## 批量回填最近 N 次 session (默认 10)
+## 用法: make evals 或 make evals N=30
+evals:
+	@python3 $(SCRIPTS_DIR)/session_eval.py --last $(if $(N),$(N),10) $(if $(FORCE),--force,)
+
+## 列出磁盘上可用的 transcript (给 SESSION= 挑编号)
+evals-list:
+	@python3 $(SCRIPTS_DIR)/session_eval.py --list
+
+## 月度 signal 汇总 —— meta-coach 读这份，不读单条 eval
+## 用法: make eval-rollup 或 make eval-rollup MONTH=2026-07
+eval-rollup:
+	@python3 $(SCRIPTS_DIR)/session_eval.py --rollup $(if $(MONTH),$(MONTH),$(shell TZ=Asia/Kuala_Lumpur date +%Y-%m))
+
 ## 季度身份审计 (需 ≥ 12 周日志)
 ## 用法: make quarterly 或 make quarterly QUARTER=2026-Q1
 quarterly:
@@ -170,4 +190,8 @@ help:
 	@echo "  make wealth             — Tracked Assets: 现金/到期/股票估值 (可选: DATE=... / JSON=1)"
 	@echo "  make web                — 启动本地理财仪表盘 (localhost)"
 	@echo "  make quarterly          — 季度身份审计 (可选: QUARTER=2026-Q1)"
+	@echo "  make eval               — 最近一次 session 转 eval (可选: SESSION=recent-3)"
+	@echo "  make evals              — 批量回填最近 N 次 session (可选: N=30)"
+	@echo "  make evals-list         — 列出可用 transcript"
+	@echo "  make eval-rollup        — 月度 agent signal 汇总 (可选: MONTH=2026-07)"
 	@echo "  make help               — 显示本帮助"
