@@ -1,0 +1,67 @@
+# Deterministic fixture for tests/test_nutrition.py — not read by any real script.
+
+- id: fixture_chicken_raw
+  name: Fixture chicken (raw basis)
+  basis: 100g_raw
+  protein_g: 20
+  carbs_g: 0
+  fat_g: 4
+  sugar_g: 0
+  kcal: 120
+  yield_factor: 0.75
+  source: fixture
+  last_verified: "2026-01-01"
+
+- id: fixture_rice_cooked
+  name: Fixture rice (cooked basis)
+  basis: 100g_cooked
+  protein_g: 3
+  carbs_g: 25
+  fat_g: 1
+  sugar_g: 0
+  kcal: 120
+  yield_factor: 2.5
+  source: fixture
+  last_verified: "2026-01-01"
+
+- id: fixture_egg
+  name: Fixture egg
+  basis: 100g_raw
+  protein_g: 12
+  carbs_g: 1
+  fat_g: 10
+  sugar_g: 1
+  kcal: 150
+  unit_weight_g: 50
+  source: fixture
+  last_verified: "2026-01-01"
+
+- id: fixture_veg
+  name: Fixture vegetables
+  basis: 100g_raw
+  protein_g: 2
+  carbs_g: 4
+  fat_g: 0
+  sugar_g: 2
+  kcal: 25
+  glycemic_index: 15
+  source: fixture
+  last_verified: "2026-01-01"
+
+- id: fixture_beef_no_yield
+  name: Fixture beef with no yield_factor set
+  basis: 100g_raw
+  protein_g: 26
+  carbs_g: 0
+  fat_g: 15
+  sugar_g: 0
+  kcal: 250
+  source: fixture
+  last_verified: "2026-01-01"
+
+- id: fixture_creatine
+  name: Fixture creatine (supplement, no macros)
+  basis: 1_serving
+  serving_g: 5
+  source: fixture
+  last_verified: "2026-01-01"

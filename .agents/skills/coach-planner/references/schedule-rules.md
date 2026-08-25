@@ -22,7 +22,8 @@ report。不要从本文件推断个人 baseline，也不要把本文件改成�
 - 训练 gate 使用 `config/thresholds.yaml` 和最新日志证据；缺数据时保留不确定性，不猜测 baseline。
 - 训练结束与 lights-out 之间至少保留项目 protocol/证据要求的恢复间隔；具体时间从 private data 解析。
 - 训练重量、动作架构和 day type 只从 `standard_week.md` 读取；不要在 public reference 维护器械清单。
-- 餐点时间、份量、蛋白目标和成本从 `data/user_profile.md` 与 `meal-library.md` 解析；不要在本文件写个人数值。
+- 餐点时间、份量、蛋白目标和成本从 `data/user_profile.md` 与 `references/nutrition-source.md` /
+  `scripts/nutrition.py` 解析；不要在本文件写个人数值。
 
 ## Google Calendar sidecar
 

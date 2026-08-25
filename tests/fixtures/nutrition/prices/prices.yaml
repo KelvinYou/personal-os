@@ -1,0 +1,25 @@
+# Deterministic fixture for tests/test_nutrition.py — not read by any real script.
+
+- food_id: fixture_chicken_raw
+  unit_cost_myr: 1.50
+  unit: "per 100g"
+  source: fixture
+  last_verified: "2026-01-01"
+
+- food_id: fixture_rice_cooked
+  unit_cost_myr: 1.00
+  unit: "per 100g"
+  source: fixture
+  last_verified: "2026-01-01"
+
+- food_id: fixture_egg
+  unit_cost_myr: 0.25
+  unit: "per egg"
+  source: fixture
+  last_verified: "2026-01-01"
+
+- food_id: fixture_veg
+  unit_cost_myr: 0.50
+  unit: "per serving"
+  source: fixture
+  last_verified: "2026-01-01"

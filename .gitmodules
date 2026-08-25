@@ -7,3 +7,6 @@
 [submodule "repos/ai-stock-analysis"]
 	path = repos/ai-stock-analysis
 	url = https://github.com/KelvinYou/ai-stock-analysis.git
+[submodule "repos/kelvinyou-notes"]
+	path = repos/kelvinyou-notes
+	url = https://github.com/KelvinYou/kelvinyou-notes.git

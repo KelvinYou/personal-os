@@ -36,7 +36,7 @@
 ## 排期建议
 
 - 是否保留 pre-workout snack、组成和剂量由 private profile/protocol 决定；不要从本文件推断个人执行规则。
-- 缺货替代也从 meal-library 与当前库存选择，不要把示例食物写成固定 baseline。
+- 缺货替代用 `scripts/nutrition.py food <id>` 逐个核对 + 当前库存选择，不要把示例食物写成固定 baseline。
 - 全麦面包 GI ~69-74（中高 GI），不是"慢碳"，民间误解。
 
 ---

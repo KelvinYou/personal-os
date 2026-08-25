@@ -84,8 +84,12 @@ Read the following files to build situational awareness:
 5. **Previous week's report** — If generating a next-week plan, also check the prior week for trend context.
 6. **Scheduling details** — Read `references/schedule-rules.md` for time anchors, weekly rhythm, workout
    windows, and timetable format templates.
-7. **Meal planning** — Read `references/meal-library.md` for meal templates, grocery prices, and macro data.
-   Use this to build specific meal plans with cost estimates and protein totals.
+7. **Meal planning** — Read `references/nutrition-source.md` for the read priority order and the
+   {{placeholder}} training/rest-day templates, dietary red lines, and supplement dosing that stay private.
+   Query individual food macros/prices via `python3 scripts/nutrition.py food <id>` (backed by the
+   `repos/kelvinyou-notes` submodule) — do not read the whole dataset. For technique/pairing questions
+   (marinades, overnight oats combos), read the relevant `repos/kelvinyou-notes/docs/health/nutrition/*.md`
+   page directly.
 8. **Training timing** — Read `references/training-timing-evidence.md` for circadian/sleep evidence on AM vs PM
    training. Use the decision tree to set workout slots: enforce ≥2h gap between training end and lights-out
    (≥4h optimal); resistance OK in evening, cardio/Z2 should be AM or weekend.
@@ -155,7 +159,8 @@ Deep Work assignment, any exception. Reproducing the whole standing block back t
 already have it. Only write out a full day when they ask for it or when today departs from its type wholesale.
 
 - Anchor to `data/user_profile.md` baselines
-- Include specific meal times with macro composition and cost estimates (from `references/meal-library.md`)
+- Include specific meal times with macro composition and cost estimates (query via `scripts/nutrition.py`,
+  see `references/nutrition-source.md`)
 - Mark workout slots with pre/post nutrition
 - Assign Deep Work blocks to specific projects/tasks (ask the user what they're working on if unclear)
 - **Enforce all active circuit breaker restrictions** — these exist to prevent compounding health debt;
