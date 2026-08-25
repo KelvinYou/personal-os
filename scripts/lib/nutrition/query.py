@@ -9,7 +9,7 @@ MACRO_FIELDS = ["protein_g", "carbs_g", "fat_g", "sugar_g", "kcal"]
 
 def parse_cost(value: Any) -> float:
     """"~7.20" / 7.2 -> 7.2. The "~" estimate marker lives on is_estimate,
-    not the numeric value — see kelvinyou-notes/datasets/nutrition/README.md."""
+    not the numeric value — see notes/datasets/nutrition/README.md."""
     return float(str(value).lstrip("~"))
 
 

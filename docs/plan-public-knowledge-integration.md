@@ -3,7 +3,7 @@
 > Status: **全部完成 (2026-08-24)** — Phase -1 / 0 / 1 / 2 / 3 / 4 已实施，见 §11 各 Phase 记录与 §13.1 附录
 > Owner: Kelvin
 > 修订: v2 — 2026-08-24，基于对仓库实际状态的核实重写
-> 相关 repo: `repos/kelvinyou-notes` (submodule, **public**, **尚不存在**) · `data` (submodule, private)
+> 相关 repo: `repos/notes` (submodule, **public**, **尚不存在**) · `data` (submodule, private)
 
 ---
 
@@ -39,7 +39,7 @@ v1 有一个前提不成立、一个架构环路，两者都会在 Phase 2 才�
 ## 2. 目标
 
 - `data/` 保持私有，只放个人状态。
-- 公共营养事实、餐食模板、evidence 在 `kelvinyou-notes` 里易读易改。
+- 公共营养事实、餐食模板、evidence 在 `notes` 里易读易改。
 - Skill 能只取一条食材、一份餐食或一小组筛选结果。
 - 每条事实只有一个 owner。
 - 改一处 YAML，查询输出和生成的文档同时更新，不需要手动同步第二张表。
@@ -57,10 +57,10 @@ v1 有一个前提不成立、一个架构环路，两者都会在 Phase 2 才�
 
 | 内容 | Owner | Consumer |
 |---|---|---|
-| 营养原理、evidence、引用 | `kelvinyou-notes/docs/health/nutrition/` | 人类；coach-planner 解释 why 时 |
-| 公共食材事实 | `kelvinyou-notes/datasets/nutrition/foods/` | nutrition 查询模块、notes 页面 |
-| 公共餐食模板 | `kelvinyou-notes/datasets/nutrition/meals/` | nutrition 查询模块、notes 页面 |
-| **公共食材零售价** | `kelvinyou-notes/datasets/nutrition/prices/` | nutrition 查询模块、notes 页面 |
+| 营养原理、evidence、引用 | `notes/docs/health/nutrition/` | 人类；coach-planner 解释 why 时 |
+| 公共食材事实 | `notes/datasets/nutrition/foods/` | nutrition 查询模块、notes 页面 |
+| 公共餐食模板 | `notes/datasets/nutrition/meals/` | nutrition 查询模块、notes 页面 |
+| **公共食材零售价** | `notes/datasets/nutrition/prices/` | nutrition 查询模块、notes 页面 |
 | 个人目标与偏好 | `personal-os/data/user_profile.md` | coach-planner |
 | 当周餐食选择 | `personal-os/data/protocol/standard_week.md` | coach-planner、daily-report |
 | 实际摄入与结果 | `personal-os/data/daily/`、`data/reports/` | weekly-review、meta-coach |
@@ -79,10 +79,10 @@ v1 有一个前提不成立、一个架构环路，两者都会在 Phase 2 才�
 
 ## 5. 目标结构
 
-### 5.1 `kelvinyou-notes` — 公共源
+### 5.1 `notes` — 公共源
 
 ```text
-kelvinyou-notes/
+notes/
 ├── docs/
 │   └── health/
 │       └── nutrition/
@@ -117,7 +117,7 @@ YAML 是可编辑的结构化源。生成的 Markdown/MDX 是只读投影，不�
 ```text
 personal-os/
 ├── repos/
-│   └── kelvinyou-notes/                    # pinned public submodule
+│   └── notes/                    # pinned public submodule
 ├── scripts/
 │   └── nutrition.py                         # 确定性查询 adapter
 └── .agents/skills/coach-planner/
@@ -213,7 +213,7 @@ source_updated: 2026-08-24
 - 价格缺失或过期
 - 非法 basis 或单位；跨 basis 但缺 `yield_factor`
 - **notes submodule 未 checkout → 硬报错**，提示 `git submodule update --init
-  repos/kelvinyou-notes`（notes 是**公开**仓库，任何人 `clone --recursive` 都能拿到，
+  repos/notes`（notes 是**公开**仓库，任何人 `clone --recursive` 都能拿到，
   不存在 `data/` 那种权限降级场景，所以不做 graceful fallback）
 
 绝不静默编造营养数值，绝不用个人目标顶替公共事实。
@@ -247,13 +247,13 @@ source_updated: 2026-08-24
 ### Phase -1 — notes 仓库前置 ✅ 2026-08-24 大半已完成（核实与 v1 假设不同）
 
 v1 假设该仓库**当前不存在**，需要从零建。核实发现假设错了：
-`github.com/KelvinYou/kelvinyou-notes` 已经存在，且不是空 scaffold —— 是一个
+`github.com/KelvinYou/notes` 已经存在，且不是空 scaffold —— 是一个
 真实维护中的 Docusaurus 站点，有 `docs/tech-notes/`、`docs/thinking/`、
 一份站点自己的 `PLAN.md`（内容改进计划，voice 标准见下）、MIT license。
 
 - ~~建仓库~~ —— 已存在，不用建。
 - ~~搭 Docusaurus scaffold~~ —— 已存在，`pnpm build` 验证通过。
-- 加为 personal-os 的 git submodule：`repos/kelvinyou-notes`（pin 到
+- 加为 personal-os 的 git submodule：`repos/notes`（pin 到
   `01bbb63`，`.gitmodules` 已加对应 entry）—— **已在本地完成，尚未 commit**。
 - 决定首发公开范围 —— 不适用；站点已经公开了 tech-notes/thinking，本次只新增
   `health/` 分类，不影响既有内容。
@@ -262,7 +262,7 @@ v1 假设该仓库**当前不存在**，需要从零建。核实发现假设错�
   AI 能秒答的东西不该在这" ("if a note is just a copy of docs, delete it")。
   这条比 personal-os 的 `docs/voice-guide.md`（只管 blog/LinkedIn/commit）更贴近
   本次要写的内容，Phase 0 的输出因此按它返工，见下。
-- **未完成**：submodule 的新增还没 commit 进 personal-os；`repos/kelvinyou-notes`
+- **未完成**：submodule 的新增还没 commit 进 personal-os；`repos/notes`
   里的 health 内容还没 commit/push 进 notes 仓库本身 —— 两次 push 都在等
   用户确认（真实公开仓库，属于"外部可见"动作）。
 
@@ -270,10 +270,10 @@ v1 假设该仓库**当前不存在**，需要从零建。核实发现假设错�
 
 把 `coach-planner/references/meal-library.md` 的**全部 8 个 section** 逐一分类为
 evidence / 公共数据集 / 公共价格 / 个人 protocol / skill 规则。第一版把公共部分
-写成中性的 evidence 摘要，暂存进本仓库 `docs/staging/kelvinyou-notes/`（当时以为
+写成中性的 evidence 摘要，暂存进本仓库 `docs/staging/notes/`（当时以为
 notes 仓库不存在）。核实 Phase -1 后发现两件事都要改：
 
-1. notes 仓库已存在，不需要暂存 —— 内容应该直接落进 `repos/kelvinyou-notes/`
+1. notes 仓库已存在，不需要暂存 —— 内容应该直接落进 `repos/notes/`
    submodule 的工作区（已完成，见 Phase -1）。
 2. 中性 evidence 摘要的写法违反了该仓库自己的 voice 标准（见 Phase -1）——
    两篇 evidence 文档（`protein-and-energy.md`、`nutrient-timing.md`）已重写成
@@ -285,7 +285,7 @@ notes 仓库不存在）。核实 Phase -1 后发现两件事都要改：
 `docs/staging/` 已删除（其 README 自己写的规则：仓库存在后原样搬入即删除）。
 以下表格记录的是**分类结果**，落地路径已更新为 submodule 内的真实路径：
 
-| Section | 实际归属 | 落地位置（`repos/kelvinyou-notes/` 内） |
+| Section | 实际归属 | 落地位置（`repos/notes/` 内） |
 |---|---|---|
 | 营养科学 Evidence | notes evidence（已按站点 voice 重写为第一人称） | `docs/health/nutrition/protein-and-energy.md`、`nutrient-timing.md` + `docs/health/index.md` |
 | 常用餐食模板（早餐/午晚餐/加餐） | notes meals | `datasets/nutrition/meals/{breakfast,lunch,snacks}.yaml` |
@@ -322,7 +322,7 @@ notes 仓库不存在）。核实 Phase -1 后发现两件事都要改：
 
 ### Phase 1 — notes 仓库数据源 ✅ 2026-08-24 已完成
 
-- `kelvinyou-notes` 作为 pinned public submodule 加到 `personal-os/repos/`（Phase -1 已做）。
+- `notes` 作为 pinned public submodule 加到 `personal-os/repos/`（Phase -1 已做）。
 - 建 `datasets/nutrition/schema.yaml`：food/meal/price 必填字段、basis/unit/slot 枚举、
   `yield_factor`/`unit_weight_g`/`as_basis` 等可选字段的用途说明。
 - 加 `scripts/validate-nutrition-data.mjs`：id 唯一性、必填字段、枚举合法性、
@@ -343,7 +343,7 @@ notes 仓库不存在）。核实 Phase -1 后发现两件事都要改：
 - `tests/test_nutrition.py`（`unittest`，11 个测试）用 `tests/fixtures/nutrition/` 的
   确定性小数据集，外加一个对真实 submodule 数据的 smoke test（未 checkout 时 skip）。
 - **未实现 `--emit-derived`**：v1 设想它把餐食总量写回 YAML 的 `derived:` 块，但
-  `kelvinyou-notes` 的 YAML 文件里手写了大量解释性注释，`js-yaml` 的 dump 会把这些
+  `notes` 的 YAML 文件里手写了大量解释性注释，`js-yaml` 的 dump 会把这些
   注释全部吃掉——用它做自动回写等于用一个"更完整"的功能换掉现有文档质量。
   Catalog 页面（Phase 4）继续显示"无汇总，用 `nutrition.py` 查"，这本来就是
   `generate-nutrition-docs.mjs` 现有的立场，不是缺口。
@@ -355,7 +355,7 @@ notes 仓库不存在）。核实 Phase -1 后发现两件事都要改：
   `meal-library.md` 原样保留的不可剥离私有内容（训练日/休息日 `{{placeholder}}` 模板、
   每日蛋白质校验、阶段切换映射、饮食红线、弹性饮食规则、补剂剂量/时机）。
 - 补剂证据等级说明（A/B grade 的解释文字，Phase 0 标记的"待办"）迁到公开笔记
-  `repos/kelvinyou-notes/docs/health/nutrition/supplements.md`，`nutrition-source.md`
+  `repos/notes/docs/health/nutrition/supplements.md`，`nutrition-source.md`
   只留剂量/时机 + 指回该页的引用。
 - `SKILL.md`、`references/fasted-vs-fed-training.md`、`references/schedule-rules.md`
   里对 `meal-library.md` 的引用全部改指向 `nutrition-source.md` / `scripts/nutrition.py`。
@@ -381,8 +381,8 @@ notes 仓库不存在）。核实 Phase -1 后发现两件事都要改：
 做 `test -e`。所以 Phase 1/2 必须在同一个 commit 里改 AGENTS.md，新增：
 
 ```
-/repos/kelvinyou-notes    — 公共笔记 submodule；nutrition 数据集的唯一 owner
-/scripts/nutrition.py     — nutrition 查询 adapter（读 repos/kelvinyou-notes）
+/repos/notes    — 公共笔记 submodule；nutrition 数据集的唯一 owner
+/scripts/nutrition.py     — nutrition 查询 adapter（读 repos/notes）
 ```
 
 notes 是公开仓库，正常 `clone --recursive` 一定拿得到，因此**不需要**像 `data/`

@@ -1,8 +1,8 @@
-"""Deterministic query adapter over the public kelvinyou-notes food dataset.
+"""Deterministic query adapter over the public notes food dataset.
 
 See docs/plan-public-knowledge-integration.md §6-8 for the design contract:
 this package is the *only* place that computes cost/price derivations.
-kelvinyou-notes's JS scripts render YAML as-is; they must never duplicate
+notes's JS scripts render YAML as-is; they must never duplicate
 this arithmetic.
 
 Meal-template support (meal_lookup/search_meals, ingredient/basis-conversion

@@ -8,7 +8,7 @@ import yaml
 from .errors import NutritionSourceMissing
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_DATASET_DIR = REPO_ROOT / "repos" / "kelvinyou-notes" / "datasets" / "nutrition"
+DEFAULT_DATASET_DIR = REPO_ROOT / "repos" / "notes" / "datasets" / "nutrition"
 
 
 def _load_yaml_dir(dir_path: Path) -> list[dict[str, Any]]:
@@ -28,7 +28,7 @@ def load_dataset(dataset_dir: Path | None = None) -> dict[str, dict]:
     dir_path = dataset_dir or DEFAULT_DATASET_DIR
     if not dir_path.exists():
         raise NutritionSourceMissing(
-            f"{dir_path} not found. Run: git submodule update --init repos/kelvinyou-notes"
+            f"{dir_path} not found. Run: git submodule update --init repos/notes"
         )
 
     foods = {f["id"]: f for f in _load_yaml_dir(dir_path / "foods")}

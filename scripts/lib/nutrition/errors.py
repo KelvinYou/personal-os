@@ -5,7 +5,7 @@ class NutritionDataError(Exception):
 
 
 class NutritionSourceMissing(NutritionDataError):
-    """Raised when repos/kelvinyou-notes/datasets/nutrition isn't checked out.
+    """Raised when repos/notes/datasets/nutrition isn't checked out.
 
     notes is a public repo — anyone with `git clone --recursive` gets it, so
     unlike data/ (private submodule) there is no graceful-fallback path here.

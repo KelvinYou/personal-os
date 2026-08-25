@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic query CLI over the public kelvinyou-notes food dataset.
+"""Deterministic query CLI over the public notes food dataset.
 
 Usage:
     python3 scripts/nutrition.py food chicken_breast_raw

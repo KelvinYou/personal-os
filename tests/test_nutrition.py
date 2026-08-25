@@ -51,7 +51,7 @@ class NutritionAdapterTests(unittest.TestCase):
         """Smoke test against the real submodule dataset, skipped if not
         checked out (same posture as data/ private-submodule tests)."""
         if not DEFAULT_DATASET_DIR.exists():
-            self.skipTest("repos/kelvinyou-notes not checked out")
+            self.skipTest("repos/notes not checked out")
         dataset = load_dataset()
         self.assertGreater(len(dataset["foods"]), 0)
         for food_id in dataset["foods"]:
