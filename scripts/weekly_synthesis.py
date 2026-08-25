@@ -183,10 +183,15 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     lines.append("## 2. 🚨 Circuit Breaker 熔断状态 (System Alerts)")
     if tripped:
         for tb in tripped:
+            auto = tb.enforcement == "auto"
+            tag = "TRIPPED" if auto else "ADVISORY"
             lines.append(
-                f"- **[TRIPPED] {tb.name}**: `{tb.metric}` = {tb.actual} (阈值: {tb.operator} {tb.threshold})"
+                f"- **[{tag}] {tb.name}**: `{tb.metric}` = {tb.actual} (阈值: {tb.operator} {tb.threshold})"
             )
-            lines.append("  - 强制行为限制:")
+            lines.append(
+                "  - 强制行为限制:" if auto
+                else "  - 建议（engine 无法验证/执行，由 agent 判断）:"
+            )
             for a in tb.actions:
                 lines.append(f"    - {a}")
     else:

@@ -97,10 +97,17 @@ logging_defaults:
 # 作息 (Schedule) 已移至 data/user_profile.md §0 `schedule`
 
 # === 熔断规则 (Circuit Breakers) ===
-# IF 条件触发 → THEN 强制执行行为限制。逻辑引擎自动输出告警。
+# IF 条件触发 → THEN 行为限制。逻辑引擎自动输出告警。
+#
+# `enforcement` 区分两类以前混在一起、肉眼分不出的规则：
+#   auto     —— actions 是对时间表的硬约束，coach-planner 排期时机械套用
+#   advisory —— actions 是给 agent 读的 prose，engine 既不能验证也不能执行；
+#               照常触发和输出，但下游必须标为「建议」而非「强制」
+# 两类都会被 breakers.evaluate() 评估 —— 该字段只改变**下游怎么呈现**，不做过滤。
 circuit_breakers:
   - name: "Sleep Critical"
     description: "单日睡眠严重不足"
+    enforcement: auto
     condition:
       metric: sleep_duration
       operator: "<"
@@ -114,6 +121,7 @@ circuit_breakers:
 
   - name: "Sleep Debt Level 1"
     description: "7天滚动睡眠负债中度 (5-8h)"
+    enforcement: auto
     condition:
       metric: rolling_7d_sleep_debt    # 仅计算近 7 天 vs baseline(7.5h) 的累计差额
       operator: ">="
@@ -126,6 +134,7 @@ circuit_breakers:
 
   - name: "Sleep Debt Level 2"
     description: "7天滚动睡眠负债严重 (>8h)"
+    enforcement: auto
     condition:
       metric: rolling_7d_sleep_debt
       operator: ">"
@@ -139,6 +148,7 @@ circuit_breakers:
 
   - name: "Energy Collapse"
     description: "精力值跌破安全线"
+    enforcement: auto
     condition:
       metric: energy_level
       operator: "<"
@@ -151,6 +161,7 @@ circuit_breakers:
 
   - name: "Mental Overload"
     description: "心智负荷过载"
+    enforcement: auto
     condition:
       metric: mental_load
       operator: ">="
@@ -163,6 +174,7 @@ circuit_breakers:
 
   - name: "Consecutive Poor Sleep"
     description: "连续多日低质量睡眠"
+    enforcement: auto
     condition:
       metric: consecutive_poor_sleep
       operator: ">="
@@ -175,6 +187,7 @@ circuit_breakers:
 
   - name: "HRV Recovery Alert"
     description: "HRV 跌破恢复安全线，身体修复能力受损"
+    enforcement: auto
     condition:
       metric: hrv
       operator: "<"
@@ -187,6 +200,7 @@ circuit_breakers:
 
   - name: "Spending Surge"
     description: "单笔大额消费预警"
+    enforcement: advisory   # actions 是 prose，engine 无法验证/执行；第 3 条的前提「本周已触发 2 次」在单快照模型里不可表达
     condition:
       metric: single_transaction
       operator: ">"
@@ -198,6 +212,7 @@ circuit_breakers:
 
   - name: "Overtraining Warning"
     description: "ATI/CTI 急慢比过训预警"
+    enforcement: auto
     condition:
       metric: load_ratio
       operator: ">"

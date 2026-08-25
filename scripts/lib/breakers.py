@@ -24,6 +24,7 @@ class TrippedBreaker:
     operator: str
     threshold: float
     actions: list[str]
+    enforcement: str = "auto"
 
 
 def evaluate(metrics: dict, breakers: list[Breaker]) -> list[TrippedBreaker]:
@@ -45,5 +46,6 @@ def evaluate(metrics: dict, breakers: list[Breaker]) -> list[TrippedBreaker]:
                 operator=cond.operator,
                 threshold=float(cond.value),
                 actions=list(cb.actions),
+                enforcement=cb.enforcement,
             ))
     return tripped

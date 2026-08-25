@@ -221,11 +221,20 @@ class BreakerCondition(BaseModel):
 
 
 class Breaker(BaseModel):
+    """一条熔断规则。
+
+    ``enforcement`` 区分两类混在同一个 list 里的东西：
+      - ``auto``     —— actions 是对时间表的硬约束（禁跑 / 降重 / DW 上限 / 断电时间），
+                        coach-planner 排期时必须机械套用，不留判断余地。
+      - ``advisory`` —— actions 是给 agent 读的 prose，engine 无法验证也无法执行。
+                        照常评估并输出，但下游必须标注为「建议」而非「强制」。
+    """
     model_config = ConfigDict(extra="allow")
     name: str
     description: str | None = None
     condition: BreakerCondition
     actions: list[str] = Field(default_factory=list)
+    enforcement: Literal["auto", "advisory"] = "auto"
 
 
 class ScoringFormula(BaseModel):
