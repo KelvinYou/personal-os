@@ -41,9 +41,9 @@ source_updated: 2026-08-19
 **Known food ids** (confirm each one via `python3 scripts/nutrition.py food <id>` — never invent an id):
 `egg`, `chicken_breast_raw`, `wholemeal_bread`, `brown_rice_cooked`, `white_rice_cooked`,
 `potato`, `pasta_dry`, `rolled_oats`, `greek_yogurt`, `whole_milk`, `skim_milk`, `cheese_slice`, `taiwan_sausage`,
-`whey_protein_powder`, `ikan_kembung`, `tempeh`, `tofu`, `canned_tuna`, `salmon_raw`, `dory_fillet_raw`,
+`whey_protein_powder`, `soy_protein_isolate`, `ikan_kembung`, `tempeh`, `tofu`, `canned_tuna`, `salmon_raw`, `dory_fillet_raw`,
 `shrimp_peeled_raw`, `broccoli`, `lettuce`, `bell_pepper`, `banana`, `cherry_tomato`, `avocado`,
-`almonds`, `walnuts`, `chia_seeds`, `pumpkin_seeds`, `dark_chocolate_999`, `black_sesame_powder`,
+`apple`, `almonds`, `walnuts`, `chia_seeds`, `pumpkin_seeds`, `dark_chocolate_999`, `black_sesame_powder`,
 `black_sesame_oil`, `black_sesame_paste`, `sesame_paste`, `peanut_butter`, `aromatics_mixed`,
 `cocoa_powder_100`, `matcha_powder`, `frozen_blueberries`, `frozen_strawberries`,
 `creatine_monohydrate`, `magnesium_glycinate`.
