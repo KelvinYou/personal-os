@@ -341,7 +341,6 @@ def render(s: Session) -> str:
     add("> Fill the frontmatter review fields, then set `reviewed: true`.")
     add("> The question is not \"did the agent do well\" but \"what instruction would have")
     add("> prevented the worst thing in this transcript\".")
-    add("")
     return "\n".join(lines) + "\n"
 
 
