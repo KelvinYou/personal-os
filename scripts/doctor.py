@@ -143,7 +143,9 @@ def _agents_md_paths() -> list[str]:
     一次性人工核对挡不住后续 schema 改动带来的复发，所以做成自检项。
     """
     text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
-    heading = re.search(r"^##\s*目录结构\s*$", text, re.M)
+    # AGENTS.md 于 fc6a5ed 全文译为英文，标题从「目录结构」变成「Directory Structure」。
+    # 两种都认，避免再翻一次语言就把自检打哑。
+    heading = re.search(r"^##\s*(?:目录结构|Directory Structure)\s*$", text, re.M)
     if not heading:
         return []
     # 标题与 fence 之间允许有说明文字（例如「本块由 make doctor 校验」那句）
@@ -164,7 +166,7 @@ def check_doc_paths(r: Report, data_available: bool) -> None:
         r.add(
             "error",
             "Doc paths",
-            "AGENTS.md 里找不到 `## 目录结构` 标题下的代码块 —— 无法校验",
+            "AGENTS.md 里找不到 `## Directory Structure`（或旧标题 `## 目录结构`）下的代码块 —— 无法校验",
             ["恢复该块，或同步改 scripts/doctor.py 的解析逻辑"],
         )
         return
