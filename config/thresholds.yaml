@@ -46,7 +46,9 @@ energy:
 # === 财务 (Financials) ===
 finance:
   savings_target_pct: 20       # 储蓄目标占收入百分比
-  weekly_spend_alert: 120.0    # 周度支出超过此值触发告警 (MYR, 目标 RM100 + 20% buffer)
+  weekly_spend_alert: 200.0    # 周度支出超过此值触发告警 (MYR)。2026-08-31 从 120 上调 ——
+                               # 全自炊基线已是 RM168.93/周（见 standard_week.md §7），
+                               # 120 会对每个正常周固定报警，200 留出外食/采购波动缓冲
   daily_spend_alert: 25.0      # 单日支出超过此值触发预警 (全自炊日约 RM20-23, 超 25 说明有外食)
 
 # === 理财 / 资产监控 (Wealth — Tracked Assets) ===
