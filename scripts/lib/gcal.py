@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -79,9 +80,17 @@ def _get_credentials() -> Credentials:
             missing = sorted(set(SCOPES) - granted)
             print(f"[Status: Info] 已缓存的 token 缺少 scope {missing}，重新走一次授权。")
     if not creds or not creds.valid:
+        refreshed = False
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
+            try:
+                creds.refresh(Request())
+                refreshed = True
+            except RefreshError as exc:
+                # Refresh tokens can be revoked (manually, or by Google after
+                # 6 months idle / a password change) — that's not a bug to
+                # crash on, it's the normal cue to redo the one-time consent.
+                print(f"[Status: Info] 缓存的 refresh token 已失效（{exc}），重新走一次授权。")
+        if not refreshed:
             flow = InstalledAppFlow.from_client_secrets_file(str(CLIENT_SECRET_PATH), SCOPES)
             creds = flow.run_local_server(port=0)
         CRED_DIR.mkdir(parents=True, exist_ok=True)
@@ -143,6 +152,8 @@ def insert_events(week_tag: str, events: list[dict], timezone: str, calendar_id:
             "extendedProperties": {"private": {"source": SOURCE_TAG, "week": week_tag}},
             "reminders": {"useDefault": False, "overrides": []},
         }
+        if e.get("color"):
+            body["colorId"] = str(e["color"])
         service.events().insert(calendarId=calendar_id, body=body).execute()
     return len(events)
 
@@ -243,7 +254,7 @@ def build_recurring_body(anchor: dict, timezone: str, start_date: date) -> dict[
     interval = anchor.get("interval", 1)
     if interval != 1:
         rrule += f";INTERVAL={interval}"
-    return {
+    body: dict[str, Any] = {
         "summary": anchor["title"],
         "description": anchor.get("description", "").strip(),
         "start": {"dateTime": f"{first.isoformat()}T{anchor['start']}:00", "timeZone": timezone},
@@ -259,6 +270,9 @@ def build_recurring_body(anchor: dict, timezone: str, start_date: date) -> dict[
         "reminders": {"useDefault": False, "overrides": []},
         "transparency": "transparent",  # shows as Free — a reference view must not block scheduling
     }
+    if anchor.get("color"):
+        body["colorId"] = str(anchor["color"])
+    return body
 
 
 def insert_protocol(anchors: list[dict], timezone: str, start_date: date, calendar_id: str) -> int:

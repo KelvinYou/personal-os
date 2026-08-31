@@ -56,6 +56,8 @@ def _load(path: Path) -> dict:
 PROTOCOL_PATH = ROOT / "data" / "protocol" / "standard_week.yaml"
 REQUIRED_ANCHOR_KEYS = {"days", "start", "end", "title"}
 VALID_DAYS = {"MO", "TU", "WE", "TH", "FR", "SA", "SU"}
+# Google Calendar's fixed 11-color event palette (colorId, API-wide, not configurable).
+VALID_COLOR_IDS = {str(i) for i in range(1, 12)}
 
 
 def _load_protocol(path: Path) -> dict:
@@ -73,6 +75,12 @@ def _load_protocol(path: Path) -> dict:
         bad = set(a["days"]) - VALID_DAYS
         if bad:
             sys.exit(f"[Status: Critical] {path.name} anchor `{a['title']}` 的 days 非法: {bad}")
+        color = a.get("color")
+        if color is not None and str(color) not in VALID_COLOR_IDS:
+            sys.exit(
+                f"[Status: Critical] {path.name} anchor `{a['title']}` 的 color `{color}` "
+                f"非法 —— Google Calendar colorId 只接受 1-11"
+            )
         # keys are the idempotency handle; a silent duplicate would make one
         # anchor untraceable after insert.
         k = a.get("key", a["title"])
@@ -97,8 +105,9 @@ def _sync_protocol(dry_run: bool) -> None:
         for a in anchors:
             first = gcal.first_occurrence(a["days"], start_date)
             every = "" if a.get("interval", 1) == 1 else f" (每 {a['interval']} 周)"
+            color = f" [color {a['color']}]" if a.get("color") else " [no color]"
             print(f"  {','.join(a['days']):<20} {a['start']}-{a['end']}  {a['title']}"
-                  f"  → 首次 {first}{every}")
+                  f"  → 首次 {first}{every}{color}")
         print("\n[Status: OK] Dry-run 完成，未写入 Calendar。去掉 DRY=1 真推。")
         return
 
