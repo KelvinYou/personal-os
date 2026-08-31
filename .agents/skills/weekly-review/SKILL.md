@@ -40,7 +40,7 @@ When the user triggers this skill, execute these steps in order:
 
 4. Read these reference files:
    - `config/thresholds.yaml` — all scoring thresholds and circuit breaker rules
-   - `data/user_profile.md` — schedule baselines, dietary macros, fitness architecture, grocery prices
+   - `data/user_profile.md` — schedule baselines, dietary macros, fitness architecture
 
 5. Check for the previous week's report in `data/reports/` (e.g., if generating W13, look for `*-w12-*.md`). If found, read it to enable week-over-week trend comparison and to check whether last week's 3 core objectives were achieved.
 

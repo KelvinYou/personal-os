@@ -13,7 +13,7 @@ Turn the user's free-form brain dump into a structured Personal-OS log.
 
 1. **Read the template**: first read `templates/daily.md` to get the latest YAML field structure.
 2. **Read the user profile**: read `data/user_profile.md` to understand the user's schedule/dietary preferences, to help with judgment calls.
-3. **Read grocery unit prices**: read the grocery unit-price info from memory, to estimate home-cooking cost.
+3. **Read grocery unit prices**: query `python3 scripts/nutrition.py food <id>` (backed by `repos/notes/datasets/nutrition/`, the single owner of food macros/prices), to estimate home-cooking cost.
 4. **Extract metadata**: extract all YAML fields from the brain dump.
 5. **Generate the log**: output a complete log file that conforms to the spec.
 
