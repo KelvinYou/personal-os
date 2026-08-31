@@ -28,7 +28,7 @@ CFG = LoggingDefaultsCfg(
     deep_work_hours_weekend=0.0,
     caffeine_cutoff="14:00",
     adherence="✅",
-    daily_spend=25.9,
+    daily_spend=24.13,
     coverage_warn_ratio=0.60,
     adherence_drift_days=3,
 )
@@ -48,7 +48,7 @@ class ResolveTests(unittest.TestCase):
         self.assertEqual(out.deep_work_hours, 8.0)
         self.assertEqual(out.caffeine_cutoff, "14:00")
         self.assertEqual(out.adherence.timetable, "✅")
-        self.assertEqual(out.daily_spend[0].amount, 25.9)
+        self.assertEqual(out.daily_spend[0].amount, 24.13)
 
     def test_weekend_deep_work_defaults_to_zero(self):
         out, _ = resolve(DailyLog(date=WEEKEND), CFG)

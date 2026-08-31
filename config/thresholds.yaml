@@ -88,7 +88,8 @@ logging_defaults:
   deep_work_hours_weekend: 0.0   # Sat/Sun，System Offline
   caffeine_cutoff: "14:00"       # = caffeine.cutoff_time，合规不违规
   adherence: "✅"                # 无偏离记录即视为按 standard_week 执行
-  daily_spend: 25.9              # RM/天，全自炊日；来源见 W33 采购清单 ~RM181/周
+  daily_spend: 24.13             # RM/天，全自炊日；来源见 standard_week.md §7 采购清单
+                                 # (RM168.93/周)。改那张表必须同步改这里 + tests/test_defaults.py
   # coverage = 实测手填字段数 / 应填字段数。低于此值周报打 Low Confidence 标记，
   # 但**不扣分** —— 惩罚沉默正是这次要拆掉的东西。
   coverage_warn_ratio: 0.60

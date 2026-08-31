@@ -15,7 +15,7 @@ energy_level:           # 1-10；留空 = 7
 #   timetable:          # 留空 = ✅ 按 standard_week 执行；偏离才写 ⚠️ / 🔴
 #   deviation_note:     # 写 ⚠️/🔴 时补一行根因
 # primary_blocker:      # 仅 incident 当日写一行
-# daily_spend:          # 留空 = 全自炊基线 RM25.9；有外食才逐项写
+# daily_spend:          # 留空 = 全自炊基线 RM24.13；有外食才逐项写
 #   - item: 描述
 #     amount: 0.0
 #     category: food

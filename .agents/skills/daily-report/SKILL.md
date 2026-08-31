@@ -44,7 +44,7 @@ Only fill a field when the brain dump **actually mentions** it:
   `deviation_note` line with the root cause. Followed the plan or not mentioned → leave blank (baseline ✅)
 - `primary_blocker`: **only write a line when there was an actual incident that day**. Everyday griping (tired, slept badly) doesn't count —
   that's already captured in COROS data. Writing it here would make the archive script mistakenly treat it as an event day whose original text must be preserved
-- `daily_spend`: **only itemize when there was eating out / extra spend**. A fully home-cooked day is left blank (baseline RM25.9/day, sourced from
+- `daily_spend`: **only itemize when there was eating out / extra spend**. A fully home-cooked day is left blank (baseline RM24.13/day, sourced from
   `data/protocol/standard_week.md` §7 grocery list). If there was eating out, estimate the home-cooked portion too, using unit prices
 - `body.*`: fill only if the user provided actual measurements, otherwise leave blank. **Never falls back to a baseline** — no measurement means no data
 - `sleep.*` / `readiness.*` / `training.*` / `activities[]`: **auto-filled by COROS** (`make sync-coros`),
