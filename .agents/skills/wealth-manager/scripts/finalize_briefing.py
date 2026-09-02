@@ -14,22 +14,25 @@ Run with the repo's own venv:
         --data-dir repos/ai-stock-analysis/data \
         --analyst-reports /tmp/meta_analyst_reports.json \
         --debate-result /tmp/meta_debate_result.json \
+        --research-verdict /tmp/meta_research_verdict.json \
         --synthesis /tmp/meta_synthesis.json
 
 Input JSON shapes must match:
     --analyst-reports: {"fundamentals": {...FundamentalsReport}, "sentiment": {...}, "technical": {...}, "macro": {...}}
     --debate-result:   {...DebateResult} (ticker/rounds/bull_case_summary/... — see models/debate.py)
+    --research-verdict: optional {...ResearchVerdict} from Layer 3.5
     --synthesis:       {"overall_signal": "...", "conviction": {...}, "executive_summary": "...",
                          "bull_case": "...", "bear_case": "...", "key_uncertainties": [...],
                          "catalysts_upcoming": [...], "agent_signal_breakdown": {...}}
                         (same shape as SynthesizerAgent.BRIEFING_OUTPUT_SCHEMA)
 
-Writes analyst_reports.json, debate_result.json, briefing.json into data/<TICKER>/, each tagged
-with "pipeline_mode": "in-session-claude-code" so downstream readers know these came from the
+Writes analyst_reports.json, debate_result.json, briefing.json, and (when supplied)
+research_verdict.json into data/<TICKER>/, each tagged with
+"pipeline_mode": "in-session-claude-code" so downstream readers know these came from the
 current Claude Code session's own reasoning, not the official Haiku/Opus/Sonnet-routed CLI.
 
 If STORAGE_BACKEND=supabase (checked via the repo's own Settings/.env — the same config
-`stock-fetch` and the official `stock-analysis` CLI honor), the three artifacts are also pushed
+`stock-fetch` and the official `stock-analysis` CLI honor), the supplied artifacts are also pushed
 to Supabase through the same SupabaseAnalysisStore.begin_run/save_*/complete_run sequence
 orchestrator.py uses, so the web dashboard sees this run too. Local files are always written
 regardless of backend; Supabase sync is additive and best-effort — a sync failure prints a
@@ -49,7 +52,7 @@ from stock_analysis.config import Settings, load_env
 from stock_analysis.data.us_market import USMarketFetcher
 from stock_analysis.data.my_market import MYMarketFetcher
 from stock_analysis.models.agent_reports import AnalystReports
-from stock_analysis.models.debate import DebateResult
+from stock_analysis.models.debate import DebateResult, ResearchVerdict
 from stock_analysis.models.market_data import TickerData
 from stock_analysis.models.synthesis import Briefing, ConvictionScore, RiskAssessment
 from stock_analysis.synthesis.risk_checker import RiskChecker
@@ -87,8 +90,9 @@ def sync_to_supabase(
     analyst_reports: AnalystReports,
     debate_result: DebateResult,
     briefing: Briefing,
+    research_verdict: ResearchVerdict | None = None,
 ) -> None:
-    """Best-effort push of the three artifacts to Supabase, mirroring orchestrator.py.
+    """Best-effort push of the supplied artifacts to Supabase, mirroring orchestrator.py.
 
     No-ops (with a stderr note) when STORAGE_BACKEND is not supabase, or when the
     Supabase env vars are not configured — local files remain this skill's source
@@ -111,6 +115,8 @@ def sync_to_supabase(
         run_id = store.begin_run(ticker, as_of, settings, market=market)
         store.save_analyst_reports(ticker, analyst_reports, as_of)
         store.save_debate_result(ticker, debate_result, as_of)
+        if research_verdict is not None:
+            store.save_research_verdict(ticker, research_verdict, as_of)
         store.save_briefing(ticker, briefing, as_of)
         store.complete_run(run_id)
         print(f"synced to Supabase: analysis_runs/{run_id}", file=sys.stderr)
@@ -133,6 +139,10 @@ def main():
     ap.add_argument("--data-dir", default="data")
     ap.add_argument("--analyst-reports", required=True, help="Path to analyst reports JSON")
     ap.add_argument("--debate-result", required=True, help="Path to debate result JSON")
+    ap.add_argument(
+        "--research-verdict",
+        help="Optional path to Layer 3.5 ResearchVerdict JSON",
+    )
     ap.add_argument("--synthesis", required=True, help="Path to synthesis JSON")
     args = ap.parse_args()
 
@@ -146,6 +156,11 @@ def main():
     )
     debate_result = DebateResult.model_validate(
         json.loads(Path(args.debate_result).read_text())
+    )
+    research_verdict = (
+        ResearchVerdict.model_validate(json.loads(Path(args.research_verdict).read_text()))
+        if args.research_verdict
+        else None
     )
     synthesis_raw = json.loads(Path(args.synthesis).read_text())
 
@@ -168,6 +183,7 @@ def main():
             correlation_notes=[],
             max_drawdown_scenario="pending",
         ),
+        research_verdict=research_verdict,
         agent_signal_breakdown=synthesis_raw["agent_signal_breakdown"],
     )
 
@@ -186,6 +202,11 @@ def main():
     debate_dict["pipeline_mode"] = "in-session-claude-code"
     (d / "debate_result.json").write_text(json.dumps(debate_dict, indent=2))
 
+    if research_verdict is not None:
+        verdict_dict = json.loads(research_verdict.model_dump_json())
+        verdict_dict["pipeline_mode"] = "in-session-claude-code"
+        (d / "research_verdict.json").write_text(json.dumps(verdict_dict, indent=2))
+
     briefing_dict = json.loads(briefing.model_dump_json())
     briefing_dict["pipeline_mode"] = "in-session-claude-code"
     (d / "briefing.json").write_text(json.dumps(briefing_dict, indent=2))
@@ -197,6 +218,7 @@ def main():
         analyst_reports,
         debate_result,
         briefing,
+        research_verdict=research_verdict,
     )
 
     print(json.dumps(briefing_dict, indent=2))

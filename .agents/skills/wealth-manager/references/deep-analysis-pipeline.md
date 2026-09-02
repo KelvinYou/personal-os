@@ -108,16 +108,18 @@ analyses can all take this path without reinstalling the environment every time)
    `agent_signal_breakdown`. **The score's sign must match the signal direction** (sell-type signals
    must be negative) — this is a rule explicitly required by the synthesizer prompt; follow it.
 5. **Layer 4 risk calculation (pure math — don't compute it mentally, call the real code)**: save
-   the JSON from the 3 steps above into temp files, then run
+   the JSON from the analyst, debate, and synthesis steps into temp files. If Layer 3.5 produced
+   a `ResearchVerdict`, save that separately as `/tmp/<ticker>_research_verdict.json`, then run
    `.agents/skills/wealth-manager/scripts/finalize_briefing.py` (executed with
-   `repos/ai-stock-analysis/.venv/bin/python`; see the usage in the script's top-of-file docstring).
+   `repos/ai-stock-analysis/.venv/bin/python`; pass `--research-verdict /tmp/<ticker>_research_verdict.json`
+   when that file exists. See the usage in the script's top-of-file docstring.
    This script directly imports the repo's real `RiskChecker` (`synthesis/risk_checker.py`) and
    Pydantic models to compute ATR stop-loss/take-profit levels, historical drawdown, and
    risk/reward — this is deterministic math, and the script's results match the official CLI's
    output exactly; don't let the LLM estimate these numbers itself.
-6. The script writes `analyst_reports.json` / `debate_result.json` / `briefing.json` back to
-   `repos/ai-stock-analysis/data/<TICKER>/`, tagged with `"pipeline_mode":
-   "in-session-claude-code"` — so anyone (including you, next time you read the cache) knows this
+6. The script writes `analyst_reports.json` / `debate_result.json` / `briefing.json` and, when
+   supplied, `research_verdict.json` back to `repos/ai-stock-analysis/data/<TICKER>/`, tagged with
+   `"pipeline_mode": "in-session-claude-code"` — so anyone (including you, next time you read the cache) knows this
    result was produced by the current Claude Code session itself, not by the official
    Haiku/Opus/Sonnet mixed routing. Both are close in rigor but use a different model
    configuration — don't conflate the two as the same thing.
