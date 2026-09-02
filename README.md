@@ -211,8 +211,19 @@ graph TB
 | `/contract-guardian` | 跨层改动（schema / 脚本 / 文档）的语义契约审查 |
 | `/quant-backtest-review` | ai-stock-analysis 回测与信号代码的对抗式复核 |
 | `/repo-orchestrator` | 多仓库协作：submodule 同步、集成检查、提交前把关 |
-| `/skill-creator` | 技能创建、优化与 eval |
-| `/git-commit` | 智能 conventional commit |
+| `/skill-creator` | 技能创建、优化与 eval（上游开源技能，非本仓库维护） |
+
+`/git-commit` 与 `/diagram-flow` 不再由本仓库持有 —— 它们与 Personal-OS 领域无关，
+已迁至 [agent-toolkit](https://github.com/KelvinYou/agent-toolkit) 统一维护，
+通过 Claude Code plugin 安装：
+
+```
+/plugin marketplace add KelvinYou/agent-toolkit
+/plugin install agent-toolkit@agent-toolkit
+```
+
+`/diagram-flow` 的仓库特定层（各 repo 的 renderer、gate、已定结论）留在
+`.agents/diagram-inventory.md`，由该 skill 在 Step 1 读取。
 
 ## 依赖
 

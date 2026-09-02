@@ -1,4 +1,0 @@
-interface:
-  display_name: "Diagram & Flow"
-  short_description: "Mermaid portability rules + JSON-first pipeline diagrams"
-  default_prompt: "Use $diagram-flow to add, fix, or review a diagram — check renderer portability first, then whether it needs a structured source of truth."
