@@ -31,6 +31,12 @@ def print_food(dataset: dict, food_id: str) -> None:
         print(f"gi: {f['glycemic_index']}")
     print(f"price: {f['price'] or 'n/a'}")
     print(f"source_updated: {f['last_verified']}")
+    if f["micronutrients"]:
+        print("micronutrients:")
+        for key, value in f["micronutrients"].items():
+            print(f"  {key}: {value}")
+        if f["micronutrient_source"]:
+            print(f"micronutrient_source: {f['micronutrient_source']}")
 
 
 def main() -> int:
