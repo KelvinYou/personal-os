@@ -1,6 +1,24 @@
 {
   "version": 1,
   "skills": {
+    "design-doc": {
+      "source": "KelvinYou/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/design-doc/SKILL.md",
+      "computedHash": "2f362591cdf54ca56cad25c062ca04ea930dcb41b34a97c31419d21b4f3c29d8"
+    },
+    "diagram-flow": {
+      "source": "KelvinYou/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/diagram-flow/SKILL.md",
+      "computedHash": "6397988075740e8b09f81fc65f2607caae6bd4798d325a0811309112625e17ff"
+    },
+    "git-commit": {
+      "source": "KelvinYou/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/git-commit/SKILL.md",
+      "computedHash": "508d16b0d09edea6b3d8d5350608d3bb0db33b5a8f5d5bcc896aa7fe742d6162"
+    },
     "skill-creator": {
       "source": "anthropics/skills",
       "sourceType": "github",

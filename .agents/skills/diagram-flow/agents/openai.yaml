@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diagram & Flow"
+  short_description: "Mermaid render-target portability + model-first diagram source of truth"
+  default_prompt: "Use $diagram-flow to add, fix, or review a diagram — establish the render target first, apply its portability contract, then decide whether the diagram needs a structured source of truth."

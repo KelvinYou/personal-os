@@ -1,0 +1,32 @@
+{
+  "skill_name": "design-doc",
+  "evals": [
+    {
+      "id": 1,
+      "name": "withdrawal-enhancement-multi-function",
+      "prompt": "我们下个 sprint 要做 Withdrawal Enhancement，一共 5 个 function：1) withdrawal limit 现在是前端算的，要改成后端按 country + verification status 决定；2) withdrawal confirmation 页要多显示 fee breakdown；3) withdrawal history 要支持按 status filter；4) 新增 batch withdrawal；5) 新增 withdrawal status 查询 API。Web 和 Mobile 都用同一套 API。帮我写成可以拿去 architect review 的 technical design。",
+      "expected_output": "A Design-Lite or Design-Full doc at docs/design/. Must include a scope table listing all 5 functions with New/Modify, a proposed-architecture diagram marking NEW vs MODIFIED, concrete API contracts for the new endpoints, a backward-compatibility verdict, business logic for the limit rule stated as pseudocode or a decision table, impact/regression scope covering both Web and Mobile, a trade-off section on where the rule is enforced, and an Open Questions section phrased as decisions for the reviewer.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "small-change-should-not-overproduce",
+      "prompt": "Ticket SUP-4412: on the transaction list page, add a 'Copy reference ID' button next to each row. Copies to clipboard, shows a toast. Write up how I'll do this before I start.",
+      "expected_output": "An Implementation Plan (Plan tier) of roughly one page — goal, approach naming actual components, ordered steps, verification. Should NOT produce a full technical design doc, and should not contain API Changes, Security & Compliance, Data Changes, Rollout, or Alternatives sections. Should state the tier choice.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "single-decision-adr",
+      "prompt": "团队在吵一件事：新的 notification service 到底应该用 Kafka 还是直接用 Postgres 做 outbox table + polling。我们现在量不大（每天几万条），但未来可能接更多下游。帮我把这个决定记录下来。",
+      "expected_output": "An ADR (not a design doc) at docs/design/adr/, one page: status, context stating constraints including current volume, a decision in one paragraph, alternatives with the specific reason each lost, and consequences covering both positive and negative including the cost knowingly accepted.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "compliance-heavy-full-tier",
+      "prompt": "We need to add KYC re-verification: users whose documents expire must re-submit ID before they can withdraw. This touches the KYC service, the withdrawal service, a new document_expiry column on the users table for ~8M rows, and we have a regulator deadline in Q3. Web and mobile both need it. Write the technical design.",
+      "expected_output": "A Design-Full doc. Must include Security & Compliance naming where each control is enforced, Data Changes covering the 8M-row migration with online/locking, duration and rollback, backfill defaults for existing rows, Error Handling for partial/inconsistent state, Rollout with deploy ordering and whether rollback is possible after migration, regression scope, and Open Questions. Should justify choosing the Full tier."
+    }
+  ]
+}

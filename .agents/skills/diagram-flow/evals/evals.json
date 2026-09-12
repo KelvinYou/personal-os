@@ -1,0 +1,67 @@
+{
+  "skill_name": "diagram-flow",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "This mermaid diagram in the README renders with a literal backslash-n in one of the boxes. Fix it.",
+      "expected_output": "The agent identifies the `\\n` inside a quoted node label, replaces it with `<br/>`, and does not propose restructuring the diagram or moving it to a structured model.",
+      "expectations": [
+        "The fix replaces `\\n` with `<br/>`.",
+        "The response does not propose a JSON or structured source of truth.",
+        "The response names the render target before applying the rule."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add a flowchart to the README showing how a request moves through the API layer.",
+      "expected_output": "The agent writes plain Mermaid, applies the universal portability rules, and does not introduce a canonical model for a single-consumer one-off diagram.",
+      "expectations": [
+        "No `\\n` appears in any node label.",
+        "Every class used has a matching `classDef`.",
+        "The response does not create a JSON model, schema, or generator.",
+        "The response does not propose extracting a shared renderer package."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our docs are all .mdx and we just added a mermaid checker to CI, but it reports zero diagrams. Why?",
+      "expected_output": "The agent identifies that the checker defaults to `*.md` and therefore matches no MDX file, and gives the `--ext md,mdx` fix.",
+      "expectations": [
+        "The response identifies the extension mismatch as the cause.",
+        "The response gives a concrete flag or path fix rather than only describing the problem.",
+        "The response does not claim the diagrams are valid on the basis of the clean report."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Copy the label style from our generated architecture.md into the hand-written README diagram so they look consistent.",
+      "expected_output": "The agent checks the consuming renderer for each file before copying, and declines or qualifies the change when the two targets have different label-markup contracts.",
+      "expectations": [
+        "The response checks the render target of both files.",
+        "The response does not copy richer HTML markup into a target that has not been verified to accept it.",
+        "The response explains that the generated file's markup follows its generator's target, not a house style."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "This pipeline diagram is drawn in Mermaid in the docs and also drawn as an SVG component in the web app. They keep drifting apart.",
+      "expected_output": "The agent recognises a second real consumer, proposes a canonical model with derived renderers, and proposes manual reconstruction rather than an automated Mermaid parser.",
+      "expectations": [
+        "The response identifies two consumers as the trigger for a structured source of truth.",
+        "The response does not propose building a Mermaid-to-model parser as the workflow.",
+        "The response proposes a check mode wired into CI as part of the same change.",
+        "The proposed model stores semantic tone or role rather than CSS or classDef names."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Set up diagram validation for this repo's CI. Our checker script lives in the parent repository.",
+      "expected_output": "The agent states that CI cannot reach across a repository or submodule boundary and installs a repo-local copy of the checker instead.",
+      "expectations": [
+        "The response rejects referencing a checker outside the repository.",
+        "The response installs or copies the checker into the repository being gated.",
+        "The response notes that a parse-only gate misses valid-but-wrong Mermaid."
+      ]
+    }
+  ]
+}
