@@ -199,6 +199,30 @@ Split into:
 (One row per day logged)
 ```
 
+### Step 3.5: Verify (run before saving)
+
+Before writing the file, recompute — don't trust your own draft:
+
+1. **Re-derive the deterministic base score independently.** Pull the raw
+   metrics from `weekly_report_prompt.md` and the thresholds from
+   `config/thresholds.yaml`, redo the arithmetic yourself, and diff it against
+   "Deterministic Base Score" in the prompt file. If they disagree, that's a
+   bug in `scripts/lib/score.py` or a stale threshold, not something to
+   silently paper over — report the discrepancy instead of picking a number.
+2. **Check every bonus/penalty citation resolves to a real entry.** For each
+   `(+N)`/`(-N)` line, confirm the cited day and event actually appear in that
+   day's `daily/YYYY-MM-DD.md` — don't let a plausible-sounding event survive
+   if you can't point to the line it came from.
+3. **Check baseline-filled fields didn't get penalized.** Re-scan the
+   Bonuses/Penalties section for any deduction that lands on a field the
+   Logging Coverage section marks as baseline-filled — that's the exact
+   regression this skill was fixed to prevent.
+4. **Check each next-week objective traces to a cited gap** in this week's
+   data (a metric, a missed objective from last week, a tripped breaker) —
+   not a generic aspiration with no evidence line above it.
+
+Fix what fails; only a report that passes all four goes to Step 4.
+
 ### Step 4: Save Report
 
 Save the generated report to:

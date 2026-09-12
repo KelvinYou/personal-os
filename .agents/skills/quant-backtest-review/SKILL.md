@@ -183,6 +183,28 @@ pasted number — ask, in order:
 5. Was this the best of several strategies or parameters? If
    `n_strategies_tested > 1`, check the DSR line rather than the raw PSR.
 
+## Verify pass (run before reporting)
+
+The checklist above is a *candidate* generator, not a verdict. Before writing
+any finding into the output, re-open the exact file/line you're about to cite
+and confirm three things — this is what catches a misread diff or a check
+that fired on stale context:
+
+1. **The cited code still says what you think it says.** Re-read the actual
+   line range in the diff/file, not your paraphrase of it from earlier in the
+   pass.
+2. **The "passing" pattern you're pointing at is genuinely absent** from the
+   diff — e.g. before flagging "doesn't route through `n_strategies_tested`",
+   grep the diff for that identifier; don't flag from memory of what the
+   function usually does.
+3. **The failure scenario is concrete** — state the specific input/state that
+   would produce a wrong number (a specific ticker, date range, or parameter
+   sweep), not just "this could leak."
+
+Drop any candidate that fails step 1 or 2. Downgrade `[Status: Critical]` to
+`[Status: Warning]` if you can state the code smell but not a concrete failure
+scenario for step 3. Only verified findings reach the Output format below.
+
 ## Output format
 
 Report findings the same way `repo-orchestrator` does — `[Status: OK]` when
