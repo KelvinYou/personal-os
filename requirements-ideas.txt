@@ -1,0 +1,3 @@
+# Optional provider for `scripts/idea_pipeline.py --engine claude`.
+# The demo and scripted engines do not require this dependency.
+claude-agent-sdk==0.2.139

@@ -6,8 +6,14 @@ DAILY_DIR := data/daily
 SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
 TODAY := $(shell TZ=Asia/Kuala_Lumpur date +%Y-%m-%d)
+IDEAS_ROOT ?= data/ideas
+IDEA_INPUT ?= templates/startup-idea-input.yaml
+IDEA_MODE ?= single
+IDEA_ENGINE ?= demo
+IDEA_MODEL ?= sonnet
+IDEA_CONFIG ?= config/idea_pipeline.yaml
 
-.PHONY: archive sync-protocol setup setup-private doctor doctor-web test today daily check weekly sync-coros report lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web eval evals evals-list eval-rollup help
+.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -15,6 +21,11 @@ setup:
 	@.venv/bin/pip install --quiet --upgrade pip
 	@.venv/bin/pip install --quiet -r requirements.txt
 	@echo "[Status: OK] .venv 就位。下一步: make doctor"
+
+## Install the optional Claude Agent SDK for real model execution
+setup-ideas:
+	@.venv/bin/pip install --quiet -r requirements-ideas.txt
+	@echo "[Status: OK] optional idea-pipeline model dependency installed."
 
 ## checkout private data submodule (需 personal-os-data 权限)
 ## 注意: 本机 .git/config 有 submodule.data.update=none（.gitmodules 里没有），
@@ -70,6 +81,39 @@ lint:
 ## 不依赖 node —— 查的是「语法合法但渲染错」的那几类 bug (literal \n / 未声明 classDef)
 check-mermaid:
 	@python3 $(SCRIPTS_DIR)/check_mermaid.py
+
+## Validate an idea input without model calls
+## Usage: make idea-validate IDEA_INPUT=path/to/input.yaml
+idea-validate:
+	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py validate --input $(IDEA_INPUT) $(if $(EVALUATED_AT),--evaluated-at $(EVALUATED_AT),)
+
+## Create the private idea record (requires the data submodule)
+## Usage: make idea-init IDEA_INPUT=path/to/input.yaml
+idea-init:
+	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py init --input $(IDEA_INPUT) --output-dir $(IDEAS_ROOT)
+
+## Run the single-agent baseline or six-lens pipeline
+## Usage: make idea-evaluate IDEA_INPUT=path/to/input.yaml IDEA_MODE=multi IDEA_ENGINE=demo
+idea-evaluate:
+	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py evaluate --input $(IDEA_INPUT) --mode $(IDEA_MODE) --engine $(IDEA_ENGINE) --model $(IDEA_MODEL) --config $(IDEA_CONFIG) --output-dir $(IDEAS_ROOT) $(if $(RESPONSE),--response $(RESPONSE),) $(if $(EVALUATED_AT),--evaluated-at $(EVALUATED_AT),)
+
+## Append a user confirmation for one executable ledger row
+## Usage: make idea-confirm-test IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=... CONFIRMED_BY=...
+idea-confirm-test:
+	@if [ -z "$(IDEA_ID)$(IDEA_RUN_ID)$(IDEA_TEST_ID)$(CONFIRMED_BY)" ]; then echo "Usage: make idea-confirm-test IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=... CONFIRMED_BY=..."; exit 1; fi
+	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py confirm-test --idea-id $(IDEA_ID) --run-id $(IDEA_RUN_ID) --test-id $(IDEA_TEST_ID) --confirmed-by "$(CONFIRMED_BY)" --output-dir $(IDEAS_ROOT) $(if $(CONFIRMED_AT),--confirmed-at $(CONFIRMED_AT),)
+
+## Append a user-owned validation result
+## Usage: make idea-record-result IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=... RESULT_STATE=INCONCLUSIVE RECORDED_BY=... OBSERVATION='...'
+idea-record-result:
+	@if [ -z "$(IDEA_ID)$(IDEA_RUN_ID)$(IDEA_TEST_ID)$(RESULT_STATE)$(RECORDED_BY)$(OBSERVATION)" ]; then echo "Usage: make idea-record-result IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=... RESULT_STATE=... RECORDED_BY=... OBSERVATION=..."; exit 1; fi
+	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py record-result --idea-id $(IDEA_ID) --run-id $(IDEA_RUN_ID) --test-id $(IDEA_TEST_ID) --state $(RESULT_STATE) --recorded-by "$(RECORDED_BY)" --observation "$(OBSERVATION)" --output-dir $(IDEAS_ROOT) $(if $(RECORDED_AT),--recorded-at $(RECORDED_AT),) $(if $(ACTUAL_COST),--actual-cost $(ACTUAL_COST),) $(if $(ACTUAL_CURRENCY),--actual-currency $(ACTUAL_CURRENCY),) $(if $(ACTUAL_USER_MINUTES),--actual-user-minutes $(ACTUAL_USER_MINUTES),)
+
+## Append one or more validated evidence items from a YAML list
+## Usage: make idea-add-evidence IDEA_ID=... IDEA_INPUT=path/to/evidence.yaml
+idea-add-evidence:
+	@if [ -z "$(IDEA_ID)" ]; then echo "Usage: make idea-add-evidence IDEA_ID=... IDEA_INPUT=path/to/evidence.yaml"; exit 1; fi
+	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py add-evidence --idea-id $(IDEA_ID) --input $(IDEA_INPUT) --output-dir $(IDEAS_ROOT)
 
 ## 运行逻辑引擎检查 (Logic Engine)
 check:
@@ -170,6 +214,7 @@ report: lint check weekly
 help:
 	@echo "Personal-OS Commands:"
 	@echo "  make setup              — 建立 .venv 并安装 requirements.txt"
+	@echo "  make setup-ideas        — install optional Claude SDK for idea evaluation"
 	@echo "  make setup-private      — checkout private data submodule (需权限)"
 	@echo "  make doctor             — 环境自检 (error / expected / warning)"
 	@echo "  make test               — Python 测试 + web typecheck"
@@ -177,6 +222,12 @@ help:
 	@echo "  make daily DATE=...     — 生成指定日期的日志模板"
 	@echo "  make lint               — 校验所有日志的 frontmatter schema"
 	@echo "  make check              — 运行逻辑引擎告警检查"
+	@echo "  make idea-validate      — validate startup-idea input (IDEA_INPUT=...)"
+	@echo "  make idea-init          — create private idea record (IDEA_INPUT=...)"
+	@echo "  make idea-evaluate      — run idea pipeline (IDEA_MODE=single|multi, IDEA_ENGINE=demo|claude|scripted)"
+	@echo "  make idea-confirm-test  — append user test confirmation"
+	@echo "  make idea-record-result — append user test result"
+	@echo "  make idea-add-evidence  — append evidence YAML"
 	@echo "  make weekly             — 聚合本周数据 (可选: DATE=2026-03-22)"
 	@echo "  make sync-coros         — 拉取昨日 COROS 数据 (可选: DATE=...)"
 	@echo "  make sync-calendar      — 推送 timetable calendar.yaml 到 Google Calendar (可选: WEEK=...)"

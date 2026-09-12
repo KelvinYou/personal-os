@@ -17,11 +17,18 @@ A personal management system that drives data-driven self-management through str
 /data/archive/            — cold-data archive (YYYY-Qn.md weekly summaries + body.csv full body-composition series)
 /data/protocol/           — standing protocol; standard_week.md is the single human-readable schedule, not re-shuffled weekly; standard_week.yaml is only a Calendar-anchors projection
 /data/finance/            — financial holdings (savings / portfolio / policy.yaml)
+/data/ideas/              — private startup-idea briefs, evidence, immutable runs, and append-only test events
 /data/reports/            — weekly report archive + weekly delta (only generated when there are exceptions)
 /data/reports/evals/      — session eval records (produced by make eval; audits the agent itself, not me)
+/data/travel/             — private trip plans (city-YYYY-MM.md); language exception: may be written in the traveler's preferred language, since map queries and mini-program names must stay in the local script
 /data/user_profile.md     — global user profile (routine/diet/training preferences)
 /docs/                    — long-form docs; three owners: VISION (direction) / ROADMAP (to-do) / DECISIONS (decided, not revisited)
 /docs/voice-guide.md      — my writing voice (reverse-engineered from 34 published blog posts); read before writing any outward-facing text
+/docs/dev-sop.md          — feature/bug-fix SOP (design → implement → test → review → merge; simple vs. complex/subtask-loop paths)
+/docs/design/             — technical design docs (implementation-ready specs, ADR-adjacent)
+/docs/plans/              — multi-phase project plans with phase-by-phase status; ROADMAP §4 links into these, don't duplicate their checklists
+/docs/analysis/           — one-off quantitative analysis docs; each carries its own re-verify-after window, check before citing
+/docs/drafts/             — content drafts pending external publish (profile copy, public-mirror README) — copy manually, don't paste blind
 /ARCHITECTURE.md          — system architecture + invariants; read before changing data flow/contracts
 /SETUP.md                 — first-time bootstrap flow; the top comment block is an interactive script for the agent
 /templates/               — blank template files
@@ -33,7 +40,7 @@ A personal management system that drives data-driven self-management through str
 /repos/portfolio-website  — personal website (unified entry point for career-related content)
 /repos/ai-stock-analysis  — stock analysis tool; also the sole owner of stock price data
 /repos/notes    — public notes submodule; sole owner of the nutrition dataset
-/scripts/nutrition.py     — nutrition query adapter (reads repos/notes; see docs/plan-public-knowledge-integration.md)
+/scripts/nutrition.py     — nutrition query adapter (reads repos/notes)
 /scripts/lib/nutrition/   — shared implementation for the nutrition adapter (basis conversion, macro/cost derivation)
 ```
 
@@ -46,10 +53,17 @@ A personal management system that drives data-driven self-management through str
 
 ## Common Commands
 - `make setup` — create `.venv` and install dependencies
+- `make setup-ideas` — install the optional Claude SDK for startup-idea model execution
 - `make setup-private` — check out the private `data` submodule (requires repo permission)
 - `make doctor` — environment self-check; distinguishes error / expected (e.g. data not checked out due to missing permission) / warning
 - `make test` — Python tests + web typecheck
 - `make today` — generate today's log template
+- `make idea-validate IDEA_INPUT=...` — validate a startup-idea input without model calls
+- `make idea-init IDEA_INPUT=...` — create a private startup-idea record
+- `make idea-evaluate IDEA_INPUT=... [IDEA_MODE=multi]` — run the startup-idea pipeline
+- `make idea-confirm-test IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=...` — confirm one test contract
+- `make idea-record-result IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=...` — append a user-owned test result
+- `make idea-add-evidence IDEA_ID=... IDEA_INPUT=...` — append evidence to an idea record
 - `make check` — run the logic engine against all logs
 - `make weekly` — aggregate this week's data, generate the weekly-report prompt
 - `make report` — one-shot full weekly report (aggregate + call AI)
@@ -61,7 +75,7 @@ A personal management system that drives data-driven self-management through str
 - When generating a schedule, always reference the routine/diet preferences in `data/user_profile.md`
 - The scoring framework uses four weighted dimensions (Output 40 / Health 30 / Mental 20 / Habits 10)
 - Log style: engineer's-eye view, marked with `[Status: OK/Warning/Critical]`
-- All content — logs, reports, and skills alike — is written in English
+- All content — logs, reports, and skills alike — is written in English. Sole exception: `data/travel/` (see directory structure) — trip plans may use the traveler's preferred language, because map search queries, mini-program names and restaurant names have to stay in the local script to be usable on the ground
 - Read `docs/voice-guide.md` before writing any **outward-facing text** (blog / LinkedIn / README prose / commit body). Internal repo reports are not governed by it — keep using the `[Status: ...]` convention.
 
 ## Give Three Next Steps When Wrapping Up

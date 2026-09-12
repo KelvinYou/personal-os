@@ -501,3 +501,38 @@ Scoring 的职责切分：
 - `data/protocol/standard_week.yaml` 不是第二份 timetable，而是 Calendar integration projection：只承载 recurring anchors、timezone、start date 和 idempotency keys，供 `make sync-protocol` 使用。修改 standing schedule 时必须同步更新两份；若无法同步，Markdown 仍是人工决策 owner，Calendar projection 必须被视为 stale。
 - `data/reports/YYYY-w##-calendar.yaml` 是例外周的 dated Calendar sidecar；无例外的周不生成 timetable/delta，也不生成 sidecar。
 - `make sync-coros` 与 `make sync-calendar/sync-protocol` 都是显式用户动作；系统不配置 cron、后台任务或云端托管部署。
+
+## 12. Startup-Idea Pipeline
+
+The startup-idea evaluator is a private, bounded decision-support workflow. It
+does not share the daily-log schema, the stock-analysis data owner, or the
+decision journal's ownership rules.
+
+| Layer | Owner | Consumers / invariant |
+|---|---|---|
+| Input and output contracts | `scripts/lib/ideas/models.py` | `validate.py`, `registry.py`, `ledger.py`, lifecycle, storage, and the CLI consume the same Pydantic models; unknown fields are rejected; each run records typed execution configuration and validated manager adjudication |
+| Deterministic contract kernel | `scripts/lib/ideas/validate.py`, `registry.py`, `formulas.py`, `ledger.py` | Only the registry assigns provenance, evidence status, and grounding; checklist-invalid reports are excluded before registration; only the ledger gate assigns deterministic test IDs and ordering |
+| Model boundary and orchestration | `scripts/lib/ideas/model_client.py`, `orchestrator.py` | Providers return structured proposals; the orchestrator binds validator-owned IDs, enforces retries/budgets, applies the configured row cap, records execution provenance, and rejects output containing excluded fragments |
+| Human-readable rendering | `scripts/lib/ideas/render.py` | Run Markdown is derived from the typed artifact; frontmatter carries the canonical integrity hash |
+| Private state | `scripts/lib/ideas/storage.py`, `lifecycle.py` → `data/ideas/<idea-id>/` | Briefs/evidence are private; typed confirmation/result events append through the lifecycle rules; completed runs are immutable; no generated idea content is written to `docs/`, `market/`, or public submodules |
+| Public topology config | `config/idea_pipeline.yaml` | Lens checklists and row cap are public configuration; run budgets remain user-supplied input |
+
+The supported entry point is `scripts/idea_pipeline.py`, exposed through the
+`idea-*` Make targets. `DemoModelClient` provides a credential-free smoke path;
+the Claude Agent SDK adapter is optional and lazy-imported. The default private
+data path is refused when the `data` submodule is not checked out, preventing a
+CLI typo from creating idea records in the parent repository.
+
+Each run follows this ownership boundary:
+
+```text
+input YAML → context validator → model proposals → checklist filter → closed-world registry
+           → bounded debate / research manager → deterministic ledger gate
+           → immutable run Markdown → typed user confirmation/result events
+```
+
+The pipeline may record an assumption ledger and user-entered validation
+results. It never contacts customers, spends money, performs web search, emits
+a success probability, or writes a build/stop decision. A final user decision
+may be captured separately by `decision-log`; that journal does not own the
+idea claim graph.

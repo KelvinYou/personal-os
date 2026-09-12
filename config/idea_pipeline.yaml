@@ -1,0 +1,28 @@
+# Public topology defaults. Per-run budgets remain required input fields.
+schema_version: "1"
+max_top_rows: 5
+lens_checklists:
+  demand:
+    - problem-severity
+    - urgency
+    - alternatives
+  buyer-distribution:
+    - buyer
+    - channel
+    - willingness-to-pay
+  unit-economics:
+    - price
+    - cost-shape
+    - cac-path
+  feasibility:
+    - sellable-version
+    - operations
+    - founder-fit
+  competition:
+    - substitutes
+    - incumbents
+    - defensibility
+  risk:
+    - regulatory
+    - trust
+    - dependencies

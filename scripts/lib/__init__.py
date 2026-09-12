@@ -9,4 +9,5 @@ Modules:
 - config:    thresholds.yaml loader with fail-fast
 - logger:    JSONL event emitter
 - migrate:   one-off frontmatter migrations
+- ideas:     startup-idea contracts, registry, ledger, and execution pipeline
 """
