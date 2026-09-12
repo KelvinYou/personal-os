@@ -101,9 +101,9 @@ E3/E4 仍能保住 E1/E2 的结构化排期价值，也仍留着现有的 ✅/�
 
 | 线 | 待办 | 详细计划 |
 |---|---|---|
-| Wealth dashboard | Phase D（知识库浏览页）· Phase E（历史趋势展示） | [plan-wealth-dashboard.md](plan-wealth-dashboard.md) §4 |
-| Public mirror | 3 项发布前检查（阈值泄漏核对 / `demo/` fixture 数据 / 仓库命名） | [personal-os-public-readme-draft.md](personal-os-public-readme-draft.md) |
-| LinkedIn / JobStreet | headline · About · DTCPay bullets · skills 排序，外加 4 项数字核实 | [profile-updates-2026-08-14.md](profile-updates-2026-08-14.md) |
+| Wealth dashboard | Phase D（知识库浏览页）· Phase E（历史趋势展示） | [plans/wealth-dashboard.md](plans/wealth-dashboard.md) §4 |
+| Public mirror | 3 项发布前检查（阈值泄漏核对 / `demo/` fixture 数据 / 仓库命名） | [drafts/personal-os-public-readme.md](drafts/personal-os-public-readme.md) |
+| LinkedIn / JobStreet | headline · About · DTCPay bullets · skills 排序，外加 4 项数字核实 | [drafts/profile-updates-2026-08-14.md](drafts/profile-updates-2026-08-14.md) |
 
 > 这四条**只在那边维护**。在这里复制一份 checklist 是两处并存的起点 ——
 > `AGENTS.md` / `CLAUDE.md` 已经因此漂移过一次。
