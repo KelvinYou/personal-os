@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: eval
 """Turn Claude Code session transcripts into reviewable eval records.
 
 Why this exists: every other loop in Personal-OS audits *me* — daily logs,
@@ -26,11 +27,13 @@ Usage:
     python3 scripts/session_eval.py --session recent-1 # the one before it
     python3 scripts/session_eval.py --last 10          # backfill 10 sessions
     python3 scripts/session_eval.py --list             # what's on disk
-    python3 scripts/session_eval.py --rollup 2026-08   # monthly signal summary
+    python3 scripts/session_eval.py --rollup 2026-08   # monthly signal summary (persists rollup-2026-08.json)
+    python3 scripts/session_eval.py --rollup-history --json  # all persisted rollups, for the web dashboard
 """
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from collections import Counter
@@ -61,6 +64,7 @@ CHURN_CALLS_PER_PROMPT = 20      # tool calls per human prompt above which churn
 ERROR_LOOP_SAME_TOOL = 2         # repeats of the same failing tool that count as a loop
 PROMPT_EXCERPT_CHARS = 400       # how much of a human prompt the record keeps
 MUTATIONS_SHOWN = 15             # mutations listed before the tail is summarised
+BUG_SHARE_THRESHOLD_PCT = 50.0   # a signal above this monthly share is an AGENTS.md bug, not a one-off (see rollup())
 
 # A correction is the single highest-signal event in a transcript: the human
 # had to intervene. Matching is intentionally narrow — "no" alone is far too
@@ -392,20 +396,22 @@ def write_eval(s: Session, force: bool = False) -> tuple[Path, str]:
 # Rollup
 # ---------------------------------------------------------------------------
 
+ROLLUP_SCHEMA_VERSION = 1
 
-def rollup(month: str) -> int:
-    """Signal frequencies across one month of evals.
 
-    This is the part `meta-coach` reads. One bad session proves nothing; the
-    same signal firing in eight of eleven sessions is an AGENTS.md bug.
+def compute_rollup(month: str) -> dict | None:
+    """Signal frequencies across one month of evals, as a plain dict.
+
+    This is the part `meta-coach` (and the web dashboard) reads. One bad
+    session proves nothing; the same signal firing in eight of eleven
+    sessions is an AGENTS.md bug — that's what `bug_share_threshold_pct`
+    marks, not a decorative cutoff.
     """
     if not EVALS_DIR.is_dir():
-        print(f"[Status: Warning] {EVALS_DIR.relative_to(PROJECT_ROOT)} 不存在 —— 先跑 make eval")
-        return 0
+        return None
     files = sorted(EVALS_DIR.glob(f"{month}-*.md"))
     if not files:
-        print(f"[Status: Warning] {month} 没有 eval 记录")
-        return 0
+        return None
 
     counts: Counter[str] = Counter()
     unreviewed: list[str] = []
@@ -427,20 +433,94 @@ def rollup(month: str) -> int:
                 changes.append((f.name, value))
 
     total = len(files)
-    print(f"[Eval Rollup] {month} — {total} session(s)")
+    return {
+        "rollup_schema_version": ROLLUP_SCHEMA_VERSION,
+        "month": month,
+        "session_count": total,
+        "unreviewed_count": len(unreviewed),
+        "unreviewed_files": unreviewed,
+        "signals": {
+            code: {"count": n, "share_pct": round(100 * n / total, 1)}
+            for code, n in counts.most_common()
+        },
+        "proposed_agents_md_changes": [
+            {"file": name, "change": change} for name, change in changes
+        ],
+        "bug_share_threshold_pct": BUG_SHARE_THRESHOLD_PCT,
+    }
+
+
+def _rollup_path(month: str) -> Path:
+    return EVALS_DIR / f"rollup-{month}.json"
+
+
+def _write_rollup(data: dict) -> Path:
+    """Persist the rollup so it survives past this one invocation.
+
+    Unlike per-session eval records, this file carries no human-filled
+    review fields — it's a pure aggregate over already-reviewed-or-not
+    sessions, so it's safe to fully overwrite every time (no
+    preserve-on-regenerate guard needed here).
+    """
+    path = _rollup_path(data["month"])
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
+def _print_rollup_text(data: dict) -> None:
+    total = data["session_count"]
+    print(f"[Eval Rollup] {data['month']} — {total} session(s)")
     print("─" * 66)
     print(f"{'signal':<24} {'n':>4}  {'share':>6}")
-    for code, n in counts.most_common():
-        print(f"{code:<24} {n:>4}  {n / total:>6.0%}")
+    for code, s in data["signals"].items():
+        print(f"{code:<24} {s['count']:>4}  {s['share_pct']:>5.0f}%")
     print("─" * 66)
-    print(f"未 review: {len(unreviewed)}/{total}")
-    for name in unreviewed[:10]:
+    print(f"未 review: {data['unreviewed_count']}/{total}")
+    for name in data["unreviewed_files"][:10]:
         print(f"  · {name}")
-    if changes:
+    if data["proposed_agents_md_changes"]:
         print("\n提议的 AGENTS.md 改动:")
-        for name, change in changes:
-            print(f"  · {name}: {change}")
+        for c in data["proposed_agents_md_changes"]:
+            print(f"  · {c['file']}: {c['change']}")
     print("\n[Next] /meta-coach —— 让它读这份 rollup，判断哪个 signal 该变成 AGENTS.md 条目。")
+
+
+def rollup(month: str, as_json: bool = False) -> int:
+    data = compute_rollup(month)
+    if data is None:
+        if not EVALS_DIR.is_dir():
+            print(f"[Status: Warning] {EVALS_DIR.relative_to(PROJECT_ROOT)} 不存在 —— 先跑 make eval")
+        else:
+            print(f"[Status: Warning] {month} 没有 eval 记录")
+        return 0
+
+    path = _write_rollup(data)
+    if as_json:
+        print(json.dumps(data, ensure_ascii=False))
+    else:
+        _print_rollup_text(data)
+        print(f"\n[Status: OK] 已写入 {path.relative_to(PROJECT_ROOT)}")
+    return 0
+
+
+def rollup_history() -> int:
+    """All persisted monthly rollups, sorted by month — the web dashboard's read path.
+
+    A single month proves nothing (see compute_rollup's docstring); this is
+    the series a trend actually needs. Months with no eval sessions have no
+    file and are simply absent, not zero-filled.
+    """
+    if not EVALS_DIR.is_dir():
+        print("[]")
+        return 0
+    out = []
+    for f in sorted(EVALS_DIR.glob("rollup-*.json")):
+        try:
+            out.append(json.loads(f.read_text(encoding="utf-8")))
+        except json.JSONDecodeError:
+            continue
+    out.sort(key=lambda d: d.get("month", ""))
+    print(json.dumps(out, ensure_ascii=False))
     return 0
 
 
@@ -473,13 +553,21 @@ def main() -> int:
     ap.add_argument("--cwd", default=str(PROJECT_ROOT), help="project working directory to look up")
     ap.add_argument("--list", action="store_true", help="list transcripts and exit")
     ap.add_argument("--rollup", metavar="YYYY-MM", help="monthly signal summary")
+    ap.add_argument(
+        "--rollup-history",
+        action="store_true",
+        help="print all persisted monthly rollups as a JSON array (for the web dashboard)",
+    )
+    ap.add_argument("--json", action="store_true", help="with --rollup, print JSON instead of the text summary")
     ap.add_argument("--force", action="store_true", help="overwrite review fields too")
     args = ap.parse_args()
 
     cwd = Path(args.cwd)
 
+    if args.rollup_history:
+        return rollup_history()
     if args.rollup:
-        return rollup(args.rollup)
+        return rollup(args.rollup, as_json=args.json)
     if args.list:
         return cmd_list(cwd)
 
