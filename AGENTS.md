@@ -40,6 +40,7 @@ A personal management system that drives data-driven self-management through str
 /repos/portfolio-website  — personal website (unified entry point for career-related content)
 /repos/ai-stock-analysis  — stock analysis tool; also the sole owner of stock price data
 /repos/notes    — public notes submodule; sole owner of the nutrition dataset
+/.agents/skills/travel-plan/ — trip-plan skill; owns the verification gate that must run BEFORE a plan is drafted (verify-class defects outnumber lint-class 26:17 and no review pass finds them)
 /scripts/travel_lint.py   — travel-plan consistency linter (`make travel-lint`); only checks what needs no external source
 /scripts/lib/travel/      — lint rules; each rule maps to a defect in tests/fixtures/travel_known_defects.yaml
 /scripts/nutrition.py     — nutrition query adapter (reads repos/notes)

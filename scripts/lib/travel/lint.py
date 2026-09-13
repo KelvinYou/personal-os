@@ -20,6 +20,7 @@ RULES: dict[str, str] = {
     "dangling_reference": "Departures cited outside the itinerary still exist inside it",
     "unsourced_specific": "A precise departure time carries a source or a ❓ marker",
     "redeye_date_trap": "A post-midnight flight shows the previous-day airport arrival",
+    "arrival_date_trap": "A pre-dawn arrival names the previous-day night its first room is booked for",
 }
 
 ERROR = "ERROR"
@@ -51,6 +52,8 @@ DEPARTURE_WORDS = "班车|班次|发车|车次|开车|末班|首班|开往|直�
 DEPARTURE_RE = re.compile(DEPARTURE_WORDS)
 FLIGHT_RE = re.compile(r"起飞|出发|depart", re.I)
 AIRPORT_RE = re.compile(r"机场|值机|航站楼|check[- ]?in|T[12]", re.I)
+ARRIVAL_RE = re.compile(r"落地|抵达|到达|arriv|land(?:s|ing|ed)?\b", re.I)
+LODGING_RE = re.compile(r"住宿|酒店|入住|客栈|民宿|订单|的房|晚的|hotel|lodging", re.I)
 SOURCED_RE = re.compile(r"✅|❓|🚨|https?://|「|~~")
 # A line that records what an earlier version got wrong. Its numbers are quoted to
 # be refuted, so reading them as claims produces nothing but noise.
@@ -66,6 +69,9 @@ EQ_SUM_RE = re.compile(r"=\s*([^|（()）\n]*\+[^|（()）\n]*)")
 INT_RE = re.compile(r"(?<!\d)(\d+)(?!\d)")
 
 LEG_RE = re.compile(r"([一-鿿]{2,8})\s*(?:→|->|⇄|➜)\s*([一-鿿]{2,8})")
+# "2h58min" / "2小时58分" is one duration, not a 58-minute one. This must be tried
+# before MIN_RE, which would otherwise match the trailing minutes alone.
+COMPOUND_RE = re.compile(r"(\d+)\s*(?:h|小时)\s*(\d+)\s*(?:min|分钟|分)")
 HOUR_RANGE_RE = re.compile(r"(\d+(?:\.\d+)?)\s*[-–~]\s*(\d+(?:\.\d+)?)\s*(?:h|小时)")
 HOUR_RE = re.compile(r"~?\s*(\d+(?:\.\d+)?)\s*(?:h|小时)")
 MIN_RANGE_RE = re.compile(r"(\d+)\s*[-–~]\s*(\d+)\s*(?:min|分钟)")
@@ -243,7 +249,10 @@ def _rule_table_body_agreement(lines: list[str], excluded: list[bool]) -> list[F
             continue
         tail = line[leg_m.end():]
         span: tuple[float, float] | None = None
-        if (m := HOUR_RANGE_RE.search(tail)):
+        if (m := COMPOUND_RE.search(tail)):
+            total = float(m.group(1)) * 60 + float(m.group(2))
+            span = (total, total)
+        elif (m := HOUR_RANGE_RE.search(tail)):
             span = (float(m.group(1)) * 60, float(m.group(2)) * 60)
         elif (m := MIN_RANGE_RE.search(tail)):
             span = (float(m.group(1)), float(m.group(2)))
@@ -373,6 +382,65 @@ def _rule_redeye_date_trap(lines: list[str], excluded: list[bool], year: int) ->
     )]
 
 
+def _rule_arrival_date_trap(lines: list[str], excluded: list[bool], year: int) -> list[Finding]:
+    """The mirror of redeye_date_trap, and the same trap seen from the other end.
+
+    Landing at 01:10 on the 22nd means the first room is booked for the night of the
+    21st — hotels sell the night, not the calendar day, and a booking made under the
+    arrival date puts the traveller in the lobby at 3am. The plan passes if any line
+    states both dates next to a lodging word; fires at most once per plan, because
+    every schedule row legitimately mentions only one of the two.
+    """
+    day_dates: dict[int, list[date]] = {}
+    heading_dates: list[date] = []
+    for _label, start, end in _day_sections(lines):
+        heading = _dates_in(lines[start], year)
+        heading_dates.extend(heading)
+        for i in range(start, end):
+            day_dates[i] = heading
+    # Only the arrival that *begins* the trip carries the lodging-night ambiguity.
+    # The 05:40 landing back home at the end of a red-eye needs no room.
+    trip_start = min(heading_dates) if heading_dates else None
+
+    line_no = match = arrival = None
+    for i, line in enumerate(lines):
+        if excluded[i] or not ARRIVAL_RE.search(line):
+            continue
+        m = next((t for t in TIME_RE.finditer(line) if _minutes(t.group(0)) < 6 * 60), None)
+        if m is None:
+            continue
+        on_line = set(_dates_in(line, year))
+        candidate = None
+        if on_line:
+            # A line naming several dates (the arrival and the night before it) is
+            # usually the statement we are looking for — anchor on the trip's start.
+            candidate = trip_start if trip_start in on_line else min(on_line)
+        elif day_dates.get(i):
+            candidate = min(day_dates[i])
+        if candidate is None or (trip_start is not None and candidate != trip_start):
+            continue
+        line_no, match, arrival = i, m, candidate
+        break
+
+    if arrival is None:
+        return []
+
+    previous = arrival - timedelta(days=1)
+    for i, line in enumerate(lines):
+        if excluded[i] or not LODGING_RE.search(line):
+            continue
+        on_line = set(_dates_in(line, year))
+        if arrival in on_line and previous in on_line:
+            return []
+
+    return [Finding(
+        "arrival_date_trap", ERROR, line_no + 1,
+        f"arrival {match.group(0)} lands {arrival:%m/%d} but no line pairs it with "
+        f"{previous:%m/%d} and the lodging — the first night is booked as "
+        f"{previous:%m/%d}, or the room is not held at 3am",
+    )]
+
+
 # --------------------------------------------------------------------------- entry
 def lint_text(text: str) -> list[Finding]:
     lines = text.splitlines()
@@ -386,5 +454,6 @@ def lint_text(text: str) -> list[Finding]:
         *_rule_dangling_reference(lines, excluded),
         *_rule_unsourced_specific(lines, excluded),
         *_rule_redeye_date_trap(lines, excluded, year),
+        *_rule_arrival_date_trap(lines, excluded, year),
     ]
     return sorted(findings, key=lambda f: (f.line, f.rule))

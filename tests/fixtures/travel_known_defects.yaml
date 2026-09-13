@@ -24,10 +24,15 @@
 # detection target (data/travel is the documented language exception).
 
 meta:
-  source_doc: data/travel/shanghai-2026-11.md
-  changelog_versions: [v2, v3, v3.1, v3.2, v4]
+  source_docs:
+    - doc: data/travel/shanghai-2026-11.md
+      prefix: v          # ids v2-01 … v4-05
+      changelog_versions: [v2, v3, v3.1, v3.2, v4]
+    - doc: data/travel/changsha-zhangjiajie-guizhou-chengdu-2026-09.md
+      prefix: cs         # ids cs-01 … cs-09
+      changelog_versions: [v4]
   compiled: 2026-09-13
-  total: 47
+  total: 56
 
 defects:
   # ---------------------------------------------------------------- v2
@@ -387,20 +392,154 @@ defects:
       "none (red-eye)", and luggage location is continuous across the day chain.
       Worth building, since it generalises to every multi-city plan.
 
+  # ------------------------------------------------------- changsha v1→v4 round
+  # Second source doc. Compiled 2026-09-13 from the v4 changelog of
+  # data/travel/changsha-zhangjiajie-guizhou-chengdu-2026-09.md.
+  #
+  # Read this block against the Shanghai one: the Shanghai defects were found by
+  # successive *review* rounds, the Changsha ones by a single *verification* pass
+  # run before the rewrite. Six of nine are verify-class and none of the six were
+  # reachable by re-reading the draft — which is the argument for the gate in
+  # .agents/skills/travel-plan/SKILL.md §1.
+
+  - id: cs-01
+    version: v4
+    summary: Mid-Autumn 9/25-27 was missed entirely; Days 4-6 sat inside a public
+      holiday through three versions
+    class: verify
+    category: calendar
+    notes: >-
+      The plan had already flagged National Day (10/1-7) and still missed the
+      earlier holiday in the same range. Generalises: check the holiday calendar
+      for EVERY date in range, not for the one holiday you already know about.
+      Highest-value single lookup in the corpus — it moves tickets, rooms and
+      crowd levels for three days at once.
+
+  - id: cs-02
+    version: v4
+    summary: Tianmen Mountain cable car's upper section closed for renovation since
+      2025-11-06; the plan routed a whole day through it
+    class: verify
+    category: conveyance-status
+    notes: >-
+      Every blog post predates a multi-month outage, so the draft inherited a
+      route that no longer exists. Ticket price was stale by the same mechanism
+      (¥278 → ¥288). Ask "is it running right now", never "how do I ride it".
+
+  - id: cs-03
+    version: v4
+    summary: First hotel night booked under the arrival date, but the flight lands
+      01:10 — the room is the *previous* night
+    class: lint
+    rule: arrival_date_trap
+    detectable: true
+    notes: >-
+      Mirror image of v4-04 (the red-eye departure trap) and the same confusion
+      seen from the other end. Consequence is lower than v4-04 (a bad night, not a
+      missed flight) but the detection is identical, so it was cheap to add once
+      v4-04's machinery existed. Also shifted the trip total 11 晚 → 12 晚.
+
+  - id: cs-04
+    version: v4
+    summary: '"No direct rail, take the 3-4 h bus" — a high-speed station 30 km away
+      made it a bookable 1 h train'
+    class: verify
+    category: routing
+    notes: >-
+      The plan itself called this "the only segment with no timetable data" and
+      then did not test the premise. The replacement road had already been driven
+      two days earlier in the same itinerary. Check the no-direct-route claim
+      before designing a workaround around it.
+
+  - id: cs-05
+    version: v4
+    summary: Gate ticket (¥227, includes shuttle) and cable-car pass (¥238/¥298)
+      treated as two tiers of one ticket
+    class: verify
+    category: ticket-composition
+    notes: >-
+      Lint-shaped in principle — "a combo ticket names what it contains" is a
+      coverage rule — but the contents themselves need a lookup, so it stays
+      verify. Related to v3.2-01 (Wuzhen tiered pricing); this is now a
+      two-instance pattern and should be a named check, not a reminder.
+
+  - id: cs-06
+    version: v4
+    summary: Transfer-day door-to-door stated as 3.7 h, counting only in-vehicle
+      time; real door-to-door ~5.5 h
+    class: lint
+    rule: null
+    detectable: false
+    notes: >-
+      Occurred twice in one plan (Day 5 and Day 9). Tempting to lint as
+      "declared total >= sum of legs" — but the failing case states a total that
+      exactly equals the ride sum and omits only the transfer slack, so the naive
+      comparison does not fire. A rule needs a minimum-interchange constant, which
+      belongs in config/thresholds.yaml per AGENTS.md, not hardcoded. Left as
+      backlog deliberately; see §1.9 of the skill for the prose form.
+
+  - id: cs-07
+    version: v4
+    summary: Summary table listed Day 3 lodging as the city while the body moved the
+      traveller to the park that evening
+    class: lint
+    rule: null
+    detectable: false
+    notes: >-
+      Same family as v4-05 (lodging state-continuity). The summary table's 住宿
+      column is a per-night state machine; it should be checkable against the day
+      bodies. Still the highest-value unimplemented rule for multi-city plans, now
+      with a second instance behind it.
+
+  - id: cs-08
+    version: v4
+    summary: Rafting day already 8 h door-to-door, yet two more sights were scheduled
+      into it
+    class: judgment
+    notes: >-
+      A model can compute that the hours do not fit, but deciding what to cut is a
+      taste call. Resolved by moving both sights onto the preceding transfer day,
+      which had a spare half-day nobody had allocated.
+
+  - id: cs-09
+    version: v4
+    summary: Budget presented as "within budget with room to spare" when the
+      corrected ticket and lodging lines put it at the ceiling
+    class: process
+    notes: >-
+      A budget is a derived figure; when upstream numbers are corrected the verdict
+      sentence has to be recomputed, not carried over. Cheap to miss because the
+      table is right and only the prose underneath it is stale.
+
 # ---------------------------------------------------------------------------
 # Scoreboard — update whenever a rule lands.
 #
-#   total                       47
-#   lint-class                  15
-#     implemented                9   (v3-03, v3-14a, v3-14b, v3.1-03, v3.2-02,
-#                                     v3.2-03, v3.2-04, v3.2-05, v4-04)
-#     backlog                    6   (v2-02, v2-08, v3-09, v3.1-04, v4-02, v4-05)
-#   verify-class                22   — fan-out agents, not yet built
+#   total                       56   (47 shanghai + 9 changsha)
+#   lint-class                  17
+#     implemented               10   (v3-03, v3-14a, v3-14b, v3.1-03, v3.2-02,
+#                                     v3.2-03, v3.2-04, v3.2-05, v4-04, cs-03)
+#     backlog                    7   (v2-02, v2-08, v3-09, v3.1-04, v4-02, v4-05,
+#                                     cs-06, cs-07 — cs-07 joins v4-05)
+#   verify-class                26   — fan-out agents, not yet built
 #   adjudicate-class             3   — v3.1-08, v3.2-07, v3.2-08
-#   judgment-class               4   — deliberately not automated
-#   process-class                3
+#   judgment-class               5   — deliberately not automated
+#   process-class                4
 #
-# Note the ratio: 3 adjudicate entries against 20 verify entries. In the v3.2 round
+# Note the ratio: 3 adjudicate entries against 26 verify entries. In the v3.2 round
 # specifically, 3 of the challenger's 4 external claims were wrong. Verification
 # throughput is not the bottleneck — adjudication accuracy is.
+#
+# The Changsha round tests a different hypothesis. Its nine defects came from one
+# verification sweep run *before* rewriting, rather than from review rounds after.
+# Six of the nine are verify-class and none of those six were reachable by
+# re-reading the draft. That is the case for ordering the work verify-then-write:
+# review passes can only find the lint- and judgment-class defects, which is why a
+# review-driven plan converges at v4 instead of v1.
+#
+# Backlog priority, now that cs-06/cs-07 have added second instances:
+#   1. lodging state-continuity (v4-05 + cs-07) — two instances, generalises to
+#      every multi-city plan, and the 住宿 column is already structured data.
+#   2. booking-window arithmetic (v3.1-04) — needs windows in config/.
+#   3. door-to-door slack (cs-06) — needs a minimum-interchange threshold in
+#      config/thresholds.yaml; do not hardcode it.
 # ---------------------------------------------------------------------------

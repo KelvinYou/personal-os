@@ -183,6 +183,76 @@ class RedeyeTests(unittest.TestCase):
         self.assertNotIn("redeye_date_trap", rules_fired(doc))
 
 
+class ArrivalTests(unittest.TestCase):
+    def test_predawn_arrival_without_previous_night(self):
+        """cs-03: lands 9/22 01:10, so the first room is the night of 9/21."""
+        doc = """### Day 1（周二 9/22）落地长沙
+
+- 01:10 CSX 落地
+- 02:45 酒店 check-in
+"""
+        self.assertIn("arrival_date_trap", rules_fired(doc))
+
+    def test_predawn_arrival_naming_the_previous_night(self):
+        doc = """### Day 1（周二 9/22）落地长沙
+
+⚠️ 航班 9/22 01:10 落地，对酒店而言这是 9/21 那一晚的房 —— 订单要订 9/21。
+
+- 01:10 CSX 落地
+"""
+        self.assertNotIn("arrival_date_trap", rules_fired(doc))
+
+    def test_arriving_home_at_dawn_needs_no_room(self):
+        """The 05:40 landing that ends a red-eye is not a lodging question."""
+        doc = """### Day 1（周六 10/31）吉隆坡 → 上海
+
+- 19:40 浦东机场落地
+
+### Day 8（周六 11/7）杭州 → 浦东机场
+
+- 21:45 抵达 T1 ✅
+- 00:10 起飞 ✅
+
+| — | 11/8 日 | 00:10 起飞 → KUL 05:40 落地 | — | 航班（机上过夜）|
+"""
+        self.assertNotIn("arrival_date_trap", rules_fired(doc))
+
+    def test_daytime_arrival_is_not_a_trap(self):
+        doc = """### Day 1（周六 10/31）吉隆坡 → 上海
+
+- 19:40 浦东机场落地
+- 21:30 酒店 check-in
+"""
+        self.assertNotIn("arrival_date_trap", rules_fired(doc))
+
+
+class CompoundDurationTests(unittest.TestCase):
+    def test_hours_and_minutes_read_as_one_duration(self):
+        """cs-06 adjacent: "2h58min" must not parse as 58 minutes.
+
+        Without the compound pattern MIN_RE wins, the leg reads as 58 min, and the
+        summary table's 3 小时 looks like a contradiction that is not there.
+        """
+        doc = """| 9 | 9/30 三 | 贵阳北 → 成都东 | 成都 | 高铁 2.5-3.5 h |
+
+### Day 9（周三 9/30）开阳 → 成都
+
+贵阳北 → 成都东：成贵高铁最快约 2h58min ✅
+"""
+        # 178 min falls inside 150-210. Read as a bare 58 min it would not, and the
+        # rule would report a contradiction that does not exist.
+        self.assertNotIn("table_body_agreement", rules_fired(doc))
+
+    def test_genuinely_disagreeing_durations_still_fire(self):
+        doc = """| 9 | 9/30 三 | 贵阳北 → 成都东 | 成都 | 高铁 约 60 分钟 |
+
+### Day 9（周三 9/30）开阳 → 成都
+
+贵阳北 → 成都东：成贵高铁最快约 2h58min ✅
+"""
+        self.assertIn("table_body_agreement", rules_fired(doc))
+
+
 class CorpusWiringTests(unittest.TestCase):
     def setUp(self):
         self.corpus = yaml.safe_load(CORPUS.read_text(encoding="utf-8"))

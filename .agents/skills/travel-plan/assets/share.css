@@ -1,0 +1,228 @@
+/* Trip-plan share sheet. Palette roles, not trip-specific colours:
+   ground / paper / ink / ink-soft / tile / water / seal(强调·警示) / autumn(次强调) / ok
+   Retune the hex values per trip if you like; keep the role names, the three
+   theme blocks (light / prefers-dark / [data-theme]) and the @media print block
+   intact — the print rules must out-specify the dark-theme rules or a dark-mode
+   PDF export comes out white-on-white. */
+:root{
+  --ground:#F3F5F4;
+  --paper:#FFFFFF;
+  --ink:#1E282C;
+  --ink-soft:#48585E;
+  --tile:#5A6B72;
+  --water:#6C8A91;
+  --seal:#A5322C;
+  --seal-wash:#F6E9E7;
+  --autumn:#8A6A38;
+  --autumn-wash:#F6EFE3;
+  --rule:#D7DEDC;
+  --rule-soft:#E7ECEA;
+  --ok:#3F6B54;
+  --ok-wash:#EAF1ED;
+
+  --serif:"Songti SC","STSong","SimSun","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --mono:"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#151B1E;
+    --paper:#1B2327;
+    --ink:#E6EBEA;
+    --ink-soft:#A7B5B8;
+    --tile:#8FA3A9;
+    --water:#8FB0B6;
+    --seal:#E4867F;
+    --seal-wash:#2E1E1E;
+    --autumn:#C9A468;
+    --autumn-wash:#2A2318;
+    --rule:#2E3A3F;
+    --rule-soft:#242E32;
+    --ok:#8DBBA0;
+    --ok-wash:#1B2622;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#151B1E; --paper:#1B2327; --ink:#E6EBEA; --ink-soft:#A7B5B8;
+  --tile:#8FA3A9; --water:#8FB0B6; --seal:#E4867F; --seal-wash:#2E1E1E;
+  --autumn:#C9A468; --autumn-wash:#2A2318; --rule:#2E3A3F; --rule-soft:#242E32;
+  --ok:#8DBBA0; --ok-wash:#1B2622;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.7;
+}
+img{max-width:100%}
+a{color:var(--water);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--water) 35%,transparent)}
+a:hover{border-bottom-color:var(--water)}
+a:focus-visible{outline:2px solid var(--seal);outline-offset:2px;border-radius:2px}
+
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+
+/* ── 报头 ── */
+header{padding:52px 0 34px;border-bottom:2px solid var(--ink)}
+.eyebrow{
+  font-family:var(--sans);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--tile);margin:0 0 14px
+}
+h1{
+  font-family:var(--serif);font-weight:600;letter-spacing:.04em;
+  font-size:clamp(30px,6.4vw,46px);line-height:1.18;margin:0;text-wrap:balance
+}
+.dates{
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:clamp(13px,2.6vw,15px);color:var(--ink-soft);margin:14px 0 0;letter-spacing:.02em
+}
+.facts{
+  display:flex;flex-wrap:wrap;gap:8px 26px;margin:22px 0 0;padding:0;list-style:none;
+  font-size:13.5px;color:var(--ink-soft)
+}
+.facts b{color:var(--ink);font-weight:600}
+
+/* ── 段落骨架 ── */
+section{padding:44px 0;border-bottom:1px solid var(--rule-soft)}
+section:last-of-type{border-bottom:0}
+h2{
+  font-family:var(--serif);font-size:clamp(21px,3.8vw,27px);font-weight:600;letter-spacing:.03em;
+  margin:0 0 6px;text-wrap:balance
+}
+.sub{color:var(--ink-soft);font-size:14px;margin:0 0 24px;max-width:62ch}
+h3{
+  font-family:var(--sans);font-size:15px;font-weight:700;letter-spacing:.01em;
+  margin:30px 0 10px;color:var(--ink)
+}
+p{max-width:66ch}
+
+/* ── 警示块：靠左印章色竖线，不用圆角卡片 ── */
+.alert{
+  background:var(--seal-wash);border-left:3px solid var(--seal);
+  padding:18px 20px;margin:24px 0
+}
+.alert .t{
+  font-weight:700;color:var(--seal);font-size:14px;letter-spacing:.03em;
+  margin:0 0 8px;display:flex;align-items:baseline;gap:8px
+}
+.alert p{margin:0 0 8px;font-size:14.5px}
+.alert p:last-child{margin-bottom:0}
+.alert ul{margin:8px 0 0;padding-left:20px;font-size:14.5px}
+.alert li{margin:5px 0}
+
+.note{background:var(--autumn-wash);border-left:3px solid var(--autumn);padding:16px 20px;margin:22px 0}
+.note .t{font-weight:700;color:var(--autumn);font-size:14px;margin:0 0 6px}
+.note p,.note ul{margin:0;font-size:14.5px}
+.note ul{padding-left:20px}
+
+.good{background:var(--ok-wash);border-left:3px solid var(--ok);padding:16px 20px;margin:22px 0}
+.good .t{font-weight:700;color:var(--ok);font-size:14px;margin:0 0 6px}
+.good p,.good ul{margin:0;font-size:14.5px}
+.good ul{padding-left:20px}
+
+/* ── 表格 ── */
+.scroll{overflow-x:auto;margin:20px 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--paper);min-width:520px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+thead th{
+  background:var(--ground);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tile);font-weight:700;border-bottom:1px solid var(--rule);white-space:nowrap
+}
+tbody tr:last-child td{border-bottom:0}
+td.t,th.t{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink-soft)}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+table.tot tbody tr:last-child td{border-top:2px solid var(--ink);font-weight:700;background:var(--ground)}
+
+/* ── 每日：左侧时间沟槽 ── */
+.day{margin:0 0 8px;padding:30px 0 0}
+.day+.day{border-top:1px solid var(--rule);margin-top:34px}
+.dayhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:0 0 4px}
+.daynum{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--seal);
+  font-weight:700;padding:3px 8px;background:var(--seal-wash);white-space:nowrap
+}
+.daydate{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;color:var(--tile)}
+.daytitle{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:.03em;margin:0}
+.daylede{color:var(--ink-soft);font-size:14px;margin:8px 0 18px;max-width:64ch}
+
+.sched{list-style:none;margin:0;padding:0}
+.sched li{
+  display:grid;grid-template-columns:82px 1fr;gap:0 16px;
+  padding:11px 0;border-bottom:1px solid var(--rule-soft)
+}
+.sched li:last-child{border-bottom:0}
+.sched .time{
+  font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;
+  color:var(--tile);padding-top:2px;white-space:nowrap
+}
+.sched .what{font-size:14.5px}
+.sched .what strong{font-weight:600}
+.sched .meta{display:block;color:var(--ink-soft);font-size:13px;margin-top:3px}
+.sched li.key .time{color:var(--seal);font-weight:700}
+.sched li.key .what strong{color:var(--seal)}
+
+/* 地图链接 */
+.map{
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--water);
+  border-bottom:1px dotted color-mix(in srgb,var(--water) 50%,transparent);
+  white-space:nowrap;margin-left:6px
+}
+.tag{
+  display:inline-block;font-size:11px;font-family:var(--mono);letter-spacing:.05em;
+  padding:1px 6px;border:1px solid var(--rule);color:var(--ink-soft);margin-left:6px;white-space:nowrap
+}
+.tag.free{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.tag.warn{color:var(--seal);border-color:color-mix(in srgb,var(--seal) 40%,transparent)}
+
+ul.plain{padding-left:20px;font-size:14.5px}
+ul.plain li{margin:6px 0}
+.tight li{margin:3px 0}
+dl.kv{margin:0;font-size:14.5px}
+dl.kv dt{font-weight:700;margin:14px 0 2px}
+dl.kv dd{margin:0 0 0 0;color:var(--ink-soft)}
+
+footer{padding:34px 0 0;border-top:2px solid var(--ink);color:var(--ink-soft);font-size:13px}
+
+@media (max-width:600px){
+  body{font-size:15.5px}
+  .wrap{padding:0 15px 60px}
+  .sched li{grid-template-columns:1fr;gap:2px}
+  .sched .time{padding-top:0;font-weight:700;color:var(--ink)}
+  .sched li.key .time{color:var(--seal)}
+  header{padding:36px 0 26px}
+  section{padding:34px 0}
+}
+
+@page{size:A4;margin:14mm 13mm}
+@media print{
+  /* 选择器特异性必须 >= 深色主题规则，否则深色模式下打印会白字白底 */
+  :root,
+  :root:not([data-theme="light"]),
+  :root[data-theme="dark"]{
+    --ground:#FFFFFF;--paper:#FFFFFF;--ink:#111111;--ink-soft:#4A4A4A;
+    --tile:#5A6B72;--water:#3F6670;--seal:#8C2A24;--seal-wash:#F4EDEC;
+    --autumn:#6E5427;--autumn-wash:#F6F2EA;--ok:#2F5942;--ok-wash:#EDF2EF;
+    --rule:#8A8A8A;--rule-soft:#CFCFCF;
+  }
+  body{font-size:10pt;line-height:1.48;background:#fff}
+  .wrap{max-width:none;padding:0}
+  /* 地图链接在 PDF 里保留：转发到手机上仍可点开导航 */
+  a{color:var(--water);border:0;text-decoration:none}
+  .map{font-size:8pt;border:0;color:var(--water)}
+  h1{font-size:22pt}
+  h2{font-size:14pt}
+  .daytitle{font-size:12.5pt}
+  section{padding:12pt 0;break-inside:auto}
+  .day{break-inside:avoid;page-break-inside:avoid}
+  .alert,.note,.good{break-inside:avoid;page-break-inside:avoid}
+  table{min-width:0;font-size:8.8pt;break-inside:auto}
+  tr{break-inside:avoid;page-break-inside:avoid}
+  thead{display:table-header-group}
+  .scroll{overflow:visible}
+  header{padding:0 0 10pt}
+  .sched li{padding:6pt 0;break-inside:avoid}
+  .sched{break-inside:auto}
+  footer{padding-top:12pt}
+  .noprint{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
