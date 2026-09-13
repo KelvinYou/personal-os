@@ -1,0 +1,406 @@
+# Travel-plan defect corpus — the eval set for any travel review pipeline.
+#
+# Source: the v2 → v4 changelog of data/travel/shanghai-2026-11.md (§9 变更记录),
+# which is the only labelled record we have of what human+AI review actually caught.
+# Every entry below was a real defect that survived at least one generation pass.
+#
+# Purpose: no orchestration design (linter, verifier fan-out, adjudicator) ships
+# until it can state how many of these it re-detects. A pipeline that cannot
+# recover the `class: lint` entries mechanically is not worth its token cost.
+#
+# `class` — who should own the detection:
+#   lint       deterministic, no model needed (scripts/travel_lint.py)
+#   verify     needs an external source lookup (fan-out agent)
+#   adjudicate the challenger was WRONG; the pipeline must be able to rule
+#              "keep the original". These are the expensive ones.
+#   judgment   a taste/trade-off call — keep it human, do not automate
+#   process    repo/workflow hygiene, not trip content
+#
+# `rule` — for class: lint, the rule id in scripts/lib/travel/lint.py.
+#   `rule: null` + `detectable: false` means we know it is lint-shaped but the
+#   rule is not implemented yet. Do not delete these; they are the backlog.
+#
+# Chinese literals are quoted verbatim only where the string is itself the
+# detection target (data/travel is the documented language exception).
+
+meta:
+  source_doc: data/travel/shanghai-2026-11.md
+  changelog_versions: [v2, v3, v3.1, v3.2, v4]
+  compiled: 2026-09-13
+  total: 47
+
+defects:
+  # ---------------------------------------------------------------- v2
+  - id: v2-01
+    version: v2
+    summary: Zhouzhuang cut, Tongli expanded to a full day
+    class: judgment
+    notes: Decided by the user after reading commercialisation evidence. Multi-agent
+      debate would average this out, not improve it.
+
+  - id: v2-02
+    version: v2
+    summary: Suzhou Museum closed on Mondays, collided with the Day 3 slot
+    class: lint
+    rule: null
+    detectable: false
+    notes: Lint-able only with a per-venue opening-hours table alongside the plan.
+      Until that table exists this stays a verify-class lookup. High recurrence risk —
+      closure-day collisions are the single most mechanical defect in the corpus.
+
+  - id: v2-03
+    version: v2
+    summary: Last night moved to the PVG airport side
+    class: judgment
+
+  - id: v2-04
+    version: v2
+    summary: Visa-free policy stated incorrectly
+    class: verify
+
+  - id: v2-05
+    version: v2
+    summary: Electronic arrival/customs declaration card missing entirely
+    class: verify
+    notes: Omission, not a wrong statement. Fan-out verifiers detect wrong claims well
+      and missing claims badly — needs a checklist-coverage prompt, not a claim check.
+
+  - id: v2-06
+    version: v2
+    summary: Wuzhen ticket pricing basis stated incorrectly
+    class: verify
+
+  - id: v2-07
+    version: v2
+    summary: Lingyin admission confirmed free (was priced)
+    class: verify
+
+  - id: v2-08
+    version: v2
+    summary: Dual map links (高德 + Google) missing on place names
+    class: lint
+    rule: null
+    detectable: false
+    notes: Coverage rule — every first mention of a place name carries both links.
+      Needs a place-name inventory to avoid firing on prose nouns.
+
+  # ---------------------------------------------------------------- v3
+  - id: v3-01
+    version: v3
+    summary: No direct Hangzhou East → Nanxun service; route rewritten via Hangzhou West
+    class: verify
+
+  - id: v3-02
+    version: v3
+    summary: Bus route 101 quoted as a 30-min hop; actually 33 stops / 47.6 km
+    quote: "101 路公交"
+    class: verify
+    notes: Plausibility-checkable if distance is known — a 47.6 km surface bus cannot
+      be 30 min. Candidate future lint rule `implausible_transit_speed`.
+
+  - id: v3-03
+    version: v3
+    summary: Day 5 stated 10:30 and 10:45 for the same departure
+    class: lint
+    rule: timeline_monotonic
+    detectable: true
+
+  - id: v3-04
+    version: v3
+    summary: Wuzhen free admission depends on room type, not on staying in the area
+    class: verify
+    notes: Superseded and inverted again in v3.1-02. Two review rounds got it wrong
+      in opposite directions — the most expensive single claim in the corpus.
+
+  - id: v3-05
+    version: v3
+    summary: Arrival card "must be filed within 72 hours" — no such window exists
+    quote: "72 小时"
+    class: verify
+    notes: Invented constraint. The generator produced a confident number with no source.
+      Cheapest guard is `unsourced_specific`, which forces a ✅/❓ marker on any hard number.
+
+  - id: v3-06
+    version: v3
+    summary: 12306 passport verification is 3-5 working days, not hours
+    class: verify
+    notes: Challenged again in v3.2-08 and upheld — see that entry.
+
+  - id: v3-07
+    version: v3
+    summary: WeChat Pay and Alipay BOTH may charge ~3% on foreign cards; the
+      "switch to Alipay" advice was wrong
+    class: verify
+
+  - id: v3-08
+    version: v3
+    summary: Lion Grove Garden requires real-name booking (was marked "待确认"); ¥30
+    class: verify
+
+  - id: v3-09
+    version: v3
+    summary: >-
+      Overclaim — "Humble Administrator's Garden sells no tickets on site at all",
+      when a foreign-visitor counter exists
+    quote: "现场完全不售票"
+    class: lint
+    rule: null
+    detectable: false
+    notes: Absolutism detector — 完全/绝对/一定/从不 on an unsourced line. Cheap to add,
+      expect a high false-positive rate; ship it as WARN only.
+
+  - id: v3-10
+    version: v3
+    summary: West Lake boat ticket sales stop 16:30; sunset 17:08 — plan pushed to 14:45
+    class: verify
+
+  - id: v3-11
+    version: v3
+    summary: Day 3 departure relaxed to 10:10; Tongli given a Metro Line 4 fallback
+    class: judgment
+
+  - id: v3-12
+    version: v3
+    summary: Malaysian consulate details incomplete (no 24h emergency line)
+    class: verify
+
+  - id: v3-13
+    version: v3
+    summary: Seasonality wrong — no 三虾面 and no tea-picking in November; hairy crab
+      is the actual season
+    class: verify
+    notes: Season-vs-date mismatch. A dedicated calendar/seasonality agent is the right
+      owner; general verifiers skip this because nothing looks false in isolation.
+
+  - id: v3-14a
+    version: v3
+    summary: '"9 天 5 地" contradicted the itinerary — actually 6 stops'
+    quote: "9 天 5 地"
+    class: lint
+    rule: count_consistency
+    detectable: true
+
+  - id: v3-14b
+    version: v3
+    summary: '"6 家酒店" contradicted the itinerary — actually 5 lodgings'
+    quote: "6 家酒店"
+    class: lint
+    rule: count_consistency
+    detectable: true
+
+  # ---------------------------------------------------------------- v3.1
+  - id: v3.1-01
+    version: v3.1
+    summary: PVG queue figure sourced from a 2009 pre-Expo press release (17 years stale,
+      and airline-specific); current official limits are 40-80 min
+    class: verify
+    severity_in_source: critical
+    notes: Staleness, not falsity — the quoted sentence was real. Verifier prompts must
+      demand a publication date, not just a URL.
+
+  - id: v3.1-02
+    version: v3.1
+    summary: Wuzhen booking advice was inverted — rooms LABELLED "含西栅门票" are the
+      ones OUTSIDE the scenic area; inside-area rooms carry no such label
+    quote: "含西栅门票"
+    class: verify
+    severity_in_source: critical
+    notes: The label means the opposite of its plain reading. No amount of careful
+      generation catches this; only fetching the booking page does.
+
+  - id: v3.1-03
+    version: v3.1
+    summary: Intercity legs counted as "高铁 4 段" against a 3-row table; real total is
+      3 rail + 2 coach = 5 legs
+    class: lint
+    rule: count_consistency
+    detectable: true
+    notes: The reviewer's own correction ("4 段长途") was ALSO wrong — it missed the
+      Wuzhen→Hangzhou coach. Arithmetic is the one thing not to delegate to a model.
+
+  - id: v3.1-04
+    version: v3.1
+    summary: 12306 advance sale is 15 days including the travel date, so a single
+      10/17 booking checkpoint is infeasible; split into 4 dated checkpoints
+    class: lint
+    rule: null
+    detectable: false
+    notes: Date arithmetic against a configured advance-sale window. Implementable once
+      booking windows live in config — this is the highest-value unimplemented rule.
+
+  - id: v3.1-05
+    version: v3.1
+    summary: Wuzhen → Hangzhou coach is 120 min (plan said 1-1.5 h, optimistic)
+    class: verify
+
+  - id: v3.1-06
+    version: v3.1
+    summary: Official Wuzhen coach runs from 苏州旅游集散中心, not 苏州汽车北站
+    class: verify
+
+  - id: v3.1-07
+    version: v3.1
+    summary: Trip.com charges HK$10-40 per rail ticket despite a "No booking fee" badge
+    class: verify
+
+  - id: v3.1-08
+    version: v3.1
+    summary: 12306 page does not itself state the 3-5 working day figure; attribution
+      to the rail passenger bureau reply holds
+    class: adjudicate
+    ruling: keep_original_with_source_note
+    notes: First case where the correct action was neither accept nor reject but
+      "keep, and annotate the limit of verification".
+
+  - id: v3.1-09
+    version: v3.1
+    summary: AGENTS.md missing the /data/travel/ directory contract + language exception
+    class: process
+
+  - id: v3.1-10
+    version: v3.1
+    summary: data/ was an uninitialised gitlink; the plan was tracked by no repo
+    class: process
+    status: resolved
+    notes: Resolved — data is a live submodule and the file landed in 8e88b1e.
+      Kept as a record of why the backup script existed.
+
+  # ---------------------------------------------------------------- v3.2
+  - id: v3.2-01
+    version: v3.2
+    summary: Backup taken at 16:52 was stale by 17:10; checksums differed
+    class: process
+
+  - id: v3.2-02
+    version: v3.2
+    summary: Re-verify checklist heading still said "4 段长途" after the body was
+      corrected to 5 intercity legs
+    class: lint
+    rule: count_consistency
+    detectable: true
+    notes: Classic post-edit drift — the fix landed in the body, not in the summary.
+
+  - id: v3.2-03
+    version: v3.2
+    summary: Overview table still said "班车 1-1.5 h" while the body said 120 min
+    class: lint
+    rule: table_body_agreement
+    detectable: true
+
+  - id: v3.2-04
+    version: v3.2
+    summary: Checklist still referenced the 10:40 departure after it was deleted
+    class: lint
+    rule: dangling_reference
+    detectable: true
+
+  - id: v3.2-05
+    version: v3.2
+    summary: No official timetable exists for Suzhou → Wuzhen at all; the "13:20"
+      departure was back-derived from the 13:15 Wuzhen-origin service
+    quote: "13:20"
+    class: lint
+    rule: unsourced_specific
+    detectable: true
+    severity_in_source: critical
+    notes: The generator invented a precise time by arithmetic on a real one. This is
+      the defect shape most likely to recur, and the cheapest to block mechanically.
+
+  - id: v3.2-06
+    version: v3.2
+    summary: The long-distance coach terminates at Xizha itself; the "transfer to a
+      scenic-area shuttle" step was invented
+    class: verify
+
+  - id: v3.2-07
+    version: v3.2
+    summary: 'Challenger claimed "FM check-in closes 40 min before departure at PVG".
+      Wrong venue — that figure is the Hongqiao T1 entry. The original 60 min stood,
+      and v3.1 had already over-corrected by deleting a valid caveat.'
+    class: adjudicate
+    ruling: restore_original
+    severity_in_source: critical
+    notes: THE reference case for why findings must not auto-apply. A review round
+      deleted correct content because a challenger sounded confident. Any pipeline that
+      applies verifier output directly reproduces this defect by construction.
+
+  - id: v3.2-08
+    version: v3.2
+    summary: 'Challenger claimed the 3-5 working day figure was unsourced; the four
+      ?no=1..4 parameter pages are byte-identical and 25 FAQ entries never say
+      "工作日" — the challenger''s quoted sentence does not exist anywhere.'
+    class: adjudicate
+    ruling: keep_original
+    notes: Challenger hallucinated a citation. Adjudicator must be able to check that
+      the challenger's own quote is real, not just that it is plausible.
+
+  - id: v3.2-09
+    version: v3.2
+    summary: Wuzhen → Hangzhou switched to the genuine 10:20 service; all 13 official
+      departures listed
+    class: verify
+
+  # ---------------------------------------------------------------- v4
+  - id: v4-01
+    version: v4
+    summary: Flight change cascaded — last hotel night and Day 9 removed, 8→7 nights,
+      5→4 lodgings
+    class: judgment
+    notes: Re-planning, not a defect. Listed because it is what generated v4's own
+      count-consistency risk (caught by count_consistency on re-run).
+
+  - id: v4-02
+    version: v4
+    summary: Maglev went from unusable to usable once arrival moved to 19:40 (last
+      departure 21:42)
+    class: lint
+    rule: null
+    detectable: false
+    notes: Feasibility against a service's last-departure time. Same family as
+      v3.1-04; both need a small facts table to check against.
+
+  - id: v4-03
+    version: v4
+    summary: Nanxun window widened 3.8 h → 5.3 h to fit the 16:30 November closing
+    class: verify
+
+  - id: v4-04
+    version: v4
+    summary: 'Red-eye date trap: the ticket reads 11/8 00:10, but the traveller must be
+      at PVG on the evening of 11/7. Check-in closes 11/7 23:10.'
+    class: lint
+    rule: redeye_date_trap
+    detectable: true
+    severity_in_source: critical
+    notes: The single highest-consequence defect in the corpus — missing it costs the
+      trip, not a detour. Purely mechanical to detect.
+
+  - id: v4-05
+    version: v4
+    summary: Day 8 has no hotel, so luggage must be carried all day; four strategies
+      given
+    class: lint
+    rule: null
+    detectable: false
+    notes: >-
+      State-continuity rule — every night maps to a lodging or an explicit
+      "none (red-eye)", and luggage location is continuous across the day chain.
+      Worth building, since it generalises to every multi-city plan.
+
+# ---------------------------------------------------------------------------
+# Scoreboard — update whenever a rule lands.
+#
+#   total                       47
+#   lint-class                  15
+#     implemented                9   (v3-03, v3-14a, v3-14b, v3.1-03, v3.2-02,
+#                                     v3.2-03, v3.2-04, v3.2-05, v4-04)
+#     backlog                    6   (v2-02, v2-08, v3-09, v3.1-04, v4-02, v4-05)
+#   verify-class                22   — fan-out agents, not yet built
+#   adjudicate-class             3   — v3.1-08, v3.2-07, v3.2-08
+#   judgment-class               4   — deliberately not automated
+#   process-class                3
+#
+# Note the ratio: 3 adjudicate entries against 20 verify entries. In the v3.2 round
+# specifically, 3 of the challenger's 4 external claims were wrong. Verification
+# throughput is not the bottleneck — adjudication accuracy is.
+# ---------------------------------------------------------------------------

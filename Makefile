@@ -13,7 +13,7 @@ IDEA_ENGINE ?= demo
 IDEA_MODEL ?= sonnet
 IDEA_CONFIG ?= config/idea_pipeline.yaml
 
-.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
+.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -76,6 +76,11 @@ daily:
 ## 校验所有日志的 frontmatter schema
 lint:
 	@$(PYTHON) $(SCRIPTS_DIR)/lint_daily.py
+
+## 校验 data/travel/*.md 的内部一致性 (时间轴 / 计数 / 悬空引用 / 红眼航班日期)
+## 只查不用外部来源就能判定的缺陷; 需要查证官网的那一层不归它管
+travel-lint:
+	@$(PYTHON) $(SCRIPTS_DIR)/travel_lint.py $(TRAVEL_DOC)
 
 ## 检查所有 Markdown 里的 mermaid 图能否在 GitHub 上正确渲染
 ## 不依赖 node —— 查的是「语法合法但渲染错」的那几类 bug (literal \n / 未声明 classDef)
@@ -221,6 +226,7 @@ help:
 	@echo "  make today              — 生成今天的日志模板"
 	@echo "  make daily DATE=...     — 生成指定日期的日志模板"
 	@echo "  make lint               — 校验所有日志的 frontmatter schema"
+	@echo "  make travel-lint        — 校验行程文档内部一致性 (TRAVEL_DOC=path 可指定单个文件)"
 	@echo "  make check              — 运行逻辑引擎告警检查"
 	@echo "  make idea-validate      — validate startup-idea input (IDEA_INPUT=...)"
 	@echo "  make idea-init          — create private idea record (IDEA_INPUT=...)"
