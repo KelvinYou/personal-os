@@ -39,6 +39,8 @@
       {
         "key": "capped_mmf",
         "balance": 19500.0,
+        "currency": "MYR",
+        "balance_myr": 19500.0,
         "rate": 3.3,
         "type": "mmf",
         "liquidity": "t+1",
@@ -52,6 +54,8 @@
       {
         "key": "locked_fd",
         "balance": 10000.0,
+        "currency": "MYR",
+        "balance_myr": 10000.0,
         "rate": 4.0,
         "type": "fd",
         "liquidity": "locked",
@@ -65,6 +69,8 @@
       {
         "key": "roomy_wallet",
         "balance": 500.0,
+        "currency": "MYR",
+        "balance_myr": 500.0,
         "rate": 3.3,
         "type": "wallet",
         "liquidity": "instant",
