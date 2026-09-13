@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: decisions
 """Decision calibration analysis.
 
 Reads all reviewed decisions, computes calibration stats, and prints

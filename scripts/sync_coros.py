@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: fitness-sync
 """Sync COROS sleep + readiness + training + activities into data/fitness/ and
 patch the corresponding data/daily/YYYY-MM-DD.md frontmatter.
 

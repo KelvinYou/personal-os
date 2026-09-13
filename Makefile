@@ -13,7 +13,7 @@ IDEA_ENGINE ?= demo
 IDEA_MODEL ?= sonnet
 IDEA_CONFIG ?= config/idea_pipeline.yaml
 
-.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
+.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -180,6 +180,11 @@ web:
 	@$(MAKE) --no-print-directory doctor-web || exit 1
 	@cd web && npm run dev
 
+## 重新生成 /flows 仪表盘的数据 (Makefile targets + 脚本读写 + submodule 关系)
+## 结构部分全自动派生；make doctor 会在它过期时报 warning
+flows:
+	@$(PYTHON) $(SCRIPTS_DIR)/flow_graph.py
+
 ## 决策校准分析 (Brier score + 分布)
 calibration:
 	@$(PYTHON) $(SCRIPTS_DIR)/calibration.py
@@ -246,6 +251,7 @@ help:
 	@echo "  make calibration        — 决策校准分析 (Brier score)"
 	@echo "  make wealth             — Tracked Assets: 现金/到期/股票估值 (可选: DATE=... / JSON=1)"
 	@echo "  make web                — 启动本地理财仪表盘 (localhost)"
+	@echo "  make flows              — 重新生成 /flows 数据流仪表盘的数据"
 	@echo "  make quarterly          — 季度身份审计 (可选: QUARTER=2026-Q1)"
 	@echo "  make eval               — 最近一次 session 转 eval (可选: SESSION=recent-3)"
 	@echo "  make evals              — 批量回填最近 N 次 session (可选: N=30)"

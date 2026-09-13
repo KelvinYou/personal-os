@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: ideas
 """CLI for the private startup-idea evaluation lifecycle."""
 from __future__ import annotations
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: daily-log
 """Lint data/daily/*.md frontmatter against the pydantic schema.
 
 Exit code 0 = all pass; 1 = at least one file failed validation.

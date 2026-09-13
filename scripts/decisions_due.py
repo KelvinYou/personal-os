@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: decisions
 """List decisions with review_date <= today and status in {open, pushed}."""
 from __future__ import annotations
 

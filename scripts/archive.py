@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: archive
 """Archive cold daily logs + prune the COROS staging buffer (C-layer).
 
 Two separate problems, deliberately handled differently:

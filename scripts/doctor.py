@@ -15,11 +15,15 @@
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.flows import compute_input_hash  # noqa: E402
 
 # PERSONAL_OS_ROOT 只为验证 public-only checkout 那条路径而存在 ——
 # 不指向它就没法证明「data 缺失被报成 expected 而不是 error」。
@@ -189,6 +193,35 @@ def check_doc_paths(r: Report, data_available: bool) -> None:
         r.add("ok", "Doc paths", f"AGENTS.md 目录结构 {len(paths) - skipped} 条路径全部存在{suffix}")
 
 
+def check_flows_freshness(r: Report) -> None:
+    """web/public/flows.json 是 make flows 的派生产物 —— 校验它没有过期，
+    而不是重新跑一遍完整抽取（那是 make flows 自己的事）。"""
+    flows_json = ROOT / "web" / "public" / "flows.json"
+    if not flows_json.is_file():
+        r.add(
+            "warning",
+            "Flow graph",
+            "web/public/flows.json 不存在 —— /flows 仪表盘还没生成过",
+            ["make flows"],
+        )
+        return
+    try:
+        stored = json.loads(flows_json.read_text(encoding="utf-8")).get("input_hash")
+    except (json.JSONDecodeError, OSError):
+        r.add("error", "Flow graph", "flows.json 不是合法 JSON", ["make flows"])
+        return
+    current = compute_input_hash(ROOT)
+    if stored == current:
+        r.add("ok", "Flow graph", "flows.json 与 Makefile/scripts/AGENTS.md 当前状态一致")
+    else:
+        r.add(
+            "warning",
+            "Flow graph",
+            "flows.json 已过期 —— Makefile/scripts/AGENTS.md 有改动没同步",
+            ["make flows"],
+        )
+
+
 def main() -> int:
     web_as_error = "--web" in sys.argv
     r = Report()
@@ -198,6 +231,7 @@ def main() -> int:
     check_pipeline_prices(r)
     check_web(r, as_error=web_as_error)
     check_doc_paths(r, data_available)
+    check_flows_freshness(r)
     r.render()
     return 1 if r.failed else 0
 

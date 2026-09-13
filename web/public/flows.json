@@ -1,0 +1,1489 @@
+{
+  "generated_at": "2026-09-13T08:43:26.332345+00:00",
+  "input_hash": "e601c06dc709acb56bca21c419e1a5990326e5b0ae009e9ad93caf98db29df1d",
+  "nodes": [
+    {
+      "id": "make:setup",
+      "label": "setup",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:setup-ideas",
+      "label": "setup-ideas",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:setup-private",
+      "label": "setup-private",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:doctor",
+      "label": "doctor",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 2
+    },
+    {
+      "id": "make:doctor-web",
+      "label": "doctor-web",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 2
+    },
+    {
+      "id": "make:test",
+      "label": "test",
+      "kind": "make-target",
+      "meta": {},
+      "group": "docs-check",
+      "rank": 1
+    },
+    {
+      "id": "make:today",
+      "label": "today",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:daily",
+      "label": "daily",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:lint",
+      "label": "lint",
+      "kind": "make-target",
+      "meta": {},
+      "group": "daily-log",
+      "rank": 1
+    },
+    {
+      "id": "make:travel-lint",
+      "label": "travel-lint",
+      "kind": "make-target",
+      "meta": {},
+      "group": "travel",
+      "rank": 1
+    },
+    {
+      "id": "make:check-mermaid",
+      "label": "check-mermaid",
+      "kind": "make-target",
+      "meta": {},
+      "group": "docs-check",
+      "rank": 0
+    },
+    {
+      "id": "make:idea-validate",
+      "label": "idea-validate",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ideas",
+      "rank": 1
+    },
+    {
+      "id": "make:idea-init",
+      "label": "idea-init",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ideas",
+      "rank": 1
+    },
+    {
+      "id": "make:idea-evaluate",
+      "label": "idea-evaluate",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ideas",
+      "rank": 1
+    },
+    {
+      "id": "make:idea-confirm-test",
+      "label": "idea-confirm-test",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ideas",
+      "rank": 1
+    },
+    {
+      "id": "make:idea-record-result",
+      "label": "idea-record-result",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ideas",
+      "rank": 1
+    },
+    {
+      "id": "make:idea-add-evidence",
+      "label": "idea-add-evidence",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ideas",
+      "rank": 1
+    },
+    {
+      "id": "make:check",
+      "label": "check",
+      "kind": "make-target",
+      "meta": {},
+      "group": "logic-check",
+      "rank": 1
+    },
+    {
+      "id": "make:weekly",
+      "label": "weekly",
+      "kind": "make-target",
+      "meta": {},
+      "group": "weekly-report",
+      "rank": 1
+    },
+    {
+      "id": "make:sync-coros",
+      "label": "sync-coros",
+      "kind": "make-target",
+      "meta": {},
+      "group": "fitness-sync",
+      "rank": 1
+    },
+    {
+      "id": "make:sync-calendar",
+      "label": "sync-calendar",
+      "kind": "make-target",
+      "meta": {},
+      "group": "calendar-sync",
+      "rank": 1
+    },
+    {
+      "id": "make:sync-protocol",
+      "label": "sync-protocol",
+      "kind": "make-target",
+      "meta": {},
+      "group": "calendar-sync",
+      "rank": 1
+    },
+    {
+      "id": "make:archive",
+      "label": "archive",
+      "kind": "make-target",
+      "meta": {},
+      "group": "archive",
+      "rank": 1
+    },
+    {
+      "id": "make:migrate",
+      "label": "migrate",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:decisions-due",
+      "label": "decisions-due",
+      "kind": "make-target",
+      "meta": {},
+      "group": "decisions",
+      "rank": 1
+    },
+    {
+      "id": "make:decision-new",
+      "label": "decision-new",
+      "kind": "make-target",
+      "meta": {},
+      "group": "decisions",
+      "rank": 1
+    },
+    {
+      "id": "make:wealth",
+      "label": "wealth",
+      "kind": "make-target",
+      "meta": {},
+      "group": "wealth",
+      "rank": 1
+    },
+    {
+      "id": "make:web",
+      "label": "web",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:flows",
+      "label": "flows",
+      "kind": "make-target",
+      "meta": {},
+      "group": "flows",
+      "rank": 1
+    },
+    {
+      "id": "make:calibration",
+      "label": "calibration",
+      "kind": "make-target",
+      "meta": {},
+      "group": "decisions",
+      "rank": 1
+    },
+    {
+      "id": "make:eval",
+      "label": "eval",
+      "kind": "make-target",
+      "meta": {},
+      "group": "eval",
+      "rank": 1
+    },
+    {
+      "id": "make:evals",
+      "label": "evals",
+      "kind": "make-target",
+      "meta": {},
+      "group": "eval",
+      "rank": 1
+    },
+    {
+      "id": "make:evals-list",
+      "label": "evals-list",
+      "kind": "make-target",
+      "meta": {},
+      "group": "eval",
+      "rank": 1
+    },
+    {
+      "id": "make:eval-rollup",
+      "label": "eval-rollup",
+      "kind": "make-target",
+      "meta": {},
+      "group": "eval",
+      "rank": 1
+    },
+    {
+      "id": "make:quarterly",
+      "label": "quarterly",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:report",
+      "label": "report",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 2
+    },
+    {
+      "id": "make:help",
+      "label": "help",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 0
+    },
+    {
+      "id": "script:archive.py",
+      "label": "archive.py",
+      "kind": "script",
+      "group": "archive",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:calibration.py",
+      "label": "calibration.py",
+      "kind": "script",
+      "group": "decisions",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:check_mermaid.py",
+      "label": "check_mermaid.py",
+      "kind": "script",
+      "group": "docs-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:decision_new.py",
+      "label": "decision_new.py",
+      "kind": "script",
+      "group": "decisions",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:decisions_due.py",
+      "label": "decisions_due.py",
+      "kind": "script",
+      "group": "decisions",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:doctor.py",
+      "label": "doctor.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 3
+    },
+    {
+      "id": "script:finance_edit.py",
+      "label": "finance_edit.py",
+      "kind": "script",
+      "group": "wealth",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:finance_history.py",
+      "label": "finance_history.py",
+      "kind": "script",
+      "group": "wealth",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:flow_graph.py",
+      "label": "flow_graph.py",
+      "kind": "script",
+      "group": "flows",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:idea_pipeline.py",
+      "label": "idea_pipeline.py",
+      "kind": "script",
+      "group": "ideas",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:lib/__init__.py",
+      "label": "lib/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/breakers.py",
+      "label": "lib/breakers.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/clock.py",
+      "label": "lib/clock.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/config.py",
+      "label": "lib/config.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/daily_log.py",
+      "label": "lib/daily_log.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/defaults.py",
+      "label": "lib/defaults.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/flows/__init__.py",
+      "label": "lib/flows/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/flows/annotations.py",
+      "label": "lib/flows/annotations.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/flows/doc_paths.py",
+      "label": "lib/flows/doc_paths.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/flows/graph.py",
+      "label": "lib/flows/graph.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/flows/hashing.py",
+      "label": "lib/flows/hashing.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:lib/flows/makefile_parser.py",
+      "label": "lib/flows/makefile_parser.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/flows/path_scanner.py",
+      "label": "lib/flows/path_scanner.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/flows/submodules.py",
+      "label": "lib/flows/submodules.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:lib/gcal.py",
+      "label": "lib/gcal.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/__init__.py",
+      "label": "lib/ideas/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/canonical.py",
+      "label": "lib/ideas/canonical.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/config.py",
+      "label": "lib/ideas/config.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/formulas.py",
+      "label": "lib/ideas/formulas.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/ledger.py",
+      "label": "lib/ideas/ledger.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/lifecycle.py",
+      "label": "lib/ideas/lifecycle.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/model_client.py",
+      "label": "lib/ideas/model_client.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/models.py",
+      "label": "lib/ideas/models.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/orchestrator.py",
+      "label": "lib/ideas/orchestrator.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/privacy.py",
+      "label": "lib/ideas/privacy.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/registry.py",
+      "label": "lib/ideas/registry.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/render.py",
+      "label": "lib/ideas/render.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/storage.py",
+      "label": "lib/ideas/storage.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/ideas/validate.py",
+      "label": "lib/ideas/validate.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/logger.py",
+      "label": "lib/logger.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/metrics.py",
+      "label": "lib/metrics.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/migrate.py",
+      "label": "lib/migrate.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:lib/nutrition/__init__.py",
+      "label": "lib/nutrition/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:lib/nutrition/errors.py",
+      "label": "lib/nutrition/errors.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/nutrition/loader.py",
+      "label": "lib/nutrition/loader.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/nutrition/query.py",
+      "label": "lib/nutrition/query.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/schema.py",
+      "label": "lib/schema.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/score.py",
+      "label": "lib/score.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/transcript.py",
+      "label": "lib/transcript.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/travel/__init__.py",
+      "label": "lib/travel/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/travel/lint.py",
+      "label": "lib/travel/lint.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/__init__.py",
+      "label": "lib/wealth/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/consistency.py",
+      "label": "lib/wealth/consistency.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/files.py",
+      "label": "lib/wealth/files.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/history.py",
+      "label": "lib/wealth/history.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/market_layer.py",
+      "label": "lib/wealth/market_layer.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/report.py",
+      "label": "lib/wealth/report.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/report_models.py",
+      "label": "lib/wealth/report_models.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/rules.py",
+      "label": "lib/wealth/rules.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/yield_layer.py",
+      "label": "lib/wealth/yield_layer.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:lint_daily.py",
+      "label": "lint_daily.py",
+      "kind": "script",
+      "group": "daily-log",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:nutrition.py",
+      "label": "nutrition.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:patch_coros.py",
+      "label": "patch_coros.py",
+      "kind": "script",
+      "group": "fitness-sync",
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:report_gen.py",
+      "label": "report_gen.py",
+      "kind": "script",
+      "group": "logic-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:session_eval.py",
+      "label": "session_eval.py",
+      "kind": "script",
+      "group": "eval",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:sync_calendar.py",
+      "label": "sync_calendar.py",
+      "kind": "script",
+      "group": "calendar-sync",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:sync_coros.py",
+      "label": "sync_coros.py",
+      "kind": "script",
+      "group": "fitness-sync",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:travel_lint.py",
+      "label": "travel_lint.py",
+      "kind": "script",
+      "group": "travel",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:wealth_check.py",
+      "label": "wealth_check.py",
+      "kind": "script",
+      "group": "wealth",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:weekly_synthesis.py",
+      "label": "weekly_synthesis.py",
+      "kind": "script",
+      "group": "weekly-report",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "path:/data/",
+      "label": "/data/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/archive/",
+      "label": "/data/archive/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/daily/",
+      "label": "/data/daily/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/finance/",
+      "label": "/data/finance/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/reports/",
+      "label": "/data/reports/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/reports/evals/",
+      "label": "/data/reports/evals/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/travel/",
+      "label": "/data/travel/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/user_profile.md",
+      "label": "/data/user_profile.md",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/market/",
+      "label": "/market/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/repos/",
+      "label": "/repos/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/repos/ai-stock-analysis",
+      "label": "/repos/ai-stock-analysis",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/scripts/",
+      "label": "/scripts/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/templates/",
+      "label": "/templates/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/web/",
+      "label": "/web/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "submodule:ai-stock-analysis",
+      "label": "ai-stock-analysis",
+      "kind": "submodule",
+      "meta": {
+        "summary": "<p align=\"center\"> <img src=\"docs/screenshot.png\" alt=\"AI Stock Analysis dashboard\" width=\"100%\"> </p>"
+      },
+      "rank": 0
+    },
+    {
+      "id": "submodule:notes",
+      "label": "notes",
+      "kind": "submodule",
+      "meta": {
+        "summary": "- https://docusaurus.io/docs"
+      },
+      "rank": 0
+    },
+    {
+      "id": "submodule:portfolio-website",
+      "label": "portfolio-website",
+      "kind": "submodule",
+      "meta": {
+        "summary": "[**kelvinyou.vercel.app**](https://kelvinyou.vercel.app)"
+      },
+      "rank": 0
+    }
+  ],
+  "edges": [
+    {
+      "from": "make:report",
+      "to": "make:lint",
+      "kind": "depends-on"
+    },
+    {
+      "from": "make:report",
+      "to": "make:check",
+      "kind": "depends-on"
+    },
+    {
+      "from": "make:report",
+      "to": "make:weekly",
+      "kind": "depends-on"
+    },
+    {
+      "from": "make:setup",
+      "to": "make:doctor",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:doctor",
+      "to": "script:doctor.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:doctor-web",
+      "to": "script:doctor.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:test",
+      "to": "script:check_mermaid.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:lint",
+      "to": "script:lint_daily.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:travel-lint",
+      "to": "script:travel_lint.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:check-mermaid",
+      "to": "script:check_mermaid.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:idea-validate",
+      "to": "script:idea_pipeline.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:idea-init",
+      "to": "script:idea_pipeline.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:idea-evaluate",
+      "to": "script:idea_pipeline.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:idea-confirm-test",
+      "to": "script:idea_pipeline.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:idea-record-result",
+      "to": "script:idea_pipeline.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:idea-add-evidence",
+      "to": "script:idea_pipeline.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:check",
+      "to": "script:report_gen.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:weekly",
+      "to": "script:weekly_synthesis.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:sync-coros",
+      "to": "script:sync_coros.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:sync-calendar",
+      "to": "script:sync_calendar.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:sync-protocol",
+      "to": "script:sync_calendar.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:archive",
+      "to": "script:archive.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:migrate",
+      "to": "script:lib/migrate.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:decisions-due",
+      "to": "script:decisions_due.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:decision-new",
+      "to": "script:decision_new.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:wealth",
+      "to": "script:wealth_check.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:wealth",
+      "to": "make:doctor",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:web",
+      "to": "make:doctor-web",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:flows",
+      "to": "script:flow_graph.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:calibration",
+      "to": "script:calibration.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:eval",
+      "to": "script:session_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:evals",
+      "to": "script:session_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:evals-list",
+      "to": "script:session_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:eval-rollup",
+      "to": "script:session_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:setup",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:setup-ideas",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:setup-private",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:doctor",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:test",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:today",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:daily",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:lint",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:travel-lint",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:check",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:idea-validate",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:idea-init",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:idea-evaluate",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:idea-confirm-test",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:idea-record-result",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:idea-add-evidence",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:weekly",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:sync-coros",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:sync-calendar",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:sync-protocol",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:archive",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:migrate",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:report",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:decisions-due",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:decision-new",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:calibration",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:wealth",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:web",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:flows",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:quarterly",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:eval",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:evals",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:evals-list",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:eval-rollup",
+      "kind": "invokes"
+    },
+    {
+      "from": "script:archive.py",
+      "to": "path:/data/archive/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:archive.py",
+      "to": "path:/data/daily/",
+      "kind": "writes"
+    },
+    {
+      "from": "script:archive.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:archive.py",
+      "to": "path:/data/daily/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:archive.py",
+      "to": "path:/templates/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:archive.py",
+      "to": "path:/data/archive/",
+      "kind": "writes"
+    },
+    {
+      "from": "script:calibration.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:decision_new.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:decision_new.py",
+      "to": "path:/templates/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:decision_new.py",
+      "to": "path:/data/",
+      "kind": "writes"
+    },
+    {
+      "from": "script:decisions_due.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
+      "to": "path:/web/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
+      "to": "path:/repos/ai-stock-analysis",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
+      "to": "path:/data/finance/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
+      "to": "path:/market/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:flow_graph.py",
+      "to": "path:/scripts/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:idea_pipeline.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:lib/flows/hashing.py",
+      "to": "path:/scripts/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:lib/flows/submodules.py",
+      "to": "path:/repos/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:lib/migrate.py",
+      "to": "path:/data/daily/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:patch_coros.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:patch_coros.py",
+      "to": "path:/data/daily/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:session_eval.py",
+      "to": "path:/data/reports/evals/",
+      "kind": "writes"
+    },
+    {
+      "from": "script:session_eval.py",
+      "to": "path:/data/reports/evals/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:sync_calendar.py",
+      "to": "path:/data/reports/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:sync_coros.py",
+      "to": "path:/data/daily/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:travel_lint.py",
+      "to": "path:/data/travel/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:weekly_synthesis.py",
+      "to": "path:/data/user_profile.md",
+      "kind": "reads"
+    },
+    {
+      "from": "submodule:ai-stock-analysis",
+      "to": "script:lib/wealth/yield_layer.py",
+      "kind": "provides"
+    },
+    {
+      "from": "submodule:ai-stock-analysis",
+      "to": "script:wealth_check.py",
+      "kind": "provides"
+    },
+    {
+      "from": "submodule:notes",
+      "to": "script:nutrition.py",
+      "kind": "provides"
+    },
+    {
+      "from": "submodule:notes",
+      "to": "script:lib/nutrition/__init__.py",
+      "kind": "provides"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: decisions
 """Create a new decision file from template."""
 from __future__ import annotations
 

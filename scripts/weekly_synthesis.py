@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: weekly-report
 """Weekly Synthesis — 周度数据聚合管道.
 
 Thin glue over scripts/lib/: aggregates a target week, runs the deterministic

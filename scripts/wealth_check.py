@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: wealth
 """Tracked Assets — maturity, valuation & rate monitor.
 
 See docs/plan-wealth-dashboard.md Phases A/B. Deterministic; no LLM and no network.

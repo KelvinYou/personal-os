@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: logic-check
 """Logic Engine — 逻辑引擎告警检查器.
 
 Thin glue over scripts/lib/: loads config, iterates all daily logs via the

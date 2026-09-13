@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: docs-check
 """Lint Mermaid blocks in this repo's Markdown for GitHub-rendering portability.
 
 Deliberately a lint, not a parser. The two diagram bugs that actually shipped

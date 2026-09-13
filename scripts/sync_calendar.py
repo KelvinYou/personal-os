@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: calendar-sync
 """Sync a week's timetable sidecar into Google Calendar.
 
 Reads data/reports/YYYY-w##-calendar.yaml (the structured sidecar coach-planner writes

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: fitness-sync
 """Patch COROS sleep/readiness/training/activities blocks into daily .md frontmatter.
 
 Invoked automatically by sync_coros.py; can also be run standalone:

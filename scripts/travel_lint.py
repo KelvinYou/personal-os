@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# flow: travel
 """Lint data/travel/*.md for internally-checkable defects.
 
 Exit code 0 = no ERROR findings; 1 = at least one. WARN never fails the run.

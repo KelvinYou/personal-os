@@ -45,6 +45,8 @@ A personal management system that drives data-driven self-management through str
 /scripts/lib/travel/      — lint rules; each rule maps to a defect in tests/fixtures/travel_known_defects.yaml
 /scripts/nutrition.py     — nutrition query adapter (reads repos/notes)
 /scripts/lib/nutrition/   — shared implementation for the nutrition adapter (basis conversion, macro/cost derivation)
+/scripts/flow_graph.py    — derives web/public/flows.json for the `/flows` dashboard (`make flows`); structural parts auto-derived, see lib/flows/
+/scripts/lib/flows/       — Makefile/script/submodule parsing for the flow graph; a `# flow: <group>` header in a script is the only manual input it reads
 ```
 
 ## Key Conventions
@@ -71,6 +73,7 @@ A personal management system that drives data-driven self-management through str
 - `make weekly` — aggregate this week's data, generate the weekly-report prompt
 - `make report` — one-shot full weekly report (aggregate + call AI)
 - `make wealth` — Tracked Assets: cash/maturities/rates + stock valuation (NAV-priced products still excluded)
+- `make flows` — regenerate `web/public/flows.json` for the `/flows` dashboard (Makefile targets + script read/write edges + submodule touchpoints); `make doctor` warns if this drifts out of sync
 - `make eval` — convert the most recent Claude Code session into an eval record (`SESSION=recent-3` to select one)
 - `make eval-rollup` — monthly agent-signal rollup; `/meta-coach` reads this, not individual evals
 
