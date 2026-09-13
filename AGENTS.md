@@ -1,7 +1,7 @@
 # Personal-OS — AI Agent Collaboration Protocol
 
 > This file is the single owner of collaboration conventions for all harnesses (Claude Code / Codex / …).
-> `CLAUDE.md` only imports this file — do not add content there.
+> `CLAUDE.md` is a symlink to this file — do not add content there.
 
 ## Project Overview
 A personal management system that drives data-driven self-management through structured logs + AI agents. Core loop: daily logging → logic-engine alerts → weekly synthesis analysis → next-week scheduling.
