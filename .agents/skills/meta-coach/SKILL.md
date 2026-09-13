@@ -25,7 +25,7 @@ The analysis needs:
 - ≥ 4 weekly reports (`data/reports/*-weekly-report.md`)
 - ≥ 4 timetables (`data/reports/*-timetable.md`)
 - Daily logs from the same period
-- This month's session evals (`data/reports/evals/*.md`, produced by `make eval`) —
+- This month's session evals (`reports/evals/*.md`, produced by `make eval`) —
   dimension E needs this. If missing, just report A–D, don't skip the whole report
 
 If there isn't enough data, tell the user how many more weeks are needed and don't force an analysis.

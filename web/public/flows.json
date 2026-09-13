@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-13T08:43:26.332345+00:00",
-  "input_hash": "e601c06dc709acb56bca21c419e1a5990326e5b0ae009e9ad93caf98db29df1d",
+  "generated_at": "2026-09-13T10:50:46.570199+00:00",
+  "input_hash": "2d51dc782b08d8dac562cf245cbf78c5a28c65d7a41eed0c149f965dc3219e6d",
   "nodes": [
     {
       "id": "make:setup",
@@ -894,13 +894,6 @@
       "rank": 0
     },
     {
-      "id": "path:/data/reports/evals/",
-      "label": "/data/reports/evals/",
-      "kind": "data-path",
-      "meta": {},
-      "rank": 0
-    },
-    {
       "id": "path:/data/travel/",
       "label": "/data/travel/",
       "kind": "data-path",
@@ -917,6 +910,13 @@
     {
       "id": "path:/market/",
       "label": "/market/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/reports/evals/",
+      "label": "/reports/evals/",
       "kind": "data-path",
       "meta": {},
       "rank": 0
@@ -1437,12 +1437,12 @@
     },
     {
       "from": "script:session_eval.py",
-      "to": "path:/data/reports/evals/",
+      "to": "path:/reports/evals/",
       "kind": "writes"
     },
     {
       "from": "script:session_eval.py",
-      "to": "path:/data/reports/evals/",
+      "to": "path:/reports/evals/",
       "kind": "reads"
     },
     {

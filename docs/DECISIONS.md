@@ -77,7 +77,7 @@
 
 ### Session eval —— 审计 agent 自己（2026-08-24）
 
-`make eval` 把 Claude Code 的 transcript 转成 `data/reports/evals/` 里一条记录。
+`make eval` 把 Claude Code 的 transcript 转成 `reports/evals/` 里一条记录。
 动机：Personal-OS 的每一条回路（daily / breakers / weekly / identity-audit）审计的
 都是**我**，没有任何东西审计 **agent**。会话跑砸时，证据是 `~/.claude/projects` 里
 一堆没人会打开的 JSONL，于是同一个失败模式反复发生，而 AGENTS.md 什么都学不到。
@@ -93,6 +93,14 @@
 当前 11 个 signal：`write-before-read` / `unverified-mutation` / `verified-mutation` /
 `tool-error-loop` / `recovered-from-error` / `user-correction` / `high-tool-churn` /
 `context-gathered` / `review-first` / `ended-on-question` / `looks-clean`。
+
+### eval 目录搬出 data/（2026-09-13）
+
+`data/reports/evals/` 移到主仓库 `reports/evals/`。eval 记录审计的是 agent 的行为
+signal（工具调用序列、错误重试等），本身不含隐私数据；放进私有 `data` 子模块只是
+沿用了 `data/reports/` 的路径习惯，没有实际隐私理由。移动后 `scripts/session_eval.py`
+的 `EVALS_DIR`、`AGENTS.md`、`.agents/skills/meta-coach/SKILL.md` 同步更新；
+`web/lib/eval-rollup.ts` 走 shell-out 到脚本，不含硬编码路径，无需改动。
 
 ---
 

@@ -19,7 +19,6 @@ A personal management system that drives data-driven self-management through str
 /data/finance/            — financial holdings (savings / portfolio / policy.yaml)
 /data/ideas/              — private startup-idea briefs, evidence, immutable runs, and append-only test events
 /data/reports/            — weekly report archive + weekly delta (only generated when there are exceptions)
-/data/reports/evals/      — session eval records (produced by make eval; audits the agent itself, not me)
 /data/travel/             — private trip plans (city-YYYY-MM.md); language exception: may be written in the traveler's preferred language, since map queries and mini-program names must stay in the local script
 /data/user_profile.md     — global user profile (routine/diet/training preferences)
 /docs/                    — long-form docs; three owners: VISION (direction) / ROADMAP (to-do) / DECISIONS (decided, not revisited)
@@ -32,6 +31,7 @@ A personal management system that drives data-driven self-management through str
 /ARCHITECTURE.md          — system architecture + invariants; read before changing data flow/contracts
 /SETUP.md                 — first-time bootstrap flow; the top comment block is an interactive script for the agent
 /templates/               — blank template files
+/reports/evals/           — session eval records (produced by make eval; audits the agent itself, not me); not private, so it lives here rather than data/
 /scripts/                 — automation scripts (Python 3)
 /tests/                   — unit tests + fixtures (never read real private data)
 /web/                     — local wealth dashboard (Next.js, localhost only)
@@ -93,7 +93,7 @@ After answering a request, proactively offer 3 optional next steps — don't ask
 Exceptions — skip this when: I'm issuing rapid consecutive instructions (meaning I already have a sequence in mind, and inserting suggestions would interrupt); or this turn is itself me answering your question.
 
 ## Audit the Agent Itself After a Session Ends
-`make eval` converts a transcript into a record under `data/reports/evals/`: facts + mechanical
+`make eval` converts a transcript into a record under `reports/evals/`: facts + mechanical
 signals (write-before-read / unverified-mutation / tool-error-loop / user-correction …),
 each signal annotated with "what evidence would falsify it."
 

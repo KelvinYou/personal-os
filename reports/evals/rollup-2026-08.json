@@ -1,0 +1,29 @@
+{
+  "rollup_schema_version": 1,
+  "month": "2026-08",
+  "session_count": 1,
+  "unreviewed_count": 1,
+  "unreviewed_files": [
+    "2026-08-31_c2e772de.md"
+  ],
+  "signals": {
+    "context-gathered": {
+      "count": 1,
+      "share_pct": 100.0
+    },
+    "high-tool-churn": {
+      "count": 1,
+      "share_pct": 100.0
+    },
+    "tool-error-loop": {
+      "count": 1,
+      "share_pct": 100.0
+    },
+    "verified-mutation": {
+      "count": 1,
+      "share_pct": 100.0
+    }
+  },
+  "proposed_agents_md_changes": [],
+  "bug_share_threshold_pct": 50.0
+}

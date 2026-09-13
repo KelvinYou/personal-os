@@ -51,7 +51,7 @@ from lib.transcript import (  # noqa: E402
     transcript_dir,
 )
 
-EVALS_DIR = PROJECT_ROOT / "data" / "reports" / "evals"
+EVALS_DIR = PROJECT_ROOT / "reports" / "evals"
 
 # Signal thresholds.
 #
