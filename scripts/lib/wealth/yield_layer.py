@@ -239,19 +239,28 @@ def cap_warnings(savings: SavingsFile, cfg: WealthCfg) -> list[CapWarning]:
     return sorted(out, key=lambda w: -w.utilization)
 
 
-def derive_summary(savings: SavingsFile) -> dict[str, float]:
+def balance_myr(acct, fx_usd_myr: float) -> float:
+    """An account's balance converted to MYR (identity for MYR accounts)."""
+    return acct.balance * fx_usd_myr if acct.currency == "USD" else acct.balance
+
+
+def derive_summary(savings: SavingsFile, fx_usd_myr: float) -> dict[str, float]:
     """现金汇总的唯一 owner —— 单向推导。
 
     savings.yaml 曾经手写一份 summary block（Phase B 移除，模型于审计 §3.5 删除）。
     这里只往一个方向算：accounts → 汇总，没有可以写回去的入口。
+
+    ``fx_usd_myr`` 换算 USD 账户余额——加权平均利率、locked/liquid 都要在同一
+    货币下才能相加，否则 USD 账户会被当成同面值的 MYR 直接汇总。
     """
     accounts = savings.accounts.values()
-    total = sum(a.balance for a in accounts)
-    locked = sum(a.balance for a in accounts if a.locked)
+    balances = [(balance_myr(a, fx_usd_myr), a) for a in accounts]
+    total = sum(b for b, _ in balances)
+    locked = sum(b for b, a in balances if a.locked)
     return {
         "total_cash": round(total, 2),
         "weighted_avg_rate": round(
-            sum(a.balance * a.rate for a in accounts) / total, 2
+            sum(b * a.rate for b, a in balances) / total, 2
         )
         if total
         else 0.0,

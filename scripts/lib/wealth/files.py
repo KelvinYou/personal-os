@@ -47,6 +47,10 @@ class SavingsAccount(BaseModel):
     balance: NonNegativeFloat
     rate: float
     type: Literal["fd", "mmf", "wallet", "savings"]
+    # 记账货币。默认 MYR（历史上全文件隐含如此）。USD 账户的 balance 就是原始
+    # USD 数字，换算成 MYR 由 report 层用 market/fx.yaml 的当日汇率算，不在这里
+    # 存一个会过期的换算值。
+    currency: Literal["MYR", "USD"] = "MYR"
     rate_reason: str = ""
     liquidity: Literal["instant", "t+1", "locked"]
     locked: bool = False

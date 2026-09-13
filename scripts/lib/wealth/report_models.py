@@ -48,6 +48,8 @@ class CashAccountOut(BaseModel):
     model_config = STRICT
     key: str
     balance: float
+    currency: str
+    balance_myr: float
     rate: float
     type: str
     liquidity: str

@@ -34,6 +34,7 @@ from .report_models import (
 )
 from .yield_layer import (
     Candidate,
+    balance_myr,
     cap_warnings,
     derive_summary,
     maturity_events,
@@ -78,7 +79,6 @@ def build_report_model(
     stale_facts = stale_rule_facts(
         wealth_rules, today, cfg.regulatory_rules_stale_days
     )
-    cash = derive_summary(savings)
     positions = resolve_positions(portfolio, data_dir)
     priced = [p for p in positions if p.priced]
     unpriced = sorted(p.symbol for p in positions if not p.priced)
@@ -86,10 +86,11 @@ def build_report_model(
     fx = usd_myr.rate
     fx_age = (today - usd_myr.as_of).days
     stock_total = sum(p.in_myr(fx) for p in priced)
+    cash = derive_summary(savings, fx)
 
     buckets: dict[str, float] = {"stocks": stock_total}
     for acct in savings.accounts.values():
-        buckets[acct.type] = buckets.get(acct.type, 0.0) + acct.balance
+        buckets[acct.type] = buckets.get(acct.type, 0.0) + balance_myr(acct, fx)
     grand_total = sum(buckets.values())
 
     return WealthReport(
@@ -123,6 +124,8 @@ def build_report_model(
                 CashAccountOut(
                     key=key,
                     balance=a.balance,
+                    currency=a.currency,
+                    balance_myr=round(balance_myr(a, fx), 2),
                     rate=a.rate,
                     type=a.type,
                     liquidity=a.liquidity,

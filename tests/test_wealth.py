@@ -256,7 +256,7 @@ class CapTests(unittest.TestCase):
 class SummaryTests(unittest.TestCase):
     def test_derived_summary_matches_fixture(self):
         self.assertEqual(
-            derive_summary(_savings()),
+            derive_summary(_savings(), 4.20),
             {
                 "total_cash": 30000.00,
                 "weighted_avg_rate": 3.34,

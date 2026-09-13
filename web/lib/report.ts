@@ -40,6 +40,8 @@ export interface Position {
 export interface Account {
   key: string;
   balance: number;
+  currency: string;
+  balance_myr: number;
   rate: number;
   type: string;
   liquidity: string;
