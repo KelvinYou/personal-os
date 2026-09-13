@@ -5,6 +5,8 @@ import { PositionsTable } from "@/components/positions-table";
 import { SectionCard } from "@/components/shared/section-card";
 import { Stat } from "@/components/shared/stat";
 import { StatusBadge } from "@/components/status-badge";
+import { TrackedAssetsChart } from "@/components/tracked-assets-chart";
+import { loadHistory } from "@/lib/history";
 import { loadReport } from "@/lib/report";
 import { myr, pct } from "@/lib/utils";
 
@@ -12,7 +14,7 @@ import { myr, pct } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const result = await loadReport();
+  const [result, history] = await Promise.all([loadReport(), loadHistory()]);
 
   if (!result.ok) {
     return (
@@ -152,6 +154,13 @@ export default async function Page() {
           />
         </div>
       </section>
+
+      <SectionCard
+        title="资产变化"
+        description="跟踪资产合计随时间的变化——每次编辑/新增/删除都会把当天的快照写入 history.csv"
+      >
+        <TrackedAssetsChart points={history} />
+      </SectionCard>
 
       <SectionCard
         title="资产配置"

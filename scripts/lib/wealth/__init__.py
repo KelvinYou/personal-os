@@ -56,6 +56,7 @@ from .market_layer import (
     resolve_positions,
     stale_prices,
 )
+from .history import HISTORY_PATH, read_history, record_snapshot
 from .report import BUCKET_LABELS, build_report, build_report_model
 from .report_models import WealthReport
 from .rules import WealthRules, load_wealth_rules, stale_rule_facts
@@ -79,6 +80,7 @@ __all__ = [
     "FX_PATH",
     "FxFile",
     "FxObservation",
+    "HISTORY_PATH",
     "InvestorProfile",
     "Liability",
     "MaturityEvent",
@@ -111,6 +113,8 @@ __all__ = [
     "load_savings",
     "load_wealth_rules",
     "maturity_events",
+    "read_history",
+    "record_snapshot",
     "resolve_positions",
     "resolve_products",
     "rollover_candidates",

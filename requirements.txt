@@ -2,6 +2,7 @@ PyYAML==6.0.3
 python-dotenv==1.2.2
 pydantic==2.13.3
 pydantic-settings==2.14.0
+ruamel.yaml==0.18.6  # round-trip YAML for scripts/finance_edit.py — preserves comments
 
 # Google Calendar sync (scripts/sync_calendar.py)
 google-auth==2.56.2
