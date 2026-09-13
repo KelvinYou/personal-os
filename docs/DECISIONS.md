@@ -102,6 +102,18 @@ signal（工具调用序列、错误重试等），本身不含隐私数据；�
 的 `EVALS_DIR`、`AGENTS.md`、`.agents/skills/meta-coach/SKILL.md` 同步更新；
 `web/lib/eval-rollup.ts` 走 shell-out 到脚本，不含硬编码路径，无需改动。
 
+### Correction Queue —— 纠正记录同样不能自己审自己（2026-09-13）
+
+用户提出「每次纠正 AI 时自动记录，回填 AGENTS.md」。这与 session eval 是同一个坑：
+如果 agent 自己判断"这是一次纠正"就直接改 AGENTS.md，等于被审计对象拿到了自己的
+写入权限。
+
+| 决策 | 选择 | 拒绝的替代 | 理由 |
+|---|---|---|---|
+| 写入目标 | 先写 `reports/corrections/pending.md`（待审队列），人工 review 后才落进 AGENTS.md | agent 判断是纠正就直接改 AGENTS.md | 复刻 session eval 的护栏——审计对象不能是审计者 |
+| 触发方式 | agent 在对话中主动判断（无确定性 hook） | 用 Claude Code hook（如 UserPromptSubmit）自动触发 | "这是不是一次纠正"是语义判断，hook 只能做关键词/正则级别的确定性触发，做不到 |
+| 队列存放位置 | 主仓库 `reports/corrections/`，不进私有 `data/` | 放进 `data/` 与其它私有记录放一起 | 纠正记录审计的是 agent 行为，不是私有个人数据；同 eval 目录同一个理由 |
+
 ---
 
 ### 阈值调参三则（2026-08-24 从 ROADMAP §5 结案）

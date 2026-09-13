@@ -32,6 +32,7 @@ A personal management system that drives data-driven self-management through str
 /SETUP.md                 — first-time bootstrap flow; the top comment block is an interactive script for the agent
 /templates/               — blank template files
 /reports/evals/           — session eval records (produced by make eval; audits the agent itself, not me); not private, so it lives here rather than data/
+/reports/corrections/     — pending.md is the correction queue (see "Correction Queue" below); archive.md holds merged/rejected entries
 /scripts/                 — automation scripts (Python 3)
 /tests/                   — unit tests + fixtures (never read real private data)
 /web/                     — local wealth dashboard (Next.js, localhost only)
@@ -103,3 +104,22 @@ each signal annotated with "what evidence would falsify it."
 - Regenerating never overwrites already-filled review fields (unless `--force`).
 - A single eval proves nothing; the distribution from `make eval-rollup` is the evidence. If the
   same signal fires in over half the sessions in a month → that's a bug in AGENTS.md, not in that session.
+
+## Correction Queue
+When I (the agent) recognize mid-session that you're correcting my behavior — not just fixing a
+file, but telling me to do something differently going forward — I append an entry to
+`reports/corrections/pending.md` instead of editing this file directly. Same pitfall as the eval
+records above: the party being corrected can't be the one deciding its own instruction change.
+
+- Detecting "this is a correction" is a judgment call I make in the moment — there is no hook that
+  fires on this deterministically, so I can miss one. If you notice I should have logged something
+  and didn't, tell me to log it retroactively.
+- Each entry: date, what I did, your correction (quoted), and a proposed AGENTS.md wording change.
+  Status starts `pending`.
+- I never merge an entry into AGENTS.md myself. You review the queue (ask me to "review the
+  correction queue" any time, or batch it into a session like the one that added this section),
+  accept/reword/reject each one, and only then does it land in AGENTS.md — the entry then moves to
+  `reports/corrections/archive.md` with the outcome noted.
+- Low volume is fine — this isn't meant to fire every session. If it's firing constantly, that's
+  itself a signal the underlying instructions are wrong often enough to need a bigger rewrite, not
+  a queue of patches.
