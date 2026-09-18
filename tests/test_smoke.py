@@ -73,6 +73,30 @@ class PoorSleepDerivationTests(unittest.TestCase):
 
 
 class DailySchemaBoundaryTests(unittest.TestCase):
+    def test_daily_template_has_unambiguous_frontmatter_fences(self):
+        template = (ROOT / "templates" / "daily.md").read_text(encoding="utf-8")
+        fences = [line for line in template.splitlines() if line.strip() == "---"]
+        self.assertEqual(fences, ["---", "---"])
+
+    def test_coros_patch_keeps_manual_fields_in_frontmatter(self):
+        from patch_coros import patch_daily
+
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "2026-09-18.md"
+            content = (ROOT / "templates" / "daily.md").read_text(encoding="utf-8")
+            content = content.replace("  weight:             # 体重 (kg)", "  weight: 71          # 体重 (kg)")
+            path.write_text(content, encoding="utf-8")
+
+            changed = patch_daily(path, {"sleep": {"duration": 7.0}})
+
+            self.assertTrue(changed)
+            self.assertEqual(load(path).body.weight, 71.0)
+            self.assertEqual(load(path).sleep.duration, 7.0)
+            self.assertEqual(
+                [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip() == "---"],
+                ["---", "---"],
+            )
+
     def test_manual_ranges_are_enforced(self):
         from lib.schema import DailyLog
 

@@ -168,7 +168,7 @@ def patch_daily(file_path: Path, fitness: dict) -> list[str]:
     if not changed:
         return []
 
-    new_content = parts[0] + "---" + "\n".join(fm_lines) + "---" + parts[2]
+    new_content = parts[0] + "---" + "\n".join(fm_lines) + "\n---" + parts[2]
     file_path.write_text(new_content, encoding="utf-8")
     return changed
 

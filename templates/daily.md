@@ -7,7 +7,7 @@
 
 energy_level:           # 1-10；留空 = 7
 
-# --- 下面全部可选，只在**偏离基线**那天写 ---
+# 下面全部可选，只在**偏离基线**那天写：
 # deep_work_hours:      # 留空 = 工作日 8h / 周末 0h
 # mental_load:          # 留空 = 3
 # caffeine_cutoff:      # 留空 = 14:00 (合规)
