@@ -22,6 +22,7 @@ A personal management system that drives data-driven self-management through str
 /data/travel/             — private trip plans (city-YYYY-MM.md); language exception: may be written in the traveler's preferred language, since map queries and mini-program names must stay in the local script
 /data/user_profile.md     — global user profile (routine/diet/training preferences)
 /docs/                    — long-form docs; three owners: VISION (direction) / ROADMAP (to-do) / DECISIONS (decided, not revisited)
+/docs/personal-direction.md — active-attention and public-understanding reference for weekend, travel, writing, and AI-assisted thinking; direction companion to VISION
 /docs/voice-guide.md      — my writing voice (reverse-engineered from 34 published blog posts); read before writing any outward-facing text
 /docs/dev-sop.md          — feature/bug-fix SOP (design → implement → test → review → merge; simple vs. complex/subtask-loop paths)
 /docs/design/             — technical design docs (implementation-ready specs, ADR-adjacent)
@@ -56,6 +57,7 @@ A personal management system that drives data-driven self-management through str
 - All thresholds are read from `config/thresholds.yaml` — no hardcoded magic numbers in scripts
 - Scripts use Python 3, dependencies in `requirements.txt` (`make setup` installs into `.venv/`)
 - All output must conform to the CommonMark standard
+- When a request concerns weekend design, travel framing, public writing, or personal knowledge direction, read `docs/personal-direction.md`; treat it as a preference framework, not a mandatory productivity rule
 
 ## Common Commands
 - `make setup` — create `.venv` and install dependencies

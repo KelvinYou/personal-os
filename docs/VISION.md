@@ -4,6 +4,11 @@
 
 **一套以工程师思维构建的个人控制系统**——不是简单的习惯追踪器，而是具备状态感知、梯度降级、闭环反馈的自我管理操作系统。
 
+For the broader personal direction behind weekend design, travel reflection, public writing,
+and AI-assisted understanding, see [personal-direction.md](personal-direction.md). That document
+is a human-readable summary and an agent-facing reference; it is a preference framework, not a
+schedule or scoring system.
+
 ## 设计哲学
 
 1. **Config-Driven** — 所有阈值外部化，零硬编码魔法数字
