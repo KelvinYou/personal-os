@@ -35,6 +35,10 @@
 
 ---
 
+**Scope correction (2026-09-17):** the consumer conclusion below rejects broad consumer apps,
+free-audience-to-affiliate models, and AI-heavy health diaries. It does **not** reject a narrow,
+paid, low-variable-cost consumer utility as a capped experiment. See §9.
+
 ## 2. 消费 App 变现基准（sector 层，2026）
 
 这是最初的 sector 排序依据，保留作为参考基线。**注意：它描述的是消费移动端，
@@ -294,6 +298,13 @@ Act 774 的教训要外推：**法律、医疗同样有受保护称号**。做�
 - [Vertical AI Is Eating Horizontal SaaS — BuildMVPFast](https://www.buildmvpfast.com/blog/vertical-ai-eating-horizontal-saas-2026)
 - [Vertical AI Companies: Why Domain Expertise Wins — CRV](https://www.crv.com/content/vertical-ai-companies)
 
+### Consumer app examples observed on 2026-09-17
+- [Money2Time website](https://www.money2time.com/) — narrow money-to-time framing, local-first storage, no bank login, and a Pro tier.
+- [Money2Time on Google Play](https://play.google.com/store/apps/details?id=com.nelsongan.money2time) — public listing showed the 10K+ download bracket at observation time.
+- [RiceCal website](https://ricecal.app/in) — Asian-food and real-portion positioning with free and Pro usage tiers.
+- [RiceCal on Google Play](https://play.google.com/store/apps/details?id=com.nelsongan.ricecal) — public listing showed the 1+ download bracket at observation time, so this is early validation rather than proof of scale.
+- [RiceCal on the App Store](https://apps.apple.com/mo/app/ricecal-asia-calorie-tracker/id6795558595) — the public listing reported insufficient ratings/reviews at observation time.
+
 ### Solo dev 经济学
 - [54% of Indie Hacker Products Make $0 — Solo Operator Stack](https://solooperatorstack.com/blog/indie-hacker-revenue-distribution-tam-clarity/)
 - [Indie Hacker SaaS Ideas 2026 — Flowjam](https://www.flowjam.com/blog/indie-hackers-saas-ideas-2025-10-you-can-launch-fast)
@@ -317,3 +328,97 @@ Act 774 的教训要外推：**法律、医疗同样有受保护称号**。做�
 5. **§2 的 sector 数据在本次扫描后已降级为背景资料** —— 因为结论是消费移动端整体不可行，这些数字不再驱动决策。
 6. **本文未评估的方向**：Social、Dating、Gaming（因需网络效应与买量，早期即排除，未做深入调研）；以及任何非软件方向。
 7. **§4.3 的四个细分是调研输出的推荐，未经任何客户验证。** #1 已在后续调研中被发现紧迫性存疑（见该节警告）。
+
+---
+
+## 9. 2026-09-17 Addendum: What to borrow from focused consumer apps
+
+### 9.1 What the Money2Time / RiceCal evidence actually supports
+
+The useful lesson is not that “an indie developer can upload an app and make money.”
+The public evidence is asymmetric: Money2Time has reached the 10K+ Google Play bracket,
+while RiceCal is still listed at 1+ downloads and with insufficient App Store reviews.
+The evidence supports a product/distribution strategy, not a revenue claim.
+
+The repeatable pattern to borrow is:
+
+1. **Lead with one memorable transformation.** “Money becomes hours of life” is easier to
+   understand and share than “personal finance tracker.” The product promise should be one
+   sentence and should describe an outcome, not a feature list.
+2. **Use a narrow local or cultural wedge.** RiceCal does not compete as another generic
+   calorie database; it starts from Asian dishes and portions people actually recognise.
+   Local context is valuable only when it changes the result, not when it is just translated UI.
+3. **Remove the highest-frequency friction.** A recurring tracker lives or dies on logging
+   speed. Receipt/photo/voice entry, sensible defaults, and a short path to the first useful
+   result matter more than a large settings surface.
+4. **Make privacy part of the value proposition.** Local-first storage, no bank login, and
+   transparent data handling can be a competitive feature for finance and health products.
+   This also limits backend and support costs at the earliest stage.
+5. **Charge for utility, not attention.** Use a free core to demonstrate the result, then test
+   a subscription or lifetime purchase for higher limits, history, automation, or convenience.
+   Do not rely on ads, affiliate income, or a large free audience to rescue weak retention.
+6. **Treat content as a distribution experiment.** Short-form posts should show a surprising
+   output or a before/after decision, with one measurable CTA. Comments are qualitative input;
+   repeat use and payment are the decision signals.
+7. **Reuse infrastructure only after a wedge is proven.** A portfolio of small apps can share
+   release, billing, analytics, and local-storage primitives, but each app still needs its own
+   sharp promise and acquisition channel. Do not build a multi-app platform before one product
+   has demonstrated repeat use.
+
+### 9.2 What is not transferable
+
+- Do not build a broad “consumer Personal-OS.” The onboarding, trust, data model, and retention
+  problem are much larger than the current personal tool.
+- Do not clone a generic expense tracker. Money2Time already owns a clear emotional frame;
+  copying the category without a stronger wedge creates feature parity without distribution.
+- Do not start with a native mobile shell. If the product is used less than weekly, a shareable
+  web tool or PWA is the better first test. Native work is justified by repeated behaviour such
+  as daily logging, camera capture, reminders, widgets, or health integrations.
+- Do not repeat the rejected free-health-audience model. The earlier health analysis rejected
+  free users plus affiliate/B2B2C revenue and AI-heavy daily feedback; this addendum does not
+  overturn that result.
+- Do not make financial recommendations or medical/dietetic claims. Finance and health data
+  also require a privacy and employment-conflict review before a production launch.
+
+### 9.3 Best-fit consumer wedge for this repository
+
+The strongest candidate is a **Malaysia budget × nutrition decision tool**, not a general food
+diary:
+
+> “Given RM X per day, what local food basket can meet a protein/calorie target within the
+> stated constraints?”
+
+Why this is worth testing:
+
+- it uses the repository’s existing Malaysia retail-price data as a real differentiator;
+- it produces an actionable answer instead of asking users to maintain another diary;
+- the core calculation can be deterministic and local-first, avoiding daily AI COGS;
+- it can start without accounts, health profiles, or server-side persistence;
+- the existing [budget-nutrition optimizer design](../design/budget-nutrition-optimizer-web.md)
+  already defines a bounded web validation path.
+
+The finance direction is a weaker first candidate because it overlaps directly with Money2Time
+and may create employment, confidentiality, or regulated-advice concerns while the developer is
+working at a payment company.
+
+### 9.4 Validation policy
+
+This is an option, not a new primary roadmap direction. Protect the current production-backend
+P0 and time-box the consumer experiment to **2–4 weeks / 30 hours maximum**.
+
+Suggested continuation gates (internal thresholds, not market benchmarks):
+
+| Signal | Continue | Stop or reframe |
+|---|---|---|
+| Target users who run the prototype | 30 people | Fewer than 15 people after a real distribution attempt |
+| Seven-day return | At least 10 users return | Fewer than 3 users return |
+| Willingness to pay | At least 5 users accept a paid trial/pre-order, testing roughly RM 9–15/month or RM 69–99 lifetime | Positive comments but no payment intent |
+| Usage cadence | Weekly or more frequent | One-off curiosity only |
+
+Start with a no-account web/PWA prototype and one content CTA. Ship to App Store and Play only
+after the usage gate passes; then add the native features that explain the higher retention,
+not a large generic feature backlog.
+
+**Decision:** C端 is now a valid capped experiment for this project, but not a reason to reverse
+the current B2B/production-backend priority or to invest in a full consumer app before demand,
+repeat use, and payment are observed.
