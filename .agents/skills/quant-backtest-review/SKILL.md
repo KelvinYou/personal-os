@@ -8,12 +8,14 @@ description: >
   interpret a backtest report's numbers, decide whether a hit rate or Sharpe
   is "real", or asks "does this signal actually work" / "can I trust this
   number" — even if they don't say "backtest" or "statistics" explicitly.
+  Also trigger when asked to run, rerun, or continue a pipeline backtest in
+  repos/ai-stock-analysis.
   Also trigger before any wealth-manager decision that cites a backtest
   result the user hasn't had checked yet. This skill checks for lookahead
   bias, overfitting, unrealistic transaction costs, and statistical
   significance problems (deflated Sharpe, multiple testing, small samples) —
   it does not do general code review or multi-repo integration checks.
-allowed-tools: Bash, Read, Glob, Grep
+allowed-tools: Bash, Read, Glob, Grep, Edit, Write
 ---
 
 # Quant Backtest Review
@@ -50,6 +52,39 @@ The user may just paste a backtest report (`Scorer.to_markdown` output, an
 `.md` file under `repos/ai-stock-analysis/docs/`) and ask if the number is
 real. In that case skip straight to the **Report-reading checklist** below —
 there's nothing to diff, just numbers to interrogate.
+
+## Running a pipeline backtest without an API key
+
+When asked to run or continue the AI pipeline backtest and
+`ANTHROPIC_API_KEY` is unavailable (or the user says there is no key), default
+to the repository's current-session path instead of stopping or attempting a
+paid provider call. Check only whether the key is present; never print, copy,
+or persist its value. Follow `Run backtests in the current session (no API
+key)` in `repos/ai-stock-analysis/README.md`:
+
+1. Run `stock-analysis-backtest --mode session-prepare` with the already-
+   frozen tickers, dates, horizon, lookback, and any available point-in-time
+   replay directory. Do not change the sample or parameters after seeing
+   outcomes.
+2. Read only the generated point-in-time packets while forming predictions;
+   they intentionally exclude forward outcomes. Write one schema-valid
+   `SessionPrediction` per manifest trial to `predictions.json` (or the
+   per-trial prediction paths). Record the actual in-session model identity
+   and prompt provenance when available.
+3. Run `stock-analysis-backtest --mode session-score` and review the normal
+   scorer/portfolio report. Keep missing-evidence guards and neutral outputs;
+   do not invent analyst evidence to force trades.
+4. Preserve external validation's provider result: an in-session run is not an
+   authenticated production-provider run. Never fabricate `provider_run.json`
+   or label that gate as passed. Such results are exploratory/research-only;
+   historical predictions may be contaminated by model knowledge of later
+   outcomes, so they are not fresh out-of-sample confirmation or promotion
+   evidence.
+
+If the sample cannot fit reliably in one context, process packets in bounded
+batches while keeping complete manifest coverage; never silently score a
+partial sample. Report missing licensed data and calibrated costs as separate
+gates instead of substituting current-only evidence or assumed values.
 
 ## Review checklist
 
