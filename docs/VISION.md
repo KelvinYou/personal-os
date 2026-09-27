@@ -4,10 +4,9 @@
 
 **一套以工程师思维构建的个人控制系统**——不是简单的习惯追踪器，而是具备状态感知、梯度降级、闭环反馈的自我管理操作系统。
 
-For the broader personal direction behind weekend design, travel reflection, public writing,
-and AI-assisted understanding, see [personal-direction.md](personal-direction.md). That document
-is a human-readable summary and an agent-facing reference; it is a preference framework, not a
-schedule or scoring system.
+An owner may keep personal direction for weekend design, travel reflection, public writing,
+and AI-assisted understanding in the private `data/reference/personal-direction.md`.
+The public [routing note](personal-direction.md) does not define anyone's preferences.
 
 ## 设计哲学
 
@@ -42,32 +41,32 @@ stateDiagram-v2
         eval --> BREAKER: cascade detected
 
         state "🟢 OK" as OK {
-            state "Deep Work ≥ 4h" as dw_ok
-            state "Energy ≥ 6" as en_ok
-            state "Sleep Debt < 5h" as sd_ok
-            state "Spend < RM120/wk" as sp_ok
+            state "Deep Work within target" as dw_ok
+            state "Energy within target" as en_ok
+            state "Sleep Debt within limit" as sd_ok
+            state "Spend within limit" as sp_ok
         }
 
         state "🟡 Warning" as Warning {
-            state "Deep Work < 4h" as dw_w
-            state "Energy = 5" as en_w
-            state "Caffeine > 14:00" as cf_w
+            state "Deep Work below target" as dw_w
+            state "Energy warning" as en_w
+            state "Caffeine after cutoff" as cf_w
             state "Poor Sleep ×1" as sl_w
         }
 
         state "🔴 Critical" as Critical {
-            state "Energy < 4" as en_c
-            state "Sleep < 6.5h" as sl_c
-            state "Sleep Debt > 8h" as sd_c
-            state "Mental Load ≥ 7" as ml_c
+            state "Energy critical" as en_c
+            state "Sleep critical" as sl_c
+            state "Sleep Debt critical" as sd_c
+            state "Mental Load critical" as ml_c
         }
 
-        state "⛔ BREAKER (5 types)" as BREAKER {
-            state "Sleep Critical<br/>< 6.5h → Deload" as B1
-            state "Sleep Debt ≥ 5h<br/>→ Restrict Training" as B2
-            state "Energy Collapse < 4<br/>→ DW Cap 2h" as B3
-            state "Mental Overload ≥ 7<br/>→ Single-task" as B4
-            state "Poor Sleep ×2+<br/>→ System Offline" as B5
+        state "⛔ BREAKER (configured rules)" as BREAKER {
+            state "Sleep Critical → Deload" as B1
+            state "Sleep Debt → Restrict Training" as B2
+            state "Energy Collapse → Reduce workload" as B3
+            state "Mental Overload → Single-task" as B4
+            state "Poor Sleep Streak → Recovery" as B5
         }
     }
 

@@ -10,9 +10,10 @@ A personal management system that drives data-driven self-management through str
 > This block is validated line-by-line via `test -e` by `make doctor` (entries under `data/` are exempt when it isn't checked out).
 > If you change the layout, update this too — this file is force-injected into every session, and a wrong path here makes an agent read the wrong file outright.
 ```
-/config/                  — my threshold settings + regulatory constants (thresholds / wealth_rules.yaml)
+/config/                  — public regulatory and pipeline settings (wealth_rules.yaml / idea_pipeline.yaml); personal thresholds live in data/config/
 /market/                  — externally observable market facts (interest_rates / fx.yaml, jobs/); public, no personal info
-/data/                    — private submodule (personal-os-data); not checked out without permission
+/data/                    — user's own independent private repo; ignored by the public parent
+/data/config/             — private thresholds.yaml and settings.yaml (timezone); required for personal runs
 /data/daily/              — daily engineer logs (YYYY-MM-DD.md); 90-day hot window, older entries folded by make archive
 /data/archive/            — cold-data archive (YYYY-Qn.md weekly summaries + body.csv full body-composition series)
 /data/protocol/           — standing protocol; standard_week.md is the single human-readable schedule, not re-shuffled weekly; standard_week.yaml is only a Calendar-anchors projection
@@ -21,13 +22,15 @@ A personal management system that drives data-driven self-management through str
 /data/reports/            — weekly report archive + weekly delta (only generated when there are exceptions)
 /data/travel/             — private trip plans (city-YYYY-MM.md); language exception: may be written in the traveler's preferred language, since map queries and mini-program names must stay in the local script
 /data/user_profile.md     — global user profile (routine/diet/training preferences)
-/docs/                    — long-form docs; three owners: VISION (direction) / ROADMAP (to-do) / DECISIONS (decided, not revisited)
-/docs/personal-direction.md — active-attention and public-understanding reference for weekend, travel, writing, and AI-assisted thinking; direction companion to VISION
-/docs/voice-guide.md      — my writing voice (reverse-engineered from 34 published blog posts); read before writing any outward-facing text
+/docs/                    — long-form docs; route through INDEX.md; VISION / ROADMAP / DECISIONS remain their named owners
+/docs/INDEX.md            — durable-doc routing, source-of-truth matrix, and agent read order
+/docs/knowledge/          — evergreen cross-project notes; new notes use the minimal knowledge-note contract
+/docs/personal-direction.md — public routing note for optional private data/reference/personal-direction.md
+/docs/voice-guide.md      — public routing note for optional private data/reference/voice-guide.md
 /docs/dev-sop.md          — feature/bug-fix SOP (design → implement → test → review → merge; simple vs. complex/subtask-loop paths)
 /docs/design/             — technical design docs (implementation-ready specs, ADR-adjacent)
 /docs/plans/              — multi-phase project plans with phase-by-phase status; ROADMAP §4 links into these, don't duplicate their checklists
-/docs/analysis/           — one-off quantitative analysis docs; each carries its own re-verify-after window, check before citing
+/docs/analysis/           — Personal-OS quantitative and wealth analysis; stock-pipeline analysis is owned by repos/ai-stock-analysis
 /docs/drafts/             — content drafts pending external publish (profile copy, public-mirror README) — copy manually, don't paste blind
 /ARCHITECTURE.md          — system architecture + invariants; read before changing data flow/contracts
 /SETUP.md                 — first-time bootstrap flow; the top comment block is an interactive script for the agent
@@ -40,7 +43,7 @@ A personal management system that drives data-driven self-management through str
 /.agents/skills/          — AI agent skills (weekly-review / wealth-manager / ...)
 /repos/                   — external project submodules, managed centrally + read by skills
 /repos/portfolio-website  — personal website (unified entry point for career-related content)
-/repos/ai-stock-analysis  — stock analysis tool; also the sole owner of stock price data
+/repos/ai-stock-analysis  — stock analysis tool; sole owner of stock price data, ticker research snapshots, and pipeline/backtest analysis docs
 /repos/notes    — public notes submodule; sole owner of the nutrition dataset
 /.agents/skills/travel-plan/ — trip-plan skill; owns the verification gate that must run BEFORE a plan is drafted (verify-class defects outnumber lint-class 26:17 and no review pass finds them)
 /scripts/travel_lint.py   — travel-plan consistency linter (`make travel-lint`); only checks what needs no external source
@@ -54,17 +57,18 @@ A personal management system that drives data-driven self-management through str
 ## Key Conventions
 - Daily log filename format: `YYYY-MM-DD.md`
 - YAML frontmatter must validate against `scripts/lib/schema.py`; the field list must stay in parity with the template (optional fields may be left blank)
-- All thresholds are read from `config/thresholds.yaml` — no hardcoded magic numbers in scripts
+- All thresholds are read from the owner's `data/config/thresholds.yaml` — no hardcoded magic numbers in scripts
 - Scripts use Python 3, dependencies in `requirements.txt` (`make setup` installs into `.venv/`)
 - All output must conform to the CommonMark standard
-- When a request concerns weekend design, travel framing, public writing, or personal knowledge direction, read `docs/personal-direction.md`; treat it as a preference framework, not a mandatory productivity rule
+- When a request concerns weekend design, travel framing, public writing, or personal knowledge direction, read the owner's `data/reference/personal-direction.md` if present; otherwise ask when needed
 
 ## Common Commands
 - `make setup` — create `.venv` and install dependencies
 - `make setup-ideas` — install the optional Claude SDK for startup-idea model execution
-- `make setup-private` — check out the private `data` submodule (requires repo permission)
+- `make setup-private DATA_REPO=...` — attach the user's own private repo to `data/`; never overwrite existing files
 - `make doctor` — environment self-check; distinguishes error / expected (e.g. data not checked out due to missing permission) / warning
 - `make test` — Python tests + web typecheck
+- `make kb-check` / `make kb-index` / `make kb-eval` / `make kb-graph` — knowledge-note contract, compact catalog, retrieval checks, and disposable Mermaid view
 - `make today` — generate today's log template
 - `make idea-validate IDEA_INPUT=...` — validate a startup-idea input without model calls
 - `make idea-init IDEA_INPUT=...` — create a private startup-idea record
@@ -85,7 +89,7 @@ A personal management system that drives data-driven self-management through str
 - The scoring framework uses four weighted dimensions (Output 40 / Health 30 / Mental 20 / Habits 10)
 - Log style: engineer's-eye view, marked with `[Status: OK/Warning/Critical]`
 - All content — logs, reports, and skills alike — is written in English. Sole exception: `data/travel/` (see directory structure) — trip plans may use the traveler's preferred language, because map search queries, mini-program names and restaurant names have to stay in the local script to be usable on the ground
-- Read `docs/voice-guide.md` before writing any **outward-facing text** (blog / LinkedIn / README prose / commit body). Internal repo reports are not governed by it — keep using the `[Status: ...]` convention.
+- Read `data/reference/voice-guide.md` if present before writing **outward-facing text** (blog / LinkedIn / README prose / commit body). Internal repo reports use the `[Status: ...]` convention.
 
 ## Give Three Next Steps When Wrapping Up
 After answering a request, proactively offer 3 optional next steps — don't ask "anything else you need?":

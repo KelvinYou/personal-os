@@ -15,21 +15,19 @@
 │     Its `expected` rows are NOT failures — a missing private `data/` is     │
 │     access control working, not a broken setup. Never "fix" an expected     │
 │     row by creating files under data/.                                      │
-│  2. Never invent values for config/thresholds.yaml or data/user_profile.md. │
-│     Every number in there is a claim about a specific human. Ask, or leave  │
-│     the shipped default and say out loud that it is still Kelvin's.         │
+│  2. Never invent values for data/config/thresholds.yaml or data/user_profile.md. │
+│     Examples are not personal settings. Keep owner_configured: false until   │
+│     the owner has reviewed every value.                                       │
 │  3. Phase 3 (personalisation) is where a wrong answer does lasting damage:  │
 │     thresholds feed circuit breakers, which gate every coach-planner        │
 │     schedule. Confirm each answer back before writing.                      │
-│  4. If the user has no `data/` access, stop after Phase 2 and tell them     │
-│     which commands are unavailable (`make wealth`, `make web`, anything     │
-│     reading data/daily/). Do not fabricate a substitute data layer.         │
+│  4. If the user has no private data repo yet, stop after Phase 2 and help   │
+│     them create one. Do not write personal data into the public repository. │
 │                                                                             │
 │ Questions to ask in Phase 3, in this order — one at a time, not batched:    │
-│   Q1 Do you have write access to the private `personal-os-data` repo?       │
-│      (no → public-only mode; skip Q3–Q6)                                    │
-│   Q2 Timezone and daily wake/sleep window? (clock.py assumes Asia/KL)       │
-│   Q3 Target deep-work hours per weekday?        → thresholds.deep_work      │
+│   Q1 What is the URL of your own private data repo?                         │
+│   Q2 Timezone and daily wake/sleep window? → data/config/settings.yaml      │
+│   Q3 Target deep-work hours per weekday? → private thresholds.deep_work     │
 │   Q4 Minimum acceptable sleep, and your HRV baseline if you know it?        │
 │                                                 → thresholds.sleep/readiness│
 │   Q5 Do you wear a COROS watch? (no → skip make sync-coros entirely)        │
@@ -67,13 +65,14 @@ agent 看的，人类可以忽略。
 | Python ≥ 3.11 | `python3 --version` | 装它；`zoneinfo` 和 `X \| None` 语法都依赖 |
 | git | `git --version` | — |
 | Node（仅 dashboard） | `node --version` | 跳过，CLI 全部不依赖 |
-| `personal-os-data` 权限 | 见 Phase 2 | 无权限也能用大部分功能，见下 |
+| 自己的 private Git repo | 见 Phase 2 | 可先只运行 public 测试；个人功能需要配置 |
 
 ## Phase 1 — 骨架
 
 ```bash
-git clone --recurse-submodules https://github.com/KelvinYou/personal-os.git
+git clone https://github.com/KelvinYou/personal-os.git
 cd personal-os
+git submodule update --init repos/ai-stock-analysis repos/notes # 可选
 make setup     # 建 .venv + 装 requirements.txt
 make doctor    # 第一次 gate
 ```
@@ -81,21 +80,22 @@ make doctor    # 第一次 gate
 `make doctor` 分三类结论，语义不同，**不要混着看**：
 
 - `error` — 仓库/环境坏了，照它给的修复命令处理。
-- `expected` — 按设计就不该有。典型：无 private repo 权限时 `data/` 未 checkout。
+- `expected` — 尚未接入自己的 `data/` 私仓，个人功能暂不可用。
   **这不是故障。** 把权限边界报成失败会训练人忽略这个命令。
 - `warning` — 能跑，但结果缺一块（如 `repos/ai-stock-analysis/data/` 为空 →
   股票全部 unpriced，合计被低估）。
 
 退出码只有 `error` 是 1。
 
-## Phase 2 — 私有数据层（可选）
+## Phase 2 — 接入自己的私有数据仓库
 
 ```bash
-make setup-private   # 需要 personal-os-data 的读权限
+make setup-private DATA_REPO=git@github.com:you/my-personal-os-data.git
 ```
 
-有权限 → `data/` 里出现 daily/ decisions/ finance/ protocol/ user_profile.md。
-无权限 → 到此为止，以下命令不可用：
+命令会把你的私仓 clone 到 `data/`；主仓库忽略这个目录，不记录它的 URL 和 commit。
+如果 `data/` 已有文件，命令会拒绝覆盖。先把文件安全迁入你的私仓，再重新运行。
+没有私仓时，以下命令不可用：
 
 - `make wealth` / `make web`（读 `data/finance/*.yaml`）
 - `make check` / `make weekly` / `make report`（读 `data/daily/`）
@@ -103,22 +103,23 @@ make setup-private   # 需要 personal-os-data 的读权限
   `/meta-coach`
 
 仍然可用：`make doctor`、`make test`、`make check-mermaid`、`make eval*`
-（session eval 读的是 `~/.claude/projects/`，与 data submodule 无关）、
+（session eval 读的是 `~/.claude/projects/`，与私仓无关）、
 `/learning-agent`、`/profile-optimizer`、`/quant-backtest-review`。
 
-**fork 这个仓库自己用**：`data` 指向我的私仓，你 clone 不到。建一个自己的
-private repo，改 `.gitmodules` 里 `submodule.data.url` 指过去，按
-`templates/daily.md` 的 frontmatter 建第一份日志。schema 由
-`scripts/lib/schema.py` 校验，`make lint` 会告诉你缺哪个字段。
+私仓内应保留 `config/settings.yaml`、`config/thresholds.yaml`、
+`user_profile.md` 和 `daily/`。首次 clone 后会复制两个配置示例；它们的
+`owner_configured: false` 会阻止个人命令运行。逐项核对后改为 `true`。
+`templates/daily.md` 是日志模板，`scripts/lib/schema.py` 是 frontmatter schema。
 
 ## Phase 3 — 个性化（agent 在这里逐条问你）
 
-仓库里所有数字都是**对某个具体的人的断言**，不是通用默认值。fork 之后不改这些，
-逻辑引擎会拿我的身体参数评判你的一周。
+公开示例里的数字不是通用默认值。必须根据自己的情况配置私仓，
+否则逻辑引擎不能生成个人结论。
 
 | 文件 | 里面是什么 | 不改的后果 |
 | :--- | :--- | :--- |
-| `config/thresholds.yaml` | deep_work / sleep / readiness / energy / caffeine / circuit_breakers / scoring | 熔断按我的 HRV 基线开火 |
+| `data/config/thresholds.yaml` | deep_work / sleep / readiness / energy / caffeine / circuit_breakers / scoring | 无效时拒绝运行 |
+| `data/config/settings.yaml` | 本地时区 | 日期可能跨日 |
 | `config/wealth_rules.yaml` | `us_estate`、`prs` —— 马来西亚税务与美国遗产税常量 | 非 MY 税务居民会算错 |
 | `data/user_profile.md` | 作息、饮食、锻炼偏好 | `/coach-planner` 排出你不会执行的表 |
 | `data/protocol/standard_week.md` | 唯一的人类时间表，每周不重排 | 排期没有锚点 |

@@ -36,7 +36,7 @@ graph TB
         DD["decisions_due.py<br/>决策到期检查"]
     end
 
-    subgraph Store ["Data Layer (data/ submodule 🔒)"]
+    subgraph Store ["Data Layer (owner's private data repo 🔒)"]
         DL["data/daily/<br/>YYYY-MM-DD.md"]
         FIT["data/fitness/<br/>YYYY-MM-DD.yaml"]
         RPT["data/reports/<br/>周报存档"]
@@ -44,8 +44,8 @@ graph TB
         UP["data/user_profile.md"]
     end
 
-    subgraph Config ["Config Layer (public)"]
-        CFG["config/thresholds.yaml<br/>config/wealth_rules.yaml"]
+    subgraph Config ["Config Layer"]
+        CFG["data/config/thresholds.yaml (private)<br/>config/wealth_rules.yaml (public)"]
     end
 
     subgraph Output ["Output"]
@@ -148,7 +148,7 @@ graph LR
 
 ## 4. Data Layer
 
-仅列出核心闭环中的 persisted entities。配置（`config/thresholds.yaml`、`config/wealth_rules.yaml`、`data/user_profile.md`）和专项 agent 数据（`data/finance/`）不在此图。
+仅列出核心闭环中的 persisted entities。配置（`data/config/thresholds.yaml`、`config/wealth_rules.yaml`、`data/user_profile.md`）和专项 agent 数据（`data/finance/`）不在此图。
 
 ```mermaid
 erDiagram
@@ -251,27 +251,27 @@ flowchart LR
 | **当前：yaml → patch → md（双写）** | daily.md 自包含，`cat 2026-04-22.md` 可见全部当日数据；grep 查询无需 join | COROS 数据两处存储，有 stale-copy 风险（用户手改 md 的 sleep 块会在下次 sync 被覆盖） | ✅ 采用 |
 | 替代：yaml 独占，md 只存 ref 指针，聚合时 join | 无双写；用户手改 md 不丢失 | daily.md 不再自包含；所有聚合 / 查询需 on-read merge；损失 grep 工作流 | ❌ 拒绝（见 `docs/DECISIONS.md` §1 第 11 条） |
 
-**用户契约**（与 §8.2 对齐）：`sleep.* / readiness.* / training.* / activities[]` 在 daily.md 中对**所有非 `patch_coros.py` 的 writer 只读**；若需手动修正，改 `data/fitness/*.yaml` 后重跑 `make sync-coros DATE=YYYY-MM-DD`，否则下次 sync 会覆盖。
+**用户契约**（与 §8.2 对齐）：启用 COROS 时，`sleep.* / readiness.* / training.* / activities[]` 在 daily.md 中对非 `patch_coros.py` 的 writer 只读；若需修正，改 `data/fitness/*.yaml` 后重跑同步。未启用 COROS 的用户可手填实测值；日后启用同步会覆盖同名字段。
 
 ---
 
 ## 6. Circuit Breakers
 
-`report_gen.py` 独立遍历 `config/thresholds.yaml` 的 `circuit_breakers` 列表，按 metric + operator 匹配最近日志逐条判定 —— **没有显式 state machine**，每个 breaker 是独立规则，可同时触发多条。
+`report_gen.py` 独立遍历 `data/config/thresholds.yaml` 的 `circuit_breakers` 列表，按 metric + operator 匹配最近日志逐条判定 —— **没有显式 state machine**，每个 breaker 是独立规则，可同时触发多条。
 
 | Breaker | Metric | Condition | 主要约束 (节选) |
 |---------|--------|-----------|----------------|
-| Sleep Critical | `sleep_duration` | `< 6.5h` (同 `sleep.poor_sleep_duration_hours`，仅时长) | 禁晨跑；禁大重量；DW cap 4h；22:00 强制断电 |
-| Sleep Debt L1 | `rolling_7d_sleep_debt` | `>= 5.0` | 跑步降级 Z2 (≤ 145bpm, 30min)；训练降重 30% |
-| Sleep Debt L2 | `rolling_7d_sleep_debt` | `> 8.0` | 禁跑步，仅低心率快走；训练降重 50%；周末零产出 |
-| Energy Collapse | `energy_level` | `< 4` | 取消当日全部训练；DW cap 2h；21:30 断电 |
-| Mental Overload | `mental_load` | `>= 7` | 单任务模式；禁额外会议/社交；2h 强制 15min 呼吸间隔 |
-| Consecutive Poor Sleep | `consecutive_poor_sleep` | `>= 2` | 次日 System Offline；咖啡因窗口 10:00 前；DW cap 3h |
-| HRV Recovery Alert | `hrv` | `< 30ms` | 禁高强度；强制午休 20-30min；22:00 强制断电 |
-| Spending Surge | `single_transaction` | `> RM 30` | 日志记录消费理由；剩余天数自炊率 ≥ 95% |
-| Overtraining Warning | `load_ratio` | `> 1.5` | 禁额外训练；下次训练降重 30%；强制 8h 睡眠窗口 |
+| Sleep Critical | `sleep_duration` | 私有 `circuit_breakers` 规则 | 降低运动和工作负荷 |
+| Sleep Debt L1 | `rolling_7d_sleep_debt` | 私有规则 | 限制训练强度 |
+| Sleep Debt L2 | `rolling_7d_sleep_debt` | 私有规则 | 优先恢复 |
+| Energy Collapse | `energy_level` | 私有规则 | 减少当日负荷 |
+| Mental Overload | `mental_load` | 私有规则 | 缩小任务范围 |
+| Consecutive Poor Sleep | `consecutive_poor_sleep` | 私有规则 | 安排恢复日 |
+| HRV Recovery Alert | `hrv` | 私有规则 | 限制高强度训练 |
+| Spending Surge | `single_transaction` | 私有规则 | 核对额外支出 |
+| Overtraining Warning | `load_ratio` | 私有规则 | 调整训练量 |
 
-完整 `actions` 列表见 `config/thresholds.yaml` 的 `circuit_breakers` 块。
+完整 `actions` 列表见 `data/config/thresholds.yaml` 的 `circuit_breakers` 块。
 
 **Null-safe 判定**：`report_gen.py` 与 `weekly_synthesis.py` 在 `actual is None` 时**跳过该 breaker**（而非 default 0），避免缺数据日（尤其 HRV 未同步时）产生 false positive。
 
@@ -329,7 +329,7 @@ graph TD
 
 - `scripts/lib/schema.py::DailyLog` 是 daily frontmatter 的 executable schema；`templates/daily.md` 是人类填写模板，必须保持字段 parity（`tests/test_smoke.py` 守护）
 - 任何未在 Pydantic model 中声明的顶级 key 视为未知（`make lint` 会拒绝）；模板中的可选字段可以为空
-- `config/thresholds.yaml` 是所有阈值 + breaker 规则的唯一来源；脚本内禁止硬编码数字
+- `data/config/thresholds.yaml` 是所有阈值 + breaker 规则的唯一来源；脚本内禁止硬编码数字
 - `data/user_profile.md` 是作息 / 饮食 / 训练偏好的唯一来源；skill 评分或排期涉及偏好时必须读这里
 - `config/wealth_rules.yaml` 是外部法规事实的唯一来源；`scripts/lib/wealth/rules.py` 负责校验并把 freshness health 传给 CLI/web
 
@@ -337,7 +337,7 @@ graph TD
 
 | Field | 写入方 | 冲突规则 |
 |-------|--------|----------|
-| `sleep.*` / `readiness.*` / `training.*` / `activities[]` | `patch_coros.py` 独占 | 用户手改会在下次 `make sync-coros` 被覆盖（见 §5 tradeoff） |
+| `sleep.*` / `readiness.*` / `training.*` / `activities[]` | 启用 COROS 时 `patch_coros.py`；否则用户手填实测值 | 启用同步后会覆盖同名手填字段（见 §5 tradeoff） |
 | `energy_level` / `mental_load` / `deep_work_hours` / `caffeine_cutoff` / `primary_blocker` / `daily_spend` | `/daily-report` skill 或用户手编 | 后写覆盖；skill 遵守"合并不覆盖"（`daily-report/SKILL.md:58`） |
 | 正文 Highlights / Blockers / Next Steps / Nutrition | `/daily-report` skill 或用户手编 | 同上 |
 | `body.*` | 用户手编**独占** | 任何脚本 / skill 不写（per `feedback-body-data-manual`） |
@@ -363,12 +363,12 @@ graph TD
 - **无状态**：每次 run 独立从日志重新 derive 所有 `latest_metrics`；不保留跨 run 状态
 - **无级联 / 无优先级**：多个 breaker 独立并行评估，同一 run 可同时 trip 多条
 - **Null-safe**（post-Wave 1）：`actual is None` → 跳过该 breaker；避免缺数据 default 0 产生 false positive
-- **Poor Sleep derivation**（Option P-d）：阈值从 `config/thresholds.yaml::sleep` 读取；在 `scripts/lib/daily_log.py::derive_poor_sleep` 单一实现
+- **Poor Sleep derivation**（Option P-d）：阈值从 `data/config/thresholds.yaml::sleep` 读取；在 `scripts/lib/daily_log.py::derive_poor_sleep` 单一实现
 - **Spending Surge**：只看最新日志当天的最大 `daily_spend.amount`；缺少当天消费证据时不从历史日志借值
 
 ### 8.5 时间 / 周界契约
 
-- daily.md 日期 = 吉隆坡本地日期；Python 统一经过 `scripts/lib/clock.py`，Makefile 也显式设置 `TZ=Asia/Kuala_Lumpur`
+- daily.md 日期 = `data/config/settings.yaml` 中的用户本地日期；Python 统一经过 `scripts/lib/clock.py`，Makefile 也读取该时区
 - 周界 = ISO week（周一起，周日止）
 - `make sync-coros` 默认拉取 `today − 1`（昨日数据早晨才完整同步到 COROS 云端）
 - `rolling_7d_sleep_debt` = `today` 往回 7 天的 `Σ max(0, baseline − duration)`
@@ -440,7 +440,7 @@ graph TB
 
     subgraph Config ["Config Layer"]
         TMPL["templates/daily.md<br/>(schema)"]
-        THR["config/thresholds.yaml"]
+        THR["data/config/thresholds.yaml"]
         UP["data/user_profile.md"]
     end
 
@@ -467,8 +467,8 @@ graph TB
 | `metrics.py` | `rolling_7d_debt(logs, baseline)`, `avg_hrv(logs)`, `consecutive_poor(logs)` 等聚合 |
 | `breakers.py` | `evaluate(metrics, cfg) → list[TrippedBreaker]`；单一 breaker 判定入口 |
 | `score.py` | `compute_base_score(metrics, rubric) → ScoreBreakdown`；deterministic 四维打分 |
-| `config.py` | 严格校验 `config/thresholds.yaml` 结构；`data/user_profile.md` 由 skills 按私有运行时资料读取，不由 Python 假称已 schema 化 |
-| `clock.py` | 所有默认日期/时间统一使用 `Asia/Kuala_Lumpur` |
+| `config.py` | 严格校验 `data/config/thresholds.yaml` 结构；`data/user_profile.md` 由 skills 按私有运行时资料读取，不由 Python 假称已 schema 化 |
+| `clock.py` | 所有默认日期/时间统一使用私仓 `data/config/settings.yaml` 中的时区 |
 | `wealth/rules.py` | 校验 `config/wealth_rules.yaml`，按 `wealth.regulatory_rules_stale_days` 计算法规事实 freshness |
 | `logger.py` | 每次 `make check` / `make weekly` append JSON line 到 `data/logs/engine-YYYY-MM-DD.jsonl` |
 | `migrate.py` | 字段批量迁移（schema 变更时回填老日志，如 `sleep.quality → derived Option P-d`） |
@@ -520,7 +520,7 @@ decision journal's ownership rules.
 The supported entry point is `scripts/idea_pipeline.py`, exposed through the
 `idea-*` Make targets. `DemoModelClient` provides a credential-free smoke path;
 the Claude Agent SDK adapter is optional and lazy-imported. The default private
-data path is refused when the `data` submodule is not checked out, preventing a
+data path is refused when the owner's `data` repository is not attached, preventing a
 CLI typo from creating idea records in the parent repository.
 
 Each run follows this ownership boundary:

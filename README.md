@@ -19,13 +19,13 @@ Brain Dump → /daily-report → 逻辑引擎告警 → /coach-planner → 每�
 | 位置 | 用途 |
 |------|------|
 | `.agents/skills/` | Agent skills，见下方 [Claude Code Skills](#claude-code-skills) |
-| `config/` | 阈值设定 + 法规常量 |
+| `config/` | 公开的法规与流水线设置；个人阈值在 `data/config/` |
 | `market/` | 外部可观测市场事实（利率/汇率/JD）；public |
-| `data/` | 🔒 private submodule —— 日志、决策、体能、财务、user_profile |
+| `data/` | 🔒 你自己的独立私有仓库（主仓库忽略此目录）—— 日志、配置、决策、财务、profile |
 | `scripts/` | Python 自动化（逻辑引擎、COROS 同步、周度聚合、doctor…） |
 | `web/` | 本地理财仪表盘（Next.js，localhost only） |
 | `repos/` | 外部项目 submodules |
-| `docs/` | VISION（方向）/ ROADMAP（待办）/ DECISIONS（已决定不重提） |
+| `docs/` | INDEX 路由 + VISION（方向）/ ROADMAP（待办）/ DECISIONS（已决定不重提）/ knowledge notes |
 | `templates/` · `tests/` | 空白模板 / 单元测试 |
 
 ## 快速开始
@@ -33,10 +33,19 @@ Brain Dump → /daily-report → 逻辑引擎告警 → /coach-planner → 每�
 > 第一次进这个仓库、或想让 agent 带着配：读 [SETUP.md](SETUP.md)（顶部注释块是给 agent 的交互式 bootstrap 脚本）。
 
 ```bash
-git clone --recurse-submodules https://github.com/KelvinYou/personal-os.git
+git clone https://github.com/KelvinYou/personal-os.git
+cd personal-os
+git submodule update --init repos/ai-stock-analysis repos/notes # 按需
 make setup      # 建 .venv + 装依赖
 make doctor     # 环境自检
 ```
+
+创建你自己的**私有** Git 仓库（空仓库也可以）后，运行 `make setup-private DATA_REPO=<你的私仓 URL>`。
+这会把私仓 clone 到 `data/`，并复制待个性化的配置示例。逐项检查
+`data/config/thresholds.yaml`、`data/config/settings.yaml`，确认后将各文件的
+`owner_configured` 改为 `true`，填写 `data/user_profile.md`，再运行 `make doctor`。
+如果 `data/` 已有文件，初始化命令会拒绝覆盖；先把它们安全迁入自己的私仓。
+主仓库不会记录你的私仓 URL 或 commit。
 
 常用命令一览（用途，不重复参数细节 —— 完整清单见 [AGENTS.md](AGENTS.md#common-commands)）：
 
@@ -50,6 +59,7 @@ make doctor     # 环境自检
 | `make wealth` | 净资产：现金/到期/利率 + 股票估值 |
 | `make web` | 本地理财仪表盘 |
 | `make test` / `make lint` | 单元测试 + web typecheck / 日志 lint |
+| `make kb-check` / `make kb-index` / `make kb-eval` / `make kb-graph` | Knowledge-note contract / catalog / retrieval eval / Mermaid view |
 | `make archive` | 折叠 90 天热窗口外的日志 |
 | `make decisions-due` / `make decision-new` | 决策待review列表 / 创建新决策条目 |
 | `make calibration` | 决策校准分析 |
@@ -57,7 +67,8 @@ make doctor     # 环境自检
 
 COROS 同步需要项目根目录 `.env`（`COROS_EMAIL` / `COROS_PASSWORD` / `COROS_REGION`）。
 
-逻辑引擎阈值规则见 `config/thresholds.yaml`（唯一事实源，脚本零硬编码）；四维评分框架（Output/Health/Mental/Habits）见 weekly-review skill。
+逻辑引擎阈值规则见私仓的 `data/config/thresholds.yaml`；公开示例在 `templates/thresholds.example.yaml`。
+四维评分框架（Output/Health/Mental/Habits）见 weekly-review skill。理财模块目前面向马来西亚、MYR/USD 场景；COROS、Calendar 和股票流水线按需启用。
 
 ## Claude Code Skills
 

@@ -1,0 +1,150 @@
+- id: docs-owner
+  query: Which document owns the settled trade-offs and how should an agent route documentation?
+  expected_paths:
+    - docs/knowledge/docs-routing.md
+  answer: >-
+    Route durable documentation through lifecycle owners, then read the smallest
+    authoritative section. See [docs/knowledge/docs-routing.md](docs/knowledge/docs-routing.md).
+  required_claims:
+    - lifecycle owners
+    - smallest authoritative section
+  required_citations:
+    - docs/knowledge/docs-routing.md
+  scope:
+    - docs/knowledge/docs-routing.md
+
+- id: context-budget
+  query: How should an agent save tokens when reading the knowledge base?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+  answer: >-
+    Route through the index, rank a few candidates, and read the smallest
+    complete source section. See [docs/knowledge/agent-context-budget.md](docs/knowledge/agent-context-budget.md).
+  required_claims:
+    - rank a few candidates
+    - smallest complete source section
+  required_citations:
+    - docs/knowledge/agent-context-budget.md
+  scope:
+    - docs/knowledge/agent-context-budget.md
+
+- id: private-boundary
+  query: Where do personal facts belong and what may public knowledge notes contain?
+  expected_paths:
+    - docs/knowledge/public-private-boundary.md
+  answer: >-
+    Keep personal facts in the owner's private data repository; public knowledge notes
+    may describe reusable abstractions without copying personal values. See
+    [docs/knowledge/public-private-boundary.md](docs/knowledge/public-private-boundary.md).
+  required_claims:
+    - personal facts in the owner's private data repository
+    - reusable abstractions
+  required_citations:
+    - docs/knowledge/public-private-boundary.md
+  scope:
+    - docs/knowledge/public-private-boundary.md
+
+- id: settled-trade-offs
+  query: Where should an agent find settled trade-offs?
+  expected_paths:
+    - docs/knowledge/docs-routing.md
+
+- id: unfinished-work
+  query: Which owner covers unfinished implementation work?
+  expected_paths:
+    - docs/knowledge/docs-routing.md
+
+- id: design-owner
+  query: Where are implementation-ready designs kept?
+  expected_paths:
+    - docs/knowledge/docs-routing.md
+
+- id: evidence-owner
+  query: Where does time-bound evidence live?
+  expected_paths:
+    - docs/knowledge/docs-routing.md
+
+- id: evergreen-owner
+  query: Which owner covers evergreen understanding?
+  expected_paths:
+    - docs/knowledge/docs-routing.md
+
+- id: owner-map
+  query: What is the documentation owner map?
+  expected_paths:
+    - docs/knowledge/docs-routing.md
+
+- id: candidate-limit
+  query: How many candidates should an agent expand?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+
+- id: retrieval-unit
+  query: What is the useful unit of retrieval?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+
+- id: whole-repository
+  query: Should an agent read the whole repository by default?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+
+- id: answer-metadata
+  query: Which source details should an answer return?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+
+- id: knowledge-gap
+  query: When should an agent report a knowledge gap?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+
+- id: index-routing
+  query: How does routing through the index save context?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+
+- id: cited-slice
+  query: What should a small cited context slice contain?
+  expected_paths:
+    - docs/knowledge/agent-context-budget.md
+
+- id: daily-finance
+  query: Where do daily logs and finance records belong?
+  expected_paths:
+    - docs/knowledge/public-private-boundary.md
+
+- id: public-contracts
+  query: What reusable abstractions may tracked documentation describe?
+  expected_paths:
+    - docs/knowledge/public-private-boundary.md
+
+- id: no-copy
+  query: What must knowledge notes never copy?
+  expected_paths:
+    - docs/knowledge/public-private-boundary.md
+
+- id: public-targets
+  query: Can public notes contain personal targets?
+  expected_paths:
+    - docs/knowledge/public-private-boundary.md
+
+- id: private-ideas
+  query: Where do private idea records belong?
+  expected_paths:
+    - docs/knowledge/public-private-boundary.md
+
+- id: unknown-domain
+  query: What is the canonical moon-colony retention policy?
+  expected_paths: []
+  expect_no_match: true
+
+- id: near-miss-data-policy
+  query: What is the canonical data retention policy?
+  expected_paths: []
+  expect_no_match: true
+
+- id: near-miss-public-policy
+  query: What is the canonical public data retention policy?
+  expected_paths: []
+  expect_no_match: true

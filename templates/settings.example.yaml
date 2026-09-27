@@ -1,0 +1,3 @@
+# Copy to data/config/settings.yaml and set your own IANA timezone.
+timezone: Etc/UTC
+owner_configured: false

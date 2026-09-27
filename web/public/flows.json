@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-19T01:43:02.961254+00:00",
-  "input_hash": "b6fd3b933599e41c711ab14450d816acf021a82985b6964594e77c54ddaf641f",
+  "generated_at": "2026-09-25T04:06:32.675814+00:00",
+  "input_hash": "1584b2e34a318cbdb709b2f6e96c27c815e252bdb3c59d78f454af44be81c0c4",
   "nodes": [
     {
       "id": "make:setup",
@@ -47,7 +47,7 @@
       "label": "test",
       "kind": "make-target",
       "meta": {},
-      "group": "docs-check",
+      "group": null,
       "rank": 1
     },
     {
@@ -85,6 +85,38 @@
     {
       "id": "make:check-mermaid",
       "label": "check-mermaid",
+      "kind": "make-target",
+      "meta": {},
+      "group": "docs-check",
+      "rank": 0
+    },
+    {
+      "id": "make:kb-check",
+      "label": "kb-check",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 0
+    },
+    {
+      "id": "make:kb-index",
+      "label": "kb-index",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 0
+    },
+    {
+      "id": "make:kb-eval",
+      "label": "kb-eval",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 0
+    },
+    {
+      "id": "make:kb-graph",
+      "label": "kb-graph",
       "kind": "make-target",
       "meta": {},
       "group": "docs-check",
@@ -271,7 +303,7 @@
       "label": "eval-rollup",
       "kind": "make-target",
       "meta": {},
-      "group": "eval",
+      "group": null,
       "rank": 1
     },
     {
@@ -377,6 +409,38 @@
       "group": "ideas",
       "meta": {},
       "rank": 2
+    },
+    {
+      "id": "script:kb_check.py",
+      "label": "kb_check.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:kb_eval.py",
+      "label": "kb_eval.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:kb_graph.py",
+      "label": "kb_graph.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:kb_index.py",
+      "label": "kb_index.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
     },
     {
       "id": "script:lib/__init__.py",
@@ -611,6 +675,14 @@
       "rank": 0
     },
     {
+      "id": "script:lib/knowledge.py",
+      "label": "lib/knowledge.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/logger.py",
       "label": "lib/logger.py",
       "kind": "script",
@@ -787,6 +859,14 @@
       "rank": 2
     },
     {
+      "id": "script:local_today.py",
+      "label": "local_today.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 2
+    },
+    {
       "id": "script:nutrition.py",
       "label": "nutrition.py",
       "kind": "script",
@@ -815,6 +895,14 @@
       "label": "session_eval.py",
       "kind": "script",
       "group": "eval",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:setup_private.py",
+      "label": "setup_private.py",
+      "kind": "script",
+      "group": null,
       "meta": {},
       "rank": 2
     },
@@ -868,6 +956,13 @@
     {
       "id": "path:/data/archive/",
       "label": "/data/archive/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/data/config/",
+      "label": "/data/config/",
       "kind": "data-path",
       "meta": {},
       "rank": 0
@@ -1006,6 +1101,11 @@
       "kind": "invokes"
     },
     {
+      "from": "make:setup-private",
+      "to": "script:setup_private.py",
+      "kind": "invokes"
+    },
+    {
       "from": "make:doctor",
       "to": "script:doctor.py",
       "kind": "invokes"
@@ -1021,6 +1121,21 @@
       "kind": "invokes"
     },
     {
+      "from": "make:test",
+      "to": "script:kb_check.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:test",
+      "to": "script:kb_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:today",
+      "to": "script:local_today.py",
+      "kind": "invokes"
+    },
+    {
       "from": "make:lint",
       "to": "script:lint_daily.py",
       "kind": "invokes"
@@ -1032,6 +1147,31 @@
     },
     {
       "from": "make:check-mermaid",
+      "to": "script:check_mermaid.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:kb-check",
+      "to": "script:kb_check.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:kb-index",
+      "to": "script:kb_index.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:kb-eval",
+      "to": "script:kb_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:kb-graph",
+      "to": "script:kb_graph.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:kb-graph",
       "to": "script:check_mermaid.py",
       "kind": "invokes"
     },
@@ -1153,6 +1293,11 @@
     {
       "from": "make:eval-rollup",
       "to": "script:session_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:eval-rollup",
+      "to": "script:local_today.py",
       "kind": "invokes"
     },
     {
@@ -1392,6 +1537,21 @@
     },
     {
       "from": "script:doctor.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
+      "to": "path:/data/config/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
+      "to": "path:/data/user_profile.md",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
       "to": "path:/data/finance/",
       "kind": "reads"
     },
@@ -1443,6 +1603,21 @@
     {
       "from": "script:session_eval.py",
       "to": "path:/reports/evals/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:setup_private.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:setup_private.py",
+      "to": "path:/data/user_profile.md",
+      "kind": "reads"
+    },
+    {
+      "from": "script:setup_private.py",
+      "to": "path:/data/config/",
       "kind": "reads"
     },
     {

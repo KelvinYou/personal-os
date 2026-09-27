@@ -5,7 +5,7 @@ PYTHON := .venv/bin/python3
 DAILY_DIR := data/daily
 SCRIPTS_DIR := scripts
 TEMPLATES_DIR := templates
-TODAY := $(shell TZ=Asia/Kuala_Lumpur date +%Y-%m-%d)
+TODAY = $(shell $(PYTHON) $(SCRIPTS_DIR)/local_today.py)
 IDEAS_ROOT ?= data/ideas
 IDEA_INPUT ?= templates/startup-idea-input.yaml
 IDEA_MODE ?= single
@@ -13,7 +13,7 @@ IDEA_ENGINE ?= demo
 IDEA_MODEL ?= sonnet
 IDEA_CONFIG ?= config/idea_pipeline.yaml
 
-.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint check-mermaid migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
+.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint check-mermaid kb-check kb-index kb-eval kb-graph migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -27,13 +27,11 @@ setup-ideas:
 	@.venv/bin/pip install --quiet -r requirements-ideas.txt
 	@echo "[Status: OK] optional idea-pipeline model dependency installed."
 
-## checkout private data submodule (需 personal-os-data 权限)
-## 注意: 本机 .git/config 有 submodule.data.update=none（.gitmodules 里没有），
-## 直接 git submodule update --init data 只会输出 Skipping。这里显式覆盖，
-## 且只作用于本次命令，不写回 .git/config。
+## Attach your own private data repository; never alters existing data/.
+## Usage: make setup-private DATA_REPO=git@github.com:you/my-data.git
 setup-private:
-	@git -c submodule.data.update=checkout submodule update --init data
-	@echo "[Status: OK] data submodule 已 checkout。"
+	@if [ -z "$(DATA_REPO)" ]; then echo "Usage: make setup-private DATA_REPO=<your-private-repo-url>"; exit 1; fi
+	@python3 $(SCRIPTS_DIR)/setup_private.py --repo "$(DATA_REPO)"
 
 ## 环境自检 (区分 error / expected / warning)
 doctor:
@@ -47,6 +45,8 @@ doctor-web:
 test:
 	@$(PYTHON) -m unittest discover -s tests -t . -v
 	@python3 $(SCRIPTS_DIR)/check_mermaid.py
+	@$(PYTHON) $(SCRIPTS_DIR)/kb_check.py
+	@$(PYTHON) $(SCRIPTS_DIR)/kb_eval.py
 	@if [ -d web/node_modules ]; then \
 		cd web && npm run --silent typecheck && echo "[Status: OK] web typecheck 通过"; \
 	else \
@@ -55,6 +55,7 @@ test:
 
 ## 生成今天的日志模板 (如果不存在)
 today:
+	@$(PYTHON) $(SCRIPTS_DIR)/local_today.py >/dev/null
 	@if [ -f $(DAILY_DIR)/$(TODAY).md ]; then \
 		echo "[Status: OK] $(TODAY).md already exists."; \
 	else \
@@ -87,12 +88,29 @@ travel-lint:
 check-mermaid:
 	@python3 $(SCRIPTS_DIR)/check_mermaid.py
 
+## Validate knowledge-note frontmatter, links, freshness, and the public/private boundary
+kb-check:
+	@$(PYTHON) $(SCRIPTS_DIR)/kb_check.py
+
+## Generate the compact knowledge catalog (docs/knowledge/_catalog.md is ignored)
+kb-index:
+	@$(PYTHON) $(SCRIPTS_DIR)/kb_index.py --write-catalog
+
+## Run the knowledge retrieval golden queries
+kb-eval:
+	@$(PYTHON) $(SCRIPTS_DIR)/kb_eval.py
+
+## Generate and portability-check the disposable Mermaid knowledge graph
+kb-graph:
+	@$(PYTHON) $(SCRIPTS_DIR)/kb_graph.py
+	@python3 $(SCRIPTS_DIR)/check_mermaid.py docs/knowledge/_graph.md
+
 ## Validate an idea input without model calls
 ## Usage: make idea-validate IDEA_INPUT=path/to/input.yaml
 idea-validate:
 	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py validate --input $(IDEA_INPUT) $(if $(EVALUATED_AT),--evaluated-at $(EVALUATED_AT),)
 
-## Create the private idea record (requires the data submodule)
+## Create the private idea record (requires the owner's data repository)
 ## Usage: make idea-init IDEA_INPUT=path/to/input.yaml
 idea-init:
 	@$(PYTHON) $(SCRIPTS_DIR)/idea_pipeline.py init --input $(IDEA_INPUT) --output-dir $(IDEAS_ROOT)
@@ -207,7 +225,7 @@ evals-list:
 ## 月度 signal 汇总 —— meta-coach 读这份，不读单条 eval
 ## 用法: make eval-rollup 或 make eval-rollup MONTH=2026-07
 eval-rollup:
-	@python3 $(SCRIPTS_DIR)/session_eval.py --rollup $(if $(MONTH),$(MONTH),$(shell TZ=Asia/Kuala_Lumpur date +%Y-%m))
+	@python3 $(SCRIPTS_DIR)/session_eval.py --rollup $(if $(MONTH),$(MONTH),$(shell $(PYTHON) $(SCRIPTS_DIR)/local_today.py --month))
 
 ## 季度身份审计 (需 ≥ 12 周日志)
 ## 用法: make quarterly 或 make quarterly QUARTER=2026-Q1
@@ -225,7 +243,7 @@ help:
 	@echo "Personal-OS Commands:"
 	@echo "  make setup              — 建立 .venv 并安装 requirements.txt"
 	@echo "  make setup-ideas        — install optional Claude SDK for idea evaluation"
-	@echo "  make setup-private      — checkout private data submodule (需权限)"
+	@echo "  make setup-private DATA_REPO=... — attach your own private data repository"
 	@echo "  make doctor             — 环境自检 (error / expected / warning)"
 	@echo "  make test               — Python 测试 + web typecheck"
 	@echo "  make today              — 生成今天的日志模板"

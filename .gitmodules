@@ -1,6 +1,3 @@
-[submodule "data"]
-	path = data
-	url = https://github.com/KelvinYou/personal-os-data.git
 [submodule "repos/portfolio-website"]
 	path = repos/portfolio-website
 	url = https://github.com/KelvinYou/portfolio-website.git

@@ -2,11 +2,19 @@ __pycache__/
 *.pyc
 .venv/
 
-# === Privacy: 个人隐私数据通过 submodule data/ (personal-os-data) 管理 ===
+# === Privacy: each user owns a separate, untracked private data repository ===
+/data/
 weekly_report_prompt.md
 .claude/projects/*/memory/
 .claude/skills/*-workspace/
 .agents/skills/*-workspace/
+
+# === Generated knowledge views ===
+docs/knowledge/_catalog.md
+docs/knowledge/_graph.md
+
+# === Obsidian local configuration ===
+.obsidian/
 
 # === Secrets ===
 .env

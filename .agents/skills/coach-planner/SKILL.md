@@ -78,10 +78,10 @@ Read the following files to build situational awareness:
    if you find yourself writing out a full day of meals, you have almost certainly skipped this file.
 1. **Recent daily logs** — Read the last 3 days of logs from `daily/` (including today if it exists).
    Use `ls -t daily/*.md | head -5` to find the most recent files.
-   Note: unfilled manual fields are **not** failures — `config/thresholds.yaml` `logging_defaults` defines the
+   Note: unfilled manual fields are **not** failures — `data/config/thresholds.yaml` `logging_defaults` defines the
    baseline they resolve to (silence = executed to baseline). Never read an empty `energy_level` as "bad day",
    and never scold the user for not logging.
-2. **Config** — Read `config/thresholds.yaml` for all threshold values and circuit breaker rules.
+2. **Config** — Read `data/config/thresholds.yaml` for all threshold values and circuit breaker rules.
 3. **User profile** — Read `data/user_profile.md` for schedule baselines, dietary macros, fitness architecture.
    **Read its §0 first** — it resolves every `{{placeholder}}` used in this skill and its references.
 4. **Latest weekly report** — Read the most recent report from `reports/` (use `ls -t reports/*.md | head -1`).
@@ -113,8 +113,9 @@ Rules:
 
 - Resolve every placeholder **before** doing arithmetic or writing a plan. Never emit a literal `{{...}}` to
   the user, and never substitute a value you remember from an earlier session.
-- If `data/user_profile.md` is missing or has no §0, **stop** and tell the user the `data/` submodule looks
-  uninitialized (`git submodule update --init data`). Do not proceed with guessed baselines.
+- If `data/user_profile.md` is missing or has no §0, **stop** and tell the user their
+  private `data/` repository needs a profile (`make setup-private DATA_REPO=...` if unattached).
+  Do not proceed with guessed baselines.
 - If a placeholder has no entry in §0, ask the user for that one value and suggest adding it to §0.
 
 ### Step 2: Assess Current State

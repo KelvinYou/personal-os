@@ -21,7 +21,7 @@ from pydantic import BaseModel, ConfigDict, NonNegativeFloat, model_validator
 ROOT = Path(__file__).resolve().parents[3]
 
 # 两个 root，因为这里有两类事实，隐私属性相反：
-#   data/finance/ — 私有 submodule。"我有多少、放在哪" 。无权限时整个目录缺席。
+#   data/finance/ — 用户自己的独立私仓。"我有多少、放在哪"。未接入时目录缺席。
 #   market/       — public。"市场今天挂什么价"。没有个人信息，永远该存在。
 # 2026-08-12 拆分：此前 interest_rates/fx 混在私仓里，后果是改一行公开利率
 # 要在私仓提交 + 在父仓 bump submodule，而且往 catalog 里写私人余额毫无阻力

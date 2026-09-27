@@ -1,21 +1,21 @@
 ---
 # ============================================================
-#  只记例外 (Exception-based logging) — W34 起
-#  完美执行日：只填 energy，其余全部留空。留空 = 按基线执行，不扣分。
-#  基线值见 config/thresholds.yaml 的 `logging_defaults`。
+#  只记例外 (Exception-based logging)
+#  仅当私有 data/config/thresholds.yaml 已由本人确认时，留空字段才按
+#  logging_defaults 评分；缺少当天日志不会生成数据。
 # ============================================================
 
-energy_level:           # 1-10；留空 = 7
+energy_level:           # 1-10；留空时按个人 logging_defaults 评分
 
 # 下面全部可选，只在**偏离基线**那天写：
-# deep_work_hours:      # 留空 = 工作日 8h / 周末 0h
-# mental_load:          # 留空 = 3
-# caffeine_cutoff:      # 留空 = 14:00 (合规)
+# deep_work_hours:      # 留空 = 个人配置中的工作日/周末基线
+# mental_load:          # 留空 = 个人配置中的基线
+# caffeine_cutoff:      # 留空 = 个人配置中的时间
 # adherence:
 #   timetable:          # 留空 = ✅ 按 standard_week 执行；偏离才写 ⚠️ / 🔴
 #   deviation_note:     # 写 ⚠️/🔴 时补一行根因
 # primary_blocker:      # 仅 incident 当日写一行
-# daily_spend:          # 留空 = 全自炊基线 RM24.13；有外食才逐项写
+# daily_spend:          # 留空 = 个人配置中的日常支出基线；额外支出才逐项写
 #   - item: 描述
 #     amount: 0.0
 #     category: food
@@ -33,7 +33,8 @@ body:
   bone_mass_kg:       # 骨量 (kg)
   basal_metabolism:   # 基础代谢 (kcal)
 
-# === COROS 自动同步 (make sync-coros) — 不要手填，也不参与兜底 ===
+# === 健康数据：启用 COROS 时由 make sync-coros 写入；否则可手填实测值 ===
+# === 不参与基线兜底；启用同步后，脚本会覆盖同名手填字段 ===
 sleep:
   duration:           # 总睡眠时长 (小时, e.g. 7.65)
   deep_min:           # 深睡 (分钟)
@@ -51,7 +52,7 @@ readiness:
   tired_rate:         # 疲劳指数 (负值=偏疲劳)
   ati:                # 急性训练负荷 (Acute TI)
   cti:                # 慢性训练负荷 / 基础体能 (Chronic TI)
-  load_ratio:         # ATI/CTI (>1.5 警示过训)
+  load_ratio:         # ATI/CTI；预警阈值见个人配置
   stamina_level:      # 体能储备 0-100 (跑步后更新)
   performance:        # -1 / 0 / +1
 training:

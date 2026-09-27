@@ -361,7 +361,7 @@ def run(hot_days: int, fitness_days: int, apply: bool, today: date | None = None
 
     print("\n" + "=" * 60)
     if apply:
-        print("[Status: OK] 归档完成。data/ 是 submodule，记得进去 commit。")
+        print("[Status: OK] 归档完成。记得到独立的 data/ 私仓中 review 和 commit。")
     else:
         print("[Status: OK] Dry-run 完成，未改动任何文件。加 APPLY=1 真写。")
     print("=" * 60)

@@ -55,7 +55,7 @@ EVALS_DIR = PROJECT_ROOT / "reports" / "evals"
 
 # Signal thresholds.
 #
-# These deliberately do NOT live in config/thresholds.yaml. That file is
+# These deliberately do NOT live in data/config/thresholds.yaml. That file is
 # pydantic-validated and loaded through the venv; this script has to run when
 # the venv is the thing that broke, which is exactly when a bad session needs
 # explaining. One named block, no bare numbers downstream.

@@ -220,7 +220,7 @@ def generate_weekly_synthesis(target_date: date | None = None) -> None:
     lines.append("")
     lines.append(coverage.detail_md(cfg.logging_defaults.coverage_warn_ratio))
     lines.append(
-        "> 兜底字段来自 `config/thresholds.yaml` 的 `logging_defaults`。"
+        "> 兜底字段来自 `data/config/thresholds.yaml` 的 `logging_defaults`。"
         "**不要因为字段是兜底的就扣分** —— 惩罚沉默正是这套机制要拆掉的东西。"
         "覆盖率低时在报告顶部标 `[Status: Low Confidence]`，并在明细表把兜底值写成 `8~` 这种形式。"
     )

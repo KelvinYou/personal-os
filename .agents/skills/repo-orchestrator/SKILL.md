@@ -16,7 +16,8 @@ allowed-tools: Bash, Read, Glob, Grep
 # Repo Orchestrator
 
 Personal-OS is a multi-repository system, not just the root checkout. A parent
-commit records submodule pointers, while the real implementation may live in
+commit records public submodule pointers. Each user owns a separate private
+`data/` repository whose pointer is never recorded by the parent. Implementation may live in
 `data/`, `repos/ai-stock-analysis/`, or `repos/portfolio-website/`. The purpose
 of this skill is to make that integration state visible and verifiable before
 any irreversible Git operation.
@@ -51,7 +52,7 @@ single-repository commit writing.
    plans, README files, or skill references.
 5. Use the project's status vocabulary: `[Status: OK]`, `[Status: Warning]`,
    `[Status: Critical]`, and `[Status: Expected]` for an intentional boundary
-   such as an unavailable private `data` submodule.
+   such as an unattached private `data` repository.
 6. Never report a parent pointer as clean merely because the gitlink changed.
    Inspect the child worktree separately and distinguish committed child HEAD
    from uncommitted files.
@@ -92,9 +93,11 @@ git -C <submodule> status --short --branch
 git -C <submodule> log --oneline -5
 ```
 
-If a submodule is absent or uninitialized, report whether that is expected:
+Inspect `data/` separately with `git -C data status` only if it is an independently
+initialized repository; it has no parent gitlink. If a repository is absent or
+uninitialized, report whether that is expected:
 
-- `data/` is private and may be unavailable in a public-only checkout;
+- `data/` is the owner's private repository and may be unavailable in a public-only checkout;
   classify this as `[Status: Expected]` for checks that do not require private
   data, and `[Status: Warning]` or `[Status: Critical]` only when the requested
   operation needs it.
@@ -110,13 +113,13 @@ For each dirty or recently changed repository, record:
 | Field | Meaning |
 |---|---|
 | Repo | root, data, ai-stock-analysis, or portfolio-website |
-| Recorded pointer | gitlink recorded by the parent, if applicable |
+| Recorded pointer | gitlink recorded by the parent for public submodules; none for `data/` |
 | Actual HEAD | child commit currently checked out |
 | Worktree | clean, modified, untracked, or unavailable |
 | Changed areas | data, pipeline, web, skills, docs, config, tests |
 | Next gate | the narrowest relevant validation command |
 
-A parent pointer update is only ready when the child worktree changes are
+A public submodule parent pointer update is only ready when the child worktree changes are
 committed in the child repository. If the child is dirty, show the files and
 state that the parent can only record the current commit, not the uncommitted
 files.
@@ -135,7 +138,7 @@ Before proposing a parent bump, check the relevant invariants:
   layers. Flag stale status claims instead of silently editing historical docs.
 - `templates/daily.md`, `scripts/lib/schema.py`, and migration/lint logic move
   together for daily-log schema changes.
-- `config/thresholds.yaml` owns thresholds; do not accept new magic numbers in
+- `data/config/thresholds.yaml` owns thresholds; do not accept new magic numbers in
   scripts or skills.
 - Python owns wealth valuation and report mathematics. TypeScript consumes the
   report contract and must not reimplement the calculation.

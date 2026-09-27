@@ -9,7 +9,7 @@ runtime data.
 - `data/protocol/standard_week.md`: the single human-readable owner of the standing timetable.
 - `data/protocol/standard_week.yaml`: the Calendar anchors projection of the standing timetable.
 - `data/user_profile.md`: personal schedule, diet, training preferences, and phase targets.
-- `config/thresholds.yaml`: sleep, HRV, training, and circuit breaker thresholds.
+- `data/config/thresholds.yaml`: sleep, HRV, training, and circuit breaker thresholds.
 - `data/reports/YYYY-w##-delta.md`: records only exception-week changes relative to the standing protocol.
 
 Every scheduling pass reads `data/protocol/standard_week.md` first, then profile, daily logs, and the
@@ -24,7 +24,7 @@ timetable.
   or one-off experiment changes actual time blocks.
 - An exception week's delta must express "what changed relative to which part of the protocol" — don't
   copy the full meal plan, training table, or timetable.
-- The training gate uses `config/thresholds.yaml` and the latest log evidence; when data is missing,
+- The training gate uses `data/config/thresholds.yaml` and the latest log evidence; when data is missing,
   preserve the uncertainty rather than guessing a baseline.
 - Preserve at least the recovery interval between training end and lights-out required by the
   project's protocol/evidence; the specific time is resolved from private data.
@@ -109,7 +109,7 @@ Present as a Draft and wait for user confirmation before saving. Only after conf
 When a training day is included, the schedule row should only give a summary; the detailed section
 should include:
 
-1. HRV / sleep gate: thresholds come from `config/thresholds.yaml` — don't copy the numbers.
+1. HRV / sleep gate: thresholds come from `data/config/thresholds.yaml` — don't copy the numbers.
 2. Weight table: weights come from the equipment tiers in the private `standard_week.md`; when
    unchanged, reference the last confirmed protocol.
 3. Each training day's exercises, sets/reps, tempo, rest between sets, execution cues, and de-load

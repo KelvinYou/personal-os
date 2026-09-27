@@ -29,7 +29,7 @@ from lib.flows import compute_input_hash  # noqa: E402
 # 不指向它就没法证明「data 缺失被报成 expected 而不是 error」。
 ROOT = Path(os.environ.get("PERSONAL_OS_ROOT") or Path(__file__).resolve().parents[1])
 VENV_PY = ROOT / ".venv" / "bin" / "python3"
-# 私仓的持仓文件：无权限时缺席是 expected。
+# Finance is optional; core private configuration is required for personal runs.
 FINANCE_FILES = ("savings.yaml", "portfolio.yaml", "policy.yaml")
 # public 的市场数据：任何 checkout 都该有，缺了就是 error（不再享受 data/ 的豁免）。
 MARKET_FILES = ("interest_rates.yaml", "fx.yaml")
@@ -81,22 +81,48 @@ def check_python(r: Report) -> bool:
 
 
 def check_private_data(r: Report) -> bool:
+    data = ROOT / "data"
+    if not data.exists() or not any(data.iterdir()):
+        r.add("expected", "Private data", "尚未接入自己的 data 仓库", ["make setup-private DATA_REPO=<your-private-repo-url>"])
+        return False
+    probe = subprocess.run(["git", "-C", str(data), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    repo_attached = probe.returncode == 0 and Path(probe.stdout.strip()).resolve() == data.resolve()
+    if not repo_attached:
+        r.add("warning", "Private repository", "data/ 有文件，但不是独立 Git 仓库；现有文件未被更改", ["先把现有 data/ 内容安全迁入你自己的私仓"])
+    else:
+        r.add("ok", "Private repository", "data/ 是独立 Git 仓库")
+
+    settings = data / "config" / "settings.yaml"
+    thresholds = data / "config" / "thresholds.yaml"
+    if not settings.is_file() or not thresholds.is_file():
+        r.add("error", "Personal configuration", "缺少 data/config/settings.yaml 或 thresholds.yaml", ["从 templates/*.example.yaml 复制并逐项设置"])
+    elif VENV_PY.is_file():
+        check = subprocess.run(
+            [str(VENV_PY), "-c", "import sys; sys.path.insert(0, 'scripts'); from lib.clock import user_timezone; from lib.config import load_thresholds; user_timezone(); load_thresholds()"],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        if check.returncode:
+            r.add("error", "Personal configuration", (check.stderr.strip().splitlines() or ["配置无效"])[-1], ["核对 owner_configured、timezone 和 thresholds schema"])
+        else:
+            r.add("ok", "Personal configuration", "私有时区与阈值已验证")
+    profile = data / "user_profile.md"
+    if not profile.is_file() or "TODO:" in profile.read_text(encoding="utf-8"):
+        r.add("warning", "User profile", "data/user_profile.md 尚未填写；排期与个人建议不可用")
+
     finance = ROOT / "data" / "finance"
     missing = [f for f in FINANCE_FILES if not (finance / f).is_file()]
     if not missing:
         r.add("ok", "Private data", "data/finance/*.yaml 已 checkout")
-        return True
+        return repo_attached
     r.add(
         "expected",
         "Private data",
-        f"data/finance/ 缺 {', '.join(missing)} —— public-only checkout 的预期状态，不是故障",
+        f"data/finance/ 缺 {', '.join(missing)} —— 理财模块尚未配置",
         [
-            "有 private repo 权限: make setup-private",
-            "无权限: make wealth / make web 不可用；其余命令不受影响",
-            "clone 时 --recurse-submodules 对 data 报 repository not found 同属预期",
+            "make wealth / make web 需要完整 finance 文件",
         ],
     )
-    return False
+    return repo_attached
 
 
 def check_market_data(r: Report) -> None:

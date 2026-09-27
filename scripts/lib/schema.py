@@ -128,7 +128,7 @@ class DailyLog(BaseModel):
         return v
 
 
-# --- Thresholds (config/thresholds.yaml) ---
+# --- Thresholds (data/config/thresholds.yaml) ---
 
 class DeepWorkCfg(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -193,7 +193,7 @@ class CaffeineCfg(BaseModel):
 
 
 class LoggingDefaultsCfg(BaseModel):
-    """Baselines used to resolve *unfilled manual* fields (config/thresholds.yaml).
+    """Baselines used to resolve *unfilled manual* fields (data/config/thresholds.yaml).
 
     Consumed by scripts/lib/defaults.py. Never applied to COROS blocks or body.*
     (see the三条边界 comment in thresholds.yaml), and never applied on the breaker
@@ -269,7 +269,8 @@ class Scoring(BaseModel):
 
 
 class Thresholds(BaseModel):
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="forbid")
+    owner_configured: Literal[True]
     deep_work: DeepWorkCfg
     sleep: SleepCfg
     energy: EnergyCfg

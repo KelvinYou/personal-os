@@ -124,7 +124,7 @@ scope remain explicit. Do not silently turn an incomplete total into net worth.
 
 Separate executable configuration from external facts:
 
-- `config/thresholds.yaml` owns engine thresholds and breaker rules;
+- `data/config/thresholds.yaml` owns engine thresholds and breaker rules;
 - `config/wealth_rules.yaml` contains public regulatory facts only, with
   `source` and `verified_at`, and must have an actual consumer if its file
   header promises freshness behavior;

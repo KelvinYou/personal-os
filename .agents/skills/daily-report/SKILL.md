@@ -27,7 +27,7 @@ $ARGUMENTS
 
 **If the brain dump doesn't mention a field, leave it blank — don't infer it, don't backfill it, don't make something up just to "fill it in".**
 
-Blank = fall back to the `logging_defaults` baseline in `config/thresholds.yaml`; scoring auto-covers it with no penalty.
+Blank = fall back to the `logging_defaults` baseline in `data/config/thresholds.yaml`; scoring auto-covers it with no penalty.
 This is deliberate design, not missing data. The actual failure mode runs the other way: the 2026-08-09 log got backfilled with
 `deep_work_hours: 0` + `adherence: ✅`, guessed by the agent — that both polluted the dataset and contradicted the baseline rule itself.
 **A guessed value is far more harmful than a blank one** — a blank value tells the system to fall back to baseline; a guessed value gets treated as a real measurement.
@@ -44,11 +44,12 @@ Only fill a field when the brain dump **actually mentions** it:
   `deviation_note` line with the root cause. Followed the plan or not mentioned → leave blank (baseline ✅)
 - `primary_blocker`: **only write a line when there was an actual incident that day**. Everyday griping (tired, slept badly) doesn't count —
   that's already captured in COROS data. Writing it here would make the archive script mistakenly treat it as an event day whose original text must be preserved
-- `daily_spend`: **only itemize when there was eating out / extra spend**. A fully home-cooked day is left blank (baseline RM24.13/day, sourced from
-  `data/protocol/standard_week.md` §7 grocery list). If there was eating out, estimate the home-cooked portion too, using unit prices
+- `daily_spend`: itemize actual extra spending when supplied. Resolve any normal-day baseline from the owner's
+  `data/config/thresholds.yaml` and protocol; do not use a currency or amount from this public skill.
 - `body.*`: fill only if the user provided actual measurements, otherwise leave blank. **Never falls back to a baseline** — no measurement means no data
-- `sleep.*` / `readiness.*` / `training.*` / `activities[]`: **auto-filled by COROS** (`make sync-coros`),
-  the brain dump doesn't need to touch these; don't overwrite existing values already in the file. Also never falls back to a baseline
+- `sleep.*` / `readiness.*` / `training.*` / `activities[]`: when COROS is enabled, `make sync-coros`
+  owns these fields; never overwrite its values from a brain dump. Without COROS, enter only measurements
+  the user actually supplied. They never fall back to a baseline.
 
 ### Markdown body
 
@@ -69,7 +70,8 @@ has been removed. It turned "a day executed on baseline" into a to-do item, whic
 
 Only flag a gap that truly cannot fall back to a baseline, and only flag it once:
 
-- Missing COROS data (`sleep.duration` is empty) → `[Status: Warning] COROS not synced, run make sync-coros`
+- Missing sleep measurements → flag once if they are needed for the requested assessment;
+  suggest `make sync-coros` only when the owner actually uses COROS.
 - The user clearly mentioned a value but you couldn't parse it → ask the user directly, don't guess
 
 ## Output requirements

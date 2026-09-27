@@ -39,7 +39,7 @@ When the user triggers this skill, execute these steps in order:
 3. Read all daily log files for the target week in full — do NOT rely on the 500-char truncation in the prompt file. Read each `daily/YYYY-MM-DD.md` completely to capture highlights, blockers, nutrition details, and any narrative context.
 
 4. Read these reference files:
-   - `config/thresholds.yaml` — all scoring thresholds and circuit breaker rules
+   - `data/config/thresholds.yaml` — owner's scoring thresholds and circuit breaker rules
    - `data/user_profile.md` — schedule baselines, dietary macros, fitness architecture
 
 5. Check for the previous week's report in `data/reports/` (e.g., if generating W13, look for `*-w12-*.md`). If found, read it to enable week-over-week trend comparison and to check whether last week's 3 core objectives were achieved.
@@ -62,14 +62,14 @@ subjective criteria and (2) apply qualitative bonus/penalty on top.
 - `caffeine_compliance` (fraction of days with cutoff ≤ 14:00 → 3 pts max)
 - `sleep_duration_consistency` (stddev of nightly durations → 2 pts max)
 
-Thresholds live in `config/thresholds.yaml` under `scoring:` — treat that file
+Thresholds live in `data/config/thresholds.yaml` under `scoring:` — treat that file
 as the source of truth. If you think a criterion should score differently than
 what the prompt shows, that is a rubric change, not an AI override.
 
 #### Baseline-filled fields — do NOT penalize them
 
 From W34 onward, unfilled manual fields resolve to `logging_defaults` in
-`config/thresholds.yaml`: **silence means the baseline was executed**, not that
+`data/config/thresholds.yaml`: **silence means the baseline was executed**, not that
 nothing happened. Before this, a missing field scored 0 without shrinking the
 denominator, so ~68 of the 100 points punished not-logging as if it were
 not-doing — which is what drove the logging to collapse in the first place.
@@ -205,7 +205,7 @@ Before writing the file, recompute — don't trust your own draft:
 
 1. **Re-derive the deterministic base score independently.** Pull the raw
    metrics from `weekly_report_prompt.md` and the thresholds from
-   `config/thresholds.yaml`, redo the arithmetic yourself, and diff it against
+   `data/config/thresholds.yaml`, redo the arithmetic yourself, and diff it against
    "Deterministic Base Score" in the prompt file. If they disagree, that's a
    bug in `scripts/lib/score.py` or a stale threshold, not something to
    silently paper over — report the discrepancy instead of picking a number.

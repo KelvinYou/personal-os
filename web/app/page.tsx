@@ -24,8 +24,8 @@ export default async function Page() {
           <p className="mt-3 text-sm text-muted-foreground">
             仪表盘不自己算数，它渲染 <code>scripts/wealth_check.py --json</code> 的输出。
             先在仓库根目录跑 <code>make wealth</code> 看错误。
-            若 data submodule 未 checkout：
-            <code>git submodule update --init data</code>。
+            若尚未接入自己的私有数据仓库，先运行
+            <code>make setup-private DATA_REPO=&lt;你的私仓 URL&gt;</code>。
           </p>
           {result.detail && (
             <pre className="mt-4 overflow-x-auto rounded-lg border bg-muted/40 p-3 text-[11px] text-muted-foreground">

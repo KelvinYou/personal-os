@@ -80,14 +80,14 @@ def _store(args: argparse.Namespace) -> IdeaStore:
             return IdeaStore(configured)
         if not (private_data / ".git").exists():
             raise StorageError(
-                "output directory is inside the private data submodule, but the "
-                "submodule is not checked out; run make setup-private"
+                "output directory is inside data/, but the owner's private "
+                "repository is not attached; run make setup-private DATA_REPO=..."
             )
         return IdeaStore(configured)
     private_data = PROJECT_ROOT / "data"
     if not (private_data / ".git").exists():
         raise StorageError(
-            "private data submodule is not checked out; run make setup-private "
+            "private data repository is not attached; run make setup-private DATA_REPO=... "
             "or pass --output-dir to an explicitly private working directory"
         )
     return IdeaStore(DEFAULT_IDEAS_ROOT)

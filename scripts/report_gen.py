@@ -132,7 +132,7 @@ def adherence_drift_alerts(logs: list, drift_days: int) -> list[str]:
         `metrics._consec_poor_up_to` 对「缺日」的处理一致。
 
     这里刻意**不**走 `lib.defaults` 的兜底填充：defaults 只用于评分，不用于告警
-    （见 config/thresholds.yaml `logging_defaults` 注释第 2 条 + DECISIONS §2）。
+    （见 data/config/thresholds.yaml `logging_defaults` 注释第 2 条 + DECISIONS §2）。
     代价是本函数硬编码了「留空 ≡ ✅」这个假设，而 `logging_defaults.adherence` 是
     它的声明 owner —— 两者一旦分叉就静默失配，所以由 tests/test_logic_engine.py
     的 parity 测试钉住。

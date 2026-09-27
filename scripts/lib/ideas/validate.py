@@ -6,7 +6,7 @@ from typing import Iterable
 from uuid import uuid4
 
 from .canonical import sha256_hex
-from ..clock import KL_TIMEZONE, now_kl
+from ..clock import now_kl, user_timezone
 from .models import EvaluationContext, EvaluationInput, EvidenceItem
 
 
@@ -40,7 +40,7 @@ def _ensure_aware(value: datetime, label: str) -> None:
 def _validate_evidence_dates(
     evidence: list[EvidenceItem], *, evaluated_at: datetime, input_: EvaluationInput
 ) -> None:
-    evaluated_date = evaluated_at.astimezone(KL_TIMEZONE).date()
+    evaluated_date = evaluated_at.astimezone(user_timezone()).date()
     for item in evidence:
         if item.retrieved_at > evaluated_date:
             raise ContextValidationError(
@@ -93,7 +93,7 @@ def validate_context(
     """Validate user-owned context and assign validator-owned run metadata."""
     evaluated_at = now or now_kl()
     _ensure_aware(evaluated_at, "evaluated_at")
-    evaluated_date = evaluated_at.astimezone(KL_TIMEZONE).date()
+    evaluated_date = evaluated_at.astimezone(user_timezone()).date()
 
     if not input_.unknowns_declared:
         raise ContextValidationError(
