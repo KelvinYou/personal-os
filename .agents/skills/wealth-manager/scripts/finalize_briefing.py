@@ -1,8 +1,7 @@
-"""Assemble a final briefing.json from in-session (no-API-key) analyst/debate/synthesis output.
+"""Assemble a final briefing.json from current-session analyst/debate/synthesis output.
 
-Used by the wealth-manager skill's "In-Session Pipeline" mode: Claude (via the Agent tool,
-running in the current Claude Code session) produces the JSON for each layer instead of the
-official ai-stock-analysis CLI (which needs claude-agent-sdk + ANTHROPIC_API_KEY). This script
+Used by the wealth-manager skill's In-Session Pipeline mode: the current assistant session
+produces the JSON for each layer instead of the SDK-backed CLI. This script
 plugs that JSON into the *actual* ai-stock-analysis Pydantic models and RiskChecker so the
 deterministic risk math (ATR-based stop/target levels, drawdown, and volatility) is identical to
 what the official research pipeline would produce — no re-implementing that logic by hand.
@@ -23,13 +22,14 @@ Input JSON shapes must match:
     --research-verdict: optional {...ResearchVerdict} from Layer 3.5
     --synthesis:       {"overall_signal": "...", "conviction": {...}, "executive_summary": "...",
                          "bull_case": "...", "bear_case": "...", "key_uncertainties": [...],
-                         "catalysts_upcoming": [...], "agent_signal_breakdown": {...}}
-                        (same shape as SynthesizerAgent.BRIEFING_OUTPUT_SCHEMA)
+                         "catalysts_upcoming": [...]}
+        (agent signal breakdown and convergence are recomputed deterministically; the
+         legacy input convergence field is optional and ignored)
 
 Writes analyst_reports.json, debate_result.json, briefing.json, and (when supplied)
 research_verdict.json into data/<TICKER>/, each tagged with
-"pipeline_mode": "in-session-claude-code" so downstream readers know these came from the
-current Claude Code session's own reasoning, not the official Haiku/Opus/Sonnet-routed CLI.
+"pipeline_mode": "in-session" so downstream readers know these came from the current
+assistant session.
 
 If STORAGE_BACKEND=supabase (checked via the repo's own Settings/.env — the same config
 `stock-fetch` and the official `stock-analysis` CLI honor), the supplied artifacts are also pushed
@@ -55,7 +55,14 @@ from stock_analysis.models.agent_reports import AnalystReports
 from stock_analysis.models.debate import DebateResult, ResearchVerdict
 from stock_analysis.models.market_data import TickerData
 from stock_analysis.models.synthesis import Briefing, ConvictionScore, RiskAssessment
-from stock_analysis.synthesis.risk_checker import RiskChecker
+from stock_analysis.synthesis.risk_checker import RiskChecker, is_actionable
+from stock_analysis.synthesis.synthesizer import (
+    _reconcile_conviction,
+    calibrate_conviction_score,
+    compute_directional_consensus,
+    compute_signal_convergence,
+    deterministic_agent_signal_breakdown,
+)
 
 
 def load_ticker_data(ticker: str, market: str, data_dir: Path) -> TickerData:
@@ -166,13 +173,43 @@ def main():
 
     from stock_analysis.models.agent_reports import Signal
 
-    signal = Signal(synthesis_raw["overall_signal"])
-    conviction = ConvictionScore(**synthesis_raw["conviction"])
+    synthesized_signal = Signal(synthesis_raw["overall_signal"])
+    raw_conviction_input = synthesis_raw["conviction"]
+    # Match the official synthesizer: the input's legacy convergence is optional
+    # and ignored; only score/explanation are used before deterministic recompute.
+    raw_conviction = ConvictionScore(
+        score=raw_conviction_input["score"],
+        signal_convergence=0.0,
+        explanation=raw_conviction_input["explanation"],
+    )
+    directional_consensus = compute_directional_consensus(analyst_reports)
+    conviction = ConvictionScore(
+        score=calibrate_conviction_score(
+            synthesized_signal,
+            raw_conviction.score,
+            directional_consensus,
+        ),
+        signal_convergence=compute_signal_convergence(analyst_reports),
+        explanation=raw_conviction.explanation,
+    )
+    conviction = _reconcile_conviction(synthesized_signal, conviction)
+    signal = synthesized_signal
+    signal_gate_reasons = []
+    if signal in (Signal.STRONG_BUY, Signal.BUY, Signal.SELL, Signal.STRONG_SELL) and not is_actionable(
+        conviction.score,
+        conviction.signal_convergence,
+    ):
+        signal_gate_reasons.append("synthesis_actionability_gate_failed")
+        signal = Signal.NEUTRAL
+        conviction = conviction.model_copy(update={"score": 0.0})
 
     briefing = Briefing(
         ticker=ticker,
         date=datetime.now(ZoneInfo("Asia/Kuala_Lumpur")).date().isoformat(),
+        data_as_of=ticker_data.price_history[-1].date.isoformat() if ticker_data.price_history else None,
         overall_signal=signal,
+        synthesized_signal=synthesized_signal,
+        signal_gate_reasons=signal_gate_reasons,
         conviction=conviction,
         executive_summary=synthesis_raw["executive_summary"],
         bull_case=synthesis_raw["bull_case"],
@@ -184,7 +221,7 @@ def main():
             max_drawdown_scenario="pending",
         ),
         research_verdict=research_verdict,
-        agent_signal_breakdown=synthesis_raw["agent_signal_breakdown"],
+        agent_signal_breakdown=deterministic_agent_signal_breakdown(analyst_reports),
     )
 
     risk_checker = RiskChecker()
@@ -195,20 +232,20 @@ def main():
     d.mkdir(parents=True, exist_ok=True)
 
     analyst_dict = json.loads(analyst_reports.model_dump_json())
-    analyst_dict["pipeline_mode"] = "in-session-claude-code"
+    analyst_dict["pipeline_mode"] = "in-session"
     (d / "analyst_reports.json").write_text(json.dumps(analyst_dict, indent=2))
 
     debate_dict = json.loads(debate_result.model_dump_json())
-    debate_dict["pipeline_mode"] = "in-session-claude-code"
+    debate_dict["pipeline_mode"] = "in-session"
     (d / "debate_result.json").write_text(json.dumps(debate_dict, indent=2))
 
     if research_verdict is not None:
         verdict_dict = json.loads(research_verdict.model_dump_json())
-        verdict_dict["pipeline_mode"] = "in-session-claude-code"
+        verdict_dict["pipeline_mode"] = "in-session"
         (d / "research_verdict.json").write_text(json.dumps(verdict_dict, indent=2))
 
     briefing_dict = json.loads(briefing.model_dump_json())
-    briefing_dict["pipeline_mode"] = "in-session-claude-code"
+    briefing_dict["pipeline_mode"] = "in-session"
     (d / "briefing.json").write_text(json.dumps(briefing_dict, indent=2))
 
     sync_to_supabase(

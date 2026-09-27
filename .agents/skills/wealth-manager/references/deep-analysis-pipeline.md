@@ -35,48 +35,30 @@ the following checks:
      list it in the output as an explicit next action item (e.g. "recommend running a full pipeline
      on META to get a conviction score") instead of ending with just "the data may be inaccurate".
 3. **Execution steps once triggered**:
-   0. **Environment self-check (try to fix it yourself first — don't give up immediately)**:
+   a. **Environment self-check (try to fix it yourself first — don't give up immediately)**:
       - Check whether `<repo>/.venv/bin/python -c "import stock_analysis"` can import; if not, run
         `python3 -m venv .venv && source .venv/bin/activate && pip install -e .` in the
         `repos/ai-stock-analysis` directory automatically (use the repo's own venv, don't install
         into system Python), then try the import again.
-      - Check whether the `ANTHROPIC_API_KEY` environment variable exists:
-        - **Present** → take the official CLI path (a)(b)(c) (the `stock-analysis` command;
-          claude-agent-sdk internally uses a Haiku/Opus/Sonnet mixed routing).
-        - **Absent** (typically the case inside a Claude Code session, which usually has no separate
-          API key) → **don't ask the user for a key, and don't give up on deep analysis because of
-          this**. Go straight to §In-Session Pipeline Mode (below), using the current session's own
-          reasoning to stand in for claude-agent-sdk's 4 analysts + debate + synthesis. Layer 1
-          (price/financials, pure yfinance, no LLM needed) and Layer 4's risk calculations (pure
-          deterministic math) still reuse the repo's real code — they are not invented from scratch.
-   a. (When an API key is present) First refresh Layer 1: `cd repos/ai-stock-analysis && git pull
-      origin main`; if the submodule is too far behind, `git submodule update --remote
-      repos/ai-stock-analysis` (run from the repo root — this changes the `.gitmodules` pointer,
-      so tell the user before committing).
-   b. (When an API key is present) Run `stock-analysis <TICKER> --market US -v` (for MY stocks use
-      `--market MY` + the code, e.g. `1155`/`4197`), executed inside the `repos/ai-stock-analysis`
-      directory.
-   c. If the ticker has never been fetched by `stock-fetch` (a Malaysian stock not in the
+      - Always use §In-Session Pipeline Mode below. Do not inspect, request, or use
+        ANTHROPIC_API_KEY, the Anthropic API, or the official SDK-backed stock-analysis path.
+   b. If the ticker has never been fetched by `stock-fetch` (a Malaysian stock not in the
       auto-universe like FBM KLCI/S&P500, e.g. BIMB/5258), first run `stock-fetch <TICKER> --market
       MY` to backfill Layer 1.
-   d. Running the full pipeline once has a real cost (API fees when a key is present; this
-      conversation's token/time cost when using In-Session mode without a key). **Only trigger it
+   c. Running the full pipeline has a conversation token/time cost. **Only trigger it
       for holdings and candidates the user explicitly wants deeply evaluated — don't run it for
-      every casual stock question**; keep answering casual questions with a quick WebSearch instead.
-4. **Don't fake it if you can't read it**: if neither path works (venv fails to install, and the
-   user has also explicitly ruled out In-Session mode), analyze via WebSearch directly and note in
-   the output "unstructured deep analysis, based only on the current search" — don't imply this is a
-   conviction-scored result, and **explicitly leave an action item** telling the user how to get a
-   more accurate signal next time.
+      every casual stock question**; an explicit request to analyze a full watchlist authorizes a
+      run for every listed ticker.
+4. **Don't fake it if data/code cannot be read**: explain the blocker. If necessary, provide a
+   clearly labeled unstructured analysis based on available sources; do not imply it has a
+   deterministic conviction score or risk calculation.
 
-### In-Session Pipeline Mode (the default deep-analysis approach when there's no `ANTHROPIC_API_KEY`)
+### In-Session Pipeline Mode (always use for this user)
 
-The official CLI's Layer 2-4 (4 analyst agents + bull/bear debate + synthesis) relies on
-`claude-agent-sdk` calling the Anthropic API separately, which needs `ANTHROPIC_API_KEY`. It's
-normal for a Claude Code session itself to not have this key — **that doesn't mean deep analysis
-can't run, just that it needs to run a different way**: use the current session itself (via the
-Agent tool, spinning up sub-agents) to stand in for those LLM calls, while Layer 1 (data fetching)
-and the risk-calculation part continue to reuse the repo's real code instead of reinventing it.
+The SDK-backed CLI calls the Anthropic API separately. For this user, always run analyst, debate,
+and synthesis work through the current assistant session and its available agent collaboration.
+Do not check for or depend on an API key. Layer 1 (data fetching) and risk calculations continue
+to use the repository's real code.
 
 **Execution steps** (once `repos/ai-stock-analysis` has been `pip install -e .`'d once, subsequent
 analyses can all take this path without reinstalling the environment every time):
@@ -117,12 +99,10 @@ analyses can all take this path without reinstalling the environment every time)
    Pydantic models to compute ATR stop-loss/take-profit levels, historical drawdown, and
    risk/reward — this is deterministic math, and the script's results match the official CLI's
    output exactly; don't let the LLM estimate these numbers itself.
-6. The script writes `analyst_reports.json` / `debate_result.json` / `briefing.json` and, when
-   supplied, `research_verdict.json` back to `repos/ai-stock-analysis/data/<TICKER>/`, tagged with
-   `"pipeline_mode": "in-session-claude-code"` — so anyone (including you, next time you read the cache) knows this
-   result was produced by the current Claude Code session itself, not by the official
-   Haiku/Opus/Sonnet mixed routing. Both are close in rigor but use a different model
-   configuration — don't conflate the two as the same thing.
+6. The script writes analyst_reports.json / debate_result.json / briefing.json and, when
+   supplied, research_verdict.json back to repos/ai-stock-analysis/data/<TICKER>/, tagged with
+   pipeline_mode=in-session so downstream readers know these were produced through the
+   current assistant session.
 7. Once done, label this analysis in the output to the user as "In-Session Pipeline" rather than
    vaguely saying "deep analysis" — this keeps to the "disclose which mode produced the verdict"
    principle from the General Guidelines above.

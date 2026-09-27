@@ -25,7 +25,7 @@ portfolio, and optimize where their cash sits across savings vehicles.
 | `data/finance/savings.yaml` | Actual cash/FD/MMF positions, caps, lock dates, liabilities | Savings, net worth, maturity queries |
 | `market/fx.yaml` | Exchange-rate observations (each pair carries its own `as_of`) | Any cross-currency question |
 | `market/interest_rates.yaml` | Digital banks, MMFs, FDs rates (market catalog, not holdings) | Savings allocation queries |
-| `config/thresholds.yaml` | Finance thresholds (savings target, spend alert) | Spending/savings analysis |
+| `data/config/thresholds.yaml` | Finance thresholds (savings target, spend alert) | Spending/savings analysis |
 | `references/investment-framework.md` | Single-stock + portfolio decision criteria (the "satellite" layer) | Stock analysis, buy/sell decisions, portfolio review |
 | `references/wealth-building-playbook.md` | Holistic plan: fund layering, asset allocation, core-satellite, DCA evidence, rebalancing, behavior | Any "where should my money go" / allocation / full-plan / net-worth-strategy question |
 | `references/malaysia-wealth-vehicles.md` | MY-specific: PRS/EPF tax relief, digital banks/MMF/FD, Ireland-domiciled UCITS ETFs, US estate-tax trap | Savings allocation, tax optimization, ETF/core selection |
@@ -51,11 +51,10 @@ seriously evaluated; a casual passing question does not trigger this) — any on
   bull/bear evenly matched, can't tell "temporary pullback vs. structural deterioration") — don't
   gloss over it or hard-code a conclusion yourself
 
-**After triggering**: read `references/deep-analysis-pipeline.md` and follow its steps
-(environment self-check → official CLI if an API key is present / In-Session Pipeline Mode if not →
-how to use the pipeline output). If neither path works, analyze via WebSearch, label it
-"unstructured deep analysis", and still leave a clear action item — don't just say "the data may be
-inaccurate".
+**After triggering**: read references/deep-analysis-pipeline.md and follow its steps
+(environment self-check → In-Session Pipeline Mode → how to use the pipeline output). Always use
+the current assistant session for analyst, debate, and synthesis work; never require or use
+ANTHROPIC_API_KEY or the Anthropic API path for this user's stock pipeline.
 
 ## Price Ownership
 
@@ -80,7 +79,7 @@ Current price comes from the ai-stock-analysis pipeline:
 Financial data goes stale fast. Before using any data from YAML files, check the `updated` field:
 
 - **Stock prices**: owned by the pipeline (above). `make wealth` flags any price older than
-  `wealth.price_stale_days` in `config/thresholds.yaml`.
+  `wealth.price_stale_days` in `data/config/thresholds.yaml`.
 - **Interest rates** (`interest_rates.yaml`): Stale if >30 days old. Promo rates especially change
   frequently. If the user asks about savings allocation and rates are >2 weeks old, WebSearch for
   "[bank name] promo rate 2026" to verify before recommending.
