@@ -35,12 +35,12 @@ Artifact, decision, or memory
 
 This loop connects four areas that can otherwise look unrelated:
 
-| Area | Active mode | Failure mode to avoid |
-|---|---|---|
-| Weekends | Explore, make, and enjoy deliberately | Turning rest into another performance metric |
-| Travel | Use places as observation lenses | Writing a post-hoc story to justify the trip |
-| Public notes | Show how a difficult idea became understandable | Publishing polished conclusions without the path |
-| AI assistance | Challenge, test, and clarify human thinking | Letting fluent output replace personal judgment |
+| Area          | Active mode                                     | Failure mode to avoid                            |
+| ------------- | ----------------------------------------------- | ------------------------------------------------ |
+| Weekends      | Explore, make, and enjoy deliberately           | Turning rest into another performance metric     |
+| Travel        | Use places as observation lenses                | Writing a post-hoc story to justify the trip     |
+| Public notes  | Show how a difficult idea became understandable | Publishing polished conclusions without the path |
+| AI assistance | Challenge, test, and clarify human thinking     | Letting fluent output replace personal judgment  |
 
 ## Weekend direction
 
