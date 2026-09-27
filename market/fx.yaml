@@ -4,7 +4,7 @@
 # 字段时，无法区分"持仓变了"和"汇率变了"，于是 SKILL.md 自己规定的
 # 「FX >1 天即 stale」根本无法执行 —— 等于没有 staleness 检查。
 #
-# 每个 pair 有自己的 as_of。阈值见 config/thresholds.yaml → wealth.fx_stale_days。
+# 每个 pair 有自己的 as_of。阈值见个人私仓 data/config/thresholds.yaml → wealth.fx_stale_days。
 # 仍是手工维护：WebSearch "USD MYR exchange rate" 后同时更新 rate 与 as_of。
 # 只改 rate 不改 as_of 比不更新更糟——那是在给一个旧数字盖新章。
 
