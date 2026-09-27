@@ -2,7 +2,7 @@
 
 Meal-template support (meal_lookup/search_meals, basis-conversion paths) was
 removed 2026-08-24 along with datasets/nutrition/meals/ — see
-docs/plan-public-knowledge-integration.md's Phase 3/4 notes. Only food_lookup
+the current read contract. Only food_lookup
 remains.
 """
 from __future__ import annotations

@@ -1,6 +1,7 @@
 # Nutrition Source — Read Contract
 
-Replaces the old `meal-library.md` (removed, see `docs/plan-public-knowledge-integration.md` §13.1).
+Replaces the old `meal-library.md`, which was removed after the public nutrition
+source and adapter reached parity.
 The single owner of public food facts/prices is now `repos/notes` (public submodule);
 this file only holds **query rules + private content that can't be extracted**.
 
@@ -62,8 +63,8 @@ source_updated: 2026-08-19
 
 ---
 
-The following content is **not extractable** (it all depends on `{{placeholder}}` or purely private
-thresholds, see plan §9), kept as-is from the old `meal-library.md`:
+The following content is **not extractable** (it depends on private placeholders); it is
+kept as-is from the old `meal-library.md`:
 
 ## AM Training Day Meal Template (target `{{protein_target_g}}`g P / `{{kcal_training_day}}` kcal)
 

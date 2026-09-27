@@ -4,9 +4,9 @@
 Usage:
     python3 scripts/nutrition.py food chicken_breast_raw
 
-See docs/plan-public-knowledge-integration.md §8. All cost/price parsing
-lives in scripts/lib/nutrition/ — this file only parses args and formats
-output.
+See `.agents/skills/coach-planner/references/nutrition-source.md` for the
+read contract. All cost/price parsing lives in `scripts/lib/nutrition/`;
+this file only parses args and formats output.
 """
 from __future__ import annotations
 
