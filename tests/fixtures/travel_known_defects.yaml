@@ -31,8 +31,11 @@ meta:
     - doc: data/travel/changsha-zhangjiajie-guizhou-chengdu-2026-09.md
       prefix: cs         # ids cs-01 … cs-09
       changelog_versions: [v4]
-  compiled: 2026-09-13
-  total: 56
+    - doc: data/travel/chongqing-jiuzhaigou-chengdu-2026-10.md
+      prefix: cq         # ids cq-01 …
+      changelog_versions: [v5, v6, v7, v8, v9, v10, v11, v12, v13]
+  compiled: 2026-09-24
+  total: 66
 
 defects:
   # ---------------------------------------------------------------- v2
@@ -511,21 +514,137 @@ defects:
       sentence has to be recomputed, not carried over. Cheap to miss because the
       table is right and only the prose underneath it is stale.
 
+  - id: cq-01
+    version: v5
+    summary: A local 10 km race on Nanbin Road collided with the plan's morning
+      cableway-to-south-bank route
+    class: verify
+    category: calendar
+    notes: >-
+      The trip was outside the national holiday window, but a city race still
+      changed road access and crowd conditions on an attraction day. Calendar
+      verification must query local races, exhibitions and road controls for every
+      date, not stop after checking public holidays.
+
+  - id: cq-02
+    version: v8
+    summary: Race competitor cutoff time was mistaken for Nanbin Road reopening
+    class: verify
+    category: calendar
+    notes: >-
+      The race rules give runner cutoff times but do not promise when road controls
+      end. A southbound one-way cableway ticket must depend on a separate traffic
+      control notice or confirmed on-site access around the south station.
+
+  - id: cq-03
+    version: v8
+    summary: Jiuzhaigou-to-Chengdu transfer claimed 6.5-7.5 h despite its own
+      schedule allowing 9.5 h and only 30 minutes between shuttle and train
+    class: lint
+    rule: null
+    detectable: false
+    notes: >-
+      A duration claim must include the final station-to-hotel leg and enough
+      station entry slack after a road shuttle. The existing duration rule did not
+      catch this because it cannot yet parse the table's conditional time ranges.
+
+  - id: cq-04
+    version: v9
+    summary: Previous-night room booking did not establish that the hotel would
+      hold both rooms until a dawn arrival or check in four foreign passports
+    class: verify
+    category: lodging
+    notes: >-
+      The date arithmetic alone is insufficient. The traveller needs written
+      confirmation of late arrival, room retention and passport check-in before
+      relying on a 05:15 landing as a chance to sleep.
+
+  - id: cq-05
+    version: v9
+    summary: Departure day scheduled hotel checkout after noon despite no
+      confirmed late-checkout policy
+    class: verify
+    category: lodging
+    notes: >-
+      Checkout time is property-specific and must be checked before the day's
+      luggage and airport transfer timeline is written. A noon checkout with
+      confirmed luggage storage is the fallback if late checkout is unavailable.
+
+  - id: cq-06
+    version: v10
+    summary: Marathon-day fallback assumed a 13:00 city-center departure could
+      reach the airport by 15:00 without a published road-control plan
+    class: verify
+    category: calendar
+    notes: >-
+      A fallback must be independently viable. The traveller needs the official
+      traffic plan and a confirmed walkable rail-station access path before a
+      city hotel can substitute for an airport-side stay.
+
+  - id: cq-07
+    version: v11
+    summary: Fixed Jiuzhaigou 07:30-08:00 arrival ignored that October opening
+      hours have changed by year and may be adjusted close to the visit
+    class: verify
+    category: venue_hours
+    notes: >-
+      The 2025 autumn notice used 07:30, while an official October 2022 notice
+      shifted opening to 08:30. The current year's day-before notice must drive
+      the hotel departure rather than a stale fixed time window.
+
+  - id: cq-08
+    version: v11
+    summary: Jiuzhaigou park and return-transfer days omitted hotel-to-gate
+      and hotel-to-shuttle-pickup legs
+    class: lint
+    rule: null
+    detectable: false
+    notes: >-
+      A timeline with a park arrival or shuttle departure needs an explicit
+      access leg from that night's hotel. The missed pickup leg also erased the
+      operator's pre-departure assembly margin before a train connection.
+
+  - id: cq-09
+    version: v12
+    summary: Panda-base and Wuhouci timelines conflated arrival with the start
+      of ticket and passport checks at the opening time
+    class: lint
+    rule: null
+    detectable: false
+    notes: >-
+      Reserved-entry venues need a distinct arrival and identity-check window.
+      The visitor may enter after the posted opening time even when at the door
+      before it, particularly when using passports at a designated counter.
+
+  - id: cq-10
+    version: v13
+    summary: A passport-specific park entry lane was treated as proof that all
+      four foreign passports could be entered in the online booking flow, while
+      the sold-out fallback assumed immediate candidate-list eligibility
+    class: verify
+    category: booking
+    notes: >-
+      Official evidence establishes passport entry verification, not successful
+      checkout in the current mini-program. The traveller must test passport
+      entry and confirm an official purchase channel. Candidate-list opening
+      time and location eligibility have varied by notice, so the current
+      platform rules govern any application.
+
 # ---------------------------------------------------------------------------
 # Scoreboard — update whenever a rule lands.
 #
-#   total                       56   (47 shanghai + 9 changsha)
-#   lint-class                  17
+#   total                       66   (47 shanghai + 9 changsha + 10 chongqing)
+#   lint-class                  21
 #     implemented               10   (v3-03, v3-14a, v3-14b, v3.1-03, v3.2-02,
 #                                     v3.2-03, v3.2-04, v3.2-05, v4-04, cs-03)
-#     backlog                    7   (v2-02, v2-08, v3-09, v3.1-04, v4-02, v4-05,
-#                                     cs-06, cs-07 — cs-07 joins v4-05)
-#   verify-class                26   — fan-out agents, not yet built
+#     backlog                   11   (v2-02, v2-08, v3-09, v3.1-04, v4-02, v4-05,
+#                                     cs-06, cs-07, cq-03, cq-08, cq-09 — cs-07 joins v4-05)
+#   verify-class                33   — fan-out agents, not yet built
 #   adjudicate-class             3   — v3.1-08, v3.2-07, v3.2-08
 #   judgment-class               5   — deliberately not automated
 #   process-class                4
 #
-# Note the ratio: 3 adjudicate entries against 26 verify entries. In the v3.2 round
+# Note the ratio: 3 adjudicate entries against 33 verify entries. In the v3.2 round
 # specifically, 3 of the challenger's 4 external claims were wrong. Verification
 # throughput is not the bottleneck — adjudication accuracy is.
 #
