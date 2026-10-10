@@ -1,0 +1,10 @@
+{
+  "eval_id": 0,
+  "eval_name": "scope-spontaneous-photography",
+  "prompt": "A traveler enjoys taking spontaneous photos and has no content-production goal. This is advice only; no itinerary edits are requested.\n\nI will photograph whatever catches my eye. Give me a few photo styles or poses I can prepare before departure; I do not want a shooting assignment.",
+  "assertions": [
+    "Offers practical styles or poses at the requested preparation level.",
+    "Does not impose city-by-city shot lists, capture quotas, compulsory notes or publishing goals.",
+    "Does not edit itinerary files for this advice-only request."
+  ]
+}

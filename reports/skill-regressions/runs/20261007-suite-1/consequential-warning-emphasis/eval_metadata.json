@@ -1,0 +1,11 @@
+{
+  "eval_id": 4,
+  "eval_name": "consequential-warning-emphasis",
+  "prompt": "Prepare a synthetic itinerary containing a critical instruction to confirm a reservation before departure, a conditional weather route and an ordinary packing note.\n\nThe important confirmation blends into ordinary notes. Make the priority clear with a warning label, color and concrete action; avoid a page of raw fields. Open the page while refining it.",
+  "assertions": [
+    "Rendered critical instruction is visually distinct from ordinary context and includes a text warning label; color is not the sole signal.",
+    "Clearly communicates what to confirm and that confirmation precedes departure; preserves the conditional route's condition.",
+    "Uses reader-facing summaries and actions rather than only exposing raw field names.",
+    "Actual output is opened and inspected during refinement, including the priority warning."
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "context": "Fixed synthetic route condition omitted by the initial fixture preparer; supplied to both agents before final outputs.",
+  "message": "Use the park walk on a dry day; if it rains, replace the walk with rest at Sample Hotel. Preserve that conditional meaning. This is supplied test input, not a researched venue fact."
+}

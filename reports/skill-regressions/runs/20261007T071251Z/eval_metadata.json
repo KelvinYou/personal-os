@@ -1,0 +1,10 @@
+{
+  "eval_id": 5,
+  "eval_name": "retire-format-preserve-unique-records",
+  "prompt": "Prepare synthetic plan.md and itinerary.html. Markdown uniquely contains a version-history row, source URL, verification date and unresolved recheck task; HTML omits these. These unique records must remain recoverable even if the display format changes.\n\nI prefer HTML only. Retire the Markdown if possible, while preserving any unique history, provenance and rechecks.",
+  "assertions": [
+    "Inspects both artifacts and identifies the unique records before any retirement.",
+    "If retiring Markdown, moves or archives all unique records to a durable recoverable owner and verifies preservation before deletion; otherwise retains it and explains the dependency.",
+    "Does not claim lossless retirement without evidence, or invent missing historical records."
+  ]
+}

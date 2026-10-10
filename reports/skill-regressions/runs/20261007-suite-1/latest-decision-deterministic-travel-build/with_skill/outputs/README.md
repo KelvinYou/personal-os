@@ -1,0 +1,1 @@
+Active artifacts: plan.md (editable source), itinerary.html (generated traveller page, including #stays). Reusable guidance is under .agents/skills/travel-plan/. retired/hotel.html is a recoverable legacy artifact only. Use the copied root scripts/travel_build.py to rebuild/check from outputs/plan.md with --output outputs/itinerary.html.

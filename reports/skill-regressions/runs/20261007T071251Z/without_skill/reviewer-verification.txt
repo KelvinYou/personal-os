@@ -1,0 +1,14 @@
+Independent reviewer content verification; source: fixture-before/, target: outputs/.
+This verifies final artifacts, not execution ordering.
+PASS: v2
+PASS: Source
+PASS: Source URL is actionable link
+PASS: Verified
+PASS: Unresolved
+PASS: Itinerary text preserved
+PASS: Original title recoverable
+PASS: No active Markdown deliverable
+PASS: Inherited verification explicitly distinguished
+Fixture plan.md SHA256: 06f06bafa5b292164d58b579c887c13844e9f224c39f38c8d59470f5a6c80b81
+Output itinerary.html SHA256: 79bcecae9263b55bf203bb39491c2300b04f9310dbf78a1625275afa623e2c99
+UNOBSERVED: independent read-before-retirement and verification-before-deletion chronology; execution.md and outputs/verification.txt are executor-reported.

@@ -18,6 +18,24 @@
       "prompt": "I'm adding analyst estimate revisions as a new feature to the technical analyst agent in repos/ai-stock-analysis -- pulling the latest revision value from the data provider as of each as_of_date during backtesting. Good to merge?",
       "expected_output": "Should flag that 'latest revision as of as_of_date' from a data provider often reflects a value that was RESTATED/revised after the fact -- the provider's API may not expose what the revision value actually looked like on that historical date (point-in-time data), creating a lookahead leak distinct from the outcome-leakage guard in outcomes.py. Should ask whether the data source is point-in-time or just 'current snapshot queried with a historical parameter'. Should NOT simply approve as safe.",
       "files": []
+    },
+    {
+      "id": "composed-system-comparison",
+      "prompt": "backtest对比ai pipeline vs long hold",
+      "expected_output": "Covers AI-only, allocator-only, hybrid and strict hold when available; separates fee/window/exposure conventions and allocator versus AI attribution.",
+      "files": []
+    },
+    {
+      "id": "no-trade-attribution",
+      "prompt": "为什么不交易？不是加了动量配置器后跑赢了吗？",
+      "expected_output": "Partitions forecasts, traces score/convergence and long-only gates, explains AI veto composition and overlapping codes; distinguishes allocator win from hybrid failure.",
+      "files": []
+    },
+    {
+      "id": "missing-hybrid-arm",
+      "prompt": "Only AI overall and hold results are available; compare the whole AI plus momentum system.",
+      "expected_output": "Labels allocator/hybrid unavailable; no fabricated returns, no overall-as-whole claim, no unrequested strategy search.",
+      "files": []
     }
   ]
 }

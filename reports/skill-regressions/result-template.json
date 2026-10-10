@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "run_id": null,
+  "case_id": null,
+  "corpus_version": null,
+  "corpus_sha256": null,
+  "executed_at": null,
+  "harness": null,
+  "model": null,
+  "repository_revision": null,
+  "relevant_file_sha256": {},
+  "fixture_sha256": {},
+  "evidence_refs": [],
+  "reviewer": null,
+  "reviewed_at": null,
+  "checks": [],
+  "outcome": null,
+  "notes": null
+}

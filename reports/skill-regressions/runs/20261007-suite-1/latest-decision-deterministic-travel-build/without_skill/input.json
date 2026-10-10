@@ -1,0 +1,7 @@
+{
+  "context": "Prepare a buildable synthetic travel source using the current renderer contract, generated itinerary, reusable skill and a legacy separate hotel page. The source contains semantic status markers and provenance. Deliver the next messages in order.",
+  "messages": [
+    "Initially I wanted HTML only.",
+    "Keep Markdown if it contains necessary records. I approve deterministic Markdown-to-HTML generation. Lodging belongs in the main itinerary; no separate hotel page. Visible HTML icons should be bundled Lucide SVG, with text labels, not emoji. Update reusable guidance if it still conflicts, then change the synthetic lodging note and regenerate."
+  ]
+}

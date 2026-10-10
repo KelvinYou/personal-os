@@ -1,0 +1,10 @@
+{
+  "eval_id": 2,
+  "eval_name": "reusable-ui-owner",
+  "prompt": "Prepare a disposable copy of the travel skill, shared templates/assets and synthetic generated itinerary. The project uses deterministic source-to-HTML generation.\n\nUpdate the travel-plan skill's reusable UI so future itineraries have an Apple-inspired, comfortable visual style. Update the reusable owner, not only this generated page.",
+  "assertions": [
+    "Changes the relevant reusable skill guidance/template/assets, rather than only generated itinerary content.",
+    "Generates a synthetic itinerary from the changed owner and shows that the new styling reaches future output.",
+    "Does not create a competing copy of the reusable UI or rewrite unrelated real trip content."
+  ]
+}

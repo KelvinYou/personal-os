@@ -1,0 +1,10 @@
+Independent artifact checks; not a browser render.
+PASS: supplemental fixture equals case supplemental-input.json.
+Supplemental condition: Use the park walk on a dry day; if it rains, replace the walk with rest at Sample Hotel. Preserve that conditional meaning. This is supplied test input, not a researched venue fact.
+PASS: HTML text contains warning label, pre-departure order action, hotel/date details and dry/rain park-to-hotel-rest substitution.
+PASS: reader-facing action and weather prose present.
+PASS: current canonical CSS embedded in delivered HTML; active/delivered HTML match.
+Independent -B build --check exit 0
+[Status: OK] 0-itinerary.html: balanced HTML, canonical assets, classes, anchors; 2 days
+[Status: OK] plan.md: generated HTML matches source, renderer and canonical assets
+UNOBSERVED: rendered warning contrast and refinement-time inspection chronology.

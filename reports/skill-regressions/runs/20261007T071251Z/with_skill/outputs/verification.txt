@@ -1,0 +1,8 @@
+Active plan.md retired: PASS
+Exact archived source matches output archive: PASS
+HTML output matches active HTML: PASS
+Version history retained: PASS
+Source URL retained: PASS
+Original verification date retained: PASS
+Unresolved recheck retained: PASS
+Original itinerary retained: PASS

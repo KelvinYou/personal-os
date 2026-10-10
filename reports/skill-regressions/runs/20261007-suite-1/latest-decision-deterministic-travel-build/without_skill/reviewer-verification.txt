@@ -1,0 +1,12 @@
+Independent reviewer artifact checks.
+PASS: source changed only requested lodging-note text; marker/history/date/source URL preserved.
+PASS: active and delivered source equal.
+PASS: generated source hash matches source; lodging text in main #stays.
+PASS: no active hotel.html or generated links to it.
+PASS: 21 inline SVG elements, visible marker labels, no visible status emoji.
+PASS: 15 initial bundled icon assets unchanged; AGENTS.md unchanged.
+Changed protected manifest files: docs/design/travel-md-html-build.md, .agents/skills/travel-plan/templates/plan.md, scripts/lib/travel/icons.py
+No active hotel output; initial fixture retained.
+Independent -B delivered build --check exit 0
+[Status: OK] 0-itinerary.html: balanced HTML, canonical assets, classes, anchors; 2 days
+[Status: OK] plan.md: generated HTML matches source, renderer and canonical assets

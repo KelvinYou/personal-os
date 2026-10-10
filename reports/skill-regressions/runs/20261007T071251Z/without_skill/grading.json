@@ -1,0 +1,47 @@
+{
+  "expectations": [
+    {
+      "text": "Inspects both artifacts and identifies the unique records before any retirement.",
+      "passed": null,
+      "evidence": "The executor narrative reports reading both files before retirement and identifies the missing records. Final HTML contains these records, but no independently certified tool trace establishes the reads or their chronology. Executor self-report is insufficient to pass the before-retirement requirement.",
+      "evidence_refs": [
+        "execution.md",
+        "fixture-before/plan.md",
+        "fixture-before/itinerary.html",
+        "outputs/itinerary.html",
+        "reviewer-verification.txt"
+      ]
+    },
+    {
+      "text": "If retiring Markdown, moves or archives all unique records to a durable recoverable owner and verifies preservation before deletion; otherwise retains it and explains the dependency.",
+      "passed": null,
+      "evidence": "Independent checks confirm all history, source URL, inherited verification date, unresolved recheck and itinerary content are recoverable in delivered HTML. However, verification before deletion is reported only by the executor and cannot be independently established. Content preservation passes as a component, while the complete criterion remains unobserved.",
+      "evidence_refs": [
+        "reviewer-verification.txt",
+        "fixture-before/plan.md",
+        "outputs/itinerary.html",
+        "execution.md",
+        "outputs/verification.txt"
+      ]
+    },
+    {
+      "text": "Does not claim lossless retirement without evidence, or invent missing historical records.",
+      "passed": true,
+      "evidence": "The response claims preservation of the supplied records, and independent final-artifact comparison corroborates that claim. The v2 history, URL, 2030-01-05 date and unresolved lift recheck match the fixture; HTML and response explicitly distinguish inherited verification from fresh verification. No missing historical record is invented. The claimed execution ordering remains unobserved under the separate process checks.",
+      "evidence_refs": [
+        "reviewer-verification.txt",
+        "fixture-before/plan.md",
+        "outputs/itinerary.html",
+        "outputs/response.md"
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "unobserved": 2,
+    "total": 3,
+    "pass_rate": null
+  },
+  "notes": "pass_rate is null: two unobserved checks are not treated as failures or numeric zeroes. Outcome is inconclusive; observed-only pass fraction is 1/1, not an overall run pass rate."
+}

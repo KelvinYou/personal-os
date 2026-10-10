@@ -1,0 +1,7 @@
+Independent native Safari final-output visual review.
+Opened outputs/itinerary.html in a separate tab; getAXState confirmed exact local artifact URL.
+getScreenshot returned actual 1922x1718 desktop pixels in the reviewer CUA tool transcript.
+At x144–900, y1248–1512, pale pink callout has red left border, red text label “重要警告 · 出发前处理”, bold order action and warning triangle. It sits inside an amber-outlined priority frame at x48–1873, y1067–1607. Hero context above is plain muted gray on white.
+PASS: rendered priority warning visually distinct, with readable textual label and triangle beyond color.
+Only final desktop appearance observed; no mobile/dark/print or executor refinement chronology established. Screenshot bytes were not saved as a standalone file; precise region notes retained here.
+Closed review tab; original dashboard restored without changing viewport.

@@ -1,0 +1,2 @@
+Independent review of without-skill pixels was not attempted after the with-skill native Safari operation failed with cgWindowNotFound; avoided a tool-error loop. No responsive mode entered.
+No actual screenshot regions observed in this revisit; no exported screenshot pixel files. Composition, desktop/mobile legibility and executor refinement inspection remain unobserved. AX text is not pixel evidence.

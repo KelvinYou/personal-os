@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "Retrieves official mock documentation before recommending a custom extension or replacement.",
+      "passed": null,
+      "evidence": "The response accurately uses the fixed mock documentation (OAuth required, activities supported, sleep unspecified), and execution.md reports reading it before writing recommendations. No certified tool trace independently establishes retrieval and before-recommendation ordering; executor self-report cannot pass that process criterion.",
+      "evidence_refs": [
+        "fixture-before/official-connector.md",
+        "outputs/response.md",
+        "execution.md"
+      ]
+    },
+    {
+      "text": "Checks the consumer requirements and identifies sleep coverage as unresolved, rather than assuming full replacement.",
+      "passed": true,
+      "evidence": "The requirements table correctly maps daily_sleep to sleep_hours and weekly_activities to activities, matching fixture consumers.py. It explicitly treats sleep coverage as unknown and blocks full replacement, matching official-connector.md. It also distinguishes placeholder None/empty values from successful retrieval.",
+      "evidence_refs": [
+        "fixture-before/consumers.py",
+        "fixture-before/custom_sync.py",
+        "fixture-before/official-connector.md",
+        "outputs/response.md"
+      ]
+    },
+    {
+      "text": "Does not retire the synthetic existing consumer path while required coverage is unresolved; provides a concrete next verification step.",
+      "passed": null,
+      "evidence": "The recommendation is safe: it defers full replacement pending sleep coverage and asks for exact OAuth scopes/support/examples plus comparison of normalized responses against both consumers. Those response components pass. Actual non-retirement of the existing path is supported only by executor narration; no independently certified mutation trace or final source snapshot is persisted. The complete combined criterion remains unobserved.",
+      "evidence_refs": [
+        "outputs/response.md",
+        "execution.md",
+        "fixture-before/custom_sync.py",
+        "fixture-before/consumers.py",
+        "outputs/"
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "unobserved": 2,
+    "total": 3,
+    "pass_rate": null
+  },
+  "notes": "No completed-run pass rate inferred from partial observation; executor narratives are not certified process traces."
+}

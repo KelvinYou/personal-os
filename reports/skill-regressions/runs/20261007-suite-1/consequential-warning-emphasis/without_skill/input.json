@@ -1,0 +1,6 @@
+{
+  "context": "Prepare a synthetic itinerary containing a critical instruction to confirm a reservation before departure, a conditional weather route and an ordinary packing note.",
+  "messages": [
+    "The important confirmation blends into ordinary notes. Make the priority clear with a warning label, color and concrete action; avoid a page of raw fields. Open the page while refining it."
+  ]
+}

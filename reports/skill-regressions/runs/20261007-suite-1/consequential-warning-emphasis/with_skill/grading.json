@@ -1,0 +1,52 @@
+{
+  "expectations": [
+    {
+      "text": "Rendered critical instruction is visually distinct from ordinary context and includes a text warning label; color is not the sole signal.",
+      "passed": true,
+      "evidence": "Independent reviewer opened the exact final HTML in native Safari and inspected actual desktop screenshot pixels. At x144\u2013900, y1248\u20131512, pale pink callout has red left border, red text label \u201c\u91cd\u8981\u8b66\u544a \u00b7 \u51fa\u53d1\u524d\u5904\u7406\u201d, bold order action and warning triangle. It sits inside an amber-outlined priority frame at x48\u20131873, y1067\u20131607. Hero context above is plain muted gray on white. Text and shape accompany color, and the confirmation is distinct from ordinary context. This verifies final appearance only.",
+      "evidence_refs": [
+        "outputs/itinerary.html",
+        "reviewer-visual-notes.txt",
+        "reviewer CUA getScreenshot tool transcript (native Safari, 1922x1718)"
+      ]
+    },
+    {
+      "text": "Clearly communicates what to confirm and that confirmation precedes departure; preserves the conditional route's condition.",
+      "passed": true,
+      "evidence": "HTML directs opening the accommodation order before departure and checking 3/1 check-in, 3/2 check-out and reservation state, distinguishing selected from booked. Day 1 retains the park walk in dry weather and replaces it with Sample Hotel (\u6d4b\u8bd5\u9152\u5e97) rest in rain, matching supplied supplemental input.",
+      "evidence_refs": [
+        "outputs/itinerary.html",
+        "outputs/plan.md",
+        "fixture-before/supplemental-input.json",
+        "../supplemental-input.json",
+        "reviewer-verification.txt"
+      ]
+    },
+    {
+      "text": "Uses reader-facing summaries and actions rather than only exposing raw field names.",
+      "passed": true,
+      "evidence": "HTML presents a reader-facing pre-departure summary and concrete order action, plus understandable dry/rain route prose. Supporting numbered records remain, but the deliverable is not only raw field names.",
+      "evidence_refs": [
+        "outputs/itinerary.html",
+        "reviewer-verification.txt"
+      ]
+    },
+    {
+      "text": "Actual output is opened and inspected during refinement, including the priority warning.",
+      "passed": null,
+      "evidence": "Executor reports Chrome browser-tab failures and explicitly says no render was observed. No certified full tool trace or inspectable screenshot substantiates refinement-time inspection. Reviewer artifact checks are not browser inspection.",
+      "evidence_refs": [
+        "execution.md",
+        "outputs/response.md",
+        "outputs/"
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "unobserved": 1,
+    "total": 4,
+    "pass_rate": null
+  }
+}

@@ -1,0 +1,7 @@
+Independent native Safari final-output visual review.
+Opened outputs/itinerary.html in a separate tab; getAXState confirmed exact local artifact URL.
+getScreenshot returned actual 1922x1718 desktop pixels in the reviewer CUA tool transcript.
+At x98–1825, y1083–1264, full-width pale pink panel has strong red outline/left border, triangle icon and red “警告 · 出发前必确认” heading. Body order action is black and readable. Plain muted context above and the neutral overview card below have no corresponding red treatment.
+PASS: rendered priority warning visually distinct, with readable textual label and triangle beyond color.
+Only final desktop appearance observed; no mobile/dark/print or executor refinement chronology established. Screenshot bytes were not saved as a standalone file; precise region notes retained here.
+Closed review tab; original dashboard restored without changing viewport.

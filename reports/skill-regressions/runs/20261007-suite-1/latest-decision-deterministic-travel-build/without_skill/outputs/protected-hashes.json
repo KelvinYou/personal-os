@@ -1,0 +1,7 @@
+{
+  "input.json": "bad581e18529407529cf011ca4c94be7c0ae1539a71d68c608680cddd731e354",
+  "result.json": "908386fa2b3781b19fbc34b6a9c6cd79c1e48834e8ea5b4a85299cf959f2f08e",
+  "fixture-before/hotel.html": "9978a36dafef18846c6e2debebae46616d6f60cc76673da82d9946ad685202cc",
+  "fixture-before/itinerary.html": "f7241bf3496b1f31beb4667b874362d1a6e356513c17e2bd1e9c66aa4f1181b7",
+  "fixture-before/plan.md": "752b9f532920a1c159e51fc4077edad9cb3635371a550d618801460037149b90"
+}

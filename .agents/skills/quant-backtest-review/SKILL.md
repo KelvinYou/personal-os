@@ -1,20 +1,13 @@
 ---
 name: quant-backtest-review
 description: >
-  Adversarially review new or changed backtest, scoring, and signal-generation
-  code in repos/ai-stock-analysis before its output is trusted for a real
-  trade. Use this skill whenever the user asks to review a backtest change,
-  add a new strategy or feature to the backtest/scorer/portfolio modules,
-  interpret a backtest report's numbers, decide whether a hit rate or Sharpe
-  is "real", or asks "does this signal actually work" / "can I trust this
-  number" — even if they don't say "backtest" or "statistics" explicitly.
-  Also trigger when asked to run, rerun, or continue a pipeline backtest in
-  repos/ai-stock-analysis.
-  Also trigger before any wealth-manager decision that cites a backtest
-  result the user hasn't had checked yet. This skill checks for lookahead
-  bias, overfitting, unrealistic transaction costs, and statistical
-  significance problems (deflated Sharpe, multiple testing, small samples) —
-  it does not do general code review or multi-repo integration checks.
+  Run, rerun, interpret and adversarially review backtests, scoring and signals
+  in repos/ai-stock-analysis. Use for AI pipeline versus long hold, momentum
+  allocator and hybrid comparisons, no-trade diagnosis, strategy additions,
+  backtest code reviews, hit-rate/Sharpe reliability, or before wealth-manager
+  cites unchecked backtest evidence. Checks comparison coverage, attribution,
+  leakage, costs, effective samples and selection bias. Does not own general
+  code review, integration or investment decisions.
 allowed-tools: Bash, Read, Glob, Grep, Edit, Write
 ---
 
@@ -50,8 +43,58 @@ only if that conversation leans on a backtest number.
 
 The user may just paste a backtest report (`Scorer.to_markdown` output, an
 `.md` file under `repos/ai-stock-analysis/docs/`) and ask if the number is
-real. In that case skip straight to the **Report-reading checklist** below —
-there's nothing to diff, just numbers to interrogate.
+real. Establish comparison scope first, then use the **Report-reading checklist**
+below; no code diff is needed.
+
+## Establish comparison scope first
+
+A broad request such as "backtest AI pipeline vs long hold" may concern the
+composed system, not only the `overall` signal row. Read the child README and
+locate applicable reports, protocols and scored JSON before choosing a command.
+Confirm source inputs and implementation version: a newer filename alone does
+not supersede a different experiment. Discover available arms from artifacts
+and current consumers, rather than assuming a fixed strategy list.
+
+For broad comparisons, report these separately when available:
+
+- AI-only executable signal (`overall`).
+- Deterministic momentum allocator without AI filtering
+  (`cross_sectional_trial_allocation` or its applicable report).
+- Allocator with AI filtering (`signal_ablation` or its applicable hybrid report).
+- Strict equal-weight continuous buy-and-hold and matched passive diagnostics.
+
+Include available allocator/hybrid results even if AI-only makes no trades.
+Explicitly label absent, unsupported or incompatible arms; do not invent a
+result, silently omit an arm or start an unrequested parameter search. An
+explicitly narrow AI-only request needs only that arm, with its scope stated.
+Allocator gains do not establish AI skill; AI-only failure does not establish
+allocator failure. Give separate verdicts for each component and the hybrid.
+
+Verify universe, dates, non-overlap subset, costs, sizing, idle cash and drawdown
+basis. Separate incompatible experiments into different tables; never subtract
+returns across them. Show trade count or exposure so abstention is visible.
+Distinguish an observed historical win, statistically supported excess and
+promotion readiness. Inspect effective N, paired intervals and search correction
+for the relevant arm; unavailable uncertainty is a limitation, not a pass.
+
+## Diagnose no-trade results
+
+Trace raw synthesis → evidence-guarded analyst signals → consensus/convergence
+and conviction calibration → execution/risk eligibility → portfolio direction
+and sizing. Count mutually exclusive outcomes: raw neutral, declined buy,
+declined sell and approved but unexecuted direction. Retain complete coverage.
+Reason codes may overlap on one call; do not sum them as separate refusals.
+Read thresholds and confidence weights from their code owners. Give a concrete
+rejected call's raw score, calibrated pre-decline score, convergence and failed
+condition when available. Final zero conviction can be a consequence of rejection.
+
+Inspect whether AI is a veto, ranking input or weight adjustment in the hybrid.
+Explain its effect on deployment: a price-ranked basket can become empty when
+no final AI label is positive. Separate missing evidence from genuine neutral
+judgments. Do not infer that restoring evidence, relaxing gates or raising stakes
+would improve returns. Use existing frozen counterfactual/ablation reports when
+available, labeling post-hoc scope; otherwise mark causal effects untested.
+Keep original forecasts and rules unchanged unless a strategy change is requested.
 
 ## Running a pipeline backtest without an API key
 

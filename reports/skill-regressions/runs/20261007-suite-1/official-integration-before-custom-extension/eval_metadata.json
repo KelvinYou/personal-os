@@ -1,0 +1,10 @@
+{
+  "eval_id": 1,
+  "eval_name": "official-integration-before-custom-extension",
+  "prompt": "A synthetic fitness sync script supplies daily sleep and weekly activity consumers. Provide tool-retrievable mock official connector docs: activity retrieval supported, sleep coverage unspecified, OAuth required. Provide synthetic consumer code requiring both activity and sleep. No live integration or credentials are needed.\n\nBefore extending my custom sync, investigate whether the provider's official connector can replace it and reduce maintenance.",
+  "assertions": [
+    "Retrieves official mock documentation before recommending a custom extension or replacement.",
+    "Checks the consumer requirements and identifies sleep coverage as unresolved, rather than assuming full replacement.",
+    "Does not retire the synthetic existing consumer path while required coverage is unresolved; provides a concrete next verification step."
+  ]
+}

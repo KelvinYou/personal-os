@@ -1,0 +1,6 @@
+{
+  "context": "Prepare synthetic plan.md and itinerary.html. Markdown uniquely contains a version-history row, source URL, verification date and unresolved recheck task; HTML omits these. These unique records must remain recoverable even if the display format changes.",
+  "messages": [
+    "I prefer HTML only. Retire the Markdown if possible, while preserving any unique history, provenance and rechecks."
+  ]
+}

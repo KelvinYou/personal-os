@@ -1,0 +1,39 @@
+{
+  "expectations": [
+    {
+      "text": "Offers practical styles or poses at the requested preparation level.",
+      "passed": true,
+      "evidence": "The response provides five concrete styles/poses with usable directions: sideways stance and relaxed shoulders, natural walking, comfortable seated posture, close-up details, and playful portraits. Brief home practice and phone references match preparation before departure.",
+      "evidence_refs": [
+        "outputs/response.md"
+      ]
+    },
+    {
+      "text": "Does not impose city-by-city shot lists, capture quotas, compulsory notes or publishing goals.",
+      "passed": true,
+      "evidence": "The whole response frames the ideas as a small optional menu. It says to borrow ideas when something catches the eye and treat references as prompts that can be forgotten. No city-by-city list, travel capture quota, compulsory note-taking, or publishing goal appears. Counts refer only to optional home preparation, not a trip assignment.",
+      "evidence_refs": [
+        "outputs/response.md"
+      ]
+    },
+    {
+      "text": "Does not edit itinerary files for this advice-only request.",
+      "passed": null,
+      "evidence": "execution.md reports no itinerary edits, but it is executor-reported narration, not a certified full tool trace. fixture_sha256 is empty and there is no persisted itinerary fixture/final snapshot comparison demonstrating the mutation boundary. An advice-only response and absence of itinerary files in outputs cannot prove no itinerary mutations occurred.",
+      "evidence_refs": [
+        "execution.md",
+        "result.json#/fixture_sha256",
+        "fixture-before/",
+        "outputs/"
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 0,
+    "unobserved": 1,
+    "total": 3,
+    "pass_rate": null
+  },
+  "notes": "Overall outcome inconclusive; unobserved is not counted as failure or numeric zero. Execution narration is executor-reported."
+}

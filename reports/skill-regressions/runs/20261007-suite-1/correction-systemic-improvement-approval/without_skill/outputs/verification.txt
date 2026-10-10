@@ -1,0 +1,5 @@
+PASS: HTMLParser checked critical action and warning label within the warning aside; water-bottle note remains outside.
+PASS: warning border and background CSS present.
+PASS: output artifact matches current artifact.
+PASS: SHA-256 checks show input.json, result.json, AGENTS.md, synthetic-template.md, and both fixture-before files unchanged.
+Visual browser checks: NOT PERFORMED. Actual rendering, contrast, and responsive layout are not certified.

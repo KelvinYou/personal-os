@@ -1,0 +1,9 @@
+Independent artifact checks, not visual verification.
+Changed frozen-manifest owners: .agents/skills/travel-plan/assets/share.css, scripts/lib/travel/render.py
+PASS: source unchanged against fixture.
+PASS: changed canonical CSS is verbatim in delivered HTML.
+PASS: delivered HTML equals active output.
+Independent -B build --check exit 0
+[Status: OK] 0-itinerary.html: balanced HTML, canonical assets, classes, anchors; 2 days
+[Status: OK] plan.md: generated HTML matches source, renderer and canonical assets
+UNOBSERVED: actual screenshot regions, desktop/mobile clipping, layout readability and inspection chronology.

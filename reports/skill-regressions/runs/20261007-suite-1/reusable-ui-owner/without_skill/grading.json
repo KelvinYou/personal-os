@@ -1,0 +1,42 @@
+{
+  "expectations": [
+    {
+      "text": "Changes the relevant reusable skill guidance/template/assets, rather than only generated itinerary content.",
+      "passed": true,
+      "evidence": "The canonical shared CSS changed against the frozen manifest, with substantive system typography, reading sizes, spacing, surfaces and navigation changes. It is the renderer-consumed owner, not merely generated HTML.",
+      "evidence_refs": [
+        "../../manifest.json",
+        "outputs/reusable/assets/share.css",
+        "reviewer-verification.txt"
+      ]
+    },
+    {
+      "text": "Generates a synthetic itinerary from the changed owner and shows that the new styling reaches future output.",
+      "passed": true,
+      "evidence": "Independent deterministic --check succeeds against the final active source, renderer and canonical assets. Delivered HTML is identical to active output and contains the changed shared CSS verbatim; delivered source is identical to the fixture. This substantiates styling propagation without relying on the executor log or claiming browser visual inspection.",
+      "evidence_refs": [
+        "reviewer-verification.txt",
+        "outputs/itinerary.html",
+        "outputs/plan.md"
+      ]
+    },
+    {
+      "text": "Does not create a competing copy of the reusable UI or rewrite unrelated real trip content.",
+      "passed": true,
+      "evidence": "Only canonical CSS differ among frozen-manifest owners; all other initial protected hashes match. The synthetic source is byte-identical across fixture, active and delivered copies. Active skill tree contains one CSS and one HTML template owner; outputs/reusable is deliverable packaging, not a competing active implementation. No unrelated trip content is present in this bounded synthetic workspace.",
+      "evidence_refs": [
+        "reviewer-verification.txt",
+        "fixture-before/plan.md",
+        "outputs/plan.md",
+        "../../manifest.json"
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "unobserved": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  }
+}

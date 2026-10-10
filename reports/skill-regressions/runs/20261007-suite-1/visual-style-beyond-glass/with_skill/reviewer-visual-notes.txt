@@ -1,0 +1,2 @@
+Independent native Safari revisit: opened exact final with-skill HTML in a new tab; AX confirmed local URL. Clicking timeline link followed by observation failed with Computer Use server error -10005: cgWindowNotFound before any screenshot returned. One cleanup rebind also failed; review tab may remain active. No responsive mode entered.
+No actual screenshot regions observed in this revisit; no exported screenshot pixel files. Composition, desktop/mobile legibility and executor refinement inspection remain unobserved. AX text is not pixel evidence.

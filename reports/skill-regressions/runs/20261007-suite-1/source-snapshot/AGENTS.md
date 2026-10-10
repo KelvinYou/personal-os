@@ -1,0 +1,143 @@
+# Personal-OS — AI Agent Collaboration Protocol
+
+> This file is the single owner of collaboration conventions for all harnesses (Claude Code / Codex / …).
+> `CLAUDE.md` is a symlink to this file — do not add content there.
+
+## Project Overview
+A personal management system that drives data-driven self-management through structured logs + AI agents. Core loop: daily logging → logic-engine alerts → weekly synthesis analysis → next-week scheduling.
+
+## Directory Structure
+> This block is validated line-by-line via `test -e` by `make doctor` (entries under `data/` are exempt when it isn't checked out).
+> If you change the layout, update this too — this file is force-injected into every session, and a wrong path here makes an agent read the wrong file outright.
+```
+/config/                  — public regulatory and pipeline settings (wealth_rules.yaml / idea_pipeline.yaml); personal thresholds live in data/config/
+/market/                  — externally observable market facts (interest_rates / fx.yaml, jobs/); public, no personal info
+/data/                    — user's own independent private repo; ignored by the public parent
+/data/config/             — private thresholds.yaml and settings.yaml (timezone); required for personal runs
+/data/daily/              — daily engineer logs (YYYY-MM-DD.md); 90-day hot window, older entries folded by make archive
+/data/archive/            — cold-data archive (YYYY-Qn.md weekly summaries + body.csv full body-composition series)
+/data/protocol/           — standing protocol; standard_week.md is the single human-readable schedule, not re-shuffled weekly; standard_week.yaml is only a Calendar-anchors projection
+/data/finance/            — financial holdings (savings / portfolio / policy.yaml)
+/data/ideas/              — private startup-idea briefs, evidence, immutable runs, and append-only test events
+/data/reports/            — weekly report archive + weekly delta (only generated when there are exceptions)
+/data/travel/             — private trip plans (city-YYYY-MM.md); language exception: may be written in the traveler's preferred language, since map queries and mini-program names must stay in the local script
+/data/user_profile.md     — global user profile (routine/diet/training preferences)
+/docs/                    — long-form docs; route through INDEX.md; VISION / ROADMAP / DECISIONS remain their named owners
+/docs/INDEX.md            — durable-doc routing, source-of-truth matrix, and agent read order
+/docs/knowledge/          — evergreen cross-project notes; new notes use the minimal knowledge-note contract
+/docs/personal-direction.md — public routing note for optional private data/reference/personal-direction.md
+/docs/voice-guide.md      — public routing note for optional private data/reference/voice-guide.md
+/docs/dev-sop.md          — feature/bug-fix SOP (design → implement → test → review → merge; simple vs. complex/subtask-loop paths)
+/docs/design/             — technical design docs (implementation-ready specs, ADR-adjacent)
+/docs/plans/              — multi-phase project plans with phase-by-phase status; ROADMAP §4 links into these, don't duplicate their checklists
+/docs/analysis/           — Personal-OS quantitative and wealth analysis; stock-pipeline analysis is owned by repos/ai-stock-analysis
+/docs/drafts/             — content drafts pending external publish (profile copy, public-mirror README) — copy manually, don't paste blind
+/ARCHITECTURE.md          — system architecture + invariants; read before changing data flow/contracts
+/SETUP.md                 — first-time bootstrap flow; the top comment block is an interactive script for the agent
+/templates/               — blank template files
+/reports/evals/           — session eval records (produced by make eval; audits the agent itself, not me); not private, so it lives here rather than data/
+/reports/corrections/     — pending.md is the correction queue (see "Correction Queue" below); archive.md holds merged/rejected entries
+/scripts/                 — automation scripts (Python 3)
+/tests/                   — unit tests + fixtures (never read real private data)
+/web/                     — local wealth dashboard (Next.js, localhost only)
+/.agents/skills/          — AI agent skills (weekly-review / wealth-manager / ...)
+/repos/                   — external project submodules, managed centrally + read by skills
+/repos/portfolio-website  — personal website (unified entry point for career-related content)
+/repos/ai-stock-analysis  — stock analysis tool; sole owner of stock price data, ticker research snapshots, and pipeline/backtest analysis docs
+/repos/notes    — public notes submodule; sole owner of the nutrition dataset
+/.agents/skills/travel-plan/ — trip-plan skill; owns the verification gate that must run BEFORE a plan is drafted (verify-class defects outnumber lint-class 26:17 and no review pass finds them)
+/scripts/travel_lint.py   — travel-plan consistency linter (`make travel-lint`); only checks what needs no external source
+/scripts/lib/travel/      — lint rules; each rule maps to a defect in tests/fixtures/travel_known_defects.yaml
+/scripts/nutrition.py     — nutrition query adapter (reads repos/notes)
+/scripts/lib/nutrition/   — shared implementation for the nutrition adapter (basis conversion, macro/cost derivation)
+/scripts/flow_graph.py    — derives web/public/flows.json for the `/flows` dashboard (`make flows`); structural parts auto-derived, see lib/flows/
+/scripts/lib/flows/       — Makefile/script/submodule parsing for the flow graph; a `# flow: <group>` header in a script is the only manual input it reads
+```
+
+## Key Conventions
+- Daily log filename format: `YYYY-MM-DD.md`
+- YAML frontmatter must validate against `scripts/lib/schema.py`; the field list must stay in parity with the template (optional fields may be left blank)
+- All thresholds are read from the owner's `data/config/thresholds.yaml` — no hardcoded magic numbers in scripts
+- Scripts use Python 3, dependencies in `requirements.txt` (`make setup` installs into `.venv/`)
+- All output must conform to the CommonMark standard
+- When a request concerns weekend design, travel framing, public writing, or personal knowledge direction, read the owner's `data/reference/personal-direction.md` if present; otherwise ask when needed
+
+## Common Commands
+- `make setup` — create `.venv` and install dependencies
+- `make setup-ideas` — install the optional Claude SDK for startup-idea model execution
+- `make setup-private DATA_REPO=...` — attach the user's own private repo to `data/`; never overwrite existing files
+- `make doctor` — environment self-check; distinguishes error / expected (e.g. data not checked out due to missing permission) / warning
+- `make help` — discover the full command list, including knowledge, Mermaid, and web checks
+- `make test` — Python tests + web typecheck
+- `make kb-check` / `make kb-index` / `make kb-eval` / `make kb-graph` — knowledge-note contract, compact catalog, retrieval checks, and disposable Mermaid view
+- `make today` — generate today's log template
+- `make idea-validate IDEA_INPUT=...` — validate a startup-idea input without model calls
+- `make idea-init IDEA_INPUT=...` — create a private startup-idea record
+- `make idea-evaluate IDEA_INPUT=... [IDEA_MODE=multi]` — run the startup-idea pipeline
+- `make idea-confirm-test IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=...` — confirm one test contract
+- `make idea-record-result IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=...` — append a user-owned test result
+- `make idea-add-evidence IDEA_ID=... IDEA_INPUT=...` — append evidence to an idea record
+- `make coros-health` — evaluate normalized official COROS MCP evidence from stdin; no daily-log writes
+- `make check` — run the logic engine against local recorded logs (does not query COROS)
+- `make weekly` — aggregate local evidence; `COROS_INPUT=-` adds client-queried official MCP evidence via stdin
+- `make report` — lint + logic check + weekly synthesis; prepares the prompt for an AI-authored report
+- `make wealth` — Tracked Assets: cash/maturities/rates + stock valuation (NAV-priced products still excluded)
+- `make flows` — regenerate `web/public/flows.json` for the `/flows` dashboard (Makefile targets + script read/write edges + submodule touchpoints); `make doctor` warns if this drifts out of sync
+- `make eval` — convert the most recent Claude Code session into an eval record (`SESSION=recent-3` to select one)
+- `make eval-rollup` — monthly agent-signal rollup; `/meta-coach` reads this, not individual evals
+
+## AI Agent Collaboration Notes
+- When generating a schedule, always reference the routine/diet preferences in `data/user_profile.md`
+- The scoring framework uses four weighted dimensions (Output 40 / Health 30 / Mental 20 / Habits 10)
+- Log style: engineer's-eye view, marked with `[Status: OK/Warning/Critical]`
+- All content — logs, reports, and skills alike — is written in English. Sole exception: `data/travel/` (see directory structure) — trip plans may use the traveler's preferred language, because map search queries, mini-program names and restaurant names have to stay in the local script to be usable on the ground
+- Read `data/reference/voice-guide.md` if present before writing **outward-facing text** (blog / LinkedIn / README prose / commit body). Internal repo reports use the `[Status: ...]` convention.
+
+## Give Three Next Steps When Wrapping Up
+After answering a request, proactively offer 3 optional next steps — don't ask "anything else you need?":
+- **The first one must be something I wouldn't have thought of but would find useful** — an opportunity visible from this context, not a restatement of what I just said.
+- The 2nd and 3rd are natural follow-ups (what command to run, which file to change).
+- One line each, with a concrete command or path. If you can't figure it out, don't guess.
+
+Exceptions — skip this when: I'm issuing rapid consecutive instructions (meaning I already have a sequence in mind, and inserting suggestions would interrupt); or this turn is itself me answering your question.
+
+## Audit the Agent Itself After a Session Ends
+`make eval` converts a transcript into a record under `reports/evals/`: facts + mechanical
+signals (write-before-read / unverified-mutation / tool-error-loop / user-correction …),
+each signal annotated with "what evidence would falsify it."
+
+- The `judgement` / `agents_md_change` / `notes` fields are **always null at generation time**.
+  An auditor that scores itself is equivalent to giving the audited party write access —
+  that's the same pitfall as in `/decision-log`. A human or `/meta-coach` fills these in afterward.
+- Regenerating never overwrites already-filled review fields (unless `--force`).
+- A single eval proves nothing; the distribution from `make eval-rollup` is the evidence. If the
+  same signal fires in over half the sessions in a month → that's a bug in AGENTS.md, not in that session.
+
+## Learn from Corrected Outputs
+
+When the user indicates that an output missed their intent, fix the current result first,
+then consider whether the cause was execution error, missing context, conflicting
+documentation, unclear skill guidance, or repeatable work better handled by a template,
+script, or validator. Do not turn every correction into a new rule. When a small systemic
+improvement could substantially reduce future rework or prevent consequential errors,
+explain the evidence, expected benefit, and smallest proposed change, and seek the user's
+agreement before applying it. Follow the Correction Queue for changes to agent behavior.
+
+## Correction Queue
+When I (the agent) recognize mid-session that you're correcting my behavior — not just fixing a
+file, but telling me to do something differently going forward — I append an entry to
+`reports/corrections/pending.md` instead of editing this file directly. Same pitfall as the eval
+records above: the party being corrected can't be the one deciding its own instruction change.
+
+- Detecting "this is a correction" is a judgment call I make in the moment — there is no hook that
+  fires on this deterministically, so I can miss one. If you notice I should have logged something
+  and didn't, tell me to log it retroactively.
+- Each entry: date, what I did, your correction (quoted), and a proposed AGENTS.md wording change.
+  Status starts `pending`.
+- I never merge an entry into AGENTS.md myself. You review the queue (ask me to "review the
+  correction queue" any time, or batch it into a session like the one that added this section),
+  accept/reword/reject each one, and only then does it land in AGENTS.md — the entry then moves to
+  `reports/corrections/archive.md` with the outcome noted.
+- Low volume is fine — this isn't meant to fire every session. If it's firing constantly, that's
+  itself a signal the underlying instructions are wrong often enough to need a bigger rewrite, not
+  a queue of patches.

@@ -1,0 +1,63 @@
+{
+  "expectations": [
+    {
+      "text": "Follows the latest supplied decision: Markdown owns content and records; changes the source and regenerates HTML rather than editing generated content independently.",
+      "passed": true,
+      "evidence": "Source diff is exactly the requested lodging note change retaining \u2753. Generated source hash matches delivered Markdown, and an independent deterministic check regenerates identical HTML with the same note. This substantiates latest Markdown-owner workflow, without inferring prior editing chronology.",
+      "evidence_refs": [
+        "fixture-before/plan.md",
+        "outputs/plan.md",
+        "outputs/itinerary.html",
+        "reviewer-verification.txt"
+      ]
+    },
+    {
+      "text": "Checks reusable guidance and updates any conflicting instructions in the disposable copy; does not merge the superseded HTML-only proposal into AGENTS.md.",
+      "passed": true,
+      "evidence": "The actual disposable SKILL.md, share-html.md and checklists.md guidance updates align content ownership with Markdown plus deterministic regeneration and lodging in main #stays; protected AGENTS.md remains unchanged.",
+      "evidence_refs": [
+        "reviewer-verification.txt",
+        "outputs/.agents/skills/travel-plan/SKILL.md",
+        "outputs/.agents/skills/travel-plan/references/share-html.md",
+        "outputs/.agents/skills/travel-plan/references/checklists.md"
+      ]
+    },
+    {
+      "text": "Lodging appears on the main itinerary with no separate hotel output or links remaining in the active generated workflow.",
+      "passed": true,
+      "evidence": "HTML includes lodging in #stays with navigation to it; no hotel.html links or active hotel output remain. Retired hotel archive matches original fixture byte for byte.",
+      "evidence_refs": [
+        "outputs/itinerary.html",
+        "fixture-before/hotel.html",
+        "reviewer-verification.txt"
+      ]
+    },
+    {
+      "text": "Visible status icons use bundled Lucide SVG plus labels; no visible emoji. Markdown semantic markers and provenance remain intact.",
+      "passed": true,
+      "evidence": "Actual HTML has inline SVG and visible pending/warning labels, no visible status emoji. Bundled icon asset hashes are unchanged; validator confirms canonical icon/assets contract. Markdown diff preserves semantic markers, original history, verification date and source provenance.",
+      "evidence_refs": [
+        "outputs/itinerary.html",
+        "outputs/plan.md",
+        "reviewer-verification.txt"
+      ]
+    },
+    {
+      "text": "Build and corresponding HTML validation succeed and generated lodging agrees with the source.",
+      "passed": true,
+      "evidence": "Independent -B builder --check on delivered source/output exits 0, validating balanced HTML, canonical assets/classes/anchors and deterministic parity. Main lodging note agrees exactly with source.",
+      "evidence_refs": [
+        "reviewer-verification.txt",
+        "outputs/plan.md",
+        "outputs/itinerary.html"
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "unobserved": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "context": "Prepare a disposable copy of the travel skill, shared templates/assets and synthetic generated itinerary. The project uses deterministic source-to-HTML generation.",
+  "messages": [
+    "Update the travel-plan skill's reusable UI so future itineraries have an Apple-inspired, comfortable visual style. Update the reusable owner, not only this generated page."
+  ]
+}

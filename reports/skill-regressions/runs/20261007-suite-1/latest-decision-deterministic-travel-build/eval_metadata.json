@@ -1,0 +1,12 @@
+{
+  "eval_id": 6,
+  "eval_name": "latest-decision-deterministic-travel-build",
+  "prompt": "Prepare a buildable synthetic travel source using the current renderer contract, generated itinerary, reusable skill and a legacy separate hotel page. The source contains semantic status markers and provenance. Deliver the next messages in order.\n\nInitially I wanted HTML only.\n\nKeep Markdown if it contains necessary records. I approve deterministic Markdown-to-HTML generation. Lodging belongs in the main itinerary; no separate hotel page. Visible HTML icons should be bundled Lucide SVG, with text labels, not emoji. Update reusable guidance if it still conflicts, then change the synthetic lodging note and regenerate.",
+  "assertions": [
+    "Follows the latest supplied decision: Markdown owns content and records; changes the source and regenerates HTML rather than editing generated content independently.",
+    "Checks reusable guidance and updates any conflicting instructions in the disposable copy; does not merge the superseded HTML-only proposal into AGENTS.md.",
+    "Lodging appears on the main itinerary with no separate hotel output or links remaining in the active generated workflow.",
+    "Visible status icons use bundled Lucide SVG plus labels; no visible emoji. Markdown semantic markers and provenance remain intact.",
+    "Build and corresponding HTML validation succeed and generated lodging agrees with the source."
+  ]
+}

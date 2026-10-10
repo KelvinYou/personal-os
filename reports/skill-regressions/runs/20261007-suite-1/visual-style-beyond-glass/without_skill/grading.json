@@ -1,0 +1,44 @@
+{
+  "expectations": [
+    {
+      "text": "Rendered output has discernible information hierarchy, readable typography, consistent spacing and alignment; reviewer cites screenshot regions.",
+      "passed": null,
+      "evidence": "No actual rendered screenshots are persisted, so reviewer cannot cite regions demonstrating hierarchy, typography, spacing or alignment. Source/CSS changes and deterministic build validity are independently supported but do not demonstrate actual composition.",
+      "evidence_refs": [
+        "outputs/itinerary.html",
+        "execution.md",
+        "reviewer-verification.txt",
+        "reviewer-visual-notes.txt"
+      ]
+    },
+    {
+      "text": "Dense content remains readable at desktop and mobile widths, without clipping, overlapping text or glass effects obscuring content.",
+      "passed": null,
+      "evidence": "No rendered desktop/mobile outputs or overflow measurements are available. Dense-content readability, clipping, overlap and glass obscuration cannot be established from CSS or structural checks. Browser integration was unavailable.",
+      "evidence_refs": [
+        "outputs/itinerary.html",
+        "execution.md",
+        "reviewer-verification.txt",
+        "reviewer-visual-notes.txt"
+      ]
+    },
+    {
+      "text": "Tool trace and screenshots show inspection of actual desktop and mobile outputs before completion is claimed.",
+      "passed": null,
+      "evidence": "execution.md explicitly records that actual desktop/mobile visual inspection and screenshots were unavailable; its Chrome binding attempts reportedly failed with cgWindowNotFound. There is no certified full tool trace or screenshot evidence of successful inspection. This is unobserved under corpus evidence rules rather than a skill failure caused by the harness limitation.",
+      "evidence_refs": [
+        "execution.md",
+        "outputs/",
+        "reviewer-visual-notes.txt"
+      ]
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "unobserved": 3,
+    "total": 3,
+    "pass_rate": null
+  },
+  "notes": "Zero observed passes does not mean failure; all visual checks are unobserved. Overall inconclusive."
+}
