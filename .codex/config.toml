@@ -3,3 +3,10 @@ inherit = "core"
 
 [shell_environment_policy.set]
 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1"
+
+# Official COROS HTTP OAuth; direct US route avoids the verified OAuth metadata redirect mismatch.
+# Account credentials stay in the client's OAuth store.
+# Read tools only for health reviews. Refresh against the live catalog after login.
+[mcp_servers.coros]
+url = "https://mcpus.coros.com/mcp"
+enabled_tools = ["queryDailyHealthData", "querySleepData", "querySleepHrv", "queryRestingHeartRate", "queryTrainingLoadAssessment", "queryRecoveryStatus", "querySportRecords", "getActivityDetail"]

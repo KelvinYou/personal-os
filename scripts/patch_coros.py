@@ -2,7 +2,8 @@
 # flow: fitness-sync
 """Patch COROS sleep/readiness/training/activities blocks into daily .md frontmatter.
 
-Invoked automatically by sync_coros.py; can also be run standalone:
+Legacy archive recovery only; never invoked by today/daily or official MCP.
+Historical staged files can be recovered explicitly:
     python3 scripts/patch_coros.py <YYYY-MM-DD>      # patch from data/fitness/<date>.yaml
 """
 from __future__ import annotations
@@ -128,6 +129,8 @@ def _patch_list(lines: list[str], key: str, items: list, changed: list[str]) -> 
         changed.append(f"{key}=[inserted {len(items)} item(s)]")
         return lines[:pos] + new_block + lines[pos:]
     start, end = rng
+    if (yaml.safe_load("\n".join(lines[start:end])) or {}).get(key) == items:
+        return lines
 
     # Keep any trailing comment on the `key:` line, drop inline `[]`.
     head = lines[start]
@@ -158,6 +161,18 @@ def patch_daily(file_path: Path, fitness: dict) -> list[str]:
     fm_lines = parts[1].split("\n")
     changed: list[str] = []
 
+    # Keep source provenance after data/fitness/*.yaml is pruned by archive.
+    if (any(isinstance(fitness.get(k), dict) for k in ("sleep", "readiness", "training"))
+            or fitness.get("activities")):
+        source_line = next((i for i, line in enumerate(fm_lines)
+                            if re.match(r"^coros_synced:", line)), None)
+        if source_line is None:
+            fm_lines.insert(1, "coros_synced: true")
+            changed.append("coros_synced=true")
+        elif fm_lines[source_line].strip() != "coros_synced: true":
+            fm_lines[source_line] = "coros_synced: true"
+            changed.append("coros_synced=true")
+
     for block in ("sleep", "readiness", "training"):
         if isinstance(fitness.get(block), dict):
             fm_lines = _patch_map(fm_lines, block, fitness[block], changed)
@@ -173,6 +188,24 @@ def patch_daily(file_path: Path, fitness: dict) -> list[str]:
     return changed
 
 
+def create_or_patch_daily(file_path: Path, fitness: dict) -> list[str]:
+    """Create a minimal telemetry record when evidence exists, then patch COROS fields."""
+    has_evidence = (any(isinstance(fitness.get(k), dict)
+                        for k in ("sleep", "readiness", "training"))
+                    or bool(fitness.get("activities")))
+    if not has_evidence:
+        return []
+    if not file_path.exists():
+        from lib.daily_log import load
+
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.write_text("---\n---\n", encoding="utf-8")
+        changes = patch_daily(file_path, fitness)
+        load(file_path)
+        return changes
+    return patch_daily(file_path, fitness)
+
+
 def main(argv: list[str]) -> None:
     if len(argv) != 2:
         sys.exit("用法: python3 scripts/patch_coros.py <YYYY-MM-DD>")
@@ -180,11 +213,12 @@ def main(argv: list[str]) -> None:
     fitness_path = FITNESS_DIR / f"{date_str}.yaml"
     daily_path = DAILY_DIR / f"{date_str}.md"
     if not fitness_path.exists():
-        sys.exit(f"[Error] 未找到 {fitness_path.relative_to(ROOT)} (先跑 make sync-coros)")
-    if not daily_path.exists():
-        sys.exit(f"[Error] 未找到 {daily_path.relative_to(ROOT)}")
+        sys.exit(f"[Error] 未找到 {fitness_path.relative_to(ROOT)} (legacy staging file required; live data uses official MCP)")
     fitness = yaml.safe_load(fitness_path.read_text())
-    changed = patch_daily(daily_path, fitness)
+    changed = create_or_patch_daily(daily_path, fitness)
+    if not daily_path.exists():
+        print(f"[Status: Expected] no COROS observations for {date_str}; no daily file")
+        return
     if changed:
         print(f"[Status: OK] patched {daily_path.relative_to(ROOT)} ({len(changed)} change(s))")
         for c in changed:
