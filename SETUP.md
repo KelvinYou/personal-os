@@ -30,7 +30,7 @@
 │   Q3 Target deep-work hours per weekday? → private thresholds.deep_work     │
 │   Q4 Minimum acceptable sleep, and your HRV baseline if you know it?        │
 │                                                 → thresholds.sleep/readiness│
-│   Q5 Do you wear a COROS watch? (no → skip make sync-coros entirely)        │
+│   Q5 COROS user? If yes, connect the official OAuth MCP in the AI client.        │
 │   Q6 Which currency and country for the finance rules?                      │
 │                                    → config/wealth_rules.yaml, market/      │
 │                                                                             │
@@ -59,6 +59,17 @@ agent 看的，人类可以忽略。
 ---
 
 ## Phase 0 — 前提
+
+For an offline move of uncommitted work and all private data, export with
+`python3 scripts/workspace_transfer.py export` (a dated ZIP and SHA-256 checksum
+are written to the project root by default).
+Extract the ZIP into a separate folder and follow its `README.md` to preview
+and apply against an existing checkout with initialized public submodules.
+The archive includes private data; root ZIPs and checksum files are ignored by
+Git and should remain untracked.
+It restores files, deletions and modes, while preserving destination Git
+metadata; it does not restore staging or commits. A plain restored `data/`
+directory still needs the private-repository attachment described in Phase 2.
 
 | 需要 | 检查 | 缺了怎么办 |
 | :--- | :--- | :--- |
@@ -128,6 +139,16 @@ make setup-private DATA_REPO=git@github.com:you/my-personal-os-data.git
 改完必须跑一次 `make test` —— thresholds 走 pydantic 校验，写错字段会 fail-fast，
 不会静默变成 0。
 
+## COROS — official connection
+
+Follow the [COROS setup guide](https://support.coros.com/hc/en-us/articles/50841795180948-Connect-Your-COROS-to-AI):
+in ChatGPT, Settings → Plugins → search COROS → connect → authorize your account;
+in Claude, Settings → Connectors → Discover → COROS → Connect. Availability depends
+on the client/account. Codex uses the official HTTP OAuth endpoint; see
+[the integration contract](docs/design/coros-official-mcp.md) for setup and a read-only
+acceptance query. Connections are client-specific; verify real data before claiming
+success. No COROS password is required in `.env`.
+
 ## Phase 4 — 验收
 
 ```bash
@@ -143,8 +164,9 @@ make check         # 逻辑引擎（有日志才有意义）
 
 配完之后，按这个顺序建立习惯 —— 一次只加一个循环，别一天全开：
 
-1. **Day 1–7 每天**：`make today`，然后跟 agent 说今天干了什么，让 `/daily-report`
-   把碎碎念写成结构化日志。这一步不做，后面全部无数据可读。
+1. **Manual logs are optional**: use `/daily-report` or `make today` for facts you
+   choose to record. Health reviews query official COROS MCP directly; a missing
+   work log is neither a failure nor evidence of completed work.
 2. **第一个周末**：`make report` → 把 `weekly_report_prompt.md` 交给
    `/weekly-review`，拿到四维评分 + 下周 P0/P1/P2。
 3. **紧接着**：`/coach-planner` 排下周时间表。它读 P0/P1/P2 + `user_profile.md` +

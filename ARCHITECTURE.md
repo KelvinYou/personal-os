@@ -1,11 +1,11 @@
 # Personal-OS — Architecture
 
-Personal-OS 是单用户本地的数据驱动自我管理系统。核心闭环：每日 Brain Dump + COROS 自动同步构成结构化日志 → 逻辑引擎扫描触发熔断告警 → 周日聚合分析产出四维评分和诊断 → coach-planner 基于诊断排下周时间表。
+Personal-OS 是单用户本地的数据驱动自我管理系统。核心闭环：optional manual context + official COROS MCP evidence → 逻辑引擎扫描触发熔断告警 → 周度聚合呈现有证据的指标与判据 → coach-planner 仅在例外出现时记录周度 delta。
 
 **设计原则**：
 - **人类可读优先** —— Markdown + YAML 作为存储介质，拒绝 SQLite/DB，保 `cat` + `grep` + 手改的工作流
 - **职责分层** —— AI 负责 flexible narrative（评分解读、blocker 根因、排期叙事），代码负责 deterministic metrics（阈值判定、聚合、熔断）
-- **本地单用户** —— 不做后台 cron / 托管部署 / 多租户；COROS 拉取与 Calendar 推送是用户显式运行的集成命令
+- **本地单用户** —— 不做后台 cron / 托管部署 / 多租户；COROS uses client-managed OAuth MCP on demand; Calendar publication remains explicit
 - **失败友好** —— 缺数据跳过而非崩溃；任何一天的日志残缺不影响其他天聚合
 
 ---
@@ -29,8 +29,7 @@ graph TB
     end
 
     subgraph Engine ["Logic Engine (Python)"]
-        SC["sync_coros.py<br/>COROS API 拉取"]
-        PC["patch_coros.py<br/>写入日志 frontmatter"]
+        CH["coros_health.py<br/>Ephemeral evidence evaluation"]
         RG["report_gen.py<br/>规则告警检查"]
         WS["weekly_synthesis.py<br/>周度数据聚合"]
         DD["decisions_due.py<br/>决策到期检查"]
@@ -38,7 +37,7 @@ graph TB
 
     subgraph Store ["Data Layer (owner's private data repo 🔒)"]
         DL["data/daily/<br/>YYYY-MM-DD.md"]
-        FIT["data/fitness/<br/>YYYY-MM-DD.yaml"]
+        MCP["Official COROS MCP<br/>Client OAuth"]
         RPT["data/reports/<br/>周报存档"]
         DEC["data/decisions/<br/>决策日志"]
         UP["data/user_profile.md"]
@@ -56,8 +55,10 @@ graph TB
 
     User -- "碎碎念" --> BD
     BD --> DR --> DL
-    COROS_HW -- "API" --> SC --> FIT
-    FIT --> PC --> DL
+    COROS_HW --> MCP
+    MCP --> CP & WR
+    CP --> CH --> ALERT
+    WR -- "Normalized stdin" --> WS
     DL --> RG --> ALERT --> User
     DL --> WS --> WR --> REPORT --> User
     REPORT --> CP
@@ -76,43 +77,29 @@ graph TB
 
 ## 2. Daily Loop
 
-每天的核心数据闭环：Brain Dump 结构化 + COROS 自动填充 + 逻辑引擎告警。
+Manual logging and live health assessment are independent. MCP queries require
+no daily file and do not create one.
 
 ```mermaid
 sequenceDiagram
     actor User
-    participant DR as /daily-report
-    participant DL as data/daily/
-    participant COROS as COROS API
-    participant SC as sync_coros.py
-    participant PC as patch_coros.py
-    participant FIT as data/fitness/
-    participant RG as report_gen.py
-    participant CP as /coach-planner
-
-    User->>DR: 今天的 Brain Dump
-    DR->>DL: 写入 YYYY-MM-DD.md<br/>(energy, spend, mental_load 等)
-
-    Note over COROS,FIT: make sync-coros (每日拉取昨日数据)
-    User->>SC: make sync-coros
-    SC->>COROS: fetch_sleep / fetch_daily_records / fetch_activities
-    COROS-->>SC: sleep + readiness + training + activities
-    SC->>FIT: 写入 YYYY-MM-DD.yaml
-    SC->>PC: 触发 patch
-    PC->>DL: 更新 sleep/readiness/training/activities frontmatter
-
-    User->>RG: make check
-    RG->>DL: 读取近期日志
-    RG-->>User: ⚠️ 告警列表 (Warning/Critical/Breaker)
-
-    alt 有告警
-        User->>CP: 今天怎么排？
-        CP->>DL: 读取近3天日志
-        CP-->>User: 调整后时间表
+    participant Agent as daily-report / coach-planner
+    participant MCP as Official COROS MCP + client OAuth
+    participant Rules as Python metrics + breakers
+    participant Daily as Private daily logs
+    User->>Agent: Brain dump or health question
+    opt Explicit manual log
+        Agent->>Daily: Merge owner-supplied facts
+    end
+    opt Health assessment
+        Agent->>MCP: Authorized queries for required dates and fields
+        MCP-->>Agent: Dated observations with units
+        Agent->>Rules: Verified normalized evidence over stdin
+        Rules-->>Agent: Observed metrics and triggered rules
+        Agent-->>User: Advice with coverage and source date
     end
 ```
 
----
 
 ## 3. Weekly Loop
 
@@ -121,7 +108,8 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph Collect ["① 数据聚合"]
-        D["7× data/daily/YYYY-MM-DD.md"] --> WS["weekly_synthesis.py"]
+        D["Available manual daily logs"] --> WS["weekly_synthesis.py"]
+        MCP["Official COROS MCP"] --> E["Verified normalized evidence"] --> WS
         WS --> PROMPT["weekly_report_prompt.md<br/>聚合摘要"]
     end
 
@@ -135,14 +123,14 @@ graph LR
 
     subgraph Plan ["③ 下周排期 (向前看)"]
         RPT --> CP["/coach-planner"]
-        CP --> TT["下周时间表<br/>(周一~周日时间块)"]
+        CP --> TT["Standing protocol<br/>Dated delta only when needed"]
     end
 
     D -. "full read<br/>(narrative)" .-> WR
     TT --> User((👤 User))
 ```
 
-> `/weekly-review` 除了读 `weekly_report_prompt.md` 的聚合摘要外，**还会直接通读 7 天 daily log**（SKILL.md Step 1.3），以捕捉 highlights / blockers / 营养等 narrative 上下文。`data/fitness/*.yaml` 只是 COROS staging buffer，先由 `patch_coros.py` 合并进 daily frontmatter，不是周聚合的第二输入。
+> weekly-review queries official COROS MCP and passes normalized JSON to `make weekly COROS_INPUT=-`. Python merges health evidence with available manual logs in memory. The skill reads full manual prose separately; health-only weeks work without daily files. Plain `make weekly` is local-only; historical fitness YAML is not a live source.
 
 ---
 
@@ -202,58 +190,48 @@ erDiagram
         string lesson "nullable"
     }
 
-    DAILY_LOG o|--o| FITNESS_YAML : "staging / patched by sync_coros"
+    DAILY_LOG o|--o| FITNESS_YAML : "legacy staging / archive recovery only"
     DAILY_LOG }o--o{ WEEKLY_REPORT : "aggregated into"
     DAILY_LOG }o--o{ DECISION : "contextual (same date)"
 ```
 
 ---
 
-## 5. COROS Sync Pipeline
+## 5. Official COROS MCP
+
+The [official setup guide](https://support.coros.com/hc/en-us/articles/50841795180948-Connect-Your-COROS-to-AI)
+owns connection. Live device facts come from official MCP via client-managed OAuth.
 
 ```mermaid
 flowchart LR
-    subgraph External ["外部"]
-        API["COROS API<br/>teamapi.coros.com<br/>(us region)"]
-    end
-
-    subgraph Auth ["认证"]
-        ENV[".env<br/>COROS_EMAIL<br/>COROS_PASSWORD<br/>COROS_REGION=us"]
-        LOGIN["coros_api.try_auto_login()"]
-        ENV --> LOGIN
-    end
-
-    subgraph Fetch ["并发拉取"]
-        direction TB
-        F1["fetch_sleep(auth, day)"]
-        F2["fetch_daily_records(auth, day)"]
-        F3["fetch_activities(auth, day)"]
-    end
-
-    subgraph Write ["写入"]
-        YAML["data/fitness/YYYY-MM-DD.yaml<br/>(sleep + readiness + training + activities)"]
-        PATCH["patch_coros.py<br/>更新日志 frontmatter"]
-        MD["data/daily/YYYY-MM-DD.md<br/>sleep/readiness/training/activities 块"]
-    end
-
-    LOGIN --> API
-    API --> F1 & F2 & F3
-    F1 & F2 & F3 --> YAML
-    YAML --> PATCH --> MD
+    Watch["COROS watch + App"] --> MCP["Official COROS MCP<br/>Client-managed OAuth"]
+    MCP --> Agent["coach-planner / weekly-review<br/>Verify dates, units and semantics"]
+    Agent --> Input["Normalized stdin JSON<br/>lib/coros_mcp.py"]
+    Manual["Private manual logs"] --> Merge["In-memory evidence merge"]
+    Input --> Merge
+    Merge --> Rules["Existing metrics / breakers / score"]
+    Rules --> Output["Advice or requested report"]
 ```
 
-### 设计 tradeoff：fitness.yaml ↔ daily.md 双写
+`docs/design/coros-official-mcp.md` owns setup and normalization. Python validates
+source, retrieval time, query period, unique dates and typed measurement fields.
+MCP mode clears local health before merging official evidence; manual context
+remains intact. Missing official fields never fall back to historical health.
+Current-day breakers do not borrow earlier measurements. Partial sleep debt is
+an observed lower bound, never proof of recovery.
 
-`data/fitness/*.yaml` 与 `data/daily/*.md` 的 `sleep / readiness / training / activities` 四块**故意双写**（`patch_coros.py` 的存在即为此）。这是经过评估后的选择：
+The internal input is not COROS's wire schema. Actual connected tools must
+establish units and semantics; an HRV normal range is not a scalar baseline,
+and recovery percentage is not `tired_rate`. Unsupported mappings stay unknown.
 
-| 方案 | 优点 | 缺点 | 决策 |
-|------|------|------|------|
-| **当前：yaml → patch → md（双写）** | daily.md 自包含，`cat 2026-04-22.md` 可见全部当日数据；grep 查询无需 join | COROS 数据两处存储，有 stale-copy 风险（用户手改 md 的 sleep 块会在下次 sync 被覆盖） | ✅ 采用 |
-| 替代：yaml 独占，md 只存 ref 指针，聚合时 join | 无双写；用户手改 md 不丢失 | daily.md 不再自包含；所有聚合 / 查询需 on-read merge；损失 grep 工作流 | ❌ 拒绝（见 `docs/DECISIONS.md` §1 第 11 条） |
+`coros_health.py` evaluates evidence without daily/fitness writes.
+`weekly_synthesis.py --coros-input -` preserves existing deterministic scoring,
+ignored prompt and private event-log outputs. `make check`, plain `make weekly`
+and `make report` inspect local recorded evidence, not current COROS readiness.
+`sync_coros.py` is a fail-closed retirement stub. Legacy `patch_coros.py` and
+fitness archive handling remain for historical recovery only; old logs/reports
+are not migrated or overwritten.
 
-**用户契约**（与 §8.2 对齐）：启用 COROS 时，`sleep.* / readiness.* / training.* / activities[]` 在 daily.md 中对非 `patch_coros.py` 的 writer 只读；若需修正，改 `data/fitness/*.yaml` 后重跑同步。未启用 COROS 的用户可手填实测值；日后启用同步会覆盖同名字段。
-
----
 
 ## 6. Circuit Breakers
 
@@ -304,7 +282,8 @@ graph TD
         IA["/identity-audit<br/>季度行为身份审计"]
     end
 
-    LOGS["7× daily logs<br/>fitness 只经 patch 进入"] --> WR
+    LOGS["Available manual daily logs"] --> WR
+    MCP["Official COROS MCP<br/>Live evidence"] --> WR & CP
     WR -- "P0/P1/P2 + 约束" --> CP
     WR -- "诊断报告" --> REPORT["data/reports/"]
 
@@ -337,7 +316,7 @@ graph TD
 
 | Field | 写入方 | 冲突规则 |
 |-------|--------|----------|
-| `sleep.*` / `readiness.*` / `training.*` / `activities[]` | 启用 COROS 时 `patch_coros.py`；否则用户手填实测值 | 启用同步后会覆盖同名手填字段（见 §5 tradeoff） |
+| `sleep.*` / `readiness.*` / `training.*` / `activities[]` | Official MCP supplies live evidence in memory; owner may explicitly log measurements | No routine MCP writes. Legacy snapshots and provenance remain readable; patch is archive recovery only |
 | `energy_level` / `mental_load` / `deep_work_hours` / `caffeine_cutoff` / `primary_blocker` / `daily_spend` | `/daily-report` skill 或用户手编 | 后写覆盖；skill 遵守"合并不覆盖"（`daily-report/SKILL.md:58`） |
 | 正文 Highlights / Blockers / Next Steps / Nutrition | `/daily-report` skill 或用户手编 | 同上 |
 | `body.*` | 用户手编**独占** | 任何脚本 / skill 不写（per `feedback-body-data-manual`） |
@@ -347,9 +326,9 @@ graph TD
 | 组件 | 读取内容 |
 |------|---------|
 | `report_gen.py` | 所有 `daily/*.md` frontmatter；**忽略正文** |
-| `weekly_synthesis.py` | 本周 frontmatter + 正文前 500 字符（Token 预算） |
-| `/weekly-review` | 本周 frontmatter + **完整正文** + `weekly_report_prompt.md` + 上周 report |
-| `/coach-planner` | 最近 3 天 frontmatter + 完整正文 + `data/user_profile.md` + 上周 report |
+| `weekly_synthesis.py` | Local logs + optional normalized official MCP stdin; no daily-log writes |
+| `/weekly-review` | Official MCP for target dates + available full manual logs + prompt + previous report |
+| `/coach-planner` | Current official MCP + available manual context + profile + latest report |
 | `/daily-report` | `templates/daily.md` + `data/user_profile.md` + （若存在）当日现有 daily.md（合并模式） |
 | `decisions_due.py` | `data/decisions/*.md` frontmatter only（status + review_date） |
 | `/decision-log` | `templates/decision.md`（schema）+ brain dump input |
@@ -370,7 +349,7 @@ graph TD
 
 - daily.md 日期 = `data/config/settings.yaml` 中的用户本地日期；Python 统一经过 `scripts/lib/clock.py`，Makefile 也读取该时区
 - 周界 = ISO week（周一起，周日止）
-- `make sync-coros` 默认拉取 `today − 1`（昨日数据早晨才完整同步到 COROS 云端）
+- MCP dates follow the owner timezone. Verify the sleep-night date and latest available observation; historical timestamps are not current evidence.
 - `rolling_7d_sleep_debt` = `today` 往回 7 天的 `Σ max(0, baseline − duration)`
 - `consecutive_poor_sleep` = 从最近的**已记录日志**往回数，遇到第一个非 Poor 日即停；缺失的日历日不是恢复证据，不打断 streak
 
@@ -378,7 +357,7 @@ graph TD
 
 | 失效 | 系统行为 |
 |------|---------|
-| COROS 认证失败 | `sync_coros.py` 非零退出，不写部分数据；daily.md 保持上一次状态 |
+| COROS OAuth/query unavailable | Flag missing live evidence; preserve files; no password fallback or all-clear claim |
 | `data/daily/YYYY-MM-DD.md` 缺失 | 聚合脚本 skip 该日，不崩；`days_logged` 自动少 1 |
 | frontmatter YAML 解析失败 | 聚合脚本打印 warning，skip 该文件，不崩 |
 | 全 null HRV（COROS 未同步或用户未戴表） | HRV Recovery Alert 自动禁用（post-Wave 1 null-skip） |
@@ -413,8 +392,7 @@ graph TB
     subgraph Script ["Script Layer (scripts/*.py)"]
         RG["report_gen.py"]
         WS["weekly_synthesis.py"]
-        SC["sync_coros.py"]
-        PC["patch_coros.py"]
+        CH["coros_health.py"]
         LD["lint_daily.py"]
         MG["migrate.py"]
     end
@@ -433,7 +411,7 @@ graph TB
 
     subgraph Data ["Data Layer (data/)"]
         DL["daily/*.md"]
-        FIT["fitness/*.yaml"]
+        MCP["Official COROS MCP<br/>Agent-owned read access"]
         RPT["reports/*.md"]
         LOGS["logs/*.jsonl<br/>新增"]
     end
@@ -470,7 +448,7 @@ graph TB
 | `config.py` | 严格校验 `data/config/thresholds.yaml` 结构；`data/user_profile.md` 由 skills 按私有运行时资料读取，不由 Python 假称已 schema 化 |
 | `clock.py` | 所有默认日期/时间统一使用私仓 `data/config/settings.yaml` 中的时区 |
 | `wealth/rules.py` | 校验 `config/wealth_rules.yaml`，按 `wealth.regulatory_rules_stale_days` 计算法规事实 freshness |
-| `logger.py` | 每次 `make check` / `make weekly` append JSON line 到 `data/logs/engine-YYYY-MM-DD.jsonl` |
+| `logger.py` | 每次 `make check` / `make weekly` append JSON line 到 `data/logs/engine-YYYY-MM-DD.jsonl`；周事件记录来源天数和 `observed_score_points`，`full_score_available` 为假时不得解释为完整 `/100` |
 | `migrate.py` | 字段批量迁移（schema 变更时回填老日志，如 `sleep.quality → derived Option P-d`） |
 
 ### 与 Agent Layer 的分工
@@ -489,18 +467,20 @@ Scoring 的职责切分：
 
 ## 10. Wealth Report Contract
 
-`scripts/lib/wealth/report_models.py::WealthReport` 是 Tracked Assets 报告的 Python owner；`scripts/wealth_check.py --json` 和 `web/` 都消费同一份 `build_report()` 输出。`report_schema_version` 当前为 `3`，新增/删除字段必须同时更新 `tests/fixtures/report_contract.json`、`web/lib/report.ts`，并通过 Python contract test 与 web typecheck。
+`scripts/lib/wealth/report_models.py::WealthReport` 是 Tracked Assets 报告的 Python owner；`scripts/wealth_check.py --json` 和 `web/` 都消费同一份 `build_report()` 输出。`report_schema_version` 当前为 `4`。`scripts/export_wealth_report_schema.py` 从 serialization schema 生成 `web/lib/report.schema.json` 和 `web/lib/report.gen.ts`；Python contract test、fixture、生成检查与 web typecheck 共同守护边界，估值逻辑仍只在 Python。
 
 报告中的 `tracked_total_myr` 不是 net worth：只包含现金与已计价股票，不包含未计价持仓、NAV 计价产品或未追踪 liabilities。`allocation.incomplete` 与 `wealth_rules.stale` 都是 fail-closed health signals：下游不得把不完整占比或过期法规事实当成确定性建议。
 
 `config/wealth_rules.yaml` 是公开、无持仓信息的外部法规事实；每条事实有 `source` 与 `verified_at`，运行报告时由 `wealth/rules.py` 校验，并在超过配置 freshness 窗口时让 CLI/web 显式降级可信度。
 
+Report v4 exposes structured dated MYR liabilities, known monthly commitments, a partial balance sheet, and unconverted travel wallets. `tracked_total_myr` remains gross assets; `balance_sheet.after_known_debt_myr` subtracts observed outstanding balances only. Unknown loan principal remains null and is listed explicitly; installments are never deducted from assets. Private `data/finance/travel-cash.yaml` holds optional CNY balances rendered as excluded cash, with no unsupported FX conversion. See `docs/design/wealth-balance-sheet.md`.
+
 ## 11. Protocol 与外部集成
 
 - `data/protocol/standard_week.md` 是唯一的人类可读 standing timetable，coach-planner 的周节奏、训练闸门和饮食协议都以它为准。
-- `data/protocol/standard_week.yaml` 不是第二份 timetable，而是 Calendar integration projection：只承载 recurring anchors、timezone、start date 和 idempotency keys，供 `make sync-protocol` 使用。修改 standing schedule 时必须同步更新两份；若无法同步，Markdown 仍是人工决策 owner，Calendar projection 必须被视为 stale。
-- `data/reports/YYYY-w##-calendar.yaml` 是例外周的 dated Calendar sidecar；无例外的周不生成 timetable/delta，也不生成 sidecar。
-- `make sync-coros` 与 `make sync-calendar/sync-protocol` 都是显式用户动作；系统不配置 cron、后台任务或云端托管部署。
+- `data/protocol/standard_week.yaml` 不是第二份 timetable，而是 Calendar integration projection：只承载 recurring anchors、timezone、start date 和 idempotency keys，供显式 `make sync-protocol` 使用。standing schedule 改动后 projection 视为 stale；发布前依据 Markdown 刷新并审查 diff。
+- `data/reports/YYYY-w##-calendar.yaml` 是指定周显式发布时生成的 dated Calendar sidecar；普通周和只有 delta 的周都不自动生成。发布前依据该周当前排期重建并审查 diff，随后运行 `make sync-calendar WEEK=...`。
+- COROS uses official client OAuth MCP on demand; Calendar publication remains explicit. No scheduler is configured by this migration.
 
 ## 12. Startup-Idea Pipeline
 

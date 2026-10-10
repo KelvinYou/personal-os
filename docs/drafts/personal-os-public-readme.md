@@ -79,7 +79,9 @@ and no real financial or health figures.
 **TODO before publishing:**
 - [ ] Confirm no thresholds/config in the mirrored code leak specific
       personal numbers (exact sleep-debt hour thresholds, portfolio size,
-      etc.) — keep the README's framing generic, as above.
+      etc.) — keep the README's framing generic, as above. The known
+      weekly-review skill copy is tracked in [Phase 1 of the consolidated plan](../plans/telemetry-and-definition-consolidation.md#phase-1--fix-live-instructions-and-make-telemetry-records-possible);
+      check this item only after scanning the remaining public paths.
 - [ ] Add a `demo/` or `examples/` directory with synthetic/fixture data so
       a visitor can see the skill flow without needing the private submodule.
 - [ ] Decide on a repo name and add the actual GitHub link to

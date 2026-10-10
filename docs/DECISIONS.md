@@ -16,9 +16,9 @@
 
 1. **Zepp Life body 数据自动同步** —— 手填是刻意的选择（memory: `feedback-body-data-manual`），不重启 `sync_scale.py`
 2. **cron / launchd / GitHub Actions 定时任务** —— 单用户本地系统的偏好，非能力限制。所有流程走显式 `make`
-3. **`make today` 自动链 `sync-coros`** —— 副作用风险（网络慢、API 变动），手动双步更安全
+3. **Automatic COROS writes in `make today`** — retired by the 2026-10-02 MCP decision; template creation performs no health query or staging patch.
 4. **事件驱动 pipeline**（如 daily-report 完成自动触发 `make check`）—— 复杂度 tax 无收益
-5. **COROS 官方 API key 申请** —— 非官方 client 覆盖够用
+5. **COROS Partner API application** — official MCP OAuth covers personal queries; no custom password client.
 6. **SQLite / 任何 DB 作 source of truth** —— 破坏「人类可读优先 + 手改 md 立即生效」的核心体验（ARCHITECTURE §1）。作为查询缓存可以，作为事实源不行
 7. **schema versioning（`schema_version: 2` 字段）** —— schema 每年大改约 1 次，一次性 migration 模式足够
 8. **LLM 直接改 daily.md frontmatter（绕过 daily-report skill）** —— 保持单一入口，否则字段必漂
@@ -27,7 +27,7 @@
 
 9. **`bedtime` / `wakeup` 字段** —— COROS API 不暴露，硬加只会制造空字段。真需要的话从 activity 时间戳反推，不需要模板字段
 10. **`sleep.quality` 三级分类（Good/Fair/Poor）** —— 已换成计算型 derivation，不重建
-11. **`patch_coros.py` 改为「读取时合并」（single source: `data/fitness/*.yaml`）** —— 评估过：能消除双写，但牺牲 daily.md 自包含性（grep / 人读价值下降）。当前 sync + patch 够用。此 tradeoff 已写入 ARCHITECTURE §5
+11. **`patch_coros.py` 改为「读取时合并」（single source: `data/fitness/*.yaml`）** —— 评估过：能消除双写，但牺牲 daily.md 自包含性（grep / 人读价值下降）。Historical decision only; the 2026-10-02 MCP cutover supersedes active sync + patch.
 
 ### 产品边界
 
@@ -43,6 +43,31 @@
 ---
 
 ## 2. 关键决策与被拒的替代方案
+
+### Official COROS MCP (2026-10-02)
+
+The owner explicitly replaced custom COROS sync with the
+[official integration](https://support.coros.com/hc/en-us/articles/50841795180948-Connect-Your-COROS-to-AI).
+Client-managed OAuth and official tools own live health access. Skills pass verified,
+normalized observations to existing Python rules over stdin; no routine fitness
+YAML or daily-log copy is required. Historical records and archive recovery remain
+compatible. Connection implies neither scheduling nor training-plan writes.
+
+`make sync-coros` fails with migration guidance before network or file writes.
+The password/staging contract is superseded; the current consumer contract lives
+in [ARCHITECTURE §5](../ARCHITECTURE.md#5-official-coros-mcp).
+Setup and normalization live in [the integration design](design/coros-official-mcp.md).
+
+### Telemetry-first logging and on-demand Calendar (2026-09-29)
+
+| Decision | Chosen behavior | Rejected approach | Reason |
+|---|---|---|---|
+| Daily record (COROS superseded on 2026-10-02) | Previously copied device data into daily files; now query official MCP on demand; `body.*` remains owner-entered | Require daily work, mood, and spend entries | Low recording effort and no invented data. The prior decision against Zepp auto-sync still applies. |
+| Work analysis | Analyze only work facts the owner chose to write. Blank means unknown; explicit `0` is an observed zero. | Treat silence as baseline work completed or as failure | Both turn an unobserved state into an outcome. Historical reports remain unchanged; new scoring needs an explicit cutover. |
+| Schedule accounting | Keep `standard_week.md` and short exception deltas; do not build per-block plan and actual records | The former ROADMAP Wave 4 E1–E4, `planned_schedule[]`, `actuals[]`, and `apply_schedule.py` | Block accounting would require ongoing manual work entries. |
+| Google Calendar | Generate a sidecar and run sync only when the owner explicitly wants to publish a schedule change | Weekly Calendar records or syncs | The standing week rarely changes, and the existing explicit commands cover exceptions. |
+
+Implementation boundaries and verification are in the [consolidated telemetry and definitions plan](plans/telemetry-and-definition-consolidation.md).
 
 ### Decision journal（L1）
 
@@ -196,4 +221,3 @@ hook，指向的 `.codex/hooks/` 目录从未存在过，所以没有「修好�
 | R2 | 形式主义衰减 —— 决策日志变成打卡 | 极简 schema + 主动 surface；触发 Capture kill 就停 |
 | R3 | review 时事后合理化 —— 把 `expected_outcome` 改造成已发生的结果 | review 流程要求**先**朗读原文 expected 再写 actual；expected 字段 immutable |
 | R4 | 决策内容比 daily log 更敏感（人际 / 薪资 / 关系） | 已在 private submodule；考虑 `private: true` flag 让 weekly review 跳过引用 |
-| R5 | Wave 4 的 actuals 对账质量取决于 Brain Dump 的详细程度 | 质量差就回滚 E3/E4，保住 E1/E2 的结构化排期 |

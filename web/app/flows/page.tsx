@@ -12,7 +12,7 @@ export default async function Page() {
 
   if (!graph) {
     return (
-      <main className="container max-w-2xl py-16">
+      <main id="main-content" className="container max-w-2xl py-16">
         <div className="rounded-xl border border-critical/40 p-6">
           <StatusBadge severity="Critical">flows.json 缺失</StatusBadge>
           <p className="mt-3 text-sm text-muted-foreground">
@@ -30,7 +30,7 @@ export default async function Page() {
   }, {});
 
   return (
-    <main className="container max-w-6xl space-y-8 py-10 md:py-14">
+    <main id="main-content" className="container max-w-6xl space-y-8 py-10 md:py-14">
       <header>
         <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
           Flows

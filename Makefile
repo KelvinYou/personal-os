@@ -13,7 +13,7 @@ IDEA_ENGINE ?= demo
 IDEA_MODEL ?= sonnet
 IDEA_CONFIG ?= config/idea_pipeline.yaml
 
-.PHONY: archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint check-mermaid kb-check kb-index kb-eval kb-graph migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
+.PHONY: coros-health archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint travel-build travel-check travel-build-all travel-check-all check-mermaid kb-check kb-index kb-eval kb-graph migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -83,6 +83,22 @@ lint:
 travel-lint:
 	@$(PYTHON) $(SCRIPTS_DIR)/travel_lint.py $(TRAVEL_DOC)
 
+## Render/check one normalized Markdown travel source; no AI or network calls
+travel-build:
+	@test -n "$(TRAVEL_DOC)" || (echo 'Usage: make travel-build TRAVEL_DOC=path/to/plan.md'; exit 1)
+	@$(PYTHON) $(SCRIPTS_DIR)/travel_build.py "$(TRAVEL_DOC)"
+
+travel-check:
+	@test -n "$(TRAVEL_DOC)" || (echo 'Usage: make travel-check TRAVEL_DOC=path/to/plan.md'; exit 1)
+	@$(PYTHON) $(SCRIPTS_DIR)/travel_build.py "$(TRAVEL_DOC)" --check
+
+## Regenerate/check every travel source, reporting failure if any source fails
+travel-build-all:
+	@travel_result=0; for travel_doc in data/travel/*.md; do $(PYTHON) $(SCRIPTS_DIR)/travel_build.py "$$travel_doc" || travel_result=1; done; exit $$travel_result
+
+travel-check-all:
+	@travel_result=0; for travel_doc in data/travel/*.md; do $(PYTHON) $(SCRIPTS_DIR)/travel_build.py "$$travel_doc" --check || travel_result=1; done; exit $$travel_result
+
 ## 检查所有 Markdown 里的 mermaid 图能否在 GitHub 上正确渲染
 ## 不依赖 node —— 查的是「语法合法但渲染错」的那几类 bug (literal \n / 未声明 classDef)
 check-mermaid:
@@ -145,17 +161,20 @@ check:
 ## 聚合周度数据，生成 Weekly Review Agent prompt
 ## 用法: make weekly 或 make weekly DATE=2026-03-22 (回溯指定周)
 weekly:
-	@$(PYTHON) $(SCRIPTS_DIR)/weekly_synthesis.py $(if $(DATE),--date $(DATE),)
+	@$(PYTHON) $(SCRIPTS_DIR)/weekly_synthesis.py $(if $(DATE),--date $(DATE),) $(if $(COROS_INPUT),--coros-input $(COROS_INPUT),)
 
-## 同步 COROS 手表数据到 data/fitness/
-## 用法: make sync-coros 或 make sync-coros DATE=2026-04-21
+## Retired compatibility command; use the official COROS MCP through OAuth
 sync-coros:
-	@$(PYTHON) $(SCRIPTS_DIR)/sync_coros.py $(if $(DATE),--date $(DATE),)
+	@$(PYTHON) $(SCRIPTS_DIR)/sync_coros.py
+
+## Evaluate normalized official MCP evidence from stdin without writing daily logs
+coros-health:
+	@$(PYTHON) $(SCRIPTS_DIR)/coros_health.py --input $(if $(COROS_INPUT),$(COROS_INPUT),-)
 
 ## 把某周 delta 的 calendar.yaml sidecar 推到 Google Calendar (一次性事件)
-## 用法: make sync-calendar 或 make sync-calendar WEEK=2026-w31
+## 用法: make sync-calendar WEEK=2026-w31
 sync-calendar:
-	@$(PYTHON) $(SCRIPTS_DIR)/sync_calendar.py $(if $(WEEK),--week $(WEEK),)
+	@$(PYTHON) $(SCRIPTS_DIR)/sync_calendar.py --week $(WEEK)
 
 ## 把 standard_week.yaml 的 Calendar anchors projection 推成周期性事件 (建一次就一直重复)
 ## 无提醒 + 标记 Free；推到独立日历 Personal-OS，可在侧边栏单独开关
@@ -227,6 +246,11 @@ evals-list:
 eval-rollup:
 	@python3 $(SCRIPTS_DIR)/session_eval.py --rollup $(if $(MONTH),$(MONTH),$(shell $(PYTHON) $(SCRIPTS_DIR)/local_today.py --month))
 
+.PHONY: skill-evals
+## Summarize independently reviewed synthetic skill regression evidence
+skill-evals:
+	@python3 $(SCRIPTS_DIR)/skill_regressions.py $(if $(JSON),--json,)
+
 ## 季度身份审计 (需 ≥ 12 周日志)
 ## 用法: make quarterly 或 make quarterly QUARTER=2026-Q1
 quarterly:
@@ -245,10 +269,18 @@ help:
 	@echo "  make setup-ideas        — install optional Claude SDK for idea evaluation"
 	@echo "  make setup-private DATA_REPO=... — attach your own private data repository"
 	@echo "  make doctor             — 环境自检 (error / expected / warning)"
+	@echo "  make doctor-web         — web 前置条件检查"
 	@echo "  make test               — Python 测试 + web typecheck"
 	@echo "  make today              — 生成今天的日志模板"
 	@echo "  make daily DATE=...     — 生成指定日期的日志模板"
 	@echo "  make lint               — 校验所有日志的 frontmatter schema"
+	@echo "  make check-mermaid      — 检查 Mermaid 图"
+	@echo "  make kb-check           — 检查知识笔记契约"
+	@echo "  make kb-index           — 生成知识目录"
+	@echo "  make kb-eval            — 运行知识检索评估"
+	@echo "  make kb-graph           — 生成知识图视图"
+	@echo "  make travel-build-all / travel-check-all — Generate/check all travel pages"
+	@echo "  make travel-build/check TRAVEL_DOC=path — Generate/check the main itinerary HTML"
 	@echo "  make travel-lint        — 校验行程文档内部一致性 (TRAVEL_DOC=path 可指定单个文件)"
 	@echo "  make check              — 运行逻辑引擎告警检查"
 	@echo "  make idea-validate      — validate startup-idea input (IDEA_INPUT=...)"
@@ -258,8 +290,8 @@ help:
 	@echo "  make idea-record-result — append user test result"
 	@echo "  make idea-add-evidence  — append evidence YAML"
 	@echo "  make weekly             — 聚合本周数据 (可选: DATE=2026-03-22)"
-	@echo "  make sync-coros         — 拉取昨日 COROS 数据 (可选: DATE=...)"
-	@echo "  make sync-calendar      — 推送 timetable calendar.yaml 到 Google Calendar (可选: WEEK=...)"
+	@echo "  make coros-health       — evaluate official MCP evidence (stdin or COROS_INPUT=...)"
+	@echo "  make sync-calendar WEEK=... — 显式推送指定周 calendar.yaml 到 Google Calendar"
 	@echo "  make sync-protocol      — 推常驻周锚点到 Calendar (DRY=1 预览)"
 	@echo "  make archive            — 归档冷日志 + 清理 COROS 暂存 (APPLY=1 真写)"
 	@echo "  make migrate            — dry-run schema 迁移 (APPLY=1 真写)"
@@ -275,4 +307,5 @@ help:
 	@echo "  make evals              — 批量回填最近 N 次 session (可选: N=30)"
 	@echo "  make evals-list         — 列出可用 transcript"
 	@echo "  make eval-rollup        — 月度 agent signal 汇总 (可选: MONTH=2026-07)"
+	@echo "  make skill-evals        — synthetic skill regression review counts (JSON=1 for dashboard report)"
 	@echo "  make help               — 显示本帮助"

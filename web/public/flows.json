@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-25T04:06:32.675814+00:00",
-  "input_hash": "1584b2e34a318cbdb709b2f6e96c27c815e252bdb3c59d78f454af44be81c0c4",
+  "generated_at": "2026-10-07T07:27:41.689894+00:00",
+  "input_hash": "1814c00007c767bb2189a02e766d33f20f06144e04663b05e4c5febec092cf0e",
   "nodes": [
     {
       "id": "make:setup",
@@ -83,12 +83,44 @@
       "rank": 1
     },
     {
+      "id": "make:travel-build",
+      "label": "travel-build",
+      "kind": "make-target",
+      "meta": {},
+      "group": "travel",
+      "rank": 1
+    },
+    {
+      "id": "make:travel-check",
+      "label": "travel-check",
+      "kind": "make-target",
+      "meta": {},
+      "group": "travel",
+      "rank": 0
+    },
+    {
+      "id": "make:travel-build-all",
+      "label": "travel-build-all",
+      "kind": "make-target",
+      "meta": {},
+      "group": "travel",
+      "rank": 1
+    },
+    {
+      "id": "make:travel-check-all",
+      "label": "travel-check-all",
+      "kind": "make-target",
+      "meta": {},
+      "group": "travel",
+      "rank": 0
+    },
+    {
       "id": "make:check-mermaid",
       "label": "check-mermaid",
       "kind": "make-target",
       "meta": {},
       "group": "docs-check",
-      "rank": 0
+      "rank": 1
     },
     {
       "id": "make:kb-check",
@@ -96,7 +128,7 @@
       "kind": "make-target",
       "meta": {},
       "group": null,
-      "rank": 0
+      "rank": 1
     },
     {
       "id": "make:kb-index",
@@ -104,7 +136,7 @@
       "kind": "make-target",
       "meta": {},
       "group": null,
-      "rank": 0
+      "rank": 1
     },
     {
       "id": "make:kb-eval",
@@ -112,7 +144,7 @@
       "kind": "make-target",
       "meta": {},
       "group": null,
-      "rank": 0
+      "rank": 1
     },
     {
       "id": "make:kb-graph",
@@ -120,7 +152,7 @@
       "kind": "make-target",
       "meta": {},
       "group": "docs-check",
-      "rank": 0
+      "rank": 1
     },
     {
       "id": "make:idea-validate",
@@ -191,7 +223,15 @@
       "label": "sync-coros",
       "kind": "make-target",
       "meta": {},
-      "group": "fitness-sync",
+      "group": null,
+      "rank": 0
+    },
+    {
+      "id": "make:coros-health",
+      "label": "coros-health",
+      "kind": "make-target",
+      "meta": {},
+      "group": "logic-check",
       "rank": 1
     },
     {
@@ -307,6 +347,14 @@
       "rank": 1
     },
     {
+      "id": "make:skill-evals",
+      "label": "skill-evals",
+      "kind": "make-target",
+      "meta": {},
+      "group": "eval",
+      "rank": 1
+    },
+    {
       "id": "make:quarterly",
       "label": "quarterly",
       "kind": "make-target",
@@ -355,6 +403,14 @@
       "rank": 2
     },
     {
+      "id": "script:coros_health.py",
+      "label": "coros_health.py",
+      "kind": "script",
+      "group": "logic-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
       "id": "script:decision_new.py",
       "label": "decision_new.py",
       "kind": "script",
@@ -377,6 +433,14 @@
       "group": null,
       "meta": {},
       "rank": 3
+    },
+    {
+      "id": "script:export_wealth_report_schema.py",
+      "label": "export_wealth_report_schema.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
     },
     {
       "id": "script:finance_edit.py",
@@ -432,7 +496,7 @@
       "kind": "script",
       "group": null,
       "meta": {},
-      "rank": 1
+      "rank": 2
     },
     {
       "id": "script:kb_index.py",
@@ -440,7 +504,7 @@
       "kind": "script",
       "group": null,
       "meta": {},
-      "rank": 1
+      "rank": 2
     },
     {
       "id": "script:lib/__init__.py",
@@ -469,6 +533,14 @@
     {
       "id": "script:lib/config.py",
       "label": "lib/config.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/coros_mcp.py",
+      "label": "lib/coros_mcp.py",
       "kind": "script",
       "group": null,
       "meta": {},
@@ -771,12 +843,36 @@
       "rank": 0
     },
     {
+      "id": "script:lib/travel/icons.py",
+      "label": "lib/travel/icons.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/travel/lint.py",
       "label": "lib/travel/lint.py",
       "kind": "script",
       "group": null,
       "meta": {},
       "rank": 0
+    },
+    {
+      "id": "script:lib/travel/markdown.py",
+      "label": "lib/travel/markdown.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/travel/render.py",
+      "label": "lib/travel/render.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
     },
     {
       "id": "script:lib/wealth/__init__.py",
@@ -907,6 +1003,14 @@
       "rank": 2
     },
     {
+      "id": "script:skill_regressions.py",
+      "label": "skill_regressions.py",
+      "kind": "script",
+      "group": "eval",
+      "meta": {},
+      "rank": 2
+    },
+    {
       "id": "script:sync_calendar.py",
       "label": "sync_calendar.py",
       "kind": "script",
@@ -918,7 +1022,15 @@
       "id": "script:sync_coros.py",
       "label": "sync_coros.py",
       "kind": "script",
-      "group": "fitness-sync",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:travel_build.py",
+      "label": "travel_build.py",
+      "kind": "script",
+      "group": "travel",
       "meta": {},
       "rank": 2
     },
@@ -1026,6 +1138,13 @@
     {
       "id": "path:/repos/ai-stock-analysis",
       "label": "/repos/ai-stock-analysis",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "path:/repos/notes",
+      "label": "/repos/notes",
       "kind": "data-path",
       "meta": {},
       "rank": 0
@@ -1146,6 +1265,26 @@
       "kind": "invokes"
     },
     {
+      "from": "make:travel-build",
+      "to": "script:travel_build.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:travel-check",
+      "to": "script:travel_build.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:travel-build-all",
+      "to": "script:travel_build.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:travel-check-all",
+      "to": "script:travel_build.py",
+      "kind": "invokes"
+    },
+    {
       "from": "make:check-mermaid",
       "to": "script:check_mermaid.py",
       "kind": "invokes"
@@ -1218,6 +1357,11 @@
     {
       "from": "make:sync-coros",
       "to": "script:sync_coros.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:coros-health",
+      "to": "script:coros_health.py",
       "kind": "invokes"
     },
     {
@@ -1301,6 +1445,11 @@
       "kind": "invokes"
     },
     {
+      "from": "make:skill-evals",
+      "to": "script:skill_regressions.py",
+      "kind": "invokes"
+    },
+    {
       "from": "make:help",
       "to": "make:setup",
       "kind": "invokes"
@@ -1322,6 +1471,11 @@
     },
     {
       "from": "make:help",
+      "to": "make:doctor-web",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
       "to": "make:test",
       "kind": "invokes"
     },
@@ -1338,6 +1492,41 @@
     {
       "from": "make:help",
       "to": "make:lint",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:check-mermaid",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:kb-check",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:kb-index",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:kb-eval",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:kb-graph",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:travel-build-all",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:travel-build",
       "kind": "invokes"
     },
     {
@@ -1387,7 +1576,7 @@
     },
     {
       "from": "make:help",
-      "to": "make:sync-coros",
+      "to": "make:coros-health",
       "kind": "invokes"
     },
     {
@@ -1471,6 +1660,11 @@
       "kind": "invokes"
     },
     {
+      "from": "make:help",
+      "to": "make:skill-evals",
+      "kind": "invokes"
+    },
+    {
       "from": "script:archive.py",
       "to": "path:/data/archive/",
       "kind": "reads"
@@ -1537,6 +1731,11 @@
     },
     {
       "from": "script:doctor.py",
+      "to": "path:/repos/notes",
+      "kind": "reads"
+    },
+    {
+      "from": "script:doctor.py",
       "to": "path:/data/",
       "kind": "reads"
     },
@@ -1558,6 +1757,11 @@
     {
       "from": "script:doctor.py",
       "to": "path:/market/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:export_wealth_report_schema.py",
+      "to": "path:/web/",
       "kind": "reads"
     },
     {
@@ -1583,6 +1787,11 @@
     {
       "from": "script:lib/migrate.py",
       "to": "path:/data/daily/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:lib/travel/render.py",
+      "to": "path:/templates/",
       "kind": "reads"
     },
     {
@@ -1626,13 +1835,13 @@
       "kind": "reads"
     },
     {
-      "from": "script:sync_coros.py",
-      "to": "path:/data/daily/",
+      "from": "script:travel_lint.py",
+      "to": "path:/data/travel/",
       "kind": "reads"
     },
     {
-      "from": "script:travel_lint.py",
-      "to": "path:/data/travel/",
+      "from": "script:weekly_synthesis.py",
+      "to": "path:/data/",
       "kind": "reads"
     },
     {

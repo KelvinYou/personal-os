@@ -25,7 +25,7 @@
 | Meta-cognition L1–L3（decision-log / meta-coach / identity-audit） | ✅ skill 已就绪，等数据积累 |
 | Wealth: Tracked Assets Phase A–C | ✅ 已落地 |
 | Agent self-audit（`make eval` / `eval-rollup`） | ✅ 已落地 —— 唯一审计 **agent** 而非审计我的回路；`judgement` 留空等 `/meta-coach` 或人填，见 [DECISIONS §2](DECISIONS.md) |
-| plan → measure 闭环 | 🟡 **粗粒度已有**（`Adherence` ✅/⚠️/🔴 flag + drift 告警），缺 per-block 对账 —— 见 §2 |
+| daily / weekly evidence | ✅ Official COROS MCP supplies live evidence on demand; manual fields remain unknown when unrecorded |
 
 ---
 
@@ -47,35 +47,19 @@
       只在 skills 列表里写 AWS/GCP 而不做这些是空头 claim ——
       `repos/portfolio-website/src/constants/data.ts` 的 `skills.delivery` 处留了同样的注释。
 
-- [ ] **Wave 4 的 E1 + E2**（~2.5h，见 §2）。每多拖一天，就少采集一天本可以免费拿到的
-      per-block 排期数据。E1/E2 零风险（schema 默认 `[]`，不改任何评分），拖着的唯一
-      理由是上一版把它和高风险的 E3/E4 打包成"5h 项目"一起 defer 了。
-
 ---
 
-## 2. Wave 4 — Planned-vs-Actual 细化
+## 2. Telemetry-first logging and on-demand Calendar
 
-**前提修正**：上一版说"没有任何结构化字段记录执行率"，不准确。`schema.py:78` 已有
-`Adherence` model（`timetable: ✅/⚠️/🔴` + `deviation_note`），`report_gen.py` 有 drift
-告警，`defaults.py` 会给空值填 ✅。所以 Wave 4 **不是从零建闭环，是把一个粗粒度的
-三态 flag 细化成 per-block 对账** —— 比原描述便宜，风险也更低。
+Work entries are optional. The weekly report analyzes work only where the owner wrote evidence; a blank field
+must not become assumed hours or a missed objective. Official COROS MCP is the live health source; no routine daily-file copy is required.
+Real body measurements remain manually entered. The current contract is
+[the official MCP design](design/coros-official-mcp.md). A standard week needs no Calendar record or sync;
+publish a schedule change to Google Calendar only when requested. The owner → consumer map, scoring cutover,
+historical compatibility, definition cleanup, and gates are in [the consolidated plan](plans/telemetry-and-definition-consolidation.md).
 
-**还缺什么**：coach-planner 排了周一 09:00–12:00 DW Project X，当晚 `/daily-report` 记
-`deep_work_hours: 6`，现有的 ✅ 只能说"大体按计划"，说不出「6h 里多少是 Project X」。
-
-**分期**：E1/E2 在 §1（有时效，零风险）；E3/E4 留在这里等 E1/E2 跑满 1 周、确认
-coach-planner 输出仍然顺手再启动。
-
-| # | 内容 | 关键文件 | 成本 |
-|---|---|---|---|
-| **E1** | `daily.md` frontmatter 新增 `planned_schedule[]` + `actuals[]`；`lib/schema.py` 加 `PlannedBlock` / `Actual`（与既有 `Adherence` 并存，不替换）；`lib/migrate.py` 让老日志默认 `[]` | `templates/daily.md`, `lib/schema.py`, `lib/migrate.py` | ~45min |
-| **E2** | coach-planner 排期时**同时**写 markdown（给人看）和目标日 `planned_schedule`（给聚合用）；新增 `scripts/apply_schedule.py` | `coach-planner/SKILL.md`, `scripts/apply_schedule.py` | ~1.5h |
-| **E3** | `/daily-report` 先读 `planned_schedule`，再从 Brain Dump 对账填 `actuals[]`；计划外活动记 `block_ref: null` | `daily-report/SKILL.md` | ~1h |
-| **E4** | `lib/metrics.py::compute_adherence()` → `AdherenceReport`（done / partial / missed / replaced、adherence_pct、按 type 分组）；weekly-review 把它作为 **Habits 分的子项**（不新增第五维度，避免分数膨胀）；coach-planner 读上周 adherence 决定下周排多少 block | `lib/metrics.py`, `weekly_synthesis.py`, 两个 SKILL.md | ~1.5h |
-
-**回滚计划**：任一阶段发现 AI 对账质量差或用户抗拒，回滚到当前状态 —— schema 字段保留
-默认 `[]`，不 break 已有流程。E3 是最脆的一环（依赖 Brain Dump 的自然语言质量）；砍掉
-E3/E4 仍能保住 E1/E2 的结构化排期价值，也仍留着现有的 ✅/⚠️/🔴 作 fallback。
+The previous Wave 4 per-block schedule and actuals expansion is withdrawn. It would add routine work tracking
+that the owner does not want. Do not implement E1–E4 or `scripts/apply_schedule.py` without a new decision.
 
 ---
 
@@ -84,8 +68,10 @@ E3/E4 仍能保住 E1/E2 的结构化排期价值，也仍留着现有的 ✅/�
 - [ ] **`scripts/lib/paths.py` —— 路径常量收敛**。全仓 26 处各自计算 repo root，
       写法还有 `parents[N]` 与 `parent.parent` 两种变体，导致 grep 不到全集。
       收敛成单一 `ROOT` 常量。适合当"启动困难时的热身任务"。
-- [ ] **P1 — RAG / retrieval + eval**（~2 周）。outcome-memory 与 calibration reporting
-      已经是 eval 思维，缺的只是 vector retrieval 那一段，可以直接接进现有 pipeline。
+- [ ] **P1 — Retrieval + eval**. Follow the LLM and evaluation phases in
+      [the foundations plan](plans/ai-native-full-stack-foundations.md).
+      Start with database queries or text search; add vector retrieval only when
+      measured retrieval failures justify it.
 - [ ] **P2 — system design 的表达**。素材已经有了（FX rate lock / per-row settlement /
       RFI state machine），缺的是讲成取舍的能力。这是**面试**丢分点，不是简历丢分点，
       所以不占 §1 的位置 —— 但它和 P0 共享同一个 deadline。
@@ -101,11 +87,13 @@ E3/E4 仍能保住 E1/E2 的结构化排期价值，也仍留着现有的 ✅/�
 
 | 线 | 待办 | 详细计划 |
 |---|---|---|
+| AI-native full-stack foundations | Planned: execution → backend/data correctness → reliable LLM features → evaluation and operations; supports the existing P0 cloud milestone | [plans/ai-native-full-stack-foundations.md](plans/ai-native-full-stack-foundations.md) |
 | Wealth dashboard | Phase D（知识库浏览页）· Phase E（历史趋势展示） | [plans/wealth-dashboard.md](plans/wealth-dashboard.md) §4 |
-| Public mirror | 3 项发布前检查（阈值泄漏核对 / `demo/` fixture 数据 / 仓库命名） | [drafts/personal-os-public-readme.md](drafts/personal-os-public-readme.md) |
+| Duplicate definitions | Decision-reader extraction remains deferred until capture value is reassessed; wealth types, nutrition parity, finance dates, and command discovery are implemented | [consolidated plan](plans/telemetry-and-definition-consolidation.md) |
+| Public mirror | 3 项发布前检查；阈值泄漏核对与 [合并计划 Phase 1](plans/telemetry-and-definition-consolidation.md#phase-1--fix-live-instructions-and-make-telemetry-records-possible) 联动，完成公开路径扫描后再勾选 | [drafts/personal-os-public-readme.md](drafts/personal-os-public-readme.md) |
 | LinkedIn / JobStreet | headline · About · DTCPay bullets · skills 排序，外加 4 项数字核实 | [drafts/profile-updates-2026-08-14.md](drafts/profile-updates-2026-08-14.md) |
 
-> 这四条**只在那边维护**。在这里复制一份 checklist 是两处并存的起点 ——
+> These tracks maintain their detailed checklists only in the linked documents. Duplicating a checklist here creates competing owners —
 > `AGENTS.md` / `CLAUDE.md` 已经因此漂移过一次。
 
 ---
@@ -114,7 +102,6 @@ E3/E4 仍能保住 E1/E2 的结构化排期价值，也仍留着现有的 ✅/�
 
 | # | 问题 | 现有建议 |
 |---|---|---|
-| Q4 | `planned_schedule.time` 的格式？ | 保留人类友好的 `"09:00-12:00"` 字符串，在 `lib/schema.py` 里 parse 成 tuple。不用 ISO duration —— 过度工程。**E1 开工时必须先定** |
 | Q5 | D4 scoring 上线后要 backfill 历史周报吗？ | 生成 `*-backfill-score.md` 记新旧对比，不替换原 report |
 
 > 2026-08-24 清理：原 Q1（HRV 绝对 vs 相对）、Q2（`awake_min_max` 太严）、Q3
@@ -127,7 +114,7 @@ E3/E4 仍能保住 E1/E2 的结构化排期价值，也仍留着现有的 ✅/�
 
 ## 6. 中长期（VISION 的演进方向，尚未拆解）
 
-- COROS / Zepp 数据自动导入（CSV / API）—— 注意 body.* 字段是刻意手填的，见 DECISIONS §1
+- Optional new device imports, after a reliable measured source exists; COROS now uses official MCP, and `body.*` remains owner-entered (DECISIONS §1)
 - 历史数据查询层（SQLite 作**查询缓存**，不是 source of truth —— 见 DECISIONS §1）
 - 睡眠债务预测模型（时序分析）
 - 训练负荷周期化（mesocycle 自动排期）

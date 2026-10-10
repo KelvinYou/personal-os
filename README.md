@@ -9,7 +9,7 @@
 ```
 Brain Dump → /daily-report → 逻辑引擎告警 → /coach-planner → 每日排期
                 ↑                                      ↑
-         COROS 手表自动同步                      /weekly-review
+         COROS official MCP (on demand)                      /weekly-review
 ```
 
 ## 目录速览
@@ -22,7 +22,7 @@ Brain Dump → /daily-report → 逻辑引擎告警 → /coach-planner → 每�
 | `config/` | 公开的法规与流水线设置；个人阈值在 `data/config/` |
 | `market/` | 外部可观测市场事实（利率/汇率/JD）；public |
 | `data/` | 🔒 你自己的独立私有仓库（主仓库忽略此目录）—— 日志、配置、决策、财务、profile |
-| `scripts/` | Python 自动化（逻辑引擎、COROS 同步、周度聚合、doctor…） |
+| `scripts/` | Python automation (rules, evidence validation, weekly aggregation, doctor) |
 | `web/` | 本地理财仪表盘（Next.js，localhost only） |
 | `repos/` | 外部项目 submodules |
 | `docs/` | INDEX 路由 + VISION（方向）/ ROADMAP（待办）/ DECISIONS（已决定不重提）/ knowledge notes |
@@ -52,10 +52,10 @@ make doctor     # 环境自检
 | 命令 | 用途 |
 |------|------|
 | `make today` | 生成今天的日志模板 |
-| `make sync-coros` | 同步 COROS 昨日数据（睡眠/HRV/活动）写入日志 |
-| `make sync-calendar` | 同步 Google Calendar 日程 |
+| `make coros-health` | Evaluate official MCP evidence from stdin; no daily-log writes |
+| `make sync-calendar WEEK=YYYY-w##` | 显式同步指定周的 Google Calendar 日程 |
 | `make check` | 跑逻辑引擎告警检查 |
-| `make weekly` / `make report` | 生成周报 prompt / 一键完整周报 |
+| `make weekly` / `make report` | 生成周报 prompt / lint + logic check + synthesis 后准备 AI 撰写 |
 | `make wealth` | 净资产：现金/到期/利率 + 股票估值 |
 | `make web` | 本地理财仪表盘 |
 | `make test` / `make lint` | 单元测试 + web typecheck / 日志 lint |
@@ -65,7 +65,11 @@ make doctor     # 环境自检
 | `make calibration` | 决策校准分析 |
 | `make quarterly` | 季度身份审计 |
 
-COROS 同步需要项目根目录 `.env`（`COROS_EMAIL` / `COROS_PASSWORD` / `COROS_REGION`）。
+COROS uses the official OAuth MCP connector in your AI client. Follow
+[the official setup guide](https://support.coros.com/hc/en-us/articles/50841795180948-Connect-Your-COROS-to-AI)
+and [the integration contract](docs/design/coros-official-mcp.md). No COROS password
+or internal Python client is required. `make check` and plain `make weekly` inspect
+local recorded evidence only; skills pass live MCP evidence to Python on demand.
 
 逻辑引擎阈值规则见私仓的 `data/config/thresholds.yaml`；公开示例在 `templates/thresholds.example.yaml`。
 四维评分框架（Output/Health/Mental/Habits）见 weekly-review skill。理财模块目前面向马来西亚、MYR/USD 场景；COROS、Calendar 和股票流水线按需启用。
@@ -98,4 +102,4 @@ COROS 同步需要项目根目录 `.env`（`COROS_EMAIL` / `COROS_PASSWORD` / `C
 
 ## 依赖
 
-依赖清单唯一 owner 是 `requirements.txt`。`make setup` 安装；`make doctor` 验证 venv/私有数据/股价 pipeline/web 依赖。COROS 同步另需 `coros_api`（内部包），仪表盘另需 `cd web && npm i`。
+依赖清单唯一 owner 是 `requirements.txt`。`make setup` 安装；`make doctor` 验证 venv/私有数据/股价 pipeline/web 依赖。COROS uses client-managed OAuth; the dashboard additionally requires `cd web && npm i`。

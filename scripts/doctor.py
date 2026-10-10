@@ -248,6 +248,33 @@ def check_flows_freshness(r: Report) -> None:
         )
 
 
+def check_nutrition_fields(r: Report) -> None:
+    """Compare the public nutrition owner with the adapter without importing YAML here."""
+    schema = ROOT / "repos" / "notes" / "datasets" / "nutrition" / "schema.yaml"
+    if not schema.is_file():
+        r.add("expected", "Nutrition schema", "repos/notes checkout unavailable")
+        return
+    if not VENV_PY.is_file():
+        r.add("error", "Nutrition schema", "Python venv unavailable for YAML parity check")
+        return
+    probe = subprocess.run(
+        [str(VENV_PY), "-c",
+         "import json,sys,yaml; sys.path.insert(0,'scripts'); "
+         "from lib.nutrition.query import MICRONUTRIENT_FIELDS; "
+         "owner=yaml.safe_load(open(sys.argv[1],encoding='utf-8'))['food']['micronutrient_fields']; "
+         "print(json.dumps({'owner':owner,'adapter':MICRONUTRIENT_FIELDS}))", str(schema)],
+        cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True,
+    )
+    if probe.returncode:
+        r.add("error", "Nutrition schema", (probe.stderr.strip().splitlines() or ["malformed schema"])[-1])
+        return
+    fields = json.loads(probe.stdout)
+    if fields["owner"] != fields["adapter"]:
+        r.add("error", "Nutrition schema", "micronutrient fields drifted from repos/notes schema.yaml")
+    else:
+        r.add("ok", "Nutrition schema", "micronutrient fields match repos/notes")
+
+
 def main() -> int:
     web_as_error = "--web" in sys.argv
     r = Report()
@@ -258,6 +285,7 @@ def main() -> int:
     check_web(r, as_error=web_as_error)
     check_doc_paths(r, data_available)
     check_flows_freshness(r)
+    check_nutrition_fields(r)
     r.render()
     return 1 if r.failed else 0
 

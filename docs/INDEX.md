@@ -8,6 +8,9 @@ This directory is the durable, agent-readable knowledge layer of Personal-OS. It
 - Architecture and invariants: [`../ARCHITECTURE.md`](../ARCHITECTURE.md)
 - Settled decisions: [`DECISIONS.md`](DECISIONS.md)
 - Unfinished work: [`ROADMAP.md`](ROADMAP.md) and [`plans/`](plans/)
+- Interface design: [`design-system.md`](design-system.md); applications and skills own their implementation assets
+- Travel source/build contract: [`design/travel-md-html-build.md`](design/travel-md-html-build.md); content remains in private `data/travel/`
+- Skill regression evidence: [`../reports/skill-regressions/README.md`](../reports/skill-regressions/README.md); synthetic cases, independent reviews and the local `/skill-regressions` view
 - Implementation-ready designs: [`design/`](design/)
 - Time-bound evidence: [`analysis/`](analysis/); check each document's re-verification date before citing it
 - Evergreen, cross-project notes: [`knowledge/`](knowledge/)
@@ -19,6 +22,8 @@ This directory is the durable, agent-readable knowledge layer of Personal-OS. It
 | Question | Canonical owner | Do not duplicate into `docs/` |
 |---|---|---|
 | System invariants and data-flow contracts | `ARCHITECTURE.md` | Design prose that contradicts them |
+| COROS live connection and evidence normalization | [`design/coros-official-mcp.md`](design/coros-official-mcp.md), official provider/client schemas | Password-client setup or a second live health source |
+| Shared interface design | [`design-system.md`](design-system.md) | Repeated principle lists in individual skills; personal preferences |
 | Product direction | `docs/VISION.md` | A second active direction document |
 | Settled trade-offs | `docs/DECISIONS.md` | Reopening them without a new decision |
 | Unfinished implementation work | `docs/ROADMAP.md` and linked plans | A second checklist in a design doc |

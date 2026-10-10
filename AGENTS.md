@@ -60,6 +60,7 @@ A personal management system that drives data-driven self-management through str
 - All thresholds are read from the owner's `data/config/thresholds.yaml` — no hardcoded magic numbers in scripts
 - Scripts use Python 3, dependencies in `requirements.txt` (`make setup` installs into `.venv/`)
 - All output must conform to the CommonMark standard
+- Before extending a custom external-service integration, check whether an official connector or MCP meets the required capabilities. Verify coverage and affected consumers before retiring the existing integration.
 - When a request concerns weekend design, travel framing, public writing, or personal knowledge direction, read the owner's `data/reference/personal-direction.md` if present; otherwise ask when needed
 
 ## Common Commands
@@ -67,6 +68,7 @@ A personal management system that drives data-driven self-management through str
 - `make setup-ideas` — install the optional Claude SDK for startup-idea model execution
 - `make setup-private DATA_REPO=...` — attach the user's own private repo to `data/`; never overwrite existing files
 - `make doctor` — environment self-check; distinguishes error / expected (e.g. data not checked out due to missing permission) / warning
+- `make help` — discover the full command list, including knowledge, Mermaid, and web checks
 - `make test` — Python tests + web typecheck
 - `make kb-check` / `make kb-index` / `make kb-eval` / `make kb-graph` — knowledge-note contract, compact catalog, retrieval checks, and disposable Mermaid view
 - `make today` — generate today's log template
@@ -76,9 +78,10 @@ A personal management system that drives data-driven self-management through str
 - `make idea-confirm-test IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=...` — confirm one test contract
 - `make idea-record-result IDEA_ID=... IDEA_RUN_ID=... IDEA_TEST_ID=...` — append a user-owned test result
 - `make idea-add-evidence IDEA_ID=... IDEA_INPUT=...` — append evidence to an idea record
-- `make check` — run the logic engine against all logs
-- `make weekly` — aggregate this week's data, generate the weekly-report prompt
-- `make report` — one-shot full weekly report (aggregate + call AI)
+- `make coros-health` — evaluate normalized official COROS MCP evidence from stdin; no daily-log writes
+- `make check` — run the logic engine against local recorded logs (does not query COROS)
+- `make weekly` — aggregate local evidence; `COROS_INPUT=-` adds client-queried official MCP evidence via stdin
+- `make report` — lint + logic check + weekly synthesis; prepares the prompt for an AI-authored report
 - `make wealth` — Tracked Assets: cash/maturities/rates + stock valuation (NAV-priced products still excluded)
 - `make flows` — regenerate `web/public/flows.json` for the `/flows` dashboard (Makefile targets + script read/write edges + submodule touchpoints); `make doctor` warns if this drifts out of sync
 - `make eval` — convert the most recent Claude Code session into an eval record (`SESSION=recent-3` to select one)
@@ -110,6 +113,16 @@ each signal annotated with "what evidence would falsify it."
 - Regenerating never overwrites already-filled review fields (unless `--force`).
 - A single eval proves nothing; the distribution from `make eval-rollup` is the evidence. If the
   same signal fires in over half the sessions in a month → that's a bug in AGENTS.md, not in that session.
+
+## Learn from Corrected Outputs
+
+When the user indicates that an output missed their intent, fix the current result first,
+then consider whether the cause was execution error, missing context, conflicting
+documentation, unclear skill guidance, or repeatable work better handled by a template,
+script, or validator. Do not turn every correction into a new rule. When a small systemic
+improvement could substantially reduce future rework or prevent consequential errors,
+explain the evidence, expected benefit, and smallest proposed change, and seek the user's
+agreement before applying it. Follow the Correction Queue for changes to agent behavior.
 
 ## Correction Queue
 When I (the agent) recognize mid-session that you're correcting my behavior — not just fixing a

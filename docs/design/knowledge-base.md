@@ -1,6 +1,6 @@
 # Personal-OS Knowledge Base — Technical Design
 
-**Author:** Codex research  **Status:** Draft  **Last updated:** 2026-09-22
+**Author:** Codex research  **Status:** Pilot implemented; scale trigger deferred  **Last updated:** 2026-09-29
 
 ## 1. Context
 
