@@ -1,68 +1,210 @@
-# The share version
+# Standalone travel HTML
 
-A share version is the plan rewritten **for the travel companion**, not an export of the working document. It goes to `data/travel/<slug>-分享版.html`, next to the `.md`.
+A companion page rewrites the plan for the traveller; it is not a raw Markdown
+export. Save it as `data/travel/<slug>-itinerary.html`. Hotel lists and other travel
+HTML derivatives use the same UI assets and can have their own page titles.
 
-## What changes from the .md
+## Content owner
 
-| drop | keep | add |
+Read the latest trip Markdown before composing. Reconcile hotels, dates, nights,
+return transport, and booking status against it. Never reuse a stale HTML body as
+current evidence. A restyle does not authorize changing the itinerary.
+
+| Drop | Keep | Add |
 |---|---|---|
-| version numbers, changelog, §12 sources | every ✅ fact, every ⚠️ trap | a lede sentence per day saying what the day *is* |
-| the ❓ audit marks as marks | the **content** of each ❓, rewritten as an instruction ("到店问客栈老板当天票价") | why the plan differs from the guidebooks the companion will read |
-| §10 re-verify checklist | the phone-call table — they may be the one calling | fallback blocks kept next to their day |
-| internal notes about what earlier versions got wrong | the *correction* itself, stated as fact | |
+| Versions, changelog, research source appendix | Verified facts, constraints, maps, contact numbers | A one-sentence purpose per day |
+| Internal audit checklist and literal question-mark markers | The uncertainty itself | Plain instructions for confirming pending details |
+| Superseded arrangements | Day-specific fallbacks | One-line reasons for unusual routing |
 
-The companion has not read the research. Anywhere the plan deliberately contradicts common advice, **say why in one line** — otherwise they will "helpfully" route the group back onto the wrong path.
+Distinguish selected hotels from paid bookings and target time windows from
+confirmed services. Do not invent a quotation, room count, transport time, or
+booking confirmation to fill a visual component.
+
+## Shared design guidance and travel composition
+
+Read [the shared interface design guide](../../../../docs/design-system.md)
+for hierarchy, trustworthy information, material, accessibility and reuse.
+It is the owner of those cross-page principles; this reference owns their travel
+application, content semantics and offline HTML build.
+
+The travel default uses the same neutral palette, typography scale, floating
+navigation, appearance menu and card treatment as the local web dashboard,
+implemented by the bundled assets. Adapt it when the user requests another direction. Start
+with the traveller's immediate decisions: trip identity, dates, next action and
+important constraints. A date index leads into timelines; lodging can use comparison
+cards, transfers connected stages, and numerical costs tables. Use a compact
+introduction for a hotel-only page. Preserve uncertainty and fallbacks while
+removing repeated or decorative information.
+
+For complete itineraries, read [checklists.md](checklists.md) and include separate city-by-city must-visit (`#places`) and must-eat (`#food`) sections, with top-navigation links, priority labels, actual dates/meals and maps. Keep all accepted places accounted for in daily routes, conditions or explicit unscheduled status.
+
+Reuse `assets/share.css`, `assets/share.js` and `templates/share.html`; exact
+styles and responsive behaviour stay there rather than becoming global rules.
+The HTML is a CSS interpretation of glass, not Apple's native material. When
+changing the shared visual treatment, update the canonical assets and reference
+together, then re-inline those assets into the affected outputs. Avoid per-trip
+CSS overrides: they drift from the next generated page.
+
+## Semantic hierarchy and action-first composition
+
+Calm styling must not flatten consequential information into ordinary notes.
+Translate source markers by meaning, retaining uncertainty and severity:
+
+| Meaning | Treatment | Required text |
+|---|---|---|
+| High risk / source 🚨 | Red `notice alert`, visible without expansion | Specific consequence and next action |
+| Hard constraint / source ⚠️ | Amber `notice warning` | Constraint and what to confirm |
+| Pending / source ❓ | Amber pending status; elevate to warning when it blocks travel | What is pending and how to resolve it |
+| Verified fact / source ✅ | Quiet context, or `notice good` for a useful reassurance | Precisely what is verified |
+| Selected hotel | Green `status selected` | Selected; never imply paid or booked without evidence |
+| Ordinary explanation | Neutral `note` or blue `notice info` | Brief context, not an alarm |
+
+Use `notice-icon`, `notice-title`, and `notice-copy` to make callouts readable.
+Icons are supplementary (`aria-hidden="true"`); meaningful labels and actions
+must remain in text. Colour alone is insufficient. Keep long copy in normal ink.
+
+When the source has pre-departure blockers, put a prominent amber `priority`
+section immediately after the trip introduction, with a concise action heading
+and an `action-grid` of short `action-card` items. Show red urgent labels only on
+items whose source supports that severity. Prefer human instructions and one
+clear action per item over raw field/value lists. Do not add invented deadlines.
+Repeat a compact risk label on relevant overview days and the full warning in
+that day's timeline. Do not collapse warnings into optional fallback details.
+
+Review every surface for omissions: booking/payment uncertainty, station versus
+hotel arrival, early check-in, road closures, admission reservation, airport
+buffers, outdated prices, and emergency contacts. This is a source review, not a
+requirement to invent risks. Make selected/pending status, decision constraints,
+and budget uncertainty visually distinguishable from routine advice.
+
+Use `journey` for complicated transfers, showing each actual stage and a short
+qualifier. Use `practical-card` for city place and food checklists and booking actions;
+reserve tables for numerical comparison. Give emergency numbers direct `tel:`
+links where the source supports them. Chronological rows use a subtle timeline
+rail so the eye can follow time without colouring every item.
+
+Localize navigation and dynamic control labels to the page language. Hotel-only
+pages use `compact-hero`. Do not decorate every fact: priority actions, daily
+warnings, and quiet explanatory content should have three distinct visual levels.
+
+When revising an existing trip, update the Markdown owner and companion HTML together, including overview, day timelines, both checklists, conditions and freshness notes. Scope claims of verification to facts actually rechecked.
+
+During refinement, open the actual generated pages, inspect desktop and phone
+layouts in light and dark appearances, and iterate on the render. Check whether
+a first-time reader can identify the journey, the next action, and the day's
+main constraint without reading the entire page. Do not claim an objectively
+"best" UI; report what was inspected and any remaining verification gaps.
 
 ## Build
 
-1. Copy `assets/share.css` verbatim into a `<style>` block. It is already tuned for dark mode, A4 print, and ~400 px phone width — do not re-derive it.
-2. Write the body against the class vocabulary below.
-3. Assemble and validate:
+Use the deterministic Markdown renderer described in [render-source.md](render-source.md).
 
 ```bash
-python3 - <<'PY'
-import html.parser, re, sys
-p = "data/travel/<slug>-分享版.html"
-s = open(p, encoding="utf-8").read()
-class P(html.parser.HTMLParser):
-    VOID = {"meta","br","img","link","hr","input"}
-    def __init__(s2): super().__init__(); s2.stack=[]; s2.err=[]
-    def handle_starttag(s2,t,a):
-        if t not in s2.VOID: s2.stack.append(t)
-    def handle_endtag(s2,t):
-        if not s2.stack: s2.err.append(f"extra </{t}>"); return
-        if s2.stack[-1]!=t: s2.err.append(f"<{s2.stack[-1]}> vs </{t}> L{s2.getpos()[0]}")
-        else: s2.stack.pop()
-pp=P(); pp.feed(s)
-style = s[s.index("<style>"):s.index("</style>")]
-body  = s[s.index("<body>"):]
-used  = {c for m in re.finditer(r'class="([^"]+)"', body) for c in m.group(1).split()}
-defined = set(re.findall(r"\.([a-zA-Z][\w-]*)", style))
-print("unclosed:", pp.stack, "errors:", pp.err)
-print("classes not in stylesheet:", sorted(used - defined))
-print("days:", s.count('class="daynum"'), "map links:", s.count("uri.amap.com"))
-PY
+make travel-build TRAVEL_DOC=data/travel/<slug>.md
+make travel-check TRAVEL_DOC=data/travel/<slug>.md
 ```
 
-Both lists must be empty, and the day count must match the itinerary.
+The renderer fills `templates/share.html`, then uses `scripts/build_share.py`
+only as the canonical asset/control finalizer. Do not fill itinerary content
+manually or run the low-level finalizer as a substitute for source rendering.
+Keep lodging cards inside the main page's `#stays`. Separate hotel pages have
+been retired and must not be recreated or linked.
 
-## Class vocabulary
+Keep the light background and glass navigation defaults, native appearance
+checkboxes, offline embedded assets and print controls from the shared shell.
+A temporary script-free preview can be generated with the CLI's
+`--nojs-preview /private/tmp/travel-preview.html`; it is not another source.
 
-| class | use |
+Build/check validate balanced structure, canonical assets, classes, local
+anchors, checklist navigation, placeholders and day counts. They do not verify
+travel facts, per-city completeness, browser rendering or colour contrast.
+Inspect desktop/mobile renders when changing layout or claiming visual parity.
+
+## Component vocabulary
+
+| Class / element | Purpose |
 |---|---|
-| `.alert` | seal-coloured left rule — traps, hard constraints, "do this now" |
-| `.note` | autumn-coloured — context, fallbacks, "if you'd rather" |
-| `.good` | green — a genuine upside worth naming |
-| `.day` / `.dayhead` / `.daynum` / `.daydate` / `.daytitle` / `.daylede` | one day block |
-| `.sched` > `li` > `.time` + `.what` (+ `.meta` inside `.what`) | the timeline. Add `class="key"` on the li for the day's load-bearing rows |
-| `.map` | map link, right after the place name |
-| `.tag`, `.tag.free`, `.tag.warn` | price / 免费 / a one-word warning |
-| `.scroll` around every `<table>` | horizontal scroll on phones |
-| `table.tot` | budget table with an emphasised final row |
-| `.kv` (`dl`/`dt`/`dd`) | definition pairs, e.g. entry requirements |
+| `.topbar` / `.topbar-inner` / `.nav` / `.brand` | Floating glass navigation |
+| `.tools` / `.icon-button.js-only` | Theme, reduced-glass, and print controls |
+| `.skip-link` | Keyboard route straight to main content |
+| `.hero` / `.eyebrow` / `.hero-sub` / `.dates` | Trip identity and dates |
+| `.facts` / `.route` / `.stop` | Compact facts and destination summaries |
+| `.overview` | Clickable day overview cards linking to real day IDs |
+| `.grid` / `.hotel` / `.hotel-meta` / `.hotel-links` | Responsive lodging cards |
+| `.status.selected` / `.status.pending` / `.status.urgent` | Selected, pending, and urgent labels |
+| `.priority` / `.action-grid` / `.action-card` | Prominent pre-departure actions |
+| `.notice.warning` / `.notice.alert` / `.notice.info` / `.notice.good` | Amber constraint, red risk, blue context, green verified fact |
+| `.notice-icon` / `.notice-title` / `.notice-copy` | Supplementary icon, visible label, readable instruction |
+| `.journey` | Ordered transfer stages with short qualifiers |
+| `.practical-card` / `.contact-grid` / `.contact-link` | Human-readable food/booking cards and direct emergency calls |
+| `.risk-label` / `.hero-action` / `.compact-hero` | Overview warning, next-action link, compact derivative introduction |
+| `.section-head` / `.sub` / `.panel` | Section heading, supporting line, content surface |
+| `.day-nav` | Native date anchor navigation |
+| `.day` / `.dayhead` / `.daynum` / `.daydate` / `.daytitle` / `.daylede` | One chronological day |
+| `.sched` > `li.key` > `.time` + `.what` with `.meta` | Timeline and important rows |
+| `.map` | One map provider link immediately after a place name |
+| `.tag` / `.tag.free` / `.tag.warn` | Costs and readable status labels |
+| `.alert` / `.note` / `.good` with `.t` | Critical constraints, context/fallbacks, upsides |
+| `.scroll` around `table`, optionally `.tot` | Contained table scrolling on phones |
+| `.kv` (`dl`, `dt`, `dd`) | Practical information pairs |
+| `.plain` / `.tight` / `.n` | Existing list and numeric-cell compatibility |
+| `.glass` / `.button` | Optional short glass summary or native action link |
+| `.footer` / `.noprint` | Freshness note / screen-only controls |
 
-Only `.map` links are needed in the share version — one map provider, not the dual `高德 + G` pair, since the file is read on a phone with one working network.
+The existing class vocabulary remains supported, so historical HTML does not
+require migration. Newly generated HTML must inline the current assets.
 
-## Print
+## Mobile reading standard
 
-`@page` is A4, and `.day`, table rows, and the callout blocks all set `break-inside: avoid`. Printing to PDF from a browser is the supported path — no separate export step.
+Mobile is a deliberate composition, not a shrunken desktop grid. Use the
+canonical screen-only breakpoint so printing remains a separate layout.
+
+- Match the web dashboard's compact top navigation and native appearance menu on
+  desktop and phones. Keep section anchors visible, highlight the current section,
+  and allow horizontal scrolling inside navigation when labels need it. Respect
+  sticky-header offsets so destinations remain readable.
+- The first phone viewport should identify the trip, dates and next action.
+  Avoid repeated destinations or large decorative summaries that delay useful content.
+- Let long day titles wrap, stack timelines on narrow screens and keep text
+  readable. Practical contacts use a wrapping list; numeric comparisons may use
+  a table with its own horizontal scroll region and visible hint.
+- Keep essential warnings expanded and visibly distinct. Optional explanations
+  may collapse. Use 44px touch targets for standalone controls and map actions;
+  inline prose links retain readable spacing. This is a design preference, not
+  a claim about WCAG AA's minimum.
+- Verify narrow phones, a long day, dark appearance, reduced glass, keyboard focus
+  and the document's final section. The full page should not scroll horizontally.
+
+Reference checks: [WCAG target size](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
+and [WCAG reflow](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
+These are engineering acceptance targets, not a blanket accessibility certification.
+
+## Visual acceptance
+
+Use the [shared acceptance check](../../../../docs/design-system.md#short-acceptance-check)
+for the overall interface. For travel HTML, also inspect:
+
+- The first phone viewport, a long day, lodging, and a warning: trip identity,
+  dates and next action remain clear, and sticky navigation does not cover anchors.
+- Phone widths around 390px and 320px: date/time labels wrap sensibly, and only
+  intentional table or navigation regions need horizontal scrolling.
+- Theme, reduced-glass, section/map links and keyboard controls: they work and
+  retain visible focus. Travel content remains available without JavaScript.
+- A4 print, including from dark mode: readable white surfaces, working map
+  references and expanded fallback content.
+
+Record environment limitations honestly. Structural validation checks the HTML
+contract and asset parity; it does not prove these visual conditions. A bounded
+documentation or style change does not need a full model benchmark.
+
+Visual alignment check: compare the delivered HTML and the local dashboard at
+the same viewport and zoom. Check typography, spacing, surfaces and navigation
+as well as icons; a matching icon family alone does not establish consistency.
+
+## Icons
+
+Use the bundled Lucide SVG assets for every HTML status/navigation icon.
+No visible emoji in HTML. Keep semantic markers in Markdown for lint and risk
+classification; `scripts/lib/travel/icons.py` converts text markers during render,
+preserving links, canonical CSS/JS and accompanying labels. Do not load icons
+from a CDN or replace verified/pending/risk distinctions with one generic state.

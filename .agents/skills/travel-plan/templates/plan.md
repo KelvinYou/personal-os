@@ -1,3 +1,8 @@
+---
+travel_render:
+  schema: 1
+  language: zh-CN
+---
 # <路线：城市 → 城市 → 城市> <YYYY-MM-DD> → <YYYY-MM-DD>
 
 > **版本** v1（<查证日>）｜<一句话：这一版是什么>
@@ -51,6 +56,19 @@
 
 ### 2.1 现在就要订的门票
 <!-- 每条：渠道、是否实名、限流规则、价格、以及「为什么不能等」 -->
+<!-- Lodging: follow references/hotels.md. Before offer search, record recommended areas,
+     required/preferred/flexible criteria, budget/currency, ranking priority and city overrides;
+     propose reasons and obtain traveller confirmation. Preserve confirmation status and date.
+     After search, put dated room-offer comparisons here, before the current-stays subsection.
+     Examples such as 200 sq ft are suggestions, not fixed defaults. Remove comments before build. -->
+
+### 2.1.1 当前住宿（展示表）
+
+| 入住日期 | 酒店 / 地址 / 地图 | 状态 | 位置与衔接 | 待确认事项 |
+|---|---|---|---|---|
+| <M/D–M/D> | <酒店链接、地址、双地图> | 待确认 | <交通衔接> | <待确认事项> |
+
+### 2.1.2 历史住宿（如有；不作当前预算）
 
 ### 2.2 入境与证件
 
@@ -92,10 +110,33 @@
 
 ---
 
-## 5. 餐饮清单
+## 4.1 必去地点清单
 
-| 城市 | 推荐 | 地图 | 人均参考 |
+> **必去**＝本次优先保留；**顺路**＝随主线连逛；**备选**＝替换或有余量再选，不叠加。条件与实际车票仍以逐日安排为准。
+
+### <城市>｜<核心体验>
+
+| 标签 | 地点 | 日期/路线 | 体验 / 条件 |
 |---|---|---|---|
+| **<必去 / 顺路 / 备选；必要时加先预约等条件>** | [<地点>](高德) · [G](google) | <MM/DD；对应 Day N> | <为什么去；必要条件或未排入原因> |
+
+<!-- 每个已接受的地点必须在逐日表、条件备选或明确未排入状态中对得上；不是写进清单就算安排。 -->
+
+---
+
+## 5. 必吃清单
+
+> **必吃**＝优先留胃口；**备选**＝替换一餐；**顺路尝鲜**＝遇到、有胃口才加。标“择一”的完成一种即可，不要求吃完清单。
+
+### <城市>｜<重点菜品>
+
+| 标签 | 吃什么 | 怎么点 / 为什么 | 哪天哪餐 / 片区 |
+|---|---|---|---|
+| **<必吃 / 备选 / 顺路尝鲜；必要时加择一/小份>** | <菜品> | <口味、份量或饮食偏好> | <MM/DD 早餐/午餐/晚餐；顺路片区> |
+
+**顺路找店**：[<片区餐饮>](高德) · [G](google)。具体店铺营业、菜单、价格与排队 ❓ <确认方式>。
+
+**推荐依据**：<支持菜品/口味的来源；查证日期>。具体店家候选与菜品推荐分开写，不为追店新增绕路。
 
 ---
 

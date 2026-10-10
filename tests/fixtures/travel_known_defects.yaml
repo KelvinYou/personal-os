@@ -33,9 +33,9 @@ meta:
       changelog_versions: [v4]
     - doc: data/travel/chongqing-jiuzhaigou-chengdu-2026-10.md
       prefix: cq         # ids cq-01 …
-      changelog_versions: [v5, v6, v7, v8, v9, v10, v11, v12, v13]
-  compiled: 2026-09-24
-  total: 66
+      changelog_versions: [v5, v6, v7, v8, v9, v10, v11, v12, v13, v26]
+  compiled: 2026-10-04
+  total: 68
 
 defects:
   # ---------------------------------------------------------------- v2
@@ -630,16 +630,39 @@ defects:
       time and location eligibility have varied by notice, so the current
       platform rules govern any application.
 
+  - id: cq-11
+    version: v26
+    summary: A pre-dawn landing was treated as a pre-service airport departure,
+      even though the planned immigration and baggage window ended after rail service began
+    class: verify
+    category: transport
+    notes: >-
+      Compare the first train with the time the traveller can reach the station,
+      not the aircraft landing time. The planned 06:45 exit follows the airport's
+      published 06:33 weekend citybound T3 first train; taxi savings still require
+      a door-to-door comparison including pickup wait and walking.
+
+  - id: cq-12
+    version: v26
+    summary: The Liziba visit omitted station-hall and exit construction scheduled
+      through the travel date, and allocated transfer time without a separate viewing window
+    class: verify
+    category: transport
+    notes: >-
+      Check station access works as well as whole-line operating status. The
+      published A/B hall and exit 3 works run until October 31, with stair detours;
+      reserve access and viewing time separately from the cross-river journey.
+
 # ---------------------------------------------------------------------------
 # Scoreboard — update whenever a rule lands.
 #
-#   total                       66   (47 shanghai + 9 changsha + 10 chongqing)
+#   total                       68   (47 shanghai + 9 changsha + 12 chongqing)
 #   lint-class                  21
 #     implemented               10   (v3-03, v3-14a, v3-14b, v3.1-03, v3.2-02,
 #                                     v3.2-03, v3.2-04, v3.2-05, v4-04, cs-03)
 #     backlog                   11   (v2-02, v2-08, v3-09, v3.1-04, v4-02, v4-05,
 #                                     cs-06, cs-07, cq-03, cq-08, cq-09 — cs-07 joins v4-05)
-#   verify-class                33   — fan-out agents, not yet built
+#   verify-class                35   — fan-out agents, not yet built
 #   adjudicate-class             3   — v3.1-08, v3.2-07, v3.2-08
 #   judgment-class               5   — deliberately not automated
 #   process-class                4

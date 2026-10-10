@@ -51,6 +51,15 @@ Back-dated from deadlines, not listed by topic.
 - §2.3 payment and network
 - §2.4 **the dated booking calendar** — a table of `窗口 | 要做的事`, computed from the advance-sale windows found in the gate
 
+For lodging, follow [hotels.md](hotels.md): recommend areas and preferences, obtain
+traveller confirmation, then search and rank specific room offers. Store the
+trip-wide preferences, confirmation status, stay overrides and dated comparisons
+as supporting content in §2.1. Keep the existing `2.1.1 当前住宿（展示表）` header
+and five-column current-stays table from `render-source.md`; place comparison or
+historical tables outside that subsection. Preference confirmation, hotel selection
+and confirmed booking are distinct states. Existing plans need no migration merely
+because this workflow was added.
+
 The booking calendar is the part people actually use. It must contain real dates, derived from real windows.
 
 ## §3 the anchor activities
@@ -66,9 +75,13 @@ The body. Per-day format is in `SKILL.md §2`. Additional rules:
 - Fallback blocks go under the day they belong to.
 - When a day changed materially from the previous version, say so inline (`✅ v4 从 Day 6 移到这里`) — the reader may be holding the old version.
 
-## §5 餐饮
+## §4.1 必去地点清单
 
-`城市 | 推荐 | 地图 | 人均参考`. A ❓ on 人均 is fine; an invented number is not.
+Group actual destinations using `标签 | 地点 | 日期/路线 | 体验 / 条件`. Reconcile every accepted place against §4: scheduled, conditional, alternative, or explicitly unscheduled. Read [checklists.md](checklists.md) for labels, evidence and coverage. This is a traveller-facing index; §3 remains the booking/operation detail for anchor activities.
+
+## §5 必吃清单
+
+Group actual destinations using `标签 | 吃什么 | 怎么点 / 为什么 | 哪天哪餐 / 片区`. Use priority, alternative and along-route tasting labels; assign meals without adding detours. Read [checklists.md](checklists.md). Include maps and sourced/pending cost context where useful; do not invent a per-person price to fill a column.
 
 ## §6 已知坑点与避雷
 

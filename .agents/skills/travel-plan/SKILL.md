@@ -1,6 +1,13 @@
 ---
 name: travel-plan
-description: Produces and revises trip plans under data/travel/ at the repo's v4 standard on the first pass — a verification gate before any day is written, per-day timeline tables with dual map links, marker discipline (✅/⚠️/❓/🚨), and a share-ready HTML build. Use this skill whenever the user asks to plan, draft, review, revise, or "make more detailed" a trip, itinerary, travel plan, or 行程/旅行计划, or mentions a file under data/travel/. Also use it when turning an existing plan into a share version for a travel companion.
+description: >
+  Produces and revises trip plans under data/travel/ with verification before
+  drafting, daily timelines, city checklists, and a companion itinerary HTML build.
+  Also owns hotel search: recommend areas and preferences, obtain traveller
+  confirmation, then compare and rank specific Trip.com room offers. Use whenever
+  the user asks to plan, review, revise, or detail a trip or itinerary, mentions
+  data/travel/, asks where to stay, wants hotel recommendations or comparisons,
+  or requests a companion itinerary page.
 ---
 
 # Trip Plans
@@ -17,15 +24,28 @@ The repo already has two labelled records of what goes wrong: `tests/fixtures/tr
 
 So the order is fixed: **verify, then write.** Not write, then review.
 
+## Record preservation
+
+Keep the Markdown source as the durable record of versions, corrections, source
+links, verification dates and unresolved rechecks; HTML is the traveller-facing
+itinerary. Edit trip content only in Markdown; regenerate the main itinerary HTML for revisions. A request to simplify the
+visible deliverable does not imply that unique audit information may be discarded.
+Before deleting or retiring a source file, compare its records with the retained
+artifact, migrate unique records and preserve a recoverable copy. If a record is
+restored from an older backup or reconstructed, label its recovery scope and gaps;
+do not present a reconstructed file as an exact original.
+
 ## Workflow
 
+0. **Locate** — for revisions, find and read the existing trip plan and companion itinerary before asking the traveller to resend them. Search the known `data/travel/` location, including ignored private data. Ask only for information that is still unavailable.
+   **Lodging branch** — when recommending areas, searching hotels or comparing rooms, read [references/hotels.md](references/hotels.md). Recommend areas and a preference draft first; obtain traveller confirmation before searching specific hotel offers. Reuse already-confirmed preferences. An area/preference discussion can be delivered on its own; the full verification gate still applies before drafting trip days.
 1. **Gate** — run the §1 verification sweep. Do not write a single day until it is done.
-2. **Compose** — `templates/plan.md` + the structure contract in `references/structure.md`.
+2. **Compose** — `templates/plan.md` + the structure contract in `references/structure.md`. Read [references/checklists.md](references/checklists.md) for the city-by-city must-visit and must-eat lists, priority labels, evidence and schedule coverage.
 3. **Self-review** — the §3 pass.
 4. **Lint** — `make travel-lint` must be clean before you hand it over.
-5. **Share** (on request) — `references/share-html.md`.
+5. **Generate HTML** — read [references/render-source.md](references/render-source.md) for the schema and deterministic workflow. Markdown is the sole editable trip content. Run `make travel-build TRAVEL_DOC=data/travel/<slug>.md`, then `make travel-check TRAVEL_DOC=data/travel/<slug>.md`. The builder lints the source, renders the shared template/CSS/JS, and validates the complete page before replacement. It makes no AI/network calls. Do not independently author generated itinerary content. HTML uses only bundled Lucide SVG icons: never emit emoji glyphs. Markdown status markers remain semantic inputs; the renderer converts visible markers while retaining text labels. Keep lodging in `#stays` on the main page; never create a separate hotel HTML or link to one. For all existing trips use `make travel-build-all` and `make travel-check-all`. For older sources, normalize explicitly before building; retain verification dates and recovery gaps. For shared UI work, read [the shared interface design guide](../../../docs/design-system.md) and `references/share-html.md`; inspect actual desktop/mobile renders before claiming visual alignment.
 
-Write to `data/travel/<cities>-YYYY-MM.md`. Chinese is fine here and usually correct — `data/travel/` is the documented language exception in AGENTS.md, because map queries, mini-program names and restaurant names have to stay in the local script to be usable on the ground.
+Write the source plan to `data/travel/<cities>-YYYY-MM.md` and the companion HTML to `data/travel/<cities>-YYYY-MM-itinerary.html`. Use `itinerary` consistently in output filenames and cross-page links. Chinese is fine here and usually correct — `data/travel/` is the documented language exception in AGENTS.md, because map queries, mini-program names and restaurant names have to stay in the local script to be usable on the ground.
 
 ---
 
@@ -104,8 +124,8 @@ Full contract in `references/structure.md`. The short version:
 - **A "do this now" block** — the two or three things that cannot be recovered if missed. Ranked by consequence, not by document order.
 - **§0 one-page overview** — day table, plus explicit totals (days / stops / nights) that agree with each other.
 - **§1 basics** · **§2 pre-departure, back-dated from deadlines** · **§3 the anchor activities**
-- **§4 day-by-day** — this is the body of the document, see below.
-- **§5 food** · **§6 pitfalls** · **§7 budget** · **§8 packing** · **§9 emergency** · **§10 re-verify checklist** · **§11 changelog** · **§12 sources**
+- **§4 day-by-day** — this is the body of the document, see below; **§4.1 must-visit checklist** follows the daily timelines.
+- **§5 must-eat checklist** · **§6 pitfalls** · **§7 budget** · **§8 packing** · **§9 emergency** · **§10 re-verify checklist** · **§11 changelog** · **§12 sources**
 
 ### The per-day format
 
@@ -155,6 +175,7 @@ Run these against the draft. They are the failure modes that survived a generati
 7. **Every ✅** — is its source in §12?
 8. **Overclaims** — 完全 / 绝对 / 一定 / 从不 on an unsourced line is almost always wrong. The corpus has one: "sells no tickets on site at all" — a foreign-visitor counter existed.
 9. **The summary table vs the days** — lodging column, durations, and totals must agree. Lint catches some of this; read it anyway.
+10. **Checklist coverage** — every accepted place has a day/route, a conditional fallback, or an explicit unscheduled status; every priority food has a meal/area. Reconcile the source plan, checklist cards, day links and companion HTML. Structural validation cannot verify this semantic agreement.
 
 Then: `make travel-lint`. **A plan that does not lint clean is not finished.**
 
@@ -164,6 +185,8 @@ Same gate. A revision request ("make it more detailed", "review this") is **not*
 
 - Bump the version, add a changelog row saying **what was wrong**, not just what changed.
 - Never silently delete a wrong claim — the changelog is how the user knows not to trust their memory of v1.
+- Revise routes by chaining nearby places and allowing door-to-door transfers, meals, rest, luggage collection and station buffers. A new place uses real available time; do not merely append it to an already full day. Keep conditional visits visibly conditional, and identify what is replaced or still unscheduled.
+- Sync changed days, overview, city checklists, warnings/fallbacks and freshness notes in both Markdown and an existing itinerary HTML; do not report a chat-only proposal as saved. For a bounded revision, state which facts were newly checked and which prior verification dates remain in force.
 - Keep the changelog section excluded from lint (it quotes superseded values on purpose; `_excluded_mask` already handles this).
 - When a revision finds defects worth remembering, add them to `tests/fixtures/travel_known_defects.yaml` with a `class` — that file is the eval set for this skill.
 
@@ -171,8 +194,13 @@ Same gate. A revision request ("make it more detailed", "review this") is **not*
 
 | path | what |
 |---|---|
+| `references/checklists.md` | must-visit/must-eat priorities, evidence, coverage and card example |
+| `references/hotels.md` | area recommendation, preference confirmation, Trip.com search, room-offer ranking and selection |
 | `references/structure.md` | the full section-by-section contract |
 | `references/verify-checklist.md` | §1 as a copyable checklist with search phrasings |
 | `references/share-html.md` | how to build the share version |
 | `templates/plan.md` | the skeleton to start from |
-| `assets/share.css` | the stylesheet the share HTML reuses verbatim |
+| `assets/share.css` | canonical Apple Liquid Glass inspired HTML stylesheet; inline verbatim |
+| `assets/share.js` | portable theme, reduced-glass, and print controls; inline verbatim |
+| `templates/share.html` | reusable standalone HTML shell with asset placeholders |
+| `scripts/validate_share.py` | HTML structure, class, asset-parity, and day-count gate |
