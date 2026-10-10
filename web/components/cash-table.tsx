@@ -1,9 +1,10 @@
 "use client";
 
+import { Pencil, Trash2, Save, X, Plus } from "lucide-react";
 import { useState } from "react";
 import type { Account, Report } from "@/lib/report";
 import { StatusBadge } from "@/components/status-badge";
-import { myr, pct } from "@/lib/utils";
+import { accountLabel, myr, pct } from "@/lib/utils";
 import { useFieldSave } from "@/lib/use-field-save";
 
 interface Draft {
@@ -155,7 +156,7 @@ export function CashTable({ report }: { report: Report }) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" role="region" aria-label="Cash accounts, scroll horizontally for all columns" tabIndex={0}>
       <table className="w-full min-w-[46rem] text-sm">
         <thead>
           <tr className="border-b text-left text-[11px] uppercase tracking-wide text-muted-foreground">
@@ -175,7 +176,7 @@ export function CashTable({ report }: { report: Report }) {
             if (isEditing) {
               return (
                 <tr key={a.key} className="border-b last:border-0 align-top">
-                  <td className="py-2.5 pr-3 font-medium text-foreground">{a.key}</td>
+                  <td className="py-2.5 pr-3 font-medium text-foreground">{accountLabel(a.key)}</td>
                   <td className="py-2.5 pr-3">
                     <input
                       type="number"
@@ -245,7 +246,7 @@ export function CashTable({ report }: { report: Report }) {
                         onClick={() => saveEdit(a)}
                         className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                       >
-                        {saving ? "保存中…" : "保存"}
+                        <Save size={14} aria-hidden="true" />{saving ? "保存中…" : "保存"}
                       </button>
                       <button
                         type="button"
@@ -253,7 +254,7 @@ export function CashTable({ report }: { report: Report }) {
                         onClick={cancelEdit}
                         className="rounded border border-border px-2 py-1 text-xs"
                       >
-                        取消
+                        <X size={14} aria-hidden="true" />取消
                       </button>
                       {error && (
                         <p className="max-w-[10rem] text-[11px] text-critical">{error}</p>
@@ -266,7 +267,7 @@ export function CashTable({ report }: { report: Report }) {
 
             return (
               <tr key={a.key} className="border-b last:border-0">
-                <td className="py-2.5 pr-3 font-medium text-foreground">{a.key}</td>
+                <td className="py-2.5 pr-3 font-medium text-foreground">{accountLabel(a.key)}</td>
                 <td className="num py-2.5 pr-3 text-right">
                   {a.currency === "USD" ? (
                     <span className="flex flex-col items-end">
@@ -314,7 +315,7 @@ export function CashTable({ report }: { report: Report }) {
                       onClick={() => startEdit(a)}
                       className="rounded border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
                     >
-                      编辑
+                      <Pencil size={14} aria-hidden="true" />编辑
                     </button>
                     <button
                       type="button"
@@ -322,7 +323,7 @@ export function CashTable({ report }: { report: Report }) {
                       onClick={() => confirmDelete(a.key)}
                       className="rounded border border-critical/40 px-2 py-1 text-xs text-critical hover:bg-critical/10 disabled:opacity-50"
                     >
-                      {deleting && deletingKey === a.key ? "删除中…" : "删除"}
+                      <Trash2 size={14} aria-hidden="true" />{deleting && deletingKey === a.key ? "删除中…" : "删除"}
                     </button>
                   </div>
                 </td>
@@ -431,7 +432,7 @@ export function CashTable({ report }: { report: Report }) {
                     onClick={saveAdd}
                     className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                   >
-                    {addingSaving ? "保存中…" : "新增"}
+                    <Save size={14} aria-hidden="true" />{addingSaving ? "保存中…" : "新增"}
                   </button>
                   <button
                     type="button"
@@ -439,7 +440,7 @@ export function CashTable({ report }: { report: Report }) {
                     onClick={cancelAdd}
                     className="rounded border border-border px-2 py-1 text-xs"
                   >
-                    取消
+                    <X size={14} aria-hidden="true" />取消
                   </button>
                   {addError && (
                     <p className="max-w-[10rem] text-[11px] text-critical">{addError}</p>
@@ -457,7 +458,7 @@ export function CashTable({ report }: { report: Report }) {
           onClick={startAdd}
           className="mt-3 rounded border border-border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          + 新增账户
+          <Plus size={14} aria-hidden="true" />新增账户
         </button>
       )}
       {deleteError && (
@@ -465,9 +466,9 @@ export function CashTable({ report }: { report: Report }) {
       )}
 
       <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-        汇总由 accounts 推导，savings.yaml 不再手写这些数字。
-        cap 利用率告警阈值 {(thresholds.cap_utilization_warn * 100).toFixed(0)}%。
-        保存会直接写入 data/finance/savings.yaml，不会自动 git commit——提交前请自行 review。
+        Balances update when you save.
+        Deposit-limit warning threshold: {(thresholds.cap_utilization_warn * 100).toFixed(0)}%。
+        Changes are saved locally.
       </p>
     </div>
   );

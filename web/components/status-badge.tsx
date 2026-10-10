@@ -1,10 +1,11 @@
+import { CircleCheck, TriangleAlert, CircleAlert, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Severity } from "@/lib/report";
 
-const ICONS: Record<Severity, string> = {
-  OK: "✓",
-  Warning: "▲",
-  Critical: "■",
+const ICONS: Record<Severity, LucideIcon> = {
+  OK: CircleCheck,
+  Warning: TriangleAlert,
+  Critical: CircleAlert,
 };
 
 /**
@@ -20,6 +21,7 @@ export function StatusBadge({
   children?: React.ReactNode;
   className?: string;
 }) {
+  const Icon = ICONS[severity];
   return (
     <span
       className={cn(
@@ -30,7 +32,7 @@ export function StatusBadge({
         className,
       )}
     >
-      <span aria-hidden>{ICONS[severity]}</span>
+      <Icon aria-hidden="true" size={13} strokeWidth={1.8} />
       <span>{children ?? severity}</span>
     </span>
   );

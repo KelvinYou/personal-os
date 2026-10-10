@@ -17,7 +17,7 @@ export default async function Page() {
     : undefined;
 
   return (
-    <main className="container max-w-5xl space-y-10 py-10 md:py-14">
+    <main id="main-content" className="container max-w-5xl space-y-10 py-10 md:py-14">
       <header>
         <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
           Agent Signals

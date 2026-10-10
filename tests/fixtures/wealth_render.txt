@@ -43,7 +43,17 @@
     每一栏的百分比都偏了，不要据此判断是否需要再平衡。
 
   跟踪资产合计  RM   31,990.00
-  (不是 net worth — liabilities 只记月供，不追踪本金)
+  (gross tracked assets; not full net worth)
+
+■ 负债与月供
+  example_card: outstanding RM600.00; as of 2026-07-01
+  example_loan: outstanding unknown; as of unknown
+  已记录月供 RM80.00
+  扣除已知负债后 RM31,390.00
+  [Status: Warning] 负债本金缺失或余额陈旧；此余额不是完整净资产
+
+■ 未折算旅行现金 (不计入 MYR 合计)
+  example_wallet: CNY 100.00 @ 2026-09-01
 
 ■ 到期监控 (窗口 30 天)
 

@@ -1,0 +1,1122 @@
+{
+  "$defs": {
+    "AllocationSection": {
+      "additionalProperties": false,
+      "description": "有持仓无价时，分母偏低，每一栏 pct 都偏了（审计 §3.11 fail-closed）。\n\n`incomplete` 不是 UI 标签，是\"别拿这些百分比做再平衡判断\"的信号。",
+      "properties": {
+        "incomplete": {
+          "title": "Incomplete",
+          "type": "boolean"
+        },
+        "unpriced_symbols": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unpriced Symbols",
+          "type": "array"
+        },
+        "slices": {
+          "items": {
+            "$ref": "#/$defs/AllocationSlice"
+          },
+          "title": "Slices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "incomplete",
+        "unpriced_symbols",
+        "slices"
+      ],
+      "title": "AllocationSection",
+      "type": "object"
+    },
+    "AllocationSlice": {
+      "additionalProperties": false,
+      "properties": {
+        "bucket": {
+          "title": "Bucket",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "amount_myr": {
+          "title": "Amount Myr",
+          "type": "number"
+        },
+        "pct": {
+          "title": "Pct",
+          "type": "number"
+        }
+      },
+      "required": [
+        "bucket",
+        "label",
+        "amount_myr",
+        "pct"
+      ],
+      "title": "AllocationSlice",
+      "type": "object"
+    },
+    "BalanceSheetSection": {
+      "additionalProperties": false,
+      "properties": {
+        "gross_tracked_assets_myr": {
+          "title": "Gross Tracked Assets Myr",
+          "type": "number"
+        },
+        "after_known_debt_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "After Known Debt Myr"
+        },
+        "liability_balances_complete": {
+          "title": "Liability Balances Complete",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "gross_tracked_assets_myr",
+        "after_known_debt_myr",
+        "liability_balances_complete"
+      ],
+      "title": "BalanceSheetSection",
+      "type": "object"
+    },
+    "CandidateOut": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rate"
+        },
+        "basis": {
+          "enum": [
+            "promo",
+            "base",
+            "none"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "min_deposit": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Min Deposit"
+        },
+        "tenure_months": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Tenure Months"
+        },
+        "notes": {
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "key",
+        "rate",
+        "basis",
+        "eligible",
+        "reasons",
+        "min_deposit",
+        "tenure_months",
+        "notes"
+      ],
+      "title": "CandidateOut",
+      "type": "object"
+    },
+    "CapOut": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "balance": {
+          "title": "Balance",
+          "type": "number"
+        },
+        "cap": {
+          "title": "Cap",
+          "type": "number"
+        },
+        "utilization": {
+          "title": "Utilization",
+          "type": "number"
+        },
+        "overflow": {
+          "title": "Overflow",
+          "type": "number"
+        }
+      },
+      "required": [
+        "key",
+        "balance",
+        "cap",
+        "utilization",
+        "overflow"
+      ],
+      "title": "CapOut",
+      "type": "object"
+    },
+    "CashAccountOut": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "balance": {
+          "title": "Balance",
+          "type": "number"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "balance_myr": {
+          "title": "Balance Myr",
+          "type": "number"
+        },
+        "rate": {
+          "title": "Rate",
+          "type": "number"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "liquidity": {
+          "title": "Liquidity",
+          "type": "string"
+        },
+        "locked": {
+          "title": "Locked",
+          "type": "boolean"
+        },
+        "cap": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cap"
+        },
+        "lock_until": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Lock Until"
+        },
+        "rate_reason": {
+          "title": "Rate Reason",
+          "type": "string"
+        },
+        "rate_unverified": {
+          "title": "Rate Unverified",
+          "type": "boolean"
+        },
+        "product_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Product Id"
+        }
+      },
+      "required": [
+        "key",
+        "balance",
+        "currency",
+        "balance_myr",
+        "rate",
+        "type",
+        "liquidity",
+        "locked",
+        "cap",
+        "lock_until",
+        "rate_reason",
+        "rate_unverified",
+        "product_id"
+      ],
+      "title": "CashAccountOut",
+      "type": "object"
+    },
+    "CashSection": {
+      "additionalProperties": false,
+      "properties": {
+        "total_cash": {
+          "title": "Total Cash",
+          "type": "number"
+        },
+        "weighted_avg_rate": {
+          "title": "Weighted Avg Rate",
+          "type": "number"
+        },
+        "liquid_now": {
+          "title": "Liquid Now",
+          "type": "number"
+        },
+        "locked": {
+          "title": "Locked",
+          "type": "number"
+        },
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/CashAccountOut"
+          },
+          "title": "Accounts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "total_cash",
+        "weighted_avg_rate",
+        "liquid_now",
+        "locked",
+        "accounts"
+      ],
+      "title": "CashSection",
+      "type": "object"
+    },
+    "CatalogConflictOut": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "held_rate": {
+          "title": "Held Rate",
+          "type": "number"
+        },
+        "catalog_base": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Catalog Base"
+        },
+        "catalog_promo": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Catalog Promo"
+        }
+      },
+      "required": [
+        "key",
+        "held_rate",
+        "catalog_base",
+        "catalog_promo"
+      ],
+      "title": "CatalogConflictOut",
+      "type": "object"
+    },
+    "ExcludedCashOut": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "currency": {
+          "title": "Currency",
+          "type": "string"
+        },
+        "balance": {
+          "title": "Balance",
+          "type": "number"
+        },
+        "as_of": {
+          "format": "date",
+          "title": "As Of",
+          "type": "string"
+        },
+        "purpose": {
+          "title": "Purpose",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "currency",
+        "balance",
+        "as_of",
+        "purpose",
+        "reason"
+      ],
+      "title": "ExcludedCashOut",
+      "type": "object"
+    },
+    "FxSection": {
+      "additionalProperties": false,
+      "description": "FX 是独立观测，有自己的 as_of —— 它比持仓变得快得多（审计 §3.7）。",
+      "properties": {
+        "pair": {
+          "title": "Pair",
+          "type": "string"
+        },
+        "rate": {
+          "title": "Rate",
+          "type": "number"
+        },
+        "as_of": {
+          "format": "date",
+          "title": "As Of",
+          "type": "string"
+        },
+        "age_days": {
+          "title": "Age Days",
+          "type": "integer"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pair",
+        "rate",
+        "as_of",
+        "age_days",
+        "stale",
+        "source"
+      ],
+      "title": "FxSection",
+      "type": "object"
+    },
+    "LiabilitiesSection": {
+      "additionalProperties": false,
+      "properties": {
+        "known_outstanding_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Known Outstanding Myr"
+        },
+        "balances_complete": {
+          "title": "Balances Complete",
+          "type": "boolean"
+        },
+        "unknown_balance_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unknown Balance Keys",
+          "type": "array"
+        },
+        "stale_balance_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stale Balance Keys",
+          "type": "array"
+        },
+        "monthly_commitments_myr": {
+          "title": "Monthly Commitments Myr",
+          "type": "number"
+        },
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/LiabilityOut"
+          },
+          "title": "Accounts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "known_outstanding_myr",
+        "balances_complete",
+        "unknown_balance_keys",
+        "stale_balance_keys",
+        "monthly_commitments_myr",
+        "accounts"
+      ],
+      "title": "LiabilitiesSection",
+      "type": "object"
+    },
+    "LiabilityOut": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "outstanding_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Outstanding Myr"
+        },
+        "as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "As Of"
+        },
+        "age_days": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Age Days"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "monthly_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Monthly Myr"
+        },
+        "monthly_full_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Monthly Full Myr"
+        },
+        "statement_due_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Statement Due Myr"
+        },
+        "payment_due_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Payment Due Date"
+        },
+        "notes": {
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "outstanding_myr",
+        "as_of",
+        "age_days",
+        "stale",
+        "monthly_myr",
+        "monthly_full_myr",
+        "statement_due_myr",
+        "payment_due_date",
+        "notes"
+      ],
+      "title": "LiabilityOut",
+      "type": "object"
+    },
+    "MaturityOut": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "balance": {
+          "title": "Balance",
+          "type": "number"
+        },
+        "rate": {
+          "title": "Rate",
+          "type": "number"
+        },
+        "lock_until": {
+          "format": "date",
+          "title": "Lock Until",
+          "type": "string"
+        },
+        "days_left": {
+          "title": "Days Left",
+          "type": "integer"
+        },
+        "severity": {
+          "enum": [
+            "OK",
+            "Warning",
+            "Critical"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "renewal_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Renewal Rate"
+        },
+        "renewal_product": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Renewal Product"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/CandidateOut"
+          },
+          "title": "Candidates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "key",
+        "balance",
+        "rate",
+        "lock_until",
+        "days_left",
+        "severity",
+        "renewal_rate",
+        "renewal_product",
+        "candidates"
+      ],
+      "title": "MaturityOut",
+      "type": "object"
+    },
+    "PositionOut": {
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "title": "Symbol",
+          "type": "string"
+        },
+        "market": {
+          "enum": [
+            "US",
+            "MY"
+          ],
+          "title": "Market",
+          "type": "string"
+        },
+        "currency": {
+          "enum": [
+            "USD",
+            "MYR"
+          ],
+          "title": "Currency",
+          "type": "string"
+        },
+        "shares": {
+          "title": "Shares",
+          "type": "number"
+        },
+        "avg_cost": {
+          "title": "Avg Cost",
+          "type": "number"
+        },
+        "price": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Price"
+        },
+        "price_source": {
+          "enum": [
+            "pipeline",
+            "manual",
+            "none"
+          ],
+          "title": "Price Source",
+          "type": "string"
+        },
+        "price_as_of": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Price As Of"
+        },
+        "market_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Market Value"
+        },
+        "market_value_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Market Value Myr"
+        },
+        "pnl": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pnl"
+        },
+        "pnl_myr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pnl Myr"
+        },
+        "pnl_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pnl Pct"
+        }
+      },
+      "required": [
+        "symbol",
+        "market",
+        "currency",
+        "shares",
+        "avg_cost",
+        "price",
+        "price_source",
+        "price_as_of",
+        "market_value",
+        "market_value_myr",
+        "pnl",
+        "pnl_myr",
+        "pnl_pct"
+      ],
+      "title": "PositionOut",
+      "type": "object"
+    },
+    "StaleFile": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "age_days": {
+          "title": "Age Days",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "age_days"
+      ],
+      "title": "StaleFile",
+      "type": "object"
+    },
+    "StalePrice": {
+      "additionalProperties": false,
+      "properties": {
+        "symbol": {
+          "title": "Symbol",
+          "type": "string"
+        },
+        "age_days": {
+          "title": "Age Days",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "symbol",
+        "age_days"
+      ],
+      "title": "StalePrice",
+      "type": "object"
+    },
+    "StocksSection": {
+      "additionalProperties": false,
+      "properties": {
+        "fx_usd_myr": {
+          "title": "Fx Usd Myr",
+          "type": "number"
+        },
+        "total_myr": {
+          "title": "Total Myr",
+          "type": "number"
+        },
+        "priced_count": {
+          "title": "Priced Count",
+          "type": "integer"
+        },
+        "total_count": {
+          "title": "Total Count",
+          "type": "integer"
+        },
+        "positions": {
+          "items": {
+            "$ref": "#/$defs/PositionOut"
+          },
+          "title": "Positions",
+          "type": "array"
+        },
+        "stale_prices": {
+          "items": {
+            "$ref": "#/$defs/StalePrice"
+          },
+          "title": "Stale Prices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "fx_usd_myr",
+        "total_myr",
+        "priced_count",
+        "total_count",
+        "positions",
+        "stale_prices"
+      ],
+      "title": "StocksSection",
+      "type": "object"
+    },
+    "WealthCfg": {
+      "additionalProperties": false,
+      "properties": {
+        "maturity_alert_days": {
+          "default": 30,
+          "title": "Maturity Alert Days",
+          "type": "integer"
+        },
+        "maturity_critical_days": {
+          "default": 7,
+          "title": "Maturity Critical Days",
+          "type": "integer"
+        },
+        "staleness_warn_days": {
+          "default": 30,
+          "title": "Staleness Warn Days",
+          "type": "integer"
+        },
+        "price_stale_days": {
+          "default": 7,
+          "title": "Price Stale Days",
+          "type": "integer"
+        },
+        "fx_stale_days": {
+          "default": 1,
+          "title": "Fx Stale Days",
+          "type": "integer"
+        },
+        "regulatory_rules_stale_days": {
+          "default": 365,
+          "title": "Regulatory Rules Stale Days",
+          "type": "integer"
+        },
+        "rate_edge_min_pct": {
+          "default": 0.25,
+          "title": "Rate Edge Min Pct",
+          "type": "number"
+        },
+        "cap_utilization_warn": {
+          "default": 0.9,
+          "title": "Cap Utilization Warn",
+          "type": "number"
+        }
+      },
+      "required": [
+        "maturity_alert_days",
+        "maturity_critical_days",
+        "staleness_warn_days",
+        "price_stale_days",
+        "fx_stale_days",
+        "regulatory_rules_stale_days",
+        "rate_edge_min_pct",
+        "cap_utilization_warn"
+      ],
+      "title": "WealthCfg",
+      "type": "object"
+    },
+    "WealthRulesHealth": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "stale_facts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stale Facts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "stale",
+        "stale_facts"
+      ],
+      "title": "WealthRulesHealth",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "report_schema_version": {
+      "const": 4,
+      "default": 4,
+      "title": "Report Schema Version",
+      "type": "integer"
+    },
+    "as_of": {
+      "format": "date",
+      "title": "As Of",
+      "type": "string"
+    },
+    "currency": {
+      "title": "Currency",
+      "type": "string"
+    },
+    "thresholds": {
+      "$ref": "#/$defs/WealthCfg"
+    },
+    "stale_files": {
+      "items": {
+        "$ref": "#/$defs/StaleFile"
+      },
+      "title": "Stale Files",
+      "type": "array"
+    },
+    "catalog_conflicts": {
+      "items": {
+        "$ref": "#/$defs/CatalogConflictOut"
+      },
+      "title": "Catalog Conflicts",
+      "type": "array"
+    },
+    "liabilities": {
+      "$ref": "#/$defs/LiabilitiesSection"
+    },
+    "balance_sheet": {
+      "$ref": "#/$defs/BalanceSheetSection"
+    },
+    "excluded_cash": {
+      "items": {
+        "$ref": "#/$defs/ExcludedCashOut"
+      },
+      "title": "Excluded Cash",
+      "type": "array"
+    },
+    "cash": {
+      "$ref": "#/$defs/CashSection"
+    },
+    "fx": {
+      "$ref": "#/$defs/FxSection"
+    },
+    "stocks": {
+      "$ref": "#/$defs/StocksSection"
+    },
+    "allocation": {
+      "$ref": "#/$defs/AllocationSection"
+    },
+    "maturity": {
+      "items": {
+        "$ref": "#/$defs/MaturityOut"
+      },
+      "title": "Maturity",
+      "type": "array"
+    },
+    "caps": {
+      "items": {
+        "$ref": "#/$defs/CapOut"
+      },
+      "title": "Caps",
+      "type": "array"
+    },
+    "wealth_rules": {
+      "$ref": "#/$defs/WealthRulesHealth"
+    },
+    "tracked_total_myr": {
+      "title": "Tracked Total Myr",
+      "type": "number"
+    }
+  },
+  "required": [
+    "report_schema_version",
+    "as_of",
+    "currency",
+    "thresholds",
+    "stale_files",
+    "catalog_conflicts",
+    "liabilities",
+    "balance_sheet",
+    "excluded_cash",
+    "cash",
+    "fx",
+    "stocks",
+    "allocation",
+    "maturity",
+    "caps",
+    "wealth_rules",
+    "tracked_total_myr"
+  ],
+  "title": "WealthReport",
+  "type": "object"
+}

@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { DashboardNav } from "@/components/dashboard-nav";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Personal OS Dashboard",
   description: "本地仪表盘（不部署）",
 };
-
-const NAV = [
-  { href: "/", label: "Tracked Assets" },
-  { href: "/eval-rollup", label: "Agent Signals" },
-  { href: "/flows", label: "Flows" },
-];
 
 export default function RootLayout({
   children,
@@ -24,24 +18,13 @@ export default function RootLayout({
         {/* Resolve the theme before first paint so dark mode never flashes. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var m=window.matchMedia('(prefers-color-scheme: dark)').matches;if(m)document.documentElement.classList.add('dark')}catch(e){}`,
+            __html: `try{var t=localStorage.getItem('os-theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);document.documentElement.dataset.material=localStorage.getItem('os-material')||'glass'}catch(e){}`,
           }}
         />
       </head>
       <body className="min-h-screen">
-        <nav className="border-b">
-          <div className="container flex max-w-5xl gap-4 py-3 text-sm">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
+        <a className="skip-link" href="#main-content">Skip to content</a>
+        <DashboardNav />
         {children}
       </body>
     </html>

@@ -7,6 +7,7 @@ this script exists instead of a plain PyYAML dump).
 from __future__ import annotations
 
 import shutil
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -19,6 +20,27 @@ from pydantic import ValidationError  # noqa: E402
 import finance_edit as fe  # noqa: E402
 
 FIXTURES = ROOT / "tests" / "fixtures" / "finance"
+
+
+class WebEditorFieldParity(unittest.TestCase):
+    def test_web_drafts_only_expose_cli_allowed_fields(self):
+        cash = (ROOT / "web/components/cash-table.tsx").read_text()
+        positions = (ROOT / "web/components/positions-table.tsx").read_text()
+
+        def interface_fields(source: str, name: str) -> set[str]:
+            body = re.search(rf"interface {name}(?: extends Draft)? \{{([^}}]+)\}}", source)
+            self.assertIsNotNone(body)
+            return set(re.findall(r"^\s+(\w+):", body.group(1), re.M))
+
+        cash_edit = interface_fields(cash, "Draft")
+        self.assertTrue(cash_edit <= fe.SAVINGS_FIELDS.keys())
+        self.assertTrue(interface_fields(cash, "NewDraft") <=
+                        (fe.SAVINGS_ADD_FIELDS.keys() | {"key"}))
+        position_edit = interface_fields(positions, "Draft") - {"avg_cost"}
+        self.assertTrue(position_edit <= fe.US_HOLDING_FIELDS.keys())
+        self.assertIn("avg_cost_usd", fe.US_HOLDING_FIELDS)
+        self.assertIn("avg_cost", fe.MY_HOLDING_FIELDS)
+        self.assertIn("code", fe.MY_HOLDING_ADD_FIELDS)
 
 
 class FinanceEditTestCase(unittest.TestCase):
@@ -51,11 +73,13 @@ class TestSavingsSet(FinanceEditTestCase):
         self.assertIn("# 距 fixture today (2026-08-11) 9 天 → Warning", after)
 
     def test_updates_the_updated_date(self) -> None:
-        import datetime
+        from datetime import date
+        from unittest.mock import patch
 
-        fe.savings_set("capped_mmf", ["balance=19600.00"], path=self.savings_path)
+        with patch.object(fe, "today_kl", return_value=date(2026, 9, 30)):
+            fe.savings_set("capped_mmf", ["balance=19600.00"], path=self.savings_path)
         after = self.savings_path.read_text(encoding="utf-8")
-        self.assertIn(f"updated: {datetime.date.today().isoformat()}", after)
+        self.assertIn("updated: 2026-09-30", after)
 
     def test_rejects_locked_without_lock_until(self) -> None:
         original = self.savings_path.read_text(encoding="utf-8")

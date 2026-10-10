@@ -1,5 +1,6 @@
 "use client";
 
+import { Pencil, Trash2, Save, X, Plus } from "lucide-react";
 import { useState } from "react";
 import type { Position, Report } from "@/lib/report";
 import { StatusBadge } from "@/components/status-badge";
@@ -263,7 +264,7 @@ export function PositionsTable({ report }: { report: Report }) {
                         onClick={() => saveEdit(p)}
                         className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                       >
-                        {saving ? "保存中…" : "保存"}
+                        <Save size={14} aria-hidden="true" />{saving ? "保存中…" : "保存"}
                       </button>
                       <button
                         type="button"
@@ -271,7 +272,7 @@ export function PositionsTable({ report }: { report: Report }) {
                         onClick={cancelEdit}
                         className="rounded border border-border px-2 py-1 text-xs"
                       >
-                        取消
+                        <X size={14} aria-hidden="true" />取消
                       </button>
                       {error && (
                         <p className="max-w-[10rem] text-[11px] text-critical">{error}</p>
@@ -284,7 +285,7 @@ export function PositionsTable({ report }: { report: Report }) {
                         onClick={() => startEdit(p)}
                         className="rounded border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
                       >
-                        编辑
+                        <Pencil size={14} aria-hidden="true" />编辑
                       </button>
                       <button
                         type="button"
@@ -292,7 +293,7 @@ export function PositionsTable({ report }: { report: Report }) {
                         onClick={() => confirmDelete(p)}
                         className="rounded border border-critical/40 px-2 py-1 text-xs text-critical hover:bg-critical/10 disabled:opacity-50"
                       >
-                        {deleting && deletingSymbol === p.symbol ? "删除中…" : "删除"}
+                        <Trash2 size={14} aria-hidden="true" />{deleting && deletingSymbol === p.symbol ? "删除中…" : "删除"}
                       </button>
                     </div>
                   )}
@@ -370,7 +371,7 @@ export function PositionsTable({ report }: { report: Report }) {
                     onClick={saveAdd}
                     className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                   >
-                    {addingSaving ? "保存中…" : "新增"}
+                    <Save size={14} aria-hidden="true" />{addingSaving ? "保存中…" : "新增"}
                   </button>
                   <button
                     type="button"
@@ -378,7 +379,7 @@ export function PositionsTable({ report }: { report: Report }) {
                     onClick={cancelAdd}
                     className="rounded border border-border px-2 py-1 text-xs"
                   >
-                    取消
+                    <X size={14} aria-hidden="true" />取消
                   </button>
                   {addError && (
                     <p className="max-w-[10rem] text-[11px] text-critical">{addError}</p>
@@ -396,7 +397,7 @@ export function PositionsTable({ report }: { report: Report }) {
           onClick={startAdd}
           className="mt-3 rounded border border-border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          + 新增持仓
+          <Plus size={14} aria-hidden="true" />新增持仓
         </button>
       )}
       {deleteError && <p className="mt-2 text-[11px] text-critical">{deleteError}</p>}

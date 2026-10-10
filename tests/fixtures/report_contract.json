@@ -1,5 +1,5 @@
 {
-  "report_schema_version": 3,
+  "report_schema_version": 4,
   "as_of": "2026-09-05",
   "currency": "MYR",
   "thresholds": {
@@ -28,6 +28,60 @@
       "held_rate": 3.3,
       "catalog_base": 3.0,
       "catalog_promo": 3.0
+    }
+  ],
+  "liabilities": {
+    "known_outstanding_myr": 600.0,
+    "balances_complete": false,
+    "unknown_balance_keys": [
+      "example_loan"
+    ],
+    "stale_balance_keys": [
+      "example_card"
+    ],
+    "monthly_commitments_myr": 80.0,
+    "accounts": [
+      {
+        "key": "example_card",
+        "type": "credit_card",
+        "outstanding_myr": 600.0,
+        "as_of": "2026-07-01",
+        "age_days": 66,
+        "stale": true,
+        "monthly_myr": null,
+        "monthly_full_myr": null,
+        "statement_due_myr": 300.0,
+        "payment_due_date": "2026-09-10",
+        "notes": ""
+      },
+      {
+        "key": "example_loan",
+        "type": "housing",
+        "outstanding_myr": null,
+        "as_of": null,
+        "age_days": null,
+        "stale": false,
+        "monthly_myr": 80.0,
+        "monthly_full_myr": 240.0,
+        "statement_due_myr": null,
+        "payment_due_date": null,
+        "notes": ""
+      }
+    ]
+  },
+  "balance_sheet": {
+    "gross_tracked_assets_myr": 31990.0,
+    "after_known_debt_myr": 31390.0,
+    "liability_balances_complete": false
+  },
+  "excluded_cash": [
+    {
+      "key": "example_wallet",
+      "currency": "CNY",
+      "balance": 100.0,
+      "as_of": "2026-09-01",
+      "purpose": "Example trip",
+      "reason": "No supported MYR conversion; excluded from tracked totals."
     }
   ],
   "cash": {

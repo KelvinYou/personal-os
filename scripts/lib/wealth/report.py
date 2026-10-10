@@ -13,7 +13,7 @@ from pathlib import Path
 
 from ..schema import WealthCfg
 from .consistency import catalog_conflicts, check_currencies, stale_files
-from .files import FxFile, PortfolioFile, RatesFile, SavingsFile
+from .files import FxFile, PortfolioFile, RatesFile, SavingsFile, TravelCashFile
 from .market_layer import resolve_positions, stale_prices
 from .rules import load_wealth_rules, stale_rule_facts
 from .report_models import (
@@ -73,6 +73,7 @@ def build_report_model(
     cfg: WealthCfg,
     today: date,
     data_dir: Path | None = None,
+    travel_cash: TravelCashFile | None = None,
 ) -> WealthReport:
     check_currencies(savings, rates)
     wealth_rules = load_wealth_rules()
@@ -93,7 +94,41 @@ def build_report_model(
         buckets[acct.type] = buckets.get(acct.type, 0.0) + balance_myr(acct, fx)
     grand_total = sum(buckets.values())
 
+    gross = round(stock_total + cash["total_cash"], 2)
+    debts = []
+    for key, debt in savings.liabilities.items():
+        age = (today - debt.as_of).days if debt.as_of is not None else None
+        debts.append(dict(
+            key=key, type=debt.type, outstanding_myr=debt.outstanding,
+            as_of=debt.as_of, age_days=age,
+            stale=age is not None and age > cfg.staleness_warn_days,
+            monthly_myr=debt.monthly_now if debt.monthly_now is not None else debt.monthly,
+            monthly_full_myr=debt.monthly_full,
+            statement_due_myr=debt.statement_due, payment_due_date=debt.payment_due_date,
+            notes=debt.notes,
+        ))
+    known = [d["outstanding_myr"] for d in debts if d["outstanding_myr"] is not None]
+    known_total = round(sum(known), 2) if known or not debts else None
+    unknown = [d["key"] for d in debts if d["outstanding_myr"] is None]
+
     return WealthReport(
+        liabilities=dict(
+            known_outstanding_myr=known_total, balances_complete=not unknown,
+            unknown_balance_keys=unknown,
+            stale_balance_keys=[d["key"] for d in debts if d["stale"]],
+            monthly_commitments_myr=round(sum(d["monthly_myr"] for d in debts if d["monthly_myr"] is not None), 2),
+            accounts=debts,
+        ),
+        balance_sheet=dict(
+            gross_tracked_assets_myr=gross,
+            after_known_debt_myr=round(gross - known_total, 2) if known_total is not None else None,
+            liability_balances_complete=not unknown,
+        ),
+        excluded_cash=[dict(
+            key=key, currency=travel_cash.currency, balance=account.balance,
+            as_of=travel_cash.updated, purpose=travel_cash.purpose,
+            reason="No supported MYR conversion; excluded from tracked totals.",
+        ) for key, account in travel_cash.accounts.items()] if travel_cash else [],
         as_of=today,
         currency=savings.currency,
         thresholds=cfg,
@@ -235,7 +270,7 @@ def build_report_model(
             "stale": bool(stale_facts),
             "stale_facts": stale_facts,
         },
-        tracked_total_myr=round(stock_total + cash["total_cash"], 2),
+        tracked_total_myr=gross,
     )
 
 
@@ -247,6 +282,7 @@ def build_report(
     cfg: WealthCfg,
     today: date,
     data_dir: Path | None = None,
+    travel_cash: TravelCashFile | None = None,
 ) -> dict:
     """过渡期 wrapper —— 形状的唯一定义在 `build_report_model()`。
 
@@ -255,5 +291,5 @@ def build_report(
     落地、消费者改读生成产物之后，再决定要不要收掉这层。
     """
     return build_report_model(
-        savings, rates, portfolio, fx_file, cfg, today, data_dir
+        savings, rates, portfolio, fx_file, cfg, today, data_dir, travel_cash
     ).model_dump(mode="json")

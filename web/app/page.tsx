@@ -1,5 +1,8 @@
+import { WalletCards, CreditCard, CalendarDays, Landmark, Wallet, LockKeyhole, TrendingUp, ChartPie, ChartNoAxesCombined, ArrowUpRight } from "lucide-react";
 import { AllocationBar } from "@/components/allocation-bar";
 import { CashTable } from "@/components/cash-table";
+import { DataHealth } from "@/components/data-health";
+import { LiabilitiesPanel } from "@/components/liabilities-panel";
 import { MaturityPanel } from "@/components/maturity-panel";
 import { PositionsTable } from "@/components/positions-table";
 import { SectionCard } from "@/components/shared/section-card";
@@ -10,226 +13,72 @@ import { loadHistory } from "@/lib/history";
 import { loadReport } from "@/lib/report";
 import { myr, pct } from "@/lib/utils";
 
-// Always re-read: the underlying YAML changes outside the app's knowledge.
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const [result, history] = await Promise.all([loadReport(), loadHistory()]);
-
-  if (!result.ok) {
-    return (
-      <main className="container max-w-2xl py-16">
-        <div className="rounded-xl border border-critical/40 p-6">
-          <StatusBadge severity="Critical">{result.message}</StatusBadge>
-          <p className="mt-3 text-sm text-muted-foreground">
-            仪表盘不自己算数，它渲染 <code>scripts/wealth_check.py --json</code> 的输出。
-            先在仓库根目录跑 <code>make wealth</code> 看错误。
-            若尚未接入自己的私有数据仓库，先运行
-            <code>make setup-private DATA_REPO=&lt;你的私仓 URL&gt;</code>。
-          </p>
-          {result.detail && (
-            <pre className="mt-4 overflow-x-auto rounded-lg border bg-muted/40 p-3 text-[11px] text-muted-foreground">
-              {result.detail}
-            </pre>
-          )}
-        </div>
-      </main>
-    );
-  }
-
+  if (!result.ok) return (
+    <main id="main-content" className="container max-w-2xl py-16">
+      <div className="rounded-2xl border border-critical/40 bg-card p-6">
+        <StatusBadge severity="Critical">{result.message}</StatusBadge>
+        <p className="mt-3 text-sm text-muted-foreground">Finance data could not be loaded. Run <code>make wealth</code> in the repository to inspect the error.</p>
+        {result.detail && <pre className="mt-4 overflow-x-auto rounded-lg bg-muted p-3 text-xs">{result.detail}</pre>}
+      </div>
+    </main>
+  );
   const r = result.report;
-  const unpriced = r.stocks.positions.filter((p) => p.price === null);
-  const worstSeverity = r.maturity.some((m) => m.severity === "Critical")
-    ? "Critical"
-    : r.maturity.length > 0 || r.wealth_rules.stale
-      ? "Warning"
-      : "OK";
-  const dataHealthWarning =
-    r.stale_files.length > 0 ||
-    r.catalog_conflicts.length > 0 ||
-    r.fx.stale ||
-    r.allocation.incomplete ||
-    r.wealth_rules.stale;
-
+  const debt = r.liabilities;
+  const adjusted = r.balance_sheet.after_known_debt_myr;
+  const partial = !debt.balances_complete || r.allocation.incomplete || r.excluded_cash.length > 0;
   return (
-    <main className="container max-w-5xl space-y-10 py-10 md:py-14">
-      <header>
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-            Tracked Assets
-          </h1>
-          <StatusBadge severity={worstSeverity} />
+    <main id="main-content" className="finance-page container max-w-6xl space-y-10 py-10 md:py-14">
+      <header className="finance-header">
+        <p className="eyebrow">Your money, in perspective</p>
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+          <div><h1 className="text-4xl font-semibold tracking-tight md:text-5xl">Financial overview</h1><p className="mt-3 text-sm text-muted-foreground">Assets, recorded debt and monthly commitments.</p></div>
+          <p className="as-of">As of <time>{r.as_of}</time><span>MYR · Private local view</span></p>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          as of {r.as_of} · {r.currency} · 本地视图，不部署 ·
-          数字全部来自 <code>scripts/lib/wealth/</code>，此页不重算
-        </p>
       </header>
 
-      {/* Data-health first: every number below inherits these caveats. */}
-      {dataHealthWarning && (
-        <SectionCard
-          title="数据健康"
-          description="以下问题会削弱本页所有结论的可信度"
-        >
-          <ul className="space-y-3 text-sm">
-            {r.stale_files.map((f) => (
-              <li key={f.name} className="flex flex-wrap items-center gap-2">
-                <StatusBadge severity="Warning">陈旧</StatusBadge>
-                <span className="text-foreground">{f.name}</span>
-                <span className="text-muted-foreground">
-                  已 {f.age_days} 天未更新（阈值 {r.thresholds.staleness_warn_days} 天）
-                </span>
-              </li>
-            ))}
-            {r.catalog_conflicts.map((c) => (
-              <li key={c.key} className="flex flex-wrap items-center gap-2">
-                <StatusBadge severity="Warning">利率对不上</StatusBadge>
-                <span className="text-foreground">{c.key}</span>
-                <span className="text-muted-foreground">
-                  记录 {pct(c.held_rate, 2)}，catalog 只有 base{" "}
-                  {c.catalog_base === null ? "n/a" : pct(c.catalog_base, 2)} / promo{" "}
-                  {c.catalog_promo === null ? "n/a" : pct(c.catalog_promo, 2)}
-                  ——需人工确认实际 tier，工具不替你选一个数字
-                </span>
-              </li>
-            ))}
-            {r.fx.stale && (
-              <li className="flex flex-wrap items-center gap-2">
-                <StatusBadge severity="Warning">汇率过期</StatusBadge>
-                <span className="text-foreground">{r.fx.pair}</span>
-                <span className="text-muted-foreground">
-                  记于 {r.fx.as_of}（{r.fx.age_days} 天前，阈值{" "}
-                  {r.thresholds.fx_stale_days} 天）——所有 USD 持仓的 MYR 折算值都按它算
-                </span>
-              </li>
-            )}
-            {r.allocation.incomplete && (
-              <li className="flex flex-wrap items-center gap-2">
-                <StatusBadge severity="Warning">占比不完整</StatusBadge>
-                <span className="text-muted-foreground">
-                  分母缺少无价持仓（{r.allocation.unpriced_symbols.join(", ")}）——
-                  每一栏百分比都偏了，不要据此判断是否需要再平衡
-                </span>
-              </li>
-            )}
-            {r.wealth_rules.stale && (
-              <li className="flex flex-wrap items-center gap-2">
-                <StatusBadge severity="Warning">法规事实过期</StatusBadge>
-                <span className="text-muted-foreground">
-                  {r.wealth_rules.stale_facts.join(", ")}——请先复核 config/wealth_rules.yaml
-                </span>
-              </li>
-            )}
-          </ul>
-        </SectionCard>
-      )}
-
-      <section>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat
-            label="跟踪资产合计"
-            value={myr(r.tracked_total_myr)}
-            hint="不是 net worth：liabilities 只记月供，不追踪本金"
-          />
-          <Stat
-            label="现金"
-            value={myr(r.cash.total_cash)}
-            hint={`加权 ${pct(r.cash.weighted_avg_rate, 2)} · 可动用 ${myr(r.cash.liquid_now)}`}
-          />
-          <Stat
-            label="股票市值"
-            value={myr(r.stocks.total_myr)}
-            hint={`${r.stocks.priced_count}/${r.stocks.total_count} 已计价`}
-            accent={unpriced.length > 0 ? "muted" : undefined}
-          />
-          <Stat
-            label="锁定中"
-            value={myr(r.cash.locked)}
-            hint={
-              r.maturity.length > 0
-                ? `${r.maturity[0].key} ${r.maturity[0].days_left} 天后到期`
-                : "无临近到期"
-            }
-          />
+      <section aria-label="Balance overview" className="balance-overview">
+        <div className="balance-hero">
+          <div className="flex flex-wrap items-center gap-3"><p className="text-sm font-medium">After known debt</p><span className="scope-pill">{partial ? "Partial balance" : "Tracked balance"}</span></div>
+          <p className="hero-value num">{adjusted === null ? "Unknown" : myr(adjusted)}</p>
+          <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">Tracked assets less recorded outstanding debt. {partial ? "Missing loan principal and excluded assets prevent a complete net-worth view." : "This covers recorded assets and debt only."}</p>
+          <a href="#liabilities" className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-medium">Review debt coverage <ArrowUpRight size={16} aria-hidden="true" /></a>
+        </div>
+        <div className="balance-facts">
+          <Stat icon={WalletCards} label="Gross tracked assets" value={myr(r.tracked_total_myr)} hint="Cash, savings and priced stocks" />
+          <Stat icon={CreditCard} label="Known outstanding debt" value={debt.known_outstanding_myr === null ? "Unknown" : myr(debt.known_outstanding_myr)} hint={debt.balances_complete ? "All recorded balances provided" : `${debt.unknown_balance_keys.length} loan / debt balances missing`} accent="down" />
+          <Stat icon={CalendarDays} label="Recorded monthly commitments" value={myr(debt.monthly_commitments_myr)} hint="Cash-flow obligation · separate from debt principal" />
         </div>
       </section>
 
-      <SectionCard
-        title="资产变化"
-        description="跟踪资产合计随时间的变化——每次编辑/新增/删除都会把当天的快照写入 history.csv"
-      >
-        <TrackedAssetsChart points={history} />
-      </SectionCard>
+      {!debt.balances_complete && <div className="coverage-notice"><strong>Complete your debt picture</strong><p>Loan payments are recorded, but outstanding principal is missing. Add current balances to include them in the adjusted figure. Credit-card outstanding is separate from the statement amount due.</p><a href="#liabilities">See recorded liabilities →</a></div>}
+      <DataHealth report={r} />
+      <nav aria-label="Finance sections" className="section-links"><a href="#liabilities"><CreditCard size={16} aria-hidden="true" />Liabilities</a><a href="#cash"><Landmark size={16} aria-hidden="true" />Cash & savings</a><a href="#stocks"><TrendingUp size={16} aria-hidden="true" />Investments</a><a href="#allocation"><ChartPie size={16} aria-hidden="true" />Allocation</a><a href="#history"><ChartNoAxesCombined size={16} aria-hidden="true" />History</a></nav>
 
-      <SectionCard
-        title="资产配置"
-        description="按经济行为分类，不按 vehicle 品牌"
-      >
+      <SectionCard id="liabilities" icon={CreditCard} title="Liabilities & payments" description="Outstanding balances reduce assets. Monthly installments describe cash flow and are not deducted again."><LiabilitiesPanel report={r} /></SectionCard>
+
+      <section aria-label="Asset details" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat icon={Landmark} label="Cash & savings" value={myr(r.cash.total_cash)} hint={`Recorded weighted yield ${pct(r.cash.weighted_avg_rate, 2)}`} />
+        <Stat icon={Wallet} label="Available / unlocked" value={myr(r.cash.liquid_now)} hint="Includes T+1 funds; not all available instantly" />
+        <Stat icon={LockKeyhole} label="Fixed deposits" value={myr(r.cash.locked)} hint="Locked until their maturity dates" />
+        <Stat icon={TrendingUp} label="Stock market value" value={myr(r.stocks.total_myr)} hint={`${r.stocks.priced_count} of ${r.stocks.total_count} holdings priced`} />
+      </section>
+
+      {r.excluded_cash.length > 0 && <SectionCard icon={Wallet} title="Travel wallets" description="Held in original currency. Not converted or included in the MYR figures above."><div className="grid gap-4 sm:grid-cols-2">{r.excluded_cash.map(wallet => <article key={wallet.key} className="wallet-card"><p className="text-sm text-muted-foreground">{wallet.key === "wechat_pay" ? "WeChat Pay" : wallet.key === "alipay" ? "Alipay" : wallet.key}</p><p className="num mt-2 text-2xl font-semibold">{wallet.currency} {wallet.balance.toLocaleString("en", {minimumFractionDigits:2, maximumFractionDigits:2})}</p><p className="mt-2 text-xs text-muted-foreground">Observed {wallet.as_of} · Excluded from MYR totals</p></article>)}</div></SectionCard>}
+
+      <SectionCard id="cash" icon={Landmark} title="Cash & savings" description="Account balances, recorded yields, withdrawal timing and deposit limits."><CashTable report={r} /></SectionCard>
+      <SectionCard id="stocks" icon={TrendingUp} title="Investments" description="Holdings and cost basis, with the observation date shown beside each market price."><PositionsTable report={r} /></SectionCard>
+      <SectionCard icon={CalendarDays} title="Upcoming maturities" description={`Deposits due within ${r.thresholds.maturity_alert_days} days.`}>{r.maturity.length ? <div className="space-y-8">{r.maturity.map(ev => <MaturityPanel key={ev.key} event={ev} />)}</div> : <p className="text-sm text-muted-foreground">No fixed deposits mature in this window.</p>}</SectionCard>
+      <SectionCard id="allocation" icon={ChartPie} title="Asset allocation" description="Share of gross tracked assets. Debt does not change this allocation denominator.">
         <AllocationBar slices={r.allocation.slices} />
-
-        <table className="mt-6 w-full text-sm">
-          <thead>
-            <tr className="border-b text-left text-[11px] uppercase tracking-wide text-muted-foreground">
-              <th className="pb-2 pr-3 font-medium">类别</th>
-              <th className="pb-2 pr-3 text-right font-medium">金额 (MYR)</th>
-              <th className="pb-2 text-right font-medium">占比</th>
-            </tr>
-          </thead>
-          <tbody>
-            {r.allocation.slices.map((a) => (
-              <tr key={a.bucket} className="border-b last:border-0">
-                <td className="py-2 pr-3 text-foreground">{a.label}</td>
-                <td className="num py-2 pr-3 text-right">{myr(a.amount_myr)}</td>
-                <td className="num py-2 text-right">{pct(a.pct)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {unpriced.length > 0 && (
-          <p className="mt-3 text-[11px] text-muted-foreground">
-            {unpriced.length} 个无价格持仓（{unpriced.map((p) => p.symbol).join("、")}）
-            未计入分母，占比因此偏高。
-          </p>
-        )}
+        <table className="mt-6 w-full text-sm"><thead><tr className="border-b text-left text-xs text-muted-foreground"><th className="pb-3 font-medium">Category</th><th className="pb-3 text-right font-medium">Value</th><th className="pb-3 text-right font-medium">Share</th></tr></thead><tbody>{r.allocation.slices.map(slice => <tr key={slice.bucket} className="border-b last:border-0"><td className="py-3 pr-3">{slice.label}</td><td className="num py-3 text-right">{myr(slice.amount_myr)}</td><td className="num py-3 pl-3 text-right">{pct(slice.pct)}</td></tr>)}</tbody></table>
+        {r.allocation.incomplete && <p className="mt-4 text-sm text-warning">Incomplete: unpriced positions ({r.allocation.unpriced_symbols.join(", ")}) are excluded.</p>}
       </SectionCard>
-
-      <SectionCard
-        title="到期监控"
-        description={`窗口 ${r.thresholds.maturity_alert_days} 天 · 到期前 ${r.thresholds.maturity_critical_days} 天升级 Critical`}
-      >
-        {r.maturity.length === 0 ? (
-          <div className="flex items-center gap-3">
-            <StatusBadge severity="OK" />
-            <span className="text-sm text-muted-foreground">
-              窗口内无锁定产品到期。
-            </span>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {r.maturity.map((ev) => (
-              <MaturityPanel key={ev.key} event={ev} />
-            ))}
-          </div>
-        )}
-      </SectionCard>
-
-      <SectionCard
-        title="股票"
-        description="price owner: ai-stock-analysis pipeline（只读，本页从不写回）"
-      >
-        <PositionsTable report={r} />
-      </SectionCard>
-
-      <SectionCard title="现金与储蓄" description="FD / MMF / 钱包，含 cap 利用率">
-        <CashTable report={r} />
-      </SectionCard>
-
-      <footer className="border-t pt-6 text-[11px] leading-relaxed text-muted-foreground">
-        范围：现金 / FD / MMF + 股票。unit trust 等 NAV 计价产品当前无持仓，
-        故不在本页——没有可靠 NAV 源之前也不会用手填数字凑估值。
-      </footer>
+      <SectionCard id="history" icon={ChartNoAxesCombined} title="Gross asset history" description="Daily snapshots of tracked assets before debt. New liability observations do not rewrite earlier snapshots."><TrackedAssetsChart points={history} /></SectionCard>
+      <footer className="border-t pt-6 text-sm leading-relaxed text-muted-foreground">This is a view of tracked finances, not a complete net-worth statement. Unconverted wallets, property values, unpriced products and unrecorded liabilities are outside the MYR total.</footer>
     </main>
   );
 }

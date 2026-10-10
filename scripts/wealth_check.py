@@ -32,6 +32,8 @@ from lib.wealth import (  # noqa: E402
     load_savings,
 )
 
+from lib.wealth.files import load_travel_cash  # noqa: E402
+
 RULE = "─" * 66
 
 
@@ -137,7 +139,23 @@ def render_text(r: dict) -> int:
         exit_code = max(exit_code, 1)
 
     print(f"\n  跟踪资产合计  RM{r['tracked_total_myr']:>12,.2f}")
-    print("  (不是 net worth — liabilities 只记月供，不追踪本金)")
+    print("  (gross tracked assets; not full net worth)")
+    debt = r["liabilities"]
+    print("\n■ 负债与月供")
+    for account in debt["accounts"]:
+        balance = account["outstanding_myr"]
+        amount = "unknown" if balance is None else f"RM{balance:,.2f}"
+        print(f"  {account['key']}: outstanding {amount}; as of {account['as_of'] or 'unknown'}")
+    print(f"  已记录月供 RM{debt['monthly_commitments_myr']:,.2f}")
+    adjusted = r["balance_sheet"]["after_known_debt_myr"]
+    print("  扣除已知负债后 " + ("unknown" if adjusted is None else f"RM{adjusted:,.2f}"))
+    if not debt["balances_complete"] or debt["stale_balance_keys"]:
+        print("  [Status: Warning] 负债本金缺失或余额陈旧；此余额不是完整净资产")
+        exit_code = max(exit_code, 1)
+    if r["excluded_cash"]:
+        print("\n■ 未折算旅行现金 (不计入 MYR 合计)")
+        for wallet in r["excluded_cash"]:
+            print(f"  {wallet['key']}: {wallet['currency']} {wallet['balance']:,.2f} @ {wallet['as_of']}")
 
     print(f"\n■ 到期监控 (窗口 {cfg['maturity_alert_days']} 天)")
     if not r["maturity"]:
@@ -225,7 +243,7 @@ def main() -> int:
     cfg = load_thresholds().wealth
     try:
         report = build_report(
-            load_savings(), load_rates(), load_portfolio(), load_fx(), cfg, today
+            load_savings(), load_rates(), load_portfolio(), load_fx(), cfg, today, travel_cash=load_travel_cash()
         )
     except FileNotFoundError as exc:
         msg = f"找不到财务数据文件: {exc}"

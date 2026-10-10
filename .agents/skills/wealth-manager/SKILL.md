@@ -22,7 +22,8 @@ portfolio, and optimize where their cash sits across savings vehicles.
 | File | Purpose | When to read |
 |------|---------|--------------|
 | `data/finance/portfolio.yaml` | Holdings + avg cost **only** — no current prices (see Price Ownership) | Any portfolio/stock query |
-| `data/finance/savings.yaml` | Actual cash/FD/MMF positions, caps, lock dates, liabilities | Savings, net worth, maturity queries |
+| `data/finance/savings.yaml` | Actual cash/FD/MMF positions, caps, lock dates, dated MYR liabilities and installments | Savings, net worth, maturity queries |
+| `data/finance/travel-cash.yaml` | Optional unconverted CNY travel-wallet balances, excluded from MYR totals | Travel cash or finance refresh |
 | `market/fx.yaml` | Exchange-rate observations (each pair carries its own `as_of`) | Any cross-currency question |
 | `market/interest_rates.yaml` | Digital banks, MMFs, FDs rates (market catalog, not holdings) | Savings allocation queries |
 | `data/config/thresholds.yaml` | Finance thresholds (savings target, spend alert) | Spending/savings analysis |
@@ -212,7 +213,10 @@ resurfacing elsewhere.
      market_value_myr, pnl, pnl_pct; `priced_count` / `total_count`
    - `allocation.slices[]` — each bucket's `amount_myr` and `pct`
      (also keep the gap hints from `allocation.incomplete` / `allocation.unpriced_symbols`)
-   - `tracked_total_myr` — sum of tracked assets
+   - `tracked_total_myr` — gross sum of tracked assets (history and allocation remain gross)
+   - `liabilities.*` — known outstanding balances, unknown/stale balance keys, monthly commitments and per-debt observations
+   - `balance_sheet.after_known_debt_myr` — gross assets less known outstanding debt; null when recorded debt exists but no balance is observed
+   - `excluded_cash[]` — unconverted travel wallets, shown in original currency only
    - `stale_files` / `stocks.stale_prices` / `catalog_conflicts` / `caps` / `maturity`
 2. **Quote these numbers as-is** — don't recompute them, don't round to a different precision,
    don't invent your own "total".
@@ -225,9 +229,8 @@ resurfacing elsewhere.
      number of days
    - `catalog_conflicts` → note the tool does not pick a tier for the user; manual confirmation is
      needed
-5. `tracked_total_myr` **is not net worth**: liabilities only record the monthly installment, not
-   the principal, and NAV-priced products are excluded. Call it "tracked assets total", not
-   "Total Net Worth".
+5. `tracked_total_myr` **is not net worth**: it is gross assets before debt. `balance_sheet.after_known_debt_myr` subtracts only recorded outstanding balances and is still not full net worth. List missing loan principal and excluded assets explicitly; monthly installments must never be subtracted as principal.
+   For reported MYR debt balances, write `outstanding` (nonnegative) together with `as_of` in `savings.yaml`; preserve unknown principal as null. `statement_due` and `payment_due_date` are separate optional credit-card facts. Never extract amounts from old notes or infer principal from monthly payments.
 6. If `make wealth` fails to run, run `make doctor` first to see why —
    this capability is unavailable when `data` hasn't been checked out; **do not fall back to
    reading the YAML and computing it by hand yourself**.
@@ -250,7 +253,8 @@ explicitly note the missing tickers)
 ### Savings Detail
 (Copy cash.accounts[] directly; include rate, liquidity, and the rate_unverified flag)
 
-Tracked assets total: RM {tracked_total_myr} (excludes liability principal and NAV-priced products)
+Gross tracked assets: RM {tracked_total_myr}
+After known debt: RM {balance_sheet.after_known_debt_myr} (partial tracked balance; state missing principal and excluded assets)
 ```
 
 ### 5. Price Updates

@@ -5,9 +5,10 @@
 Python 不报错、TS 编译通过、页面静默渲染 `undefined`。
 
 把 report 建模成 model 是修法的第一步：形状从此有一个可执行的定义，
-第二步再从它导出 JSON Schema 并 codegen `report.gen.ts`（届时 TS 侧不再手抄）。
+`scripts/export_wealth_report_schema.py` 从 serialization schema 生成
+`web/lib/report.gen.ts`，TS 侧不再手抄形状。
 
-过渡期约定：
+报告约定：
   - `build_report_model()` 是唯一的组装入口
   - `build_report()` 仍返回 dict，只是 `.model_dump(mode="json")` 的 wrapper，
     所以 `render_text(r: dict)`、现有 dict-indexing 测试、`json.dumps(...)` 全部不变
@@ -182,19 +183,66 @@ class WealthRulesHealth(BaseModel):
     stale_facts: list[str]
 
 
-class WealthReport(BaseModel):
+class LiabilityOut(BaseModel):
     model_config = STRICT
+    key: str
+    type: str
+    outstanding_myr: float | None
+    as_of: date | None
+    age_days: int | None
+    stale: bool
+    monthly_myr: float | None
+    monthly_full_myr: float | None
+    statement_due_myr: float | None
+    payment_due_date: date | None
+    notes: str
+
+
+class LiabilitiesSection(BaseModel):
+    model_config = STRICT
+    known_outstanding_myr: float | None
+    balances_complete: bool
+    unknown_balance_keys: list[str]
+    stale_balance_keys: list[str]
+    monthly_commitments_myr: float
+    accounts: list[LiabilityOut]
+
+
+class BalanceSheetSection(BaseModel):
+    model_config = STRICT
+    gross_tracked_assets_myr: float
+    after_known_debt_myr: float | None
+    # This is a partial tracked balance, never full net worth.
+    liability_balances_complete: bool
+
+
+class ExcludedCashOut(BaseModel):
+    model_config = STRICT
+    key: str
+    currency: str
+    balance: float
+    as_of: date
+    purpose: str
+    reason: str
+
+
+class WealthReport(BaseModel):
+    model_config = ConfigDict(extra="forbid", json_schema_serialization_defaults_required=True)
     # 消费者（web dashboard / skill）据此判断自己读的是不是它认识的形状。
     # 改动字段含义就 bump 它；删/加字段由 tests/test_report_contract.py 守。
+    # v4 (2026-10-04): dated liabilities, partial balance sheet and excluded travel cash.
     # v3 (2026-08-18): expose validated regulatory-rule freshness health.
     # v2 (2026-08-12): maturity[] 加 renewal_rate / renewal_product，候选门槛
     # 从合约利率改为续做利率。
-    report_schema_version: int = 3
+    report_schema_version: Literal[4] = 4
     as_of: date
     currency: str
     thresholds: WealthCfg
     stale_files: list[StaleFile]
     catalog_conflicts: list[CatalogConflictOut]
+    liabilities: LiabilitiesSection
+    balance_sheet: BalanceSheetSection
+    excluded_cash: list[ExcludedCashOut]
     cash: CashSection
     fx: FxSection
     stocks: StocksSection
@@ -202,5 +250,5 @@ class WealthReport(BaseModel):
     maturity: list[MaturityOut]
     caps: list[CapOut]
     wealth_rules: WealthRulesHealth
-    # 不是 net worth：liabilities 只记月供不追踪本金，NAV 计价产品也不在内。
+    # Gross tracked assets; debt is exposed separately and never changes history/allocation.
     tracked_total_myr: float

@@ -74,7 +74,7 @@ class SavingsAccount(BaseModel):
 
 
 class Liability(BaseModel):
-    """只记月供，不追踪 outstanding 本金——所以它不进 tracked_total。"""
+    """Dated MYR debt observations; installments are separate cash-flow facts."""
 
     model_config = STRICT
     type: str
@@ -83,7 +83,17 @@ class Liability(BaseModel):
     monthly_now: NonNegativeFloat | None = None
     monthly_full: NonNegativeFloat | None = None
     end_date: str | None = None
+    outstanding: NonNegativeFloat | None = None
+    as_of: date | None = None
+    statement_due: NonNegativeFloat | None = None
+    payment_due_date: date | None = None
     notes: str = ""
+
+    @model_validator(mode="after")
+    def _dated_balance(self) -> Liability:
+        if (self.outstanding is None) != (self.as_of is None):
+            raise ValueError("outstanding and as_of must be provided together")
+        return self
 
 
 class SavingsFile(BaseModel):
@@ -277,3 +287,25 @@ def load_portfolio(path: Path | None = None) -> PortfolioFile:
 def load_fx(path: Path | None = None) -> FxFile:
     p = path or FX_PATH
     return FxFile.model_validate(yaml.safe_load(p.read_text(encoding="utf-8")))
+
+
+class TravelCashAccount(BaseModel):
+    model_config = STRICT
+    balance: NonNegativeFloat
+
+
+class TravelCashFile(BaseModel):
+    """Unconverted private travel wallets; deliberately outside MYR totals."""
+    model_config = STRICT
+    updated: date
+    currency: Literal["CNY"]
+    purpose: str
+    included_in_wealth_report: Literal[False] = False
+    accounts: dict[str, TravelCashAccount]
+
+
+def load_travel_cash(path: Path | None = None) -> TravelCashFile | None:
+    path = path or FINANCE_DIR / "travel-cash.yaml"
+    if not path.exists():
+        return None
+    return TravelCashFile.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))

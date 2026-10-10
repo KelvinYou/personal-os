@@ -211,7 +211,7 @@ def savings_set(account: str, sets: list[str], path: Path | None = None) -> None
     acct = accounts[account]
     for field, value in fields.items():
         _set_scalar(acct, field, value)
-    doc["updated"] = date.today()
+    doc["updated"] = today_kl()
 
     SavingsFile.model_validate(doc)  # raises pydantic.ValidationError on failure
     _atomic_write(path, doc)
@@ -237,7 +237,7 @@ def savings_add(account: str, sets: list[str], path: Path | None = None) -> None
     for field, value in fields.items():
         _set_scalar(acct, field, value)
     accounts[account] = acct
-    doc["updated"] = date.today()
+    doc["updated"] = today_kl()
 
     SavingsFile.model_validate(doc)
     _atomic_write(path, doc)
@@ -254,7 +254,7 @@ def savings_delete(account: str, path: Path | None = None) -> None:
     if account not in accounts:
         raise EditError(f"savings.yaml 中没有账户 {account!r}")
     del accounts[account]
-    doc["updated"] = date.today()
+    doc["updated"] = today_kl()
 
     SavingsFile.model_validate(doc)
     _atomic_write(path, doc)
@@ -281,7 +281,7 @@ def portfolio_set(
 
     for field, value in fields.items():
         _set_scalar(match, field, value)
-    doc["updated"] = date.today()
+    doc["updated"] = today_kl()
 
     PortfolioFile.model_validate(doc)
     _atomic_write(path, doc)
@@ -313,7 +313,7 @@ def portfolio_add(
     for field, value in fields.items():
         _set_scalar(entry, field, value)
     holdings.append(entry)
-    doc["updated"] = date.today()
+    doc["updated"] = today_kl()
 
     PortfolioFile.model_validate(doc)
     _atomic_write(path, doc)
@@ -332,7 +332,7 @@ def portfolio_delete(market: str, symbol: str, path: Path | None = None) -> None
     if idx is None:
         raise EditError(f"portfolio.yaml 的 {list_key} 中没有 symbol {symbol!r}")
     del holdings[idx]
-    doc["updated"] = date.today()
+    doc["updated"] = today_kl()
 
     PortfolioFile.model_validate(doc)
     _atomic_write(path, doc)

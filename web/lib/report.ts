@@ -17,144 +17,17 @@ const SCRIPT = path.join(REPO_ROOT, "scripts", "wealth_check.py");
  * So we shell out to the same script the CLI uses and render its JSON.
  */
 
-export type PriceSource = "pipeline" | "manual" | "none";
-export type Severity = "OK" | "Warning" | "Critical";
+import type { WealthReport } from "./report.gen";
+export type { PriceSource, Severity, AllocationSlice } from "./report.gen";
+export type Position = import("./report.gen").PositionOut;
+export type Account = import("./report.gen").CashAccountOut;
+export type Candidate = import("./report.gen").CandidateOut;
+export type MaturityEvent = import("./report.gen").MaturityOut;
+export type Allocation = import("./report.gen").AllocationSection;
+export type FxObservation = import("./report.gen").FxSection;
+export type Report = WealthReport;
 
-export interface Position {
-  symbol: string;
-  market: "US" | "MY";
-  currency: "USD" | "MYR";
-  shares: number;
-  avg_cost: number;
-  price: number | null;
-  price_source: PriceSource;
-  price_as_of: string | null;
-  market_value: number | null;
-  market_value_myr: number | null;
-  pnl: number | null;
-  /** current-FX translated —— 不是真实本币回报（买入时 FX/手续费未记录）。 */
-  pnl_myr: number | null;
-  pnl_pct: number | null;
-}
-
-export interface Account {
-  key: string;
-  balance: number;
-  currency: string;
-  balance_myr: number;
-  rate: number;
-  type: string;
-  liquidity: string;
-  locked: boolean;
-  cap: number | null;
-  lock_until: string | null;
-  rate_reason: string;
-  rate_unverified: boolean;
-  product_id: string | null;
-}
-
-export interface Candidate {
-  category: string;
-  key: string;
-  rate: number | null;
-  basis: "promo" | "base" | "none";
-  eligible: boolean;
-  reasons: string[];
-  min_deposit: number | null;
-  tenure_months: number | null;
-  notes: string;
-}
-
-export interface MaturityEvent {
-  key: string;
-  balance: number;
-  rate: number;
-  lock_until: string;
-  days_left: number;
-  severity: Severity;
-  /**
-   * 同产品今天可得的续做利率；候选排名的门槛。null = catalog 排不出。
-   * 注意上面的 `rate` 是本笔 placement 的合约利率，到期即失效 ——
-   * 展示"不动会掉到多少"必须读 renewal_rate，不是 rate。
-   */
-  renewal_rate: number | null;
-  renewal_product: string | null;
-  candidates: Candidate[];
-}
-
-export interface AllocationSlice {
-  bucket: string;
-  label: string;
-  amount_myr: number;
-  pct: number;
-}
-
-/**
- * 有持仓无价时分母偏低，每一栏的 pct 都偏了 —— incomplete 不是装饰性标签，
- * 是"别拿这些百分比做再平衡判断"的信号（审计 §3.11）。
- */
-export interface Allocation {
-  incomplete: boolean;
-  unpriced_symbols: string[];
-  slices: AllocationSlice[];
-}
-
-/** FX 是独立观测，有自己的 as_of —— 它比持仓变得快得多（审计 §3.7）。 */
-export interface FxObservation {
-  pair: string;
-  rate: number;
-  as_of: string;
-  age_days: number;
-  stale: boolean;
-  source: string;
-}
-
-export interface Report {
-  report_schema_version: number;
-  as_of: string;
-  currency: string;
-  thresholds: Record<string, number>;
-  stale_files: { name: string; age_days: number }[];
-  catalog_conflicts: {
-    key: string;
-    held_rate: number;
-    catalog_base: number | null;
-    catalog_promo: number | null;
-  }[];
-  cash: {
-    total_cash: number;
-    weighted_avg_rate: number;
-    liquid_now: number;
-    locked: number;
-    accounts: Account[];
-  };
-  fx: FxObservation;
-  stocks: {
-    fx_usd_myr: number;
-    total_myr: number;
-    priced_count: number;
-    total_count: number;
-    positions: Position[];
-    stale_prices: { symbol: string; age_days: number }[];
-  };
-  allocation: Allocation;
-  maturity: MaturityEvent[];
-  caps: {
-    key: string;
-    balance: number;
-    cap: number;
-    utilization: number;
-    overflow: number;
-  }[];
-  wealth_rules: {
-    schema_version: number;
-    stale: boolean;
-    stale_facts: string[];
-  };
-  tracked_total_myr: number;
-}
-
-const SUPPORTED_REPORT_SCHEMA_VERSION = 3;
+const SUPPORTED_REPORT_SCHEMA_VERSION: Report["report_schema_version"] = 4;
 
 export type LoadResult =
   | { ok: true; report: Report }
