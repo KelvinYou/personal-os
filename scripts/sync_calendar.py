@@ -7,7 +7,6 @@ alongside the human-readable timetable) and upserts it as Google Calendar events
 so re-running after an edit never duplicates (see scripts/lib/gcal.py docstring).
 
 Usage:
-    make sync-calendar                        # latest *-calendar.yaml in data/reports/
     make sync-calendar WEEK=2026-w31          # specific week
 """
 from __future__ import annotations
@@ -30,16 +29,11 @@ REPORTS_DIR = ROOT / "data" / "reports"
 REQUIRED_EVENT_KEYS = {"date", "start", "end", "title"}
 
 
-def _resolve_path(week: str | None) -> Path:
-    if week:
-        p = REPORTS_DIR / f"{week}-calendar.yaml"
-        if not p.exists():
-            sys.exit(f"[Status: Critical] 找不到 {p.relative_to(ROOT)}")
-        return p
-    candidates = sorted(REPORTS_DIR.glob("*-calendar.yaml"))
-    if not candidates:
-        sys.exit(f"[Status: Critical] {REPORTS_DIR.relative_to(ROOT)} 下没有任何 *-calendar.yaml")
-    return candidates[-1]
+def _resolve_path(week: str) -> Path:
+    p = REPORTS_DIR / f"{week}-calendar.yaml"
+    if not p.exists():
+        sys.exit(f"[Status: Critical] 找不到 {p.relative_to(ROOT)}")
+    return p
 
 
 def _load(path: Path) -> dict:
@@ -127,7 +121,7 @@ def _sync_protocol(dry_run: bool) -> None:
 def main() -> None:
     load_dotenv(ROOT / ".env")
     parser = argparse.ArgumentParser()
-    parser.add_argument("--week", help="e.g. 2026-w31 (default: latest calendar.yaml)")
+    parser.add_argument("--week", help="required for weekly publication, e.g. 2026-w31")
     parser.add_argument("--protocol", action="store_true",
                         help="推送 data/protocol/standard_week.yaml 的周期性锚点")
     parser.add_argument("--dry-run", action="store_true", help="只打印，不写 Calendar")
@@ -136,6 +130,9 @@ def main() -> None:
     if args.protocol:
         _sync_protocol(args.dry_run)
         return
+
+    if not args.week:
+        parser.error("--week is required unless --protocol is set")
 
     path = _resolve_path(args.week)
     data = _load(path)

@@ -27,22 +27,32 @@ When the user triggers this skill, execute these steps in order:
 
 ### Step 1: Gather Data
 
-1. Run the weekly synthesis script to aggregate metrics:
-   ```bash
-   python3 scripts/weekly_synthesis.py $(if [ -n "$DATE" ]; then echo "--date $DATE"; fi)
-   ```
-   If the user specifies a date or week number, pass `--date YYYY-MM-DD` (any date within that week works).
+1. Follow `docs/design/coros-official-mcp.md`. Query official COROS MCP for the
+   target ISO week through the latest completed assessment date, including the
+   configured preceding sleep-debt window. Verify tool schemas, units, dates
+   and per-tool coverage. Normalize verified observations without daily-log writes.
 
-2. Read the generated prompt file for aggregated metrics:
+2. Run synthesis with normalized MCP JSON supplied as stdin:
+   ```bash
+   make weekly DATE=YYYY-MM-DD COROS_INPUT=-
+   ```
+   Supply JSON via the execution tool; never interpolate health data into shell
+   substitutions. If MCP is unavailable, label the review local-only and use:
+   ```bash
+   make weekly DATE=YYYY-MM-DD
+   ```
+   For a requested ISO week, choose any date in that week. Omit `DATE` for the current week.
+
+3. Read the generated prompt file for aggregated metrics:
    - `weekly_report_prompt.md` (contains aggregated data + circuit breaker status)
 
-3. Read all daily log files for the target week in full — do NOT rely on the 500-char truncation in the prompt file. Read each `daily/YYYY-MM-DD.md` completely to capture highlights, blockers, nutrition details, and any narrative context.
+4. Read all available `data/daily/YYYY-MM-DD.md` files for the target week in full; the prompt truncates prose.
 
-4. Read these reference files:
+5. Read these reference files:
    - `data/config/thresholds.yaml` — owner's scoring thresholds and circuit breaker rules
    - `data/user_profile.md` — schedule baselines, dietary macros, fitness architecture
 
-5. Check for the previous week's report in `data/reports/` (e.g., if generating W13, look for `*-w12-*.md`). If found, read it to enable week-over-week trend comparison and to check whether last week's 3 core objectives were achieved.
+6. Check for the previous week's report in `data/reports/` (e.g., if generating W13, look for `*-w12-*.md`). If found, read it to enable week-over-week trend comparison and to check whether last week's 3 core objectives were achieved.
 
 ### Step 2: Analyze & Score
 
@@ -51,58 +61,25 @@ appears in `weekly_report_prompt.md` as "Deterministic Base Score". Read it — 
 NOT recompute the mechanical portion. Your job is to (1) fill the AI-gated
 subjective criteria and (2) apply qualitative bonus/penalty on top.
 
-#### What code already computed (don't recompute)
+#### Evidence and missing values
 
-- `deep_work` (proportional to 30h target → 25 pts max)
-- `avg_energy` (proportional to 7 → 8 pts max)
-- `poor_sleep_days` (count via Option P-d derivation → 10 pts max)
-- `rolling_sleep_debt` (threshold lookup → 7 pts max)
-- `avg_mental_load` (threshold lookup → 10 pts max)
-- `weekly_spend` (inverse-proportional around RM100 baseline → 5 pts max)
-- `caffeine_compliance` (fraction of days with cutoff ≤ 14:00 → 3 pts max)
-- `sleep_duration_consistency` (stddev of nightly durations → 2 pts max)
-
-Thresholds live in `data/config/thresholds.yaml` under `scoring:` — treat that file
-as the source of truth. If you think a criterion should score differently than
-what the prompt shows, that is a rubric change, not an AI override.
-
-#### Baseline-filled fields — do NOT penalize them
-
-From W34 onward, unfilled manual fields resolve to `logging_defaults` in
-`data/config/thresholds.yaml`: **silence means the baseline was executed**, not that
-nothing happened. Before this, a missing field scored 0 without shrinking the
-denominator, so ~68 of the 100 points punished not-logging as if it were
-not-doing — which is what drove the logging to collapse in the first place.
-
-`weekly_report_prompt.md` carries a **Logging Coverage** section listing which
-fields were baseline-filled and on how many days. Your obligations:
-
-- **Never deduct points, never open a penalty item, and never write a "logging discipline" scolding
-  for baseline-filled fields.** That is the exact behavior being removed.
-- Mark baseline-filled values in the Daily Breakdown table with a trailing `~`
-  (`8~`, `7~`) so the reader can tell measured from assumed at a glance.
-- If coverage is below `coverage_warn_ratio`, put `[Status: Low Confidence]`
-  under the score heading and say plainly that the score rests largely on
-  baselines. Lower confidence, not a lower score.
-- Subjective criteria still need evidence. With no narrative to judge, rate
-  `output_quality` / `crisis_handling` / `emotional_resilience` from whatever
-  real signal exists (COROS data, commits, the user's own account) — do not
-  invent events, and do not rate 0 merely because the log was quiet.
-- COROS blocks and `body.*` are never baseline-filled. A gap there is a real
-  gap and should be reported as one.
+`scripts/lib/score.py` owns deterministic arithmetic; `data/config/thresholds.yaml`
+owns the rubric and cutoff. Blank optional fields are unknown. An explicit zero
+is observed evidence. Report recorded work and spend with their observed-day
+counts, and distinguish missing daily files from missing MCP measurements and manual entries.
+MCP supports health-only weeks without daily files. Keep the query period,
+retrieval time and actual tool names in the saved report. Merged evidence days
+are not manually logged days. Partial sleep debt is an observed lower bound.
+An unavailable criterion receives no point judgment. Never present measured
+components as a complete `/100` or compare new scores directly with reports
+from before the telemetry-observed-v1 cutover.
 
 #### Subjective criteria (AI fills; 0–1 input per criterion)
 
-For each criterion below, form a 0–1 rating from the week's narrative evidence
-and multiply into the criterion's max points (rubric's `max_points` field).
-Cite the evidence in the final report under "Bonuses/Penalties".
-
-- `output_quality` [max 10]: shipped features, research depth, knowledge sharing
-- `blocker_management` [max 5]: blockers identified early, resolved efficiently
-- `sleep_structure` [max 3]: deep_min in range [60, 150]; HRV stable or ≥ 0.85 × baseline
-- `body_composition` [max 2]: trending stable/positive; no measurement → 0
-- `crisis_handling` [max 5]: responded decisively to tripped breakers
-- `emotional_resilience` [max 5]: maintained output despite disruptions
+For each subjective criterion in the current rubric, form a 0–1 rating only
+when source evidence supports it. Use its configured maximum. Include a dated
+citation for each judgment; leave unsupported criteria unavailable, including
+body composition when only a weight snapshot is available.
 
 #### Bonus & Penalty (on top of base + subjective)
 
@@ -123,6 +100,7 @@ Produce the report in this exact structure:
 # Engineering Weekly Report: YYYY-W## Core Data Analysis & System Diagnosis
 
 > Period: YYYY-MM-DD (Mon) ~ YYYY-MM-DD (Sun) | Valid records: N/7 days
+> Scoring policy: telemetry-observed-v1 (2026-09-29 cutover)
 
 ## Aggregated Telemetry
 | Metric | This Week | Last Week | Change | Status |
@@ -136,12 +114,12 @@ If no previous week data, omit the Last Week and Change columns.
 
 ### 0. System Alerts (Circuit Breaker Status)
 List all tripped circuit breakers with their metric values and enforced actions.
-If none: `[All Clear] All circuit breakers normal.`
+If none: no breaker triggered on observed evidence. List missing required metrics; incomplete coverage is not an all-clear.
 
-### 1. Weekly Multi-Dimensional Score: XX/100
+### 1. Weekly Multi-Dimensional Score
 
-**Deterministic base (from code):**
-- Output XX/40 · Health XX/30 · Mental XX/20 · Habits XX/10 = XX/100
+**Measured components (from code):**
+- List observed points and unavailable criteria. Show `/100` only when all required criteria have evidence.
 
 **Subjective criteria (AI-filled, 0-1 per criterion):**
 - output_quality: N/10 — [evidence]
@@ -158,7 +136,7 @@ If none: `[All Clear] All circuit breakers normal.`
 - (-N) [Specific event with date, root cause analysis]
 - (-3) per tripped breaker (list each)
 
-**Final total: XX/100**
+**Final total:** full `/100` only when all criteria have evidence; otherwise unavailable.
 
 ### 2. Core Output Inventory
 Split into:
@@ -190,7 +168,7 @@ Split into:
 
 > **Note:** Scheduling is owned by the coach-planner agent. The standing timetable is `data/protocol/standard_week.md`, and it is not
 > re-scheduled every week; coach-planner only produces a ≤30-line
-> `data/reports/YYYY-w##-delta.md` when there's an actual exception (schedule conflict/breaker/load increase/P0-P2 mounting/single-variable experiment).
+> `data/reports/YYYY-w##-delta.md` when there's a dated execution exception.
 > A week with no exceptions just runs the standing protocol, with no file generated.
 
 ### 5. Daily Breakdown
@@ -201,22 +179,17 @@ Split into:
 
 ### Step 3.5: Verify (run before saving)
 
-Before writing the file, recompute — don't trust your own draft:
+Before writing the file, verify the evidence and computed output:
 
-1. **Re-derive the deterministic base score independently.** Pull the raw
-   metrics from `weekly_report_prompt.md` and the thresholds from
-   `data/config/thresholds.yaml`, redo the arithmetic yourself, and diff it against
-   "Deterministic Base Score" in the prompt file. If they disagree, that's a
-   bug in `scripts/lib/score.py` or a stale threshold, not something to
-   silently paper over — report the discrepancy instead of picking a number.
+1. **Check score provenance.** Match each displayed criterion to the prompt's
+   observed basis and configured rubric. Leave unavailable criteria unscored;
+   do not redo deterministic arithmetic in prose.
 2. **Check every bonus/penalty citation resolves to a real entry.** For each
    `(+N)`/`(-N)` line, confirm the cited day and event actually appear in that
-   day's `daily/YYYY-MM-DD.md` — don't let a plausible-sounding event survive
+   manual log or dated official MCP observation (tool + retrieval time); do not let a plausible-sounding event survive
    if you can't point to the line it came from.
-3. **Check baseline-filled fields didn't get penalized.** Re-scan the
-   Bonuses/Penalties section for any deduction that lands on a field the
-   Logging Coverage section marks as baseline-filled — that's the exact
-   regression this skill was fixed to prevent.
+3. **Check unknowns.** No missing work, spend, caffeine, or subjective field
+   should become a zero observation, assumed baseline, or complete score.
 4. **Check each next-week objective traces to a cited gap** in this week's
    data (a metric, a missed objective from last week, a tripped breaker) —
    not a generic aspiration with no evidence line above it.

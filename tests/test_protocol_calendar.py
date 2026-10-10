@@ -6,6 +6,7 @@ validation. Nothing here touches the network.
 from __future__ import annotations
 
 import sys
+import subprocess
 import unittest
 from datetime import date
 from pathlib import Path
@@ -45,6 +46,14 @@ class FirstOccurrenceTests(unittest.TestCase):
     def test_unknown_weekday_code_raises(self):
         with self.assertRaises(KeyError):
             gcal.first_occurrence(["XX"], W34_MON)
+
+    def test_week_mode_requires_explicit_week_before_sync(self):
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "sync_calendar.py")],
+            capture_output=True, text=True,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("--week is required", result.stderr)
 
 
 class EventBodyTests(unittest.TestCase):

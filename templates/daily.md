@@ -1,27 +1,24 @@
 ---
 # ============================================================
-#  只记例外 (Exception-based logging)
-#  仅当私有 data/config/thresholds.yaml 已由本人确认时，留空字段才按
-#  logging_defaults 评分；缺少当天日志不会生成数据。
+#  可选观测：留空 = 未知；显式 0 = 已观测到零。
 # ============================================================
 
-energy_level:           # 1-10；留空时按个人 logging_defaults 评分
+energy_level:           # 1-10；留空 = 未记录
 
-# 下面全部可选，只在**偏离基线**那天写：
-# deep_work_hours:      # 留空 = 个人配置中的工作日/周末基线
-# mental_load:          # 留空 = 个人配置中的基线
-# caffeine_cutoff:      # 留空 = 个人配置中的时间
+# 下面全部可选；有观测时才填写：
+# deep_work_hours:      # 可填 0；留空 = 未记录
+# mental_load:          # 留空 = 未记录
+# caffeine_cutoff:      # 留空 = 未记录
 # adherence:
-#   timetable:          # 留空 = ✅ 按 standard_week 执行；偏离才写 ⚠️ / 🔴
+#   timetable:          # 留空 = 未记录；✅ / ⚠️ / 🔴 均须显式填写
 #   deviation_note:     # 写 ⚠️/🔴 时补一行根因
 # primary_blocker:      # 仅 incident 当日写一行
-# daily_spend:          # 留空 = 个人配置中的日常支出基线；额外支出才逐项写
+# daily_spend:          # 留空 = 未记录；金额 0 表示已确认零支出
 #   - item: 描述
 #     amount: 0.0
 #     category: food
 
-# === 体测字段 (每 2 周一次，Sun 晨起空腹；无测量就整块留空) ===
-# 注意：body.* 不参与基线兜底 —— 没测就是没测，不会凭空造数
+# === 手动体测；可以只记体重，其他字段留空 ===
 body:
   weight:             # 体重 (kg)
   body_fat_pct:       # 体脂率 %
@@ -33,8 +30,9 @@ body:
   bone_mass_kg:       # 骨量 (kg)
   basal_metabolism:   # 基础代谢 (kcal)
 
-# === 健康数据：启用 COROS 时由 make sync-coros 写入；否则可手填实测值 ===
-# === 不参与基线兜底；启用同步后，脚本会覆盖同名手填字段 ===
+# === Optional health snapshots: official COROS MCP is queried on demand, not auto-written here ===
+# === 启用同步后，脚本会覆盖同名手填字段 ===
+# coros_synced: true  # Legacy provenance only; do not set from routine MCP queries.
 sleep:
   duration:           # 总睡眠时长 (小时, e.g. 7.65)
   deep_min:           # 深睡 (分钟)

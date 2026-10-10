@@ -28,7 +28,7 @@ CFG = LoggingDefaultsCfg(
     deep_work_hours_weekend=0.0,
     caffeine_cutoff="14:00",
     adherence="✅",
-    daily_spend=28.02,
+    daily_spend=24.18,
     coverage_warn_ratio=0.60,
     adherence_drift_days=3,
 )
@@ -48,7 +48,7 @@ class ResolveTests(unittest.TestCase):
         self.assertEqual(out.deep_work_hours, 8.0)
         self.assertEqual(out.caffeine_cutoff, "14:00")
         self.assertEqual(out.adherence.timetable, "✅")
-        self.assertEqual(out.daily_spend[0].amount, 28.02)
+        self.assertEqual(out.daily_spend[0].amount, 24.18)
 
     def test_weekend_deep_work_defaults_to_zero(self):
         out, _ = resolve(DailyLog(date=WEEKEND), CFG)
@@ -165,27 +165,23 @@ class CoverageTests(unittest.TestCase):
 
 
 class ScoringImpactTests(unittest.TestCase):
-    """The point of the whole exercise: an unlogged-but-normal week scores fairly."""
+    """A silent week must never be filled into a complete score."""
 
     def _week(self, dates):
         return [DailyLog(date=d, sleep=Sleep(duration=7.6), readiness=Readiness(hrv=58, hrv_baseline=58)) for d in dates]
 
-    def test_silent_week_no_longer_scores_near_zero(self):
+    def test_silent_week_has_no_invented_work_or_complete_score(self):
         from lib.score import compute_base_score
 
         cfg = load_thresholds()
         week = self._week([date(2026, 8, 17) + __import__("datetime").timedelta(days=i) for i in range(7)])
 
         raw_agg = compute_weekly_aggregate(week, week, cfg.sleep.baseline_hours)
-        raw_score = compute_base_score(raw_agg, week, cfg.scoring)
-
-        resolved, _ = resolve_all(week, CFG)
-        res_agg = compute_weekly_aggregate(resolved, resolved, cfg.sleep.baseline_hours)
-        res_score = compute_base_score(res_agg, resolved, cfg.scoring)
-
-        # 5 weekdays × 8h = 40h deep work, energy 7, mental load 3, caffeine compliant.
-        self.assertEqual(res_agg.total_deep_work, 40.0)
-        self.assertGreater(res_score.total, raw_score.total + 30)
+        score = compute_base_score(raw_agg, week, cfg.scoring,
+                                   caffeine_cutoff=cfg.caffeine.cutoff_time)
+        self.assertEqual(raw_agg.work_days, 0)
+        self.assertIsNone(score.output.criteria[0].points)
+        self.assertFalse(score.complete)
 
 
 if __name__ == "__main__":

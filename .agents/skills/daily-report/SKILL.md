@@ -23,33 +23,31 @@ $ARGUMENTS
 
 ## Extraction rules
 
-### Core principle: log only exceptions
+### Core principle: record only observed facts
 
 **If the brain dump doesn't mention a field, leave it blank — don't infer it, don't backfill it, don't make something up just to "fill it in".**
 
-Blank = fall back to the `logging_defaults` baseline in `data/config/thresholds.yaml`; scoring auto-covers it with no penalty.
-This is deliberate design, not missing data. The actual failure mode runs the other way: the 2026-08-09 log got backfilled with
-`deep_work_hours: 0` + `adherence: ✅`, guessed by the agent — that both polluted the dataset and contradicted the baseline rule itself.
-**A guessed value is far more harmful than a blank one** — a blank value tells the system to fall back to baseline; a guessed value gets treated as a real measurement.
+Blank means unknown. An explicit zero means the owner observed zero. Never
+invent an observation from silence or a routine schedule.
 
 ### YAML metadata
 
 Only fill a field when the brain dump **actually mentions** it:
 
-- `energy_level`: (1-10) only score it if the user described energy/mood. Not mentioned → leave blank (baseline 7)
-- `deep_work_hours`: (float) only fill if the user gave an explicit duration. Not mentioned → leave blank (baseline: 8 on workdays / 0 on weekends)
-- `mental_load`: (1-7) only fill if the user described stress. Not mentioned → leave blank (baseline 3)
-- `caffeine_cutoff`: (HH:MM) **only fill if it's after 14:00**. Normal / not mentioned → leave blank (baseline 14:00, compliant)
-- `adherence.timetable`: **only fill when it deviates from `data/protocol/standard_week.md`** ⚠️ or 🔴, and add a
-  `deviation_note` line with the root cause. Followed the plan or not mentioned → leave blank (baseline ✅)
+- `energy_level`: (1-10) fill only if the user described energy; otherwise unknown.
+- `deep_work_hours`: fill only when the user gave a duration, including an explicit zero.
+- `mental_load`: (1-7) fill only if the user described stress.
+- `caffeine_cutoff`: (HH:MM) record any stated last caffeine time; compare with `data/config/thresholds.yaml` at review time.
+- `adherence.timetable`: record ✅, ⚠️, or 🔴 only when the user says how the plan went; add
+  `deviation_note` for ⚠️ or 🔴. Unmentioned adherence remains unknown.
 - `primary_blocker`: **only write a line when there was an actual incident that day**. Everyday griping (tired, slept badly) doesn't count —
-  that's already captured in COROS data. Writing it here would make the archive script mistakenly treat it as an event day whose original text must be preserved
-- `daily_spend`: itemize actual extra spending when supplied. Resolve any normal-day baseline from the owner's
-  `data/config/thresholds.yaml` and protocol; do not use a currency or amount from this public skill.
-- `body.*`: fill only if the user provided actual measurements, otherwise leave blank. **Never falls back to a baseline** — no measurement means no data
-- `sleep.*` / `readiness.*` / `training.*` / `activities[]`: when COROS is enabled, `make sync-coros`
-  owns these fields; never overwrite its values from a brain dump. Without COROS, enter only measurements
-  the user actually supplied. They never fall back to a baseline.
+  that belongs in subjective observations or an on-demand COROS query. Writing it here would make the archive script mistakenly treat it as an event day whose original text must be preserved
+- `daily_spend`: itemize actual spending when supplied. A confirmed zero may be recorded as an explicit zero entry.
+- `body.*`: fill only measured fields, including a weight-only measurement.
+- `sleep.*` / `readiness.*` / `training.*` / `activities[]`: official COROS MCP is
+  the live source; follow `docs/design/coros-official-mcp.md`. Do not copy MCP
+  results into daily logs by default or overwrite historical health blocks.
+  Record owner-supplied measurements only when explicitly provided for logging.
 
 ### Markdown body
 
@@ -59,19 +57,17 @@ Only fill a field when the brain dump **actually mentions** it:
 - **Blockers and disruptions**: only real incidents, not everyday fatigue
 - Root cause for plan deviation (when `adherence` is ⚠️/🔴)
 
-An uneventful day means an empty body — COROS + frontmatter already contain everything weekly-review needs.
+An uneventful day means an empty body — manual frontmatter supplies personal context; weekly-review queries official COROS MCP separately.
 
 ## Handling missing data
 
-**Do not raise a warning just because a field is blank.** Blank is the expected state; `logging_defaults` covers it.
+**Do not raise a warning just because a field is blank.** Keep missing observations unknown.
 
-The old version used to append `[Status: Warning] No relevant data detected today, manual entry recommended` at the end of the log — that line
-has been removed. It turned "a day executed on baseline" into a to-do item, which is exactly the kind of noise this system is meant to eliminate.
-
-Only flag a gap that truly cannot fall back to a baseline, and only flag it once:
+Only flag a gap needed for the requested assessment, and only flag it once:
 
 - Missing sleep measurements → flag once if they are needed for the requested assessment;
-  suggest `make sync-coros` only when the owner actually uses COROS.
+  use the official COROS connector only when the owner uses COROS and an assessment is requested.
+  Missing connector access does not prevent writing a manual daily log.
 - The user clearly mentioned a value but you couldn't parse it → ask the user directly, don't guess
 
 ## Output requirements

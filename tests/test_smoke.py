@@ -201,18 +201,19 @@ class WeeklyAggregateTests(FixtureHelpers):
 
 
 class BaseScoreTests(FixtureHelpers):
-    def test_score_bounded_and_subjective_defaults_to_zero(self):
+    def test_score_bounded_and_missing_subjective_unavailable(self):
         logs = self._fixtures()
         cfg = load_thresholds()
         agg = compute_weekly_aggregate(
             logs, logs, cfg.sleep.baseline_hours, today=date(2026, 1, 7)
         )
-        bs = compute_base_score(agg, logs, cfg.scoring)
+        bs = compute_base_score(agg, logs, cfg.scoring, caffeine_cutoff=cfg.caffeine.cutoff_time)
         self.assertGreaterEqual(bs.total, 0)
         self.assertLessEqual(bs.total, 100)
-        # Subjective criteria default to 0 basis → 0 points
+        # Subjective criteria require evidence.
         names = {c.name: c for c in bs.output.criteria}
-        self.assertEqual(names["output_quality"].points, 0)
+        self.assertIsNone(names["output_quality"].points)
+        self.assertFalse(bs.complete)
 
     def test_subjective_overrides_score(self):
         logs = self._fixtures()
@@ -223,6 +224,7 @@ class BaseScoreTests(FixtureHelpers):
         bs = compute_base_score(
             agg, logs, cfg.scoring,
             subjective={"output_quality": 0.8, "crisis_handling": 1.0},
+            caffeine_cutoff=cfg.caffeine.cutoff_time,
         )
         names = {c.name: c for c in bs.output.criteria}
         self.assertAlmostEqual(names["output_quality"].points, 0.8 * 10, places=2)

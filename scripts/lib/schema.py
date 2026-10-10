@@ -94,6 +94,7 @@ class DailyLog(BaseModel):
     date: date  # derived from filename, not stored in frontmatter
     energy_level: int | None = Field(default=None, ge=1, le=10)
     deep_work_hours: float | None = None
+    coros_synced: bool | None = None  # legacy recorded provenance; ephemeral MCP inputs do not rewrite logs
     sleep: Sleep = Field(default_factory=Sleep)
     readiness: Readiness = Field(default_factory=Readiness)
     training: Training = Field(default_factory=Training)
@@ -174,7 +175,7 @@ class FinanceCfg(BaseModel):
 class WealthCfg(BaseModel):
     # extra="allow" 是撒谎的：web/lib/report.ts 把 thresholds 声明为
     # Record<string, number>，而这里任何非 number 的值都能穿透（审计 §3.6 末）。
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", json_schema_serialization_defaults_required=True)
     maturity_alert_days: int = 30
     maturity_critical_days: int = 7
     staleness_warn_days: int = 30

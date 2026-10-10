@@ -76,15 +76,18 @@ Read the following files to build situational awareness:
    difference against: weekly rhythm, training gate, weight tables, exercise detail, the three diet rules, the
    four day-type time blocks, protein rotation, grocery list. Do not re-derive any of that from scratch —
    if you find yourself writing out a full day of meals, you have almost certainly skipped this file.
-1. **Recent daily logs** — Read the last 3 days of logs from `daily/` (including today if it exists).
-   Use `ls -t daily/*.md | head -5` to find the most recent files.
-   Note: unfilled manual fields are **not** failures — `data/config/thresholds.yaml` `logging_defaults` defines the
-   baseline they resolve to (silence = executed to baseline). Never read an empty `energy_level` as "bad day",
-   and never scold the user for not logging.
+1. **Live health evidence** — Follow `docs/design/coros-official-mcp.md` and query
+   official COROS MCP for the assessment date and configured sleep-debt window.
+   Read tool schemas first; verify dates, units, baseline semantics and coverage.
+   Run normalized evidence through `make coros-health` for deterministic breakers.
+   Missing metrics are unknown, not clear.
+   **Manual context** — Read recent available daily logs for subjective state,
+   work, spend and narrative. Missing daily files do not block an MCP-backed
+   assessment. Never substitute historical health for live MCP gaps.
 2. **Config** — Read `data/config/thresholds.yaml` for all threshold values and circuit breaker rules.
 3. **User profile** — Read `data/user_profile.md` for schedule baselines, dietary macros, fitness architecture.
    **Read its §0 first** — it resolves every `{{placeholder}}` used in this skill and its references.
-4. **Latest weekly report** — Read the most recent report from `reports/` (use `ls -t reports/*.md | head -1`).
+4. **Latest weekly report** — Read the most recent report from `data/reports/`.
    Extract P0/P1/P2 objectives, execution constraints, active circuit breaker restrictions, and training mode.
 5. **Previous week's report** — If generating a next-week plan, also check the prior week for trend context.
 6. **Scheduling details** — Read `references/schedule-rules.md` for time anchors, weekly rhythm, workout
@@ -138,9 +141,10 @@ From the gathered data, build a mental model of:
 
 Not all data will always be available. When files are missing or incomplete:
 
-- **Daily log missing**: Ask the user directly — "How many hours did you sleep last night? How's your energy
-  today? Any known plans?" Use their verbal answers as the data source. Don't guess or use stale data from
-  older logs.
+- **Daily log missing**: Query official COROS MCP first. Ask only for subjective
+  state or schedule exceptions needed for the decision. If MCP is unavailable,
+  flag it once and use explicit owner observations; do not suggest password sync
+  or treat historical health as current evidence.
 - **Weekly report missing** (e.g., user asks for a weekly plan on Monday before the report is generated):
   Fall back to the previous week's P0/P1/P2 objectives and ask "Do last week's objectives still stand? Any
   new priorities for this week?"
@@ -217,17 +221,19 @@ to produce the next-week schedule.
 1. **Read `data/protocol/standard_week.md`** — this is the baseline the whole week runs on. Read it first;
    everything below is expressed as a difference against it.
 2. **Read the latest weekly report** — extract P0/P1/P2 objectives and execution constraints
-3. **Read recent daily logs** (last 3 days) for current state awareness
+3. **Query official COROS MCP** for current health, then read available daily logs for manual context
 4. **Ask the user about known exceptions**: "Any dinners/business trips/public holidays/overtime next week?"
    — you cannot infer these from data, and they are the single most common reason a delta is needed at all.
-5. **Decide: delta or nothing.** Write a delta only if at least one row of standard_week.md §8 fires:
+5. **Decide: protocol change, dated delta, or nothing.** A delta requires a real
+   execution exception with a date and affected block. Objectives alone do not
+   require a delta when they fit the standing blocks.
 
    | Trigger | What goes in the delta |
    |---|---|
    | Schedule exception (dinner/trip/overtime/public holiday) | Which day, which time block is affected, how it's compensated |
    | Circuit breaker tripped | Enforced restrictions + this week's training mode (Normal/Deload/Recovery) |
-   | Weight increase (double progression target met) | Which exercise moves to which tier → **also write back to standard_week.md §3** |
-   | weekly-review's P0/P1/P2 | Mapped to a specific day and time block |
+   | Weight increase (double progression target met) | Update `standard_week.md` §3 and its changelog; no delta unless a dated block also changes |
+   | weekly-review's P0/P1/P2 | Delta only if a dated block must change |
    | One-off experiment (e.g. changing wake time) | Which variable changes, what next week's success criteria are |
 
    None of them fire → say so and stop. Do not manufacture a delta to look useful.
@@ -239,7 +245,10 @@ to produce the next-week schedule.
 7. **One variable at a time.** If two experiments are queued, schedule one and say why the other waits —
    changing both makes the weekend review unable to attribute the effect.
 8. Present as **Draft** and ask the user to confirm or adjust.
-9. Once confirmed, save to `data/reports/YYYY-w##-delta.md` (same week number as the report).
+9. Once confirmed, save a dated exception to `data/reports/YYYY-w##-delta.md`.
+   No Calendar sidecar is generated by planning. Only an explicit publication
+   request refreshes the projection for that week, reviews its diff, and calls
+   `make sync-calendar WEEK=YYYY-w##`. Standing anchors use `make sync-protocol`.
 
 **When to update standard_week.md instead of writing a delta**
 
@@ -304,11 +313,9 @@ When the user confirms a timetable:
 - **Next-week delta**: Save to `data/reports/YYYY-w##-delta.md` (same week number as the weekly report it's
   based on), ≤30 lines, expressed purely as differences against `data/protocol/standard_week.md`. If no
   exception fired, write nothing at all and tell the user the week runs on the standing protocol.
-  **Write `data/reports/YYYY-w##-calendar.yaml` only when a delta shifts actual time blocks** — the standing
-  week's blocks are stable, so re-pushing an identical calendar every week is churn. When a delta does move
-  something, regenerate the full sidecar (not just the changed events) so Calendar stays consistent —
-  `scripts/sync_calendar.py` reads it (schema + rationale in `references/schedule-rules.md`, section
-  "Google Calendar Sidecar"). Overwrite, never append.
+  A delta alone creates no Calendar sidecar. On an explicit publication request,
+  regenerate the requested week's complete sidecar from its current schedule,
+  review the diff, then run `make sync-calendar WEEK=YYYY-w##`.
 - **Weekly adjustment**: If there's no weekly report yet, note the adjusted plan in today's daily log.
   If a report exists, mention the adjustment but don't modify the report file.
 

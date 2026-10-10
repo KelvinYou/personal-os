@@ -18,27 +18,15 @@ timetable.
 
 ## Planning rules
 
-- A standard week just executes the standing protocol; when there's no exception, don't generate a
-  weekly timetable, delta, or calendar sidecar.
-- Generate a dated delta only when a schedule exception, circuit breaker restriction, goal assignment,
-  or one-off experiment changes actual time blocks.
-- An exception week's delta must express "what changed relative to which part of the protocol" — don't
-  copy the full meal plan, training table, or timetable.
-- The training gate uses `data/config/thresholds.yaml` and the latest log evidence; when data is missing,
-  preserve the uncertainty rather than guessing a baseline.
-- Preserve at least the recovery interval between training end and lights-out required by the
-  project's protocol/evidence; the specific time is resolved from private data.
-- Training weights, exercise architecture, and day type are read only from `standard_week.md`; don't
-  maintain an equipment list in the public reference.
-- Meal times, portions, protein targets, and cost are resolved from `data/user_profile.md` and
-  `references/nutrition-source.md` / `scripts/nutrition.py`; don't write personal values in this file.
+The complete protocol-versus-delta decision rule lives in `../SKILL.md` under
+"Next-Week Plan". Use that rule; this reference supplies output shapes only.
 
 ## Google Calendar sidecar
 
 `scripts/sync_calendar.py` has two independent modes:
 
 - `--protocol`: reads `data/protocol/standard_week.yaml`, syncs recurring anchors.
-- `--week`: reads `data/reports/YYYY-w##-calendar.yaml`, syncs dated events for one exception week.
+- `--week` (required for weekly publication): reads `data/reports/YYYY-w##-calendar.yaml` and syncs that week.
 
 Exception-week sidecar schema:
 
@@ -55,8 +43,8 @@ events:
 ```
 
 Sync is delete-then-insert keyed by `week`; the sidecar must be regenerated in full, never append a
-single event. Weeks with no time-block change don't generate a sidecar; only write to
-`data/reports/YYYY-w##-calendar.yaml` when Calendar actually needs to be published. OAuth and
+single event. A delta alone never creates a sidecar; write
+`data/reports/YYYY-w##-calendar.yaml` only for an explicit publication request. OAuth and
 permission notes are in `scripts/lib/gcal.py`.
 
 ## Weekly delta output

@@ -17,8 +17,8 @@ from .clock import today_kl
 from .schema import DailyLog, SleepCfg
 
 
-def _avg(values: list[float]) -> float:
-    return sum(values) / len(values) if values else 0.0
+def _avg(values: list[float]) -> float | None:
+    return sum(values) / len(values) if values else None
 
 
 @dataclass
@@ -26,15 +26,20 @@ class WeeklyAggregate:
     monday: date
     days_logged: int = 0
     total_deep_work: float = 0.0
-    avg_energy: float = 0.0
-    avg_sleep: float = 0.0
-    avg_deep_min: float = 0.0
-    avg_rem_min: float = 0.0
-    avg_awake_min: float = 0.0
-    avg_hrv: float = 0.0
-    avg_tired_rate: float = 0.0
-    avg_load_ratio: float = 0.0
-    avg_mental_load: float = 0.0
+    work_days: int = 0
+    coros_days: int = 0
+    body_days: int = 0
+    spend_days: int = 0
+    sleep_days: int = 0
+    avg_energy: float | None = None
+    avg_sleep: float | None = None
+    avg_deep_min: float | None = None
+    avg_rem_min: float | None = None
+    avg_awake_min: float | None = None
+    avg_hrv: float | None = None
+    avg_tired_rate: float | None = None
+    avg_load_ratio: float | None = None
+    avg_mental_load: float | None = None
     poor_sleep_days: int = 0
     total_sleep_debt: float = 0.0        # display-only ("本周累计负债")
     rolling_7d_sleep_debt: float = 0.0   # for breaker (latest 7 days vs baseline)
@@ -44,6 +49,7 @@ class WeeklyAggregate:
     primary_blockers: list[str] = field(default_factory=list)
     total_spend: float = 0.0
     latest_body: dict | None = None
+    latest_body_date: date | None = None
     consecutive_poor: int = 0
 
 
@@ -89,6 +95,9 @@ def compute_weekly_aggregate(
         agg.days_logged += 1
         if log.deep_work_hours is not None:
             agg.total_deep_work += log.deep_work_hours
+            agg.work_days += 1
+        if log.sleep.duration is not None:
+            agg.sleep_days += 1
         _append_if_some(energies, log.energy_level)
         _append_if_some(mental, log.mental_load)
         _append_if_some(sleeps, log.sleep.duration)
@@ -115,12 +124,16 @@ def compute_weekly_aggregate(
         if log.primary_blocker and str(log.primary_blocker).strip():
             agg.primary_blockers.append(str(log.primary_blocker).strip())
 
+        if any(s.amount is not None for s in log.daily_spend):
+            agg.spend_days += 1
         for s in log.daily_spend:
             if s.amount is not None:
                 agg.total_spend += s.amount
 
-        if log.body.body_fat_pct is not None:
-            agg.latest_body = log.body.model_dump(exclude_none=False)
+        if any(v is not None for v in log.body.model_dump().values()):
+            agg.body_days += 1
+            agg.latest_body = log.body.model_dump(exclude_none=True)
+            agg.latest_body_date = log.date
 
     agg.avg_energy = _avg(energies)
     agg.avg_sleep = _avg(sleeps)

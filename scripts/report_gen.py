@@ -125,17 +125,12 @@ def breaker_alerts(tripped) -> list[str]:
 def adherence_drift_alerts(logs: list, drift_days: int) -> list[str]:
     """Rule 7 — N consecutive ⚠️/🔴 days → timetable 与 reality 系统性偏离，coach-planner 需重排。
 
-    空值语义（有意为之，不要"修"成读 logging_defaults）：
-      - `timetable` 留空 = 按 standard_week 执行 = ✅，见 templates/daily.md 与
-        `logging_defaults.adherence`。所以留空**打断** streak，与显式 ✅ 同义。
+    空值语义：`timetable` 留空是未知；不计作偏离，也不计作遵守。
+    因此留空会打断已观测偏离 streak。
       - 日志文件整天缺失的日子根本不在 `logs` 里，自然跳过 —— 与
         `metrics._consec_poor_up_to` 对「缺日」的处理一致。
 
-    这里刻意**不**走 `lib.defaults` 的兜底填充：defaults 只用于评分，不用于告警
-    （见 data/config/thresholds.yaml `logging_defaults` 注释第 2 条 + DECISIONS §2）。
-    代价是本函数硬编码了「留空 ≡ ✅」这个假设，而 `logging_defaults.adherence` 是
-    它的声明 owner —— 两者一旦分叉就静默失配，所以由 tests/test_logic_engine.py
-    的 parity 测试钉住。
+    告警只用原始观测，不做默认值填充。
     """
     alerts: list[str] = []
     streak = 0
@@ -168,6 +163,7 @@ def run_checks() -> list[str]:
     logs = list(iter_all())
     alerts: list[str] = []
     total_spend = 0.0
+    spend_days = 0
 
     for log in logs:
         # Rule 1 / 2 / 5 —— 单日规则，保持 per-day 交错顺序
@@ -179,6 +175,7 @@ def run_checks() -> list[str]:
             if rule:
                 alerts.append(rule)
         total_spend += log_spend_total(log)  # Rule 6 累计
+        spend_days += any(s.amount is not None for s in log.daily_spend)
 
     metrics = latest_metrics(
         logs, sleep_baseline, cfg.sleep.debt_window_days, sleep_cfg=cfg.sleep
@@ -198,16 +195,19 @@ def run_checks() -> list[str]:
     # --- 输出 ---
     print("=" * 50)
     print("[Logic Engine] System Check Report")
+    print("  Evidence      : local recorded logs only; official COROS MCP was not queried.")
+    if logs:
+        print(f"  Latest log    : {max(log.date for log in logs)}; not proof of current readiness.")
     print("=" * 50)
     print(f"  Days scanned  : {len(logs)}")
     print(f"  7d Sleep debt : {metrics.get('rolling_7d_sleep_debt', 0.0):.1f}h")
-    print(f"  Weekly spend  : RM{total_spend:.2f}")
+    print(f"  Recorded spend: RM{total_spend:.2f} across {spend_days} days" if spend_days else "  Spend         : unavailable")
     if "hrv" in metrics:
         print(f"  Latest HRV    : {metrics['hrv']:.0f}ms")
     print("-" * 50)
 
     if not alerts:
-        print("[Status: OK] All systems nominal. No alerts triggered.")
+        print("[Status: OK] No alerts triggered on local recorded evidence; missing live health is unknown.")
     else:
         for a in alerts:
             print(f"  {a}")

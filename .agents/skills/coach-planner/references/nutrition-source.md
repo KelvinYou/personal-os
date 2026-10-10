@@ -126,7 +126,7 @@ hardcode example foods in this file.
 - Within the **2 hours before** a heavy compound-lift day (Leg Day / high-volume day), avoid large volumes of
   slow carbs and high-fat foods — this guards against digestive load triggering a vasovagal response. A light
   snack (banana, rice ball, etc. — fast carbs) is fine 1h before training
-- Caffeine cutoff: 14:00 (past 16:00 counts as a serious violation, strongly linked to insomnia)
+- Caffeine cutoff and late warning time: read `data/config/thresholds.yaml` at runtime.
 - **Calorie floor**: rest-day intake ≥ `{{bmr_floor_kcal}}`, specific value resolved from private profile
 - **Fat floor**: ≥ `{{fat_floor_g}}`, specific value resolved from private profile
 - **Weekly weight-loss rate**: follow the weight-change guardrails in the private profile; this file does not

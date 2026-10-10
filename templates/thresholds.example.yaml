@@ -44,16 +44,8 @@ caffeine:
   cutoff_time: '14:00'
   late_cutoff_time: '16:00'
 logging_defaults:
-  enabled: true
-  effective_from: '2026-08-17'
-  energy_level: 7
-  mental_load: 3
-  deep_work_hours: 8.0
-  deep_work_hours_weekend: 0.0
-  caffeine_cutoff: '14:00'
-  adherence: ✅
-  daily_spend: 24.18
-  coverage_warn_ratio: 0.6
+  # Legacy parsing only; weekly scoring never fills missing observations.
+  enabled: false
   adherence_drift_days: 3
 circuit_breakers:
 - name: Sleep Critical

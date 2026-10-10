@@ -24,7 +24,7 @@ from .schema import DailyLog, Scoring, ScoringDim, ScoringFormula
 class CriterionScore:
     name: str
     max_points: float
-    points: float
+    points: float | None
     formula: str
     basis: float | None = None  # the observable input value
 
@@ -48,7 +48,15 @@ class ScoreBreakdown:
     def total(self) -> float:
         return self.output.points + self.health.points + self.mental.points + self.habits.points
 
+    @property
+    def complete(self) -> bool:
+        return all(c.points is not None for d in (self.output, self.health, self.mental, self.habits)
+                   for c in d.criteria)
+
     def summary_line(self) -> str:
+        if not self.complete:
+            return (f"Measured components: Output {self.output.points:.1f}, Health {self.health.points:.1f}, "
+                    f"Mental {self.mental.points:.1f}, Habits {self.habits.points:.1f}; full score unavailable")
         return (
             f"Base Score (deterministic): Output {self.output.points:.1f}/{self.output.max_points:.0f} · "
             f"Health {self.health.points:.1f}/{self.health.max_points:.0f} · "
@@ -109,10 +117,11 @@ def _score_dim(
     for crit_name, formula in dim.criteria.items():
         basis = bases.get(crit_name)
         if basis is None:
-            pts = 0.0
+            pts = None
         else:
             pts = _apply(formula, basis)
-        total += pts
+        if pts is not None:
+            total += pts
         criteria_scores.append(CriterionScore(
             name=crit_name,
             max_points=formula.max_points,
@@ -130,7 +139,7 @@ def sleep_duration_stddev(logs: Iterable[DailyLog]) -> float | None:
     return pstdev(xs)
 
 
-def caffeine_compliance_rate(logs: Iterable[DailyLog], cutoff: str = "14:00") -> float | None:
+def caffeine_compliance_rate(logs: Iterable[DailyLog], *, cutoff: str) -> float | None:
     """Fraction of days with caffeine_cutoff at or before `cutoff` (HH:MM string compare)."""
     observed = [l.caffeine_cutoff for l in logs if l.caffeine_cutoff and str(l.caffeine_cutoff).strip()]
     if not observed:
@@ -144,29 +153,31 @@ def compute_base_score(
     week_logs: list[DailyLog],
     rubric: Scoring,
     subjective: dict[str, float] | None = None,
+    *,
+    caffeine_cutoff: str,
 ) -> ScoreBreakdown:
     """Compute base score given aggregated metrics + the week's logs.
 
     `subjective` maps criterion name → 0-1 score. Any criterion left unsupplied
-    defaults to 0 (AI can fill in the qualitative pass and re-score).
+    remains unavailable until evidence supports a judgment.
     """
     subj = subjective or {}
 
-    def flat(crit: str, default: float = 0.0) -> float:
-        return float(subj.get(crit, default))
+    def flat(crit: str) -> float | None:
+        return float(subj[crit]) if crit in subj else None
 
     stddev = sleep_duration_stddev(week_logs)
-    caff = caffeine_compliance_rate(week_logs, cutoff="14:00")
+    caff = caffeine_compliance_rate(week_logs, cutoff=caffeine_cutoff)
 
     output_bases = {
-        "deep_work": agg.total_deep_work,
+        "deep_work": agg.total_deep_work if agg.work_days else None,
         "output_quality": flat("output_quality"),
         "blocker_management": flat("blocker_management"),
     }
     health_bases = {
         "avg_energy": agg.avg_energy,
-        "poor_sleep_days": float(agg.poor_sleep_days),
-        "rolling_sleep_debt": agg.rolling_7d_sleep_debt,
+        "poor_sleep_days": float(agg.poor_sleep_days) if agg.sleep_days == 7 else None,
+        "rolling_sleep_debt": agg.rolling_7d_sleep_debt if agg.sleep_days == 7 else None,
         "sleep_structure": flat("sleep_structure"),
         "body_composition": flat("body_composition"),
     }
@@ -176,7 +187,7 @@ def compute_base_score(
         "emotional_resilience": flat("emotional_resilience"),
     }
     habits_bases: dict[str, float | None] = {
-        "weekly_spend": agg.total_spend,
+        "weekly_spend": agg.total_spend if agg.spend_days == 7 else None,
         "caffeine_compliance": caff,
         "sleep_duration_consistency": stddev,
     }
@@ -195,9 +206,13 @@ def compute_base_score(
 def format_breakdown_md(bs: ScoreBreakdown) -> str:
     lines = ["### Deterministic Base Score", "", bs.summary_line(), ""]
     for dim in (bs.output, bs.health, bs.mental, bs.habits):
-        lines.append(f"**{dim.name}** ({dim.points:.1f}/{dim.max_points:.0f}):")
+        if all(c.points is not None for c in dim.criteria):
+            lines.append(f"**{dim.name}** ({dim.points:.1f}/{dim.max_points:.0f}):")
+        else:
+            lines.append(f"**{dim.name}** (observed points {dim.points:.1f}; incomplete):")
         for c in dim.criteria:
             basis_str = "—" if c.basis is None else f"{c.basis:.2f}"
-            lines.append(f"  - {c.name} [{c.formula}]: basis={basis_str} → {c.points:.1f}/{c.max_points:.0f}")
+            result = "unavailable" if c.points is None else f"{c.points:.1f}/{c.max_points:.0f}"
+            lines.append(f"  - {c.name} [{c.formula}]: basis={basis_str} → {result}")
         lines.append("")
     return "\n".join(lines)

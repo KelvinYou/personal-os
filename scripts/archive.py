@@ -5,12 +5,12 @@
 Two separate problems, deliberately handled differently:
 
 `data/fitness/*.yaml` is **not** an archive target — it is a staging buffer.
-`sync_coros.py` writes it, `patch_coros.py` merges it into the matching daily
-frontmatter, and nothing else in the repo reads it. 94 of its 114 files are
-byte-for-byte redundant with a daily log that already holds the same values.
+The retired password sync wrote it; `patch_coros.py` can recover it into daily
+frontmatter. Local-only weekly synthesis can still count its legacy provenance.
+Historical files may be redundant with a daily log holding the same values.
 So the treatment is a retention window, not a digest: keep a replay buffer,
 drop the rest. The exception is a date with fitness data but *no* daily file
-(sync_coros skips the patch when the file is absent) — that data has never
+(a legacy sync may have skipped the patch) — that data has never
 landed anywhere, so it gets a daily log created before anything is pruned.
 
 `data/daily/*.md` is real data, but nothing consumes it at per-day granularity
