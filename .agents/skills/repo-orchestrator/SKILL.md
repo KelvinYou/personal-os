@@ -6,7 +6,7 @@ description: >
   data, or agent skills. Use this skill whenever the user asks to sync or bump
   submodules, prepare a release or integration check, review whether a change is
   safe to commit, finish work across repositories, inspect dirty submodule state,
-  or verify the correct order of tests and parent-pointer updates—even when they
+  export offline working-tree transfers including private data, or verify the correct order of tests and parent-pointer updates—even when they
   do not explicitly say "orchestrate" or "release". This skill prepares and
   validates the integration; explicit commit or push requests hand off to
   git-commit after the checks pass.
@@ -74,6 +74,32 @@ Personal-OS timetable request unless the user also asks for repository
 coordination.
 
 ## Workflow
+
+### Offline transfer without commits
+
+For an explicitly requested ZIP handoff, use `scripts/workspace_transfer.py`
+instead of a parent-only diff: parent diffs omit ignored private `data/` and
+dirty child files. Export to the project root by default:
+
+```bash
+python3 scripts/workspace_transfer.py export
+```
+
+The archive includes the entire private data tree (except `.git` metadata),
+root changes, untracked nonignored files, and public child changes relative to
+the recorded parent gitlinks. Inspect the manifest and test ZIP integrity.
+Use the included README and standalone apply script on the destination; preview
+before `--write`. Existing different private files require an explicit
+`--overwrite-data`; applying saves a private before-image backup first.
+
+Git HEADs, indexes and history are not transferred. Child committed differences
+become destination worktree edits; gitlink updates remain a separate later Git
+operation. Root ZIPs and checksum files are ignored by Git; keep these private
+artifacts untracked. Check the actual Git
+toplevel of `data/`: Git commands inside an ignored ordinary directory can
+silently resolve to the parent repo. A full snapshot does not attach a private
+repo or satisfy features that require one. Do not initialize or publish it as
+part of the transfer.
 
 ### 1. Discover the repository graph
 

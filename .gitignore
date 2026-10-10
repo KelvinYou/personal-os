@@ -4,6 +4,9 @@ __pycache__/
 
 # === Privacy: each user owns a separate, untracked private data repository ===
 /data/
+# Private offline transfer archives stored in the project root
+/*.zip
+/*.zip.sha256
 weekly_report_prompt.md
 .claude/projects/*/memory/
 .claude/skills/*-workspace/
