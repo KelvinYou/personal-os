@@ -1,294 +1,294 @@
 {
-  "generated_at": "2026-08-14T09:07:02.928054+00:00",
+  "generated_at": "2026-10-28T06:55:52.985360+00:00",
   "window_days": 30,
-  "source_files": 3,
-  "total_jobs": 90,
-  "jobs_with_skills": 88,
+  "source_files": 25,
+  "total_jobs": 1104,
+  "jobs_with_skills": 859,
   "top_overall": [
     [
-      "automation",
-      39
-    ],
-    [
-      "llm",
-      36
-    ],
-    [
-      "ai",
-      28
-    ],
-    [
       "python",
-      27
-    ],
-    [
-      "api",
-      25
-    ],
-    [
-      "react",
-      24
-    ],
-    [
-      "typescript",
-      20
-    ],
-    [
-      "agentic ai",
-      19
-    ],
-    [
-      "javascript",
-      19
-    ],
-    [
-      "ci/cd",
-      18
-    ],
-    [
-      "machine learning",
-      16
-    ],
-    [
-      "generative ai",
-      16
-    ],
-    [
-      "data engineering",
-      16
-    ],
-    [
-      "sql",
-      14
-    ],
-    [
-      "full-stack",
-      11
-    ],
-    [
-      "rag",
-      11
-    ],
-    [
-      "ai-assisted development",
-      11
+      165
     ],
     [
       "java",
-      10
+      140
     ],
     [
-      "rest api",
-      9
+      "llm",
+      129
     ],
     [
-      "git",
-      9
+      "machine learning",
+      90
     ],
     [
-      "node.js",
-      9
+      "react",
+      88
     ],
     [
-      "azure",
-      8
-    ],
-    [
-      "postgresql",
-      8
-    ],
-    [
-      "cloud",
-      8
-    ],
-    [
-      "go",
-      7
+      "javascript",
+      77
     ],
     [
       "aws",
-      6
+      74
     ],
     [
-      "testing",
-      6
+      "ai",
+      66
     ],
     [
-      "docker",
-      5
+      "typescript",
+      66
     ],
     [
-      ".net",
-      5
+      "ci/cd",
+      65
+    ],
+    [
+      "full-stack",
+      64
+    ],
+    [
+      "rest api",
+      61
+    ],
+    [
+      "backend",
+      60
+    ],
+    [
+      "sql",
+      58
+    ],
+    [
+      "rag",
+      58
+    ],
+    [
+      "agentic ai",
+      51
+    ],
+    [
+      "automation",
+      50
+    ],
+    [
+      "microservices",
+      50
+    ],
+    [
+      "spring boot",
+      48
     ],
     [
       "kubernetes",
-      4
+      45
+    ],
+    [
+      "node.js",
+      42
+    ],
+    [
+      ".net",
+      42
+    ],
+    [
+      "generative ai",
+      41
+    ],
+    [
+      "frontend",
+      39
+    ],
+    [
+      "fintech",
+      38
+    ],
+    [
+      "postgresql",
+      36
+    ],
+    [
+      "c#",
+      36
+    ],
+    [
+      "api",
+      34
+    ],
+    [
+      "docker",
+      34
+    ],
+    [
+      "ai agents",
+      33
     ]
   ],
   "top_by_location": {
     "Malaysia": [
       [
-        "ai",
-        28
-      ],
-      [
-        "automation",
-        24
+        "python",
+        74
       ],
       [
         "llm",
-        20
+        61
       ],
       [
-        "agentic ai",
-        13
-      ],
-      [
-        "typescript",
-        12
-      ],
-      [
-        "data engineering",
-        12
-      ],
-      [
-        "full-stack",
-        11
-      ],
-      [
-        "api",
-        11
-      ],
-      [
-        "python",
-        10
-      ],
-      [
-        "react",
-        10
-      ],
-      [
-        "ai-assisted development",
-        10
-      ],
-      [
-        "rest api",
-        8
-      ],
-      [
-        "rag",
-        8
-      ],
-      [
-        "javascript",
-        8
-      ],
-      [
-        "generative ai",
-        8
-      ],
-      [
-        "machine learning",
-        7
-      ],
-      [
-        "sql",
-        7
-      ],
-      [
-        "azure",
-        7
+        "ai",
+        55
       ],
       [
         "java",
-        6
+        54
       ],
       [
-        "git",
-        6
+        "javascript",
+        46
+      ],
+      [
+        "machine learning",
+        45
+      ],
+      [
+        "rest api",
+        45
+      ],
+      [
+        "react",
+        42
+      ],
+      [
+        "full-stack",
+        38
+      ],
+      [
+        "rag",
+        36
+      ],
+      [
+        "automation",
+        32
+      ],
+      [
+        "aws",
+        31
+      ],
+      [
+        "sql",
+        29
+      ],
+      [
+        ".net",
+        29
+      ],
+      [
+        "typescript",
+        28
+      ],
+      [
+        "agentic ai",
+        26
+      ],
+      [
+        "frontend",
+        25
+      ],
+      [
+        "kubernetes",
+        25
+      ],
+      [
+        "spring boot",
+        24
+      ],
+      [
+        "node.js",
+        23
       ]
     ],
     "Singapore": [
       [
         "python",
-        17
-      ],
-      [
-        "llm",
-        16
-      ],
-      [
-        "automation",
-        15
-      ],
-      [
-        "react",
-        14
-      ],
-      [
-        "api",
-        14
-      ],
-      [
-        "ci/cd",
-        13
-      ],
-      [
-        "javascript",
-        11
-      ],
-      [
-        "machine learning",
-        9
-      ],
-      [
-        "typescript",
-        8
-      ],
-      [
-        "generative ai",
-        8
-      ],
-      [
-        "sql",
-        7
-      ],
-      [
-        "go",
-        6
-      ],
-      [
-        "agentic ai",
-        6
-      ],
-      [
-        "node.js",
-        5
-      ],
-      [
-        "cloud",
-        4
-      ],
-      [
-        "testing",
-        4
+        91
       ],
       [
         "java",
-        4
+        86
       ],
       [
-        "data engineering",
-        4
+        "llm",
+        68
+      ],
+      [
+        "backend",
+        52
+      ],
+      [
+        "react",
+        46
+      ],
+      [
+        "machine learning",
+        45
+      ],
+      [
+        "ci/cd",
+        44
       ],
       [
         "aws",
-        4
+        43
       ],
       [
-        ".net",
-        3
+        "typescript",
+        38
+      ],
+      [
+        "microservices",
+        32
+      ],
+      [
+        "javascript",
+        31
+      ],
+      [
+        "fintech",
+        30
+      ],
+      [
+        "sql",
+        29
+      ],
+      [
+        "full-stack",
+        26
+      ],
+      [
+        "agentic ai",
+        25
+      ],
+      [
+        "spring boot",
+        24
+      ],
+      [
+        "generative ai",
+        23
+      ],
+      [
+        "rag",
+        22
+      ],
+      [
+        "api",
+        21
+      ],
+      [
+        "payments",
+        21
       ]
     ]
   },
@@ -296,246 +296,668 @@
     "jobstreet-my": [
       [
         "ai",
-        28
+        54
       ],
       [
         "full-stack",
-        11
+        35
+      ],
+      [
+        "machine learning",
+        31
+      ],
+      [
+        "javascript",
+        27
+      ],
+      [
+        "python",
+        23
+      ],
+      [
+        "frontend",
+        23
+      ],
+      [
+        "react",
+        15
       ],
       [
         "automation",
-        5
+        13
       ],
       [
         "llm",
-        4
-      ],
-      [
-        "agentic ai",
-        3
+        13
       ],
       [
         "java",
-        1
+        12
       ],
       [
-        "api",
-        1
+        ".net",
+        10
+      ],
+      [
+        "php",
+        8
+      ],
+      [
+        "ai agents",
+        8
+      ],
+      [
+        "apis",
+        8
+      ],
+      [
+        "computer vision",
+        7
       ]
     ],
     "indeed": [
+      [
+        "llm",
+        60
+      ],
+      [
+        "python",
+        60
+      ],
+      [
+        "react",
+        35
+      ],
+      [
+        "ci/cd",
+        35
+      ],
       [
         "automation",
         34
       ],
       [
-        "llm",
-        32
-      ],
-      [
-        "python",
-        27
-      ],
-      [
-        "react",
-        24
-      ],
-      [
-        "api",
-        24
+        "java",
+        31
       ],
       [
         "typescript",
-        20
+        30
       ],
       [
         "javascript",
-        19
+        28
       ],
       [
-        "ci/cd",
-        18
+        "api",
+        28
       ],
       [
-        "machine learning",
-        16
+        "aws",
+        28
       ],
       [
         "agentic ai",
-        16
-      ],
-      [
-        "generative ai",
-        16
-      ],
-      [
-        "data engineering",
-        16
-      ],
-      [
-        "sql",
-        14
+        26
       ],
       [
         "rag",
-        11
+        25
       ],
       [
-        "ai-assisted development",
-        11
+        "machine learning",
+        21
+      ],
+      [
+        "sql",
+        21
+      ],
+      [
+        "rest api",
+        20
+      ]
+    ],
+    "linkedin": [
+      [
+        "java",
+        85
+      ],
+      [
+        "python",
+        76
+      ],
+      [
+        "llm",
+        50
+      ],
+      [
+        "aws",
+        37
+      ],
+      [
+        "rest api",
+        36
+      ],
+      [
+        "microservices",
+        34
+      ],
+      [
+        "spring boot",
+        34
+      ],
+      [
+        "sql",
+        32
+      ],
+      [
+        "typescript",
+        31
+      ],
+      [
+        "kubernetes",
+        31
+      ],
+      [
+        "ci/cd",
+        30
+      ],
+      [
+        "react",
+        29
+      ],
+      [
+        "rag",
+        28
+      ],
+      [
+        "fintech",
+        26
+      ],
+      [
+        "machine learning",
+        25
+      ]
+    ],
+    "jobstreet-sg": [
+      [
+        "backend",
+        27
+      ],
+      [
+        "full-stack",
+        26
+      ],
+      [
+        "machine learning",
+        13
+      ],
+      [
+        "java",
+        12
+      ],
+      [
+        "react",
+        9
+      ],
+      [
+        "frontend",
+        8
+      ],
+      [
+        "aws",
+        7
+      ],
+      [
+        "c#",
+        7
+      ],
+      [
+        "agentic ai",
+        6
+      ],
+      [
+        "python",
+        6
+      ],
+      [
+        "llm",
+        6
+      ],
+      [
+        "generative ai",
+        6
+      ],
+      [
+        ".net",
+        6
+      ],
+      [
+        "payments",
+        5
+      ],
+      [
+        "ai agents",
+        4
       ]
     ]
   },
   "deltas": [
     {
-      "skill": "automation",
-      "recent_count": 39,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "llm",
-      "recent_count": 36,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "ai",
-      "recent_count": 28,
+      "skill": "java",
+      "recent_count": 116,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
       "skill": "python",
-      "recent_count": 27,
+      "recent_count": 108,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "api",
-      "recent_count": 25,
+      "skill": "llm",
+      "recent_count": 69,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "react",
-      "recent_count": 24,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "typescript",
-      "recent_count": 20,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "agentic ai",
-      "recent_count": 19,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "javascript",
-      "recent_count": 19,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "ci/cd",
-      "recent_count": 18,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "generative ai",
-      "recent_count": 16,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "data engineering",
-      "recent_count": 16,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "machine learning",
-      "recent_count": 16,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "sql",
-      "recent_count": 14,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "rag",
-      "recent_count": 11,
+      "skill": "aws",
+      "recent_count": 67,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
       "skill": "full-stack",
-      "recent_count": 11,
+      "recent_count": 53,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "ai-assisted development",
-      "recent_count": 11,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "java",
-      "recent_count": 10,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "node.js",
-      "recent_count": 9,
+      "skill": "react",
+      "recent_count": 52,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
       "skill": "rest api",
-      "recent_count": 9,
+      "recent_count": 49,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "git",
-      "recent_count": 9,
+      "skill": "spring boot",
+      "recent_count": 46,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "machine learning",
+      "recent_count": 46,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "rag",
+      "recent_count": 45,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ci/cd",
+      "recent_count": 43,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "kubernetes",
+      "recent_count": 41,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "microservices",
+      "recent_count": 37,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": ".net",
+      "recent_count": 37,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "sql",
+      "recent_count": 36,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "backend",
+      "recent_count": 36,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "c#",
+      "recent_count": 36,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "typescript",
+      "recent_count": 35,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ai agents",
+      "recent_count": 33,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "docker",
+      "recent_count": 29,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "node.js",
+      "recent_count": 27,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
       "skill": "postgresql",
+      "recent_count": 26,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "golang",
+      "recent_count": 25,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "langchain",
+      "recent_count": 23,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "mysql",
+      "recent_count": 23,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "c++",
+      "recent_count": 22,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "go",
+      "recent_count": 22,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "angular",
+      "recent_count": 22,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "generative ai",
+      "recent_count": 21,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "javascript",
+      "recent_count": 20,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "pytorch",
+      "recent_count": 18,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "kafka",
+      "recent_count": 18,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "next.js",
+      "recent_count": 17,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "agentic ai",
+      "recent_count": 17,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "computer vision",
+      "recent_count": 15,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "azure",
+      "recent_count": 14,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "redis",
+      "recent_count": 13,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "git",
+      "recent_count": 13,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "langgraph",
+      "recent_count": 13,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "full-stack development",
+      "recent_count": 12,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "distributed systems",
+      "recent_count": 12,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "php",
+      "recent_count": 12,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "test automation",
+      "recent_count": 12,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "fastapi",
+      "recent_count": 12,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "tensorflow",
+      "recent_count": 11,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "gcp",
+      "recent_count": 11,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "apis",
+      "recent_count": 11,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "linux",
+      "recent_count": 11,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "frontend",
+      "recent_count": 10,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "mongodb",
+      "recent_count": 10,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "payments",
+      "recent_count": 10,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "sql server",
+      "recent_count": 10,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "mlops",
+      "recent_count": 10,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "vue.js",
+      "recent_count": 9,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ai-assisted development",
+      "recent_count": 9,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": ".net core",
+      "recent_count": 9,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "prompt engineering",
+      "recent_count": 9,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "terraform",
+      "recent_count": 9,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "oracle",
+      "recent_count": 8,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "fine-tuning",
       "recent_count": 8,
       "prior_count": 0,
       "growth_ratio": null,
@@ -549,91 +971,511 @@
       "tag": "emerging"
     },
     {
-      "skill": "azure",
+      "skill": "kotlin",
       "recent_count": 8,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "go",
+      "skill": "restful api",
       "recent_count": 7,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "aws",
+      "skill": "flutter",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "agile",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "observability",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "data pipelines",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "soap",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "django",
+      "recent_count": 7,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "deep learning",
       "recent_count": 6,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "testing",
+      "skill": "tool calling",
       "recent_count": 6,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "docker",
+      "skill": "laravel",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "plc",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "devops",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "spring",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "elasticsearch",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "mybatis",
+      "recent_count": 6,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "graphql",
       "recent_count": 5,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": ".net",
+      "skill": "rust",
       "recent_count": 5,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "langchain",
-      "recent_count": 4,
+      "skill": "spark",
+      "recent_count": 5,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "microservices",
-      "recent_count": 4,
+      "skill": "jquery",
+      "recent_count": 5,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "kubernetes",
-      "recent_count": 4,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "vector db",
-      "recent_count": 4,
-      "prior_count": 0,
-      "growth_ratio": null,
-      "tag": "emerging"
-    },
-    {
-      "skill": "next.js",
-      "recent_count": 4,
+      "skill": "mobile",
+      "recent_count": 5,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
       "skill": "mcp",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "scikit-learn",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "etl",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "react native",
+      "recent_count": 5,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "snowflake",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "couchbase",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "embedded systems",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "c",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "automation",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "manual testing",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "asp.net core",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "scala",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "agentic workflows",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "websockets",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "prometheus",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "wpf",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "robotics",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "firmware",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "embedded software",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "azure openai",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ai automation",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "low latency",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "erp",
+      "recent_count": 4,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "a/b testing",
       "recent_count": 3,
       "prior_count": 0,
       "growth_ratio": null,
       "tag": "emerging"
     },
     {
-      "skill": "mongodb",
+      "skill": "api",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "blockchain",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "nestjs",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "low-code",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "data analytics",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "vector databases",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "grpc",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "gitlab",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "robot learning",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "dubbo",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "asp.net mvc",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "edge ai",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "databricks",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "mariadb",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "microsoft copilot studio",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "api development",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "swagger",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "nosql",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "claude code",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "claude",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "pgvector",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "ms sql",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "hibernate",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "quantization",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "vector database",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "system integration",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "tcp/ip",
+      "recent_count": 3,
+      "prior_count": 0,
+      "growth_ratio": null,
+      "tag": "emerging"
+    },
+    {
+      "skill": "reinforcement learning",
       "recent_count": 3,
       "prior_count": 0,
       "growth_ratio": null,
