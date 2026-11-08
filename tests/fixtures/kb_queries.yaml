@@ -148,3 +148,28 @@
   query: What is the canonical public data retention policy?
   expected_paths: []
   expect_no_match: true
+
+- id: video-editing-story
+  query: How should an AI assisted travel video use motivated cuts and avoid repeating footage?
+  expected_paths:
+    - docs/knowledge/video-editing-workflow.md
+
+- id: video-editing-acceptance
+  query: How should video editing separate technical checks from creative acceptance?
+  expected_paths:
+    - docs/knowledge/video-editing-workflow.md
+
+- id: hdr-washed-out
+  query: How should washed out iPhone HLG Dolby Vision footage convert HDR to SDR?
+  expected_paths:
+    - docs/knowledge/hdr-to-sdr-video.md
+
+- id: video-frame-timing
+  query: How should a video timeline quantize seconds to frames and verify the export?
+  expected_paths:
+    - docs/knowledge/hdr-to-sdr-video.md
+
+- id: agent-verification-before-delegation
+  query: How do I scale agent work without reviewing every output myself?
+  expected_paths:
+    - docs/knowledge/agent-delegation-verification.md

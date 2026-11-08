@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-07T07:27:41.689894+00:00",
-  "input_hash": "1814c00007c767bb2189a02e766d33f20f06144e04663b05e4c5febec092cf0e",
+  "generated_at": "2026-11-07T23:53:07.659901+00:00",
+  "input_hash": "94c959756790b9e56d900316e9e846ea74378c1c01431ae80c0bac99dfa6c664",
   "nodes": [
     {
       "id": "make:setup",
@@ -51,6 +51,14 @@
       "rank": 1
     },
     {
+      "id": "make:test-browser",
+      "label": "test-browser",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 0
+    },
+    {
       "id": "make:today",
       "label": "today",
       "kind": "make-target",
@@ -80,6 +88,14 @@
       "kind": "make-target",
       "meta": {},
       "group": "travel",
+      "rank": 1
+    },
+    {
+      "id": "make:deck-lint",
+      "label": "deck-lint",
+      "kind": "make-target",
+      "meta": {},
+      "group": "docs-check",
       "rank": 1
     },
     {
@@ -117,6 +133,30 @@
     {
       "id": "make:check-mermaid",
       "label": "check-mermaid",
+      "kind": "make-target",
+      "meta": {},
+      "group": "docs-check",
+      "rank": 1
+    },
+    {
+      "id": "make:ui-build",
+      "label": "ui-build",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ui",
+      "rank": 0
+    },
+    {
+      "id": "make:ui-check",
+      "label": "ui-check",
+      "kind": "make-target",
+      "meta": {},
+      "group": "ui",
+      "rank": 0
+    },
+    {
+      "id": "make:design-check",
+      "label": "design-check",
       "kind": "make-target",
       "meta": {},
       "group": "docs-check",
@@ -307,6 +347,22 @@
       "rank": 1
     },
     {
+      "id": "make:office",
+      "label": "office",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:office-check",
+      "label": "office-check",
+      "kind": "make-target",
+      "meta": {},
+      "group": "office",
+      "rank": 1
+    },
+    {
       "id": "make:calibration",
       "label": "calibration",
       "kind": "make-target",
@@ -427,6 +483,38 @@
       "rank": 2
     },
     {
+      "id": "script:deck_hook.py",
+      "label": "deck_hook.py",
+      "kind": "script",
+      "group": "docs-check",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:deck_lint.py",
+      "label": "deck_lint.py",
+      "kind": "script",
+      "group": "docs-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:design_rules_check.py",
+      "label": "design_rules_check.py",
+      "kind": "script",
+      "group": "docs-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:design_tokens_check.py",
+      "label": "design_tokens_check.py",
+      "kind": "script",
+      "group": "docs-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
       "id": "script:doctor.py",
       "label": "doctor.py",
       "kind": "script",
@@ -435,12 +523,28 @@
       "rank": 3
     },
     {
+      "id": "script:export_finance_activity_schema.py",
+      "label": "export_finance_activity_schema.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
       "id": "script:export_wealth_report_schema.py",
       "label": "export_wealth_report_schema.py",
       "kind": "script",
       "group": null,
       "meta": {},
       "rank": 1
+    },
+    {
+      "id": "script:finance_activity.py",
+      "label": "finance_activity.py",
+      "kind": "script",
+      "group": "wealth",
+      "meta": {},
+      "rank": 0
     },
     {
       "id": "script:finance_edit.py",
@@ -547,8 +651,24 @@
       "rank": 0
     },
     {
+      "id": "script:lib/corrections.py",
+      "label": "lib/corrections.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/daily_log.py",
       "label": "lib/daily_log.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/deck.py",
+      "label": "lib/deck.py",
       "kind": "script",
       "group": null,
       "meta": {},
@@ -811,6 +931,54 @@
       "rank": 0
     },
     {
+      "id": "script:lib/office/__init__.py",
+      "label": "lib/office/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/app_server.py",
+      "label": "lib/office/app_server.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/collaboration.py",
+      "label": "lib/office/collaboration.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/monitor.py",
+      "label": "lib/office/monitor.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/team.py",
+      "label": "lib/office/team.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/work.py",
+      "label": "lib/office/work.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/schema.py",
       "label": "lib/schema.py",
       "kind": "script",
@@ -875,8 +1043,24 @@
       "rank": 1
     },
     {
+      "id": "script:lib/ui_artifact.py",
+      "label": "lib/ui_artifact.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
       "id": "script:lib/wealth/__init__.py",
       "label": "lib/wealth/__init__.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/activity.py",
+      "label": "lib/wealth/activity.py",
       "kind": "script",
       "group": null,
       "meta": {},
@@ -971,6 +1155,38 @@
       "rank": 1
     },
     {
+      "id": "script:office_collaboration.py",
+      "label": "office_collaboration.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:office_execution_config.py",
+      "label": "office_execution_config.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:office_monitor.py",
+      "label": "office_monitor.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:office_work.py",
+      "label": "office_work.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 1
+    },
+    {
       "id": "script:patch_coros.py",
       "label": "patch_coros.py",
       "kind": "script",
@@ -1043,6 +1259,22 @@
       "rank": 2
     },
     {
+      "id": "script:ui_build.py",
+      "label": "ui_build.py",
+      "kind": "script",
+      "group": "ui",
+      "meta": {},
+      "rank": 1
+    },
+    {
+      "id": "script:ui_check.py",
+      "label": "ui_check.py",
+      "kind": "script",
+      "group": "ui",
+      "meta": {},
+      "rank": 1
+    },
+    {
       "id": "script:wealth_check.py",
       "label": "wealth_check.py",
       "kind": "script",
@@ -1057,6 +1289,14 @@
       "group": "weekly-report",
       "meta": {},
       "rank": 2
+    },
+    {
+      "id": "script:workspace_transfer.py",
+      "label": "workspace_transfer.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
     },
     {
       "id": "path:/data/",
@@ -1175,7 +1415,7 @@
       "label": "ai-stock-analysis",
       "kind": "submodule",
       "meta": {
-        "summary": "<p align=\"center\"> <img src=\"docs/screenshot.png\" alt=\"AI Stock Analysis dashboard\" width=\"100%\"> </p>"
+        "summary": "Four analysts research a stock. A bull and a bear challenge the evidence. A research manager rules on the argument, and a synthesizer produces a briefing with conditional price levels."
       },
       "rank": 0
     },
@@ -1193,7 +1433,7 @@
       "label": "portfolio-website",
       "kind": "submodule",
       "meta": {
-        "summary": "[**kelvinyou.vercel.app**](https://kelvinyou.vercel.app)"
+        "summary": "[![CI](https://github.com/KelvinYou/portfolio-website/actions/workflows/ci.yml/badge.svg)](https://github.com/KelvinYou/portfolio-website/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](License.txt)"
       },
       "rank": 0
     }
@@ -1241,6 +1481,16 @@
     },
     {
       "from": "make:test",
+      "to": "script:design_tokens_check.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:test",
+      "to": "script:design_rules_check.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:test",
       "to": "script:kb_check.py",
       "kind": "invokes"
     },
@@ -1262,6 +1512,11 @@
     {
       "from": "make:travel-lint",
       "to": "script:travel_lint.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:deck-lint",
+      "to": "script:deck_lint.py",
       "kind": "invokes"
     },
     {
@@ -1287,6 +1542,26 @@
     {
       "from": "make:check-mermaid",
       "to": "script:check_mermaid.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:ui-build",
+      "to": "script:ui_build.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:ui-check",
+      "to": "script:ui_check.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:design-check",
+      "to": "script:design_tokens_check.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:design-check",
+      "to": "script:design_rules_check.py",
       "kind": "invokes"
     },
     {
@@ -1415,6 +1690,11 @@
       "kind": "invokes"
     },
     {
+      "from": "make:office-check",
+      "to": "script:office_monitor.py",
+      "kind": "invokes"
+    },
+    {
       "from": "make:calibration",
       "to": "script:calibration.py",
       "kind": "invokes"
@@ -1501,6 +1781,11 @@
     },
     {
       "from": "make:help",
+      "to": "make:design-check",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
       "to": "make:kb-check",
       "kind": "invokes"
     },
@@ -1532,6 +1817,11 @@
     {
       "from": "make:help",
       "to": "make:travel-lint",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:deck-lint",
       "kind": "invokes"
     },
     {
@@ -1631,6 +1921,16 @@
     },
     {
       "from": "make:help",
+      "to": "make:office",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:office-check",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
       "to": "make:flows",
       "kind": "invokes"
     },
@@ -1720,6 +2020,11 @@
       "kind": "reads"
     },
     {
+      "from": "script:design_rules_check.py",
+      "to": "path:/web/",
+      "kind": "reads"
+    },
+    {
       "from": "script:doctor.py",
       "to": "path:/web/",
       "kind": "reads"
@@ -1760,6 +2065,11 @@
       "kind": "reads"
     },
     {
+      "from": "script:export_finance_activity_schema.py",
+      "to": "path:/web/",
+      "kind": "reads"
+    },
+    {
       "from": "script:export_wealth_report_schema.py",
       "to": "path:/web/",
       "kind": "reads"
@@ -1792,6 +2102,26 @@
     {
       "from": "script:lib/travel/render.py",
       "to": "path:/templates/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:lib/ui_artifact.py",
+      "to": "path:/templates/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:office_collaboration.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:office_monitor.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:office_work.py",
+      "to": "path:/data/",
       "kind": "reads"
     },
     {
@@ -1847,6 +2177,11 @@
     {
       "from": "script:weekly_synthesis.py",
       "to": "path:/data/user_profile.md",
+      "kind": "reads"
+    },
+    {
+      "from": "script:workspace_transfer.py",
+      "to": "path:/data/",
       "kind": "reads"
     },
     {

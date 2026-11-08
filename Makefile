@@ -13,7 +13,7 @@ IDEA_ENGINE ?= demo
 IDEA_MODEL ?= sonnet
 IDEA_CONFIG ?= config/idea_pipeline.yaml
 
-.PHONY: coros-health archive sync-protocol setup setup-ideas setup-private doctor doctor-web test today daily check weekly sync-coros report lint travel-lint travel-build travel-check travel-build-all travel-check-all check-mermaid kb-check kb-index kb-eval kb-graph migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
+.PHONY: office office-check ui-build ui-check coros-health archive sync-protocol setup setup-ideas setup-private doctor doctor-web test test-browser today daily check weekly sync-coros report lint deck-lint travel-lint travel-build travel-check travel-build-all travel-check-all check-mermaid design-check kb-check kb-index kb-eval kb-graph migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -45,13 +45,20 @@ doctor-web:
 test:
 	@$(PYTHON) -m unittest discover -s tests -t . -v
 	@python3 $(SCRIPTS_DIR)/check_mermaid.py
+	@python3 $(SCRIPTS_DIR)/design_tokens_check.py
+	@python3 $(SCRIPTS_DIR)/design_rules_check.py
 	@$(PYTHON) $(SCRIPTS_DIR)/kb_check.py
 	@$(PYTHON) $(SCRIPTS_DIR)/kb_eval.py
 	@if [ -d web/node_modules ]; then \
-		cd web && npm run --silent typecheck && echo "[Status: OK] web typecheck 通过"; \
+		cd web && npm run --silent typecheck && npm run --silent test && echo "[Status: OK] web typecheck and interface contracts passed"; \
 	else \
 		echo "[Status: Warning] 跳过 web typecheck — web/node_modules 缺失 (cd web && npm i)"; \
 	fi
+
+## 真实浏览器回归 (@playwright/test + 系统 Chrome, 自动起隔离的 Next dev server); 不在 make test 里
+## 用法: make test-browser [SUITES="office-player home-interactions"]  可选 TEST_PORT / CHROME_PATH
+test-browser:
+	@cd web && npm run --silent test:browser -- $(SUITES)
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -83,6 +90,11 @@ lint:
 travel-lint:
 	@$(PYTHON) $(SCRIPTS_DIR)/travel_lint.py $(TRAVEL_DOC)
 
+## Check a .pptx against presentation-guide visual acceptance (cover artwork, dominant element, layout rhythm)
+deck-lint:
+	@test -n "$(DECK)" || (echo 'Usage: make deck-lint DECK=path/to/deck.pptx [EXEMPT=4,12] [LAYOUTS=1]'; exit 1)
+	@$(PYTHON) $(SCRIPTS_DIR)/deck_lint.py "$(DECK)" --exempt "$(EXEMPT)" $(if $(LAYOUTS),--layouts)
+
 ## Render/check one normalized Markdown travel source; no AI or network calls
 travel-build:
 	@test -n "$(TRAVEL_DOC)" || (echo 'Usage: make travel-build TRAVEL_DOC=path/to/plan.md'; exit 1)
@@ -103,6 +115,23 @@ travel-check-all:
 ## 不依赖 node —— 查的是「语法合法但渲染错」的那几类 bug (literal \n / 未声明 classDef)
 check-mermaid:
 	@python3 $(SCRIPTS_DIR)/check_mermaid.py
+
+## Build a standalone HTML page that embeds the shared design assets (writes ui-artifact.json beside it)
+## 用法: make ui-build SPEC=path/spec.json OUT=/abs/path/index.html
+ui-build:
+	@test -n "$(SPEC)" -a -n "$(OUT)" || (echo 'Usage: make ui-build SPEC=spec.json OUT=/abs/path/index.html'; exit 1)
+	@$(PYTHON) $(SCRIPTS_DIR)/ui_build.py --input "$(SPEC)" --output "$(OUT)"
+
+## Check delivered standalone HTML for real design-system reuse (embedded, current, ordered, offline)
+## 用法: make ui-check MANIFEST=/abs/path/ui-artifact.json  或  make ui-check HTML="a.html b.html"
+ui-check:
+	@test -n "$(MANIFEST)$(HTML)" || (echo 'Usage: make ui-check MANIFEST=ui-artifact.json | HTML="page.html ..."'; exit 1)
+	@$(PYTHON) $(SCRIPTS_DIR)/ui_check.py $(if $(MANIFEST),--manifest "$(MANIFEST)",--html $(HTML))
+
+## WCAG contrast for globals.css tokens (light + dark) + ratchet against native controls / hardcoded hex in web/; FAIL blocks make test
+design-check:
+	@python3 $(SCRIPTS_DIR)/design_tokens_check.py
+	@python3 $(SCRIPTS_DIR)/design_rules_check.py
 
 ## Validate knowledge-note frontmatter, links, freshness, and the public/private boundary
 kb-check:
@@ -222,6 +251,14 @@ web:
 flows:
 	@$(PYTHON) $(SCRIPTS_DIR)/flow_graph.py
 
+## Launch the local virtual office; demo works without private configuration.
+office:
+	@cd web && npm run dev -- --hostname 127.0.0.1 --port 3000
+
+## Check the private office configuration and current workspace evidence.
+office-check:
+	@$(PYTHON) $(SCRIPTS_DIR)/office_monitor.py
+
 ## 决策校准分析 (Brier score + 分布)
 calibration:
 	@$(PYTHON) $(SCRIPTS_DIR)/calibration.py
@@ -275,6 +312,7 @@ help:
 	@echo "  make daily DATE=...     — 生成指定日期的日志模板"
 	@echo "  make lint               — 校验所有日志的 frontmatter schema"
 	@echo "  make check-mermaid      — 检查 Mermaid 图"
+	@echo "  make design-check       — globals.css token 的 WCAG 对比度 + web/ 原生控件/硬编码色棘轮检查"
 	@echo "  make kb-check           — 检查知识笔记契约"
 	@echo "  make kb-index           — 生成知识目录"
 	@echo "  make kb-eval            — 运行知识检索评估"
@@ -282,6 +320,7 @@ help:
 	@echo "  make travel-build-all / travel-check-all — Generate/check all travel pages"
 	@echo "  make travel-build/check TRAVEL_DOC=path — Generate/check the main itinerary HTML"
 	@echo "  make travel-lint        — 校验行程文档内部一致性 (TRAVEL_DOC=path 可指定单个文件)"
+	@echo "  make deck-lint DECK=... — check a .pptx: cover artwork, dominant element, layout rhythm (EXEMPT=4,12 LAYOUTS=1)"
 	@echo "  make check              — 运行逻辑引擎告警检查"
 	@echo "  make idea-validate      — validate startup-idea input (IDEA_INPUT=...)"
 	@echo "  make idea-init          — create private idea record (IDEA_INPUT=...)"
@@ -301,6 +340,8 @@ help:
 	@echo "  make calibration        — 决策校准分析 (Brier score)"
 	@echo "  make wealth             — Tracked Assets: 现金/到期/股票估值 (可选: DATE=... / JSON=1)"
 	@echo "  make web                — 启动本地理财仪表盘 (localhost)"
+	@echo "  make office             — launch the local 3D office (open /office)"
+	@echo "  make office-check       — check local Codex session observation"
 	@echo "  make flows              — 重新生成 /flows 数据流仪表盘的数据"
 	@echo "  make quarterly          — 季度身份审计 (可选: QUARTER=2026-Q1)"
 	@echo "  make eval               — 最近一次 session 转 eval (可选: SESSION=recent-3)"

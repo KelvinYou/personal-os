@@ -50,8 +50,10 @@ from lib.transcript import (  # noqa: E402
     resolve_transcript,
     transcript_dir,
 )
+from lib.corrections import load_entries, recurrence_by_month  # noqa: E402
 
 EVALS_DIR = PROJECT_ROOT / "reports" / "evals"
+CORRECTIONS_DIR = PROJECT_ROOT / "reports" / "corrections"
 
 # Signal thresholds.
 #
@@ -447,7 +449,32 @@ def compute_rollup(month: str) -> dict | None:
             {"file": name, "change": change} for name, change in changes
         ],
         "bug_share_threshold_pct": BUG_SHARE_THRESHOLD_PCT,
+        # Correction-queue recurrence for the same month (None when nothing was logged).
+        "corrections": next((r for r in correction_recurrence() if r["month"] == month), None),
     }
+
+
+def correction_recurrence() -> list[dict]:
+    """Per-month correction counts and repeats of an earlier class (see lib/corrections.py)."""
+    return recurrence_by_month(load_entries(CORRECTIONS_DIR))
+
+
+def corrections_report(as_json: bool = False) -> int:
+    rows = correction_recurrence()
+    if as_json:
+        print(json.dumps(rows, ensure_ascii=False))
+        return 0
+    print("[Correction recurrence] repeat = an earlier entry already used this class")
+    print("─" * 66)
+    print(f"{'month':<9} {'logged':>6} {'repeats':>7} {'rate':>6}  repeat classes")
+    for r in rows:
+        rate = "—" if r["repeat_rate_pct"] is None else f"{r['repeat_rate_pct']:.0f}%"
+        classes = ", ".join(sorted({e["class"] for e in r["repeat_entries"]})) or "—"
+        print(f"{r['month']:<9} {r['logged']:>6} {r['repeats']:>7} {rate:>6}  {classes}")
+    unclassified = sum(r["unclassified"] for r in rows)
+    if unclassified:
+        print(f"\n[Status: Warning] {unclassified} entry(ies) lack **Class:** —— recurrence undercounts")
+    return 0
 
 
 def _rollup_path(month: str) -> Path:
@@ -558,7 +585,12 @@ def main() -> int:
         action="store_true",
         help="print all persisted monthly rollups as a JSON array (for the web dashboard)",
     )
-    ap.add_argument("--json", action="store_true", help="with --rollup, print JSON instead of the text summary")
+    ap.add_argument(
+        "--corrections",
+        action="store_true",
+        help="per-month correction-queue recurrence (entries reusing an earlier **Class:**)",
+    )
+    ap.add_argument("--json", action="store_true", help="with --rollup / --corrections, print JSON instead of text")
     ap.add_argument("--force", action="store_true", help="overwrite review fields too")
     args = ap.parse_args()
 
@@ -566,6 +598,8 @@ def main() -> int:
 
     if args.rollup_history:
         return rollup_history()
+    if args.corrections:
+        return corrections_report(as_json=args.json)
     if args.rollup:
         return rollup(args.rollup, as_json=args.json)
     if args.list:

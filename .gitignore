@@ -22,3 +22,6 @@ docs/knowledge/_graph.md
 # === Secrets ===
 .env
 .credentials/
+
+# === macOS ===
+.DS_Store

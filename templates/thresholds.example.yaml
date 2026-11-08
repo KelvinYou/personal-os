@@ -1,5 +1,36 @@
 # Malaysia/MYR example only. Review every value and action before enabling.
 owner_configured: false
+# Local office operational limits; optional for existing installations.
+office:
+  poll_interval_ms: 3000
+  stale_after_seconds: 180
+  history_days: 3
+  max_sessions: 32
+  max_candidates: 256
+  max_read_bytes: 2097152
+  max_record_bytes: 262144
+  recent_events: 8
+  collaboration:
+    enabled: false
+    lease_seconds: 900
+    turn_timeout_seconds: 600
+    max_parallel_teams: 1
+  execution:
+    enabled: false
+    poll_interval_ms: 1000
+    max_prompt_chars: 8000
+    max_messages: 80
+    max_message_chars: 32768
+    rpc_timeout_seconds: 30
+    turn_timeout_seconds: 900
+# Deck lint (make deck-lint); optional. See docs/presentation-guide.md § Visual acceptance.
+presentation:
+  focal_text_ratio: 3.0        # largest text >= 3x the slide's body size
+  focal_visual_min_area: 0.25  # or a picture/chart covering >= 25% of the slide
+  background_min_area: 0.95    # pictures this large are backgrounds, not artwork
+  rhythm_max_run: 2            # at most 2 consecutive content slides share a layout
+  rhythm_max_share: 0.34       # no layout covers more than one third of content slides
+  rhythm_min_content_slides: 6 # share rule applies only to decks with >= 6 content slides
 deep_work:
   minimum_hours: 4.0
 sleep:

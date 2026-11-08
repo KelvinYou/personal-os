@@ -269,6 +269,57 @@ class Scoring(BaseModel):
     habits: ScoringDim | None = None
 
 
+class OfficeCollaborationCfg(BaseModel):
+    """Opt-in execution and advisory-claim limits for the local team board."""
+    model_config = ConfigDict(extra="forbid")
+    enabled: bool
+    lease_seconds: int = Field(ge=60, le=86400)
+    turn_timeout_seconds: int = Field(ge=30, le=3600)
+    max_parallel_teams: int = Field(ge=1, le=4)
+
+
+class OfficeExecutionCfg(BaseModel):
+    """Opt-in budgets for the web-owned writable Codex conversation."""
+    model_config = ConfigDict(extra="forbid")
+    enabled: bool
+    poll_interval_ms: int = Field(ge=500, le=60000)
+    max_prompt_chars: int = Field(ge=100, le=100000)
+    max_messages: int = Field(ge=10, le=500)
+    max_message_chars: int = Field(ge=1000, le=100000)
+    rpc_timeout_seconds: int = Field(ge=5, le=120)
+    turn_timeout_seconds: int = Field(ge=30, le=3600)
+
+
+class OfficeCfg(BaseModel):
+    """Operational limits, explicitly configured in the owner's thresholds file."""
+    model_config = ConfigDict(extra="forbid")
+    poll_interval_ms: int = Field(ge=1000, le=60000)
+    stale_after_seconds: int = Field(ge=10, le=86400)
+    history_days: int = Field(ge=1, le=30)
+    max_sessions: int = Field(ge=1, le=128)
+    max_candidates: int = Field(ge=1, le=2048)
+    max_read_bytes: int = Field(ge=4096, le=16777216)
+    max_record_bytes: int = Field(ge=4096, le=4194304)
+    recent_events: int = Field(ge=1, le=50)
+    collaboration: OfficeCollaborationCfg | None = None
+    execution: OfficeExecutionCfg | None = None
+
+
+class PresentationCfg(BaseModel):
+    """Deck-lint limits (docs/presentation-guide.md § Visual acceptance)."""
+    model_config = ConfigDict(extra="forbid")
+    # Largest text on a content slide must be >= this multiple of its body size.
+    focal_text_ratio: float = Field(ge=1.5, le=10)
+    # A picture/chart covering >= this fraction of the slide counts as the focal element.
+    focal_visual_min_area: float = Field(gt=0, lt=1)
+    # A picture covering >= this fraction is a background, not a focal element or artwork.
+    background_min_area: float = Field(gt=0, le=1)
+    # Composition rhythm over content slides (cover and exempt slides excluded).
+    rhythm_max_run: int = Field(ge=1, le=10)                # consecutive slides with one layout
+    rhythm_max_share: float = Field(gt=0, le=1)             # fraction of content slides per layout
+    rhythm_min_content_slides: int = Field(ge=2, le=50)     # share rule applies from this deck size
+
+
 class Thresholds(BaseModel):
     model_config = ConfigDict(extra="forbid")
     owner_configured: Literal[True]
@@ -282,6 +333,8 @@ class Thresholds(BaseModel):
     logging_defaults: LoggingDefaultsCfg = Field(default_factory=LoggingDefaultsCfg)
     circuit_breakers: list[Breaker] = Field(default_factory=list)
     scoring: Scoring
+    office: OfficeCfg | None = None
+    presentation: PresentationCfg | None = None
 
 
 def parse_date_from_filename(path: Path) -> date:
