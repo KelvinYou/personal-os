@@ -6,6 +6,8 @@ section changed.
 
 ## 2026-10-04 — Diagnose corrected outputs for valuable systemic improvements
 
+**Class:** `correction-process`
+
 **What I did:** The first HTML update matched the web's icons but retained a different visual treatment. Subsequent refinement aligned the presentation and exposed conflicting guidance in the skill entry.
 
 **Your correction:** "如果我prompt了一次，ai出来的result不对，就思考看看是什么原因，是不是docs不够清晰，skills可以改进，值得做成script来稳定输出等的思考，如果价值非常高，就提这个意见让我同意去优化。"
@@ -15,6 +17,8 @@ section changed.
 **Outcome:** merged — the user approved the exact wording proposed in the conversation with "加上". Added AGENTS.md § "Learn from Corrected Outputs". Existing pending corrections remain unreviewed.
 
 ## 2026-09-29 — Travel photography advice became a shooting assignment
+
+**Class:** `travel-photo-scope`
 
 **What I did:** I turned an interest in spontaneous travel photos into city-by-city capture and note-taking prompts that felt too deliberate.
 
@@ -28,6 +32,8 @@ section changed.
 
 ## 2026-10-02 — Suggested extending custom sync before checking official integration
 
+**Class:** `official-integration-first`
+
 **What I did:** I recommended automating the existing COROS sync pipeline without first checking whether an official integration could remove the need to maintain it.
 
 **Your correction:** "coros已有自己的mcp，不需要我现在这套，看看如何使用"
@@ -39,6 +45,8 @@ section changed.
 **Outcome (2026-10-07):** reworded — approved by the owner on 2026-10-07. Added AGENTS.md § "Key Conventions": "Before extending a custom external-service integration, check whether an official connector or MCP meets the required capabilities. Verify coverage and affected consumers before retiring the existing integration." The COROS integration is implemented in docs/design/coros-official-mcp.md and its consumers; that document still marks real live-data acceptance as pending. Archiving this correction does not certify that acceptance. The owner approved this disposition during the correction-queue review.
 
 ## 2026-10-04 — Visual reference was reduced to material effects
+
+**Class:** `design-bypass`
 
 **What I did:** I described the requested Apple-inspired travel UI mainly through Liquid Glass effects and initially changed generated pages before recognizing that the user wanted the reusable skill updated.
 
@@ -52,6 +60,8 @@ section changed.
 
 ## 2026-10-04 — Restrained styling flattened consequential information
 
+**Class:** `design-bypass`
+
 **What I did:** The travel HTML used similar neutral panels for critical pre-departure actions and ordinary context; the initial restyle also treated day warnings as generic notes.
 
 **Your correction:** "太单调了，先确认，再出发。这种应该放个warning换个颜色等证明她重要"; "边优化边打开来看"; "尽量不要纯字段看着很boring，需要让人一看就懂的感觉"
@@ -63,6 +73,8 @@ section changed.
 **Outcome (2026-10-07):** rejected — no additional AGENTS.md rule. Semantic emphasis and reader composition are implemented in docs/design-system.md, .agents/skills/travel-plan/references/share-html.md and assets/share.css. Actual desktop/mobile inspection remains required for visual changes. The owner approved this disposition during the correction-queue review.
 
 ## 2026-10-06 — Travel deliverables should be HTML only
+
+**Class:** `content-loss`
 
 **What I did:** I maintained the trip in Markdown and synchronized companion HTML, following the travel-plan skill's source-plan convention.
 
@@ -88,6 +100,8 @@ section changed.
 
 ## 2026-10-01 — Restaurant search was restricted to the hotel street
 
+**Class:** `restaurant-radius`
+
 **What I did:** I treated nearby dining as limited to the hotel street and prioritised convenience over worthwhile local restaurants reachable by a short trip.
 
 **Your correction:** "不一定要酒店楼下，可以是搭地铁到隔壁春熙路还是哪里都行"
@@ -97,3 +111,60 @@ section changed.
 **Status at capture:** pending
 
 **Outcome (2026-10-07):** rejected — no global instruction change; this was a trip-specific dining scope clarification. The owner approved archiving it. This entry was previously embedded inside the pending-file template comment and has been extracted into a normal archive entry. No claim is made here that current private dining choices were independently reverified.
+
+## 2026-11-04 — Office and home UI bypassed the design system's controls
+
+**Class:** `design-bypass`
+
+**What I did:** Generated office / office-collaboration / home UI with native `<select>`, `<input>`, `<textarea>`, hand-styled `<button>` and page-level hex palettes. The design system only said "reuse Select"; it had no NEVER rule for native controls, no Input/Textarea primitive, and `make design-check` only checked colour contrast, so nothing failed.
+
+**Your correction:** "目前web里，感觉很多样式都没有按规范来，例如select。看看是design system漏掉了还是什么个事情，在office和home都是有这个问题" / "主要先确保每次生成的ui都严格根据规范"
+
+**Proposed `ui-design-rules` skill change (Components section):**
+- "NEVER write a native `<select>`, `<input>`, `<textarea>` or hand-styled `<button>` in `web/`; use `Select`, `Input` / `Textarea` (`components/ui/input.tsx`) and `Button` / `buttonClass()` (`components/ui/button.tsx`)."
+- "NEVER restyle `.design-select-*` internals from page CSS; only width on the trigger is allowed."
+- "NEVER add a hex colour to page CSS or a Tailwind `[#hex]` class; add a token to `globals.css`."
+- "A standalone HTML page (e.g. `home-design/apartment.html`) must import the design tokens or be rewritten as React."
+- "Before saying done, `make design-check` must pass; it now includes the `design_rules_check.py` ratchet."
+
+**Already applied (code, not behavior wording):** `Input` / `Textarea` primitives, `buttonClass()`, office + office-collaboration + home-preview buttons migrated to `Button`, and `scripts/design_rules_check.py` with `scripts/design_rules_baseline.json` (194 baselined violations, new ones fail `make design-check` and `make test`). Remaining baseline: native buttons in office (chips, toggles, rows), 100 hex values in `office.css`, `apartment.html` controls, finance table inputs.
+
+**Status at capture:** pending
+
+**Outcome (2026-11-04):** accepted — the NEVER rules landed in `.agents/skills/ui-design-rules/SKILL.md` (Components section and the done-checklist). A `PreToolUse` / `PostToolUse` hook on Write|Edit in `.claude/settings.json` (`scripts/design_hook.sh`) injects the rules before a `web/` edit and reports ratchet failures right after it. The owner approved this in-session ("都做"). `apartment.html` is still on the baseline; it needs a separate decision (token stylesheet vs React).
+
+## 2026-11-06 — Shared 3D style must be realized in presentation artwork
+
+**Class:** `design-bypass`
+
+**What I did:** Extracted a shared artifact style with a rounded matte 3D default,
+but described generated illustrations as optional and added no explicit artwork
+acceptance criterion. Claimed PPT would inherit the shared style without a trial
+deck. Inspection of the first dtc-e2e overview PPT and its v2 found 12 slides each,
+zero embedded media and zero picture elements; the contact sheet shows flat text
+and shapes. This confirms the output mismatch, but does not establish which
+instructions the generating session read.
+
+**Your correction:** "我生成的第一版ppt没有3d图片的？规范没立对吗"
+
+**Proposed AGENTS.md change:** none pending owner agreement on the smallest
+source-level clarification. Proposed shared-style wording: "When the shared 3D
+style applies, include actual topic-relevant rounded matte 3D artwork on the cover
+and representative mechanism/explanation pages. Text, tables and charts can remain
+editable and flat; they do not replace the required artwork. A deck with zero 3D
+artwork does not pass shared-style acceptance unless explicitly overridden by the
+owner or a supplied template." The shared guide would require checking visible
+artwork, and the PPT adapter would describe editable text plus image assets.
+No instruction changes or PPT regeneration were applied in this review.
+
+**Status at capture:** pending
+
+**Outcome (2026-11-06):** accepted — the owner approved the proposed definition
+with "做". Applied the requirement in `data/reference/artifact-style.md`,
+`docs/artifact-design-guide.md` and `docs/presentation-guide.md`: actual 3D artwork
+on the cover and main mechanism/explanation pages, combined with editable text and
+diagrams; zero-artwork drafts fail the selected style unless explicitly overridden.
+Production notes must identify artwork pages/assets, and rendered output must be
+visually checked. Existing AGENTS.md routing already loads these owners, so no
+additional AGENTS.md wording was needed. No PPT regeneration was requested or
+performed as part of this specification update.
