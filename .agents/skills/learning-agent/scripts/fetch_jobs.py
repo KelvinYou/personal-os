@@ -51,6 +51,14 @@ def is_fresh_today(path: Path) -> bool:
     return mtime.date() == datetime.now(timezone.utc).date()
 
 
+def clean(value):
+    """Map pandas missing values (NaN / NaT / None) to None so output stays valid JSON."""
+    try:
+        return None if value != value or value is None else value  # NaN != NaN
+    except (TypeError, ValueError):  # NaT and array-likes refuse comparison
+        return None if str(value) in ("NaT", "nan") else value
+
+
 def scrape(query: str, location: str, sources: list[str], limit: int, hours_old: int) -> list[dict]:
     try:
         from jobspy import scrape_jobs  # type: ignore
@@ -87,10 +95,11 @@ def scrape(query: str, location: str, sources: list[str], limit: int, hours_old:
 
     # Normalize to plain dicts, keep only fields useful for skill extraction.
     records: list[dict] = []
-    for _, row in df.iterrows():
+    for _, raw in df.iterrows():
+        row = {k: clean(v) for k, v in raw.items()}
         records.append(
             {
-                "id": str(row.get("id", "")),
+                "id": str(row.get("id") or ""),
                 "site": row.get("site"),
                 "title": row.get("title"),
                 "company": row.get("company"),
@@ -98,9 +107,10 @@ def scrape(query: str, location: str, sources: list[str], limit: int, hours_old:
                 "job_url": row.get("job_url"),
                 "description": row.get("description") or "",
                 "job_type": row.get("job_type"),
-                "date_posted": str(row.get("date_posted")) if row.get("date_posted") else None,
+                "date_posted": str(row["date_posted"]) if row.get("date_posted") else None,
                 "min_amount": row.get("min_amount"),
                 "max_amount": row.get("max_amount"),
+                "interval": row.get("interval"),  # yearly / monthly / hourly — needed to compare amounts
                 "currency": row.get("currency"),
                 "is_remote": row.get("is_remote"),
                 "skills_extracted": None,  # populated by LLM pass downstream
@@ -142,6 +152,20 @@ def main() -> int:
     jobs = scrape(args.query, args.location, sources, limit, args.hours_old)
     elapsed = time.time() - started
 
+    # JobSpy logs per-site failures (SSL, 429, schema drift) and returns whatever
+    # succeeded. Zero jobs across every source means the scan failed, not that the
+    # market is empty — fail loud and don't write a file the cache would then trust.
+    if not jobs:
+        print(
+            f"ERROR: all sources returned 0 jobs ({', '.join(sources)}). "
+            "Check the JobSpy errors above; nothing was written.",
+            file=sys.stderr,
+        )
+        return 4
+    empty = [s for s in sources if not any(j["site"] == s for j in jobs)]
+    if empty:
+        print(f"WARN: no data from {', '.join(empty)} — sample is partial.", file=sys.stderr)
+
     payload = {
         "query": args.query,
         "location": args.location,
@@ -152,9 +176,10 @@ def main() -> int:
         "fetch_duration_sec": round(elapsed, 1),
         "query_hash": build_query_hash(args.query, args.location, sources),
         "job_count": len(jobs),
+        "sources_empty": empty,
         "jobs": jobs,
     }
-    output.write_text(json.dumps(payload, indent=2, default=str, ensure_ascii=False))
+    output.write_text(json.dumps(payload, indent=2, default=str, ensure_ascii=False, allow_nan=False))
     print(f"Saved {len(jobs)} jobs to {output} ({elapsed:.1f}s)", file=sys.stderr)
     return 0
 

@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 import time
 from datetime import datetime, timezone
@@ -50,6 +51,30 @@ def is_fresh_today(path: Path) -> bool:
         return False
     mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
     return mtime.date() == datetime.now(timezone.utc).date()
+
+
+_AMOUNT_RE = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*([kK])?")
+_INTERVALS = {"hour": "hourly", "day": "daily", "week": "weekly", "month": "monthly", "year": "yearly", "annum": "yearly"}
+
+
+def parse_salary(j: dict) -> tuple[float | None, float | None, str | None]:
+    """Return (min, max, interval) from a SEEK job record.
+
+    The v5 search API exposes salary only as display text, e.g.
+    "RM 8,500 – RM 12,500 per month"; older payloads had a {min, max} dict.
+    """
+    sal = j.get("salary")
+    if isinstance(sal, dict):
+        return sal.get("min"), sal.get("max"), None
+    label = j.get("salaryLabel") or ""
+    amounts = [
+        float(num.replace(",", "")) * (1000 if k else 1)
+        for num, k in _AMOUNT_RE.findall(label)
+    ]
+    if not amounts:
+        return None, None, None
+    interval = next((v for key, v in _INTERVALS.items() if key in label.lower()), None)
+    return min(amounts), max(amounts), interval
 
 
 def build_query_hash(query: str, country: str) -> str:
@@ -127,6 +152,7 @@ def fetch_api(query: str, country: str, limit: int) -> list[dict]:
                 break
 
             for j in raw_jobs:
+                min_amount, max_amount, interval = parse_salary(j)
                 all_records.append(
                     {
                         "id": str(j.get("id") or j.get("jobId") or ""),
@@ -147,12 +173,10 @@ def fetch_api(query: str, country: str, limit: int) -> list[dict]:
                         ),
                         "job_type": j.get("workType"),
                         "date_posted": j.get("listingDate") or j.get("postedDate"),
-                        "min_amount": (j.get("salary") or {}).get("min")
-                        if isinstance(j.get("salary"), dict)
-                        else None,
-                        "max_amount": (j.get("salary") or {}).get("max")
-                        if isinstance(j.get("salary"), dict)
-                        else None,
+                        "min_amount": min_amount,
+                        "max_amount": max_amount,
+                        "interval": interval,
+                        "salary_label": j.get("salaryLabel"),
                         "currency": "MYR" if country == "my" else "SGD",
                         "is_remote": bool(j.get("isRemote", False)),
                         "skills_extracted": None,
