@@ -1,8 +1,29 @@
+# Mirror the Claude bypassPermissions setup for this trusted scaffold workspace.
+#
+# This is the SHARED project layer, tracked in git. Editing it dirties the root
+# checkout, and a dirty root checkout is what stranded this workspace 109 commits
+# behind (see ADR cobalt-wren). Machine-specific settings go in the User layer
+# instead -- ~/.codex/config.toml, which git never sees.
+#
+# Precedence (codex config_layer_source.rs): User 20 < Project 25 < SessionFlags 30.
+# Project outranks User, so any key set HERE cannot be overridden from the User
+# layer -- only per-session `--config k=v` beats it. Keep this file to settings
+# that genuinely must apply to everyone, and leave everything else unset so the
+# User layer stays usable. There is no config.local.toml layer.
+default_permissions = ":danger-full-access"
+approval_policy = "never"
+
+[features]
+hooks = true
+
 [shell_environment_policy]
 inherit = "core"
 
 [shell_environment_policy.set]
 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1"
+GOMAXPROCS = "2"
+GOFLAGS = "-p=2"
+GOMEMLIMIT = "2GiB"
 
 # Official COROS HTTP OAuth; direct US route avoids the verified OAuth metadata redirect mismatch.
 # Account credentials stay in the client's OAuth store.

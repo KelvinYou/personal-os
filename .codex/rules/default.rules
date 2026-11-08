@@ -1,0 +1,103 @@
+# Hard blocks matching the Claude deny list in .claude/settings.json.
+prefix_rule(
+    pattern = ["rm", "-rf", "/"],
+    decision = "forbidden",
+    justification = "Refuse destructive root deletion.",
+    match = ["rm -rf /"],
+)
+
+prefix_rule(
+    pattern = ["rm", "-fr", "/"],
+    decision = "forbidden",
+    justification = "Refuse destructive root deletion.",
+    match = ["rm -fr /"],
+)
+
+prefix_rule(
+    pattern = ["rm", "-r", "-f", "/"],
+    decision = "forbidden",
+    justification = "Refuse destructive root deletion.",
+    match = ["rm -r -f /"],
+)
+
+prefix_rule(
+    pattern = ["rm", "-f", "-r", "/"],
+    decision = "forbidden",
+    justification = "Refuse destructive root deletion.",
+    match = ["rm -f -r /"],
+)
+
+prefix_rule(
+    pattern = ["mkfs"],
+    decision = "forbidden",
+    justification = "Filesystem formatting commands are blocked.",
+    match = ["mkfs /dev/sda"],
+)
+
+prefix_rule(
+    pattern = [
+        [
+            "mkfs.ext2",
+            "mkfs.ext3",
+            "mkfs.ext4",
+            "mkfs.xfs",
+            "mkfs.btrfs",
+            "mkfs.vfat",
+            "mkfs.fat",
+            "mkfs.ntfs",
+            "mke2fs",
+        ],
+    ],
+    decision = "forbidden",
+    justification = "Filesystem formatting commands are blocked.",
+    match = ["mkfs.ext4 /dev/sda1", "mke2fs /dev/sda1"],
+)
+
+prefix_rule(
+    pattern = [
+        "sudo",
+        [
+            "mkfs",
+            "mkfs.ext2",
+            "mkfs.ext3",
+            "mkfs.ext4",
+            "mkfs.xfs",
+            "mkfs.btrfs",
+            "mkfs.vfat",
+            "mkfs.fat",
+            "mkfs.ntfs",
+            "mke2fs",
+        ],
+    ],
+    decision = "forbidden",
+    justification = "Filesystem formatting commands are blocked.",
+    match = ["sudo mkfs.ext4 /dev/sda1"],
+)
+
+prefix_rule(
+    pattern = ["shutdown"],
+    decision = "forbidden",
+    justification = "Host shutdown commands are blocked.",
+    match = ["shutdown now"],
+)
+
+prefix_rule(
+    pattern = ["sudo", "shutdown"],
+    decision = "forbidden",
+    justification = "Host shutdown commands are blocked.",
+    match = ["sudo shutdown now"],
+)
+
+prefix_rule(
+    pattern = ["reboot"],
+    decision = "forbidden",
+    justification = "Host reboot commands are blocked.",
+    match = ["reboot"],
+)
+
+prefix_rule(
+    pattern = ["sudo", "reboot"],
+    decision = "forbidden",
+    justification = "Host reboot commands are blocked.",
+    match = ["sudo reboot"],
+)

@@ -27,6 +27,9 @@ The analysis needs:
 - Daily logs from the same period
 - This month's session evals (`reports/evals/*.md`, produced by `make eval`) —
   dimension E needs this. If missing, just report A–D, don't skip the whole report
+- Correction-queue recurrence (`python3 scripts/session_eval.py --corrections`) and
+  `reports/corrections/enforcement.md` — dimension F. Independent of evals; available even
+  when there are no session evals
 
 If there isn't enough data, tell the user how many more weeks are needed and don't force an analysis.
 
@@ -46,11 +49,18 @@ ls -t data/daily/*.md | head -28
 
 # The agent's own signal distribution this month (the only input for dimension E)
 make eval-rollup MONTH=YYYY-MM
+
+# Which correction classes came back, per month (input for dimension F; read this BEFORE
+# proposing any instruction change, so the proposal targets the class that is actually repeating)
+python3 scripts/session_eval.py --corrections
 ```
+
+Then read `reports/corrections/enforcement.md`: the rule → enforcer table and each class's
+current enforcement level.
 
 Read the most recent 4 weekly reports + 4 timetables + the corresponding daily logs.
 
-### Step 2: Analyze five dimensions
+### Step 2: Analyze six dimensions
 
 #### A. Plan vs Reality Delta
 
@@ -105,6 +115,29 @@ an audit that only reports negatives gets ignored, which is the same as having n
 read its falsifier first to confirm it isn't a classifier false positive. `unverified-mutation` is the easiest false positive:
 `scripts/lib/transcript.py:_BASH_VERIFY` only recognizes the commands it explicitly lists.
 
+#### F. Correction Recurrence
+
+Dimension E counts behavior signals; F counts whether the owner's corrections stopped
+recurring. A repeat is a correction whose `**Class:**` already appeared earlier — the previous
+fix did not prevent it. This is the evidence for choosing which escalation to make next.
+
+For every class that repeated in the audited month:
+
+1. Look up its current level in `enforcement.md` (architecture / types / lint-hook-CI / test / docs).
+2. Recommend the **next rung up the ladder**, never a reworded doc rule. A class that repeats while
+   only docs enforce it is, by the AGENTS.md ladder, a repeat to escalate. If it is already at
+   lint or above and still repeats, say which case the check missed (cite the entry date) — the
+   check has a gap, not the agent.
+3. Name the real past entry the new check must fail on (AGENTS.md: prove each check on a real past
+   mistake).
+
+Before/after: when `enforcement.md` records an escalation date for a class, compare that class's
+repeats in the months before and after. One month after an escalation is too early to conclude;
+report it as "pending" until two later months exist.
+
+Also report: unclassified entries (they undercount repeats), and classes with no repeat for two
+months or more (candidates to drop from the rule table).
+
 ### Step 3: Output the report
 
 Write to `data/reports/YYYY-MM-meta-audit.md`:
@@ -134,6 +167,11 @@ Write to `data/reports/YYYY-MM-meta-audit.md`:
 - Positive: `context-gathered` XX% / `verified-mutation` XX%
 - Verdict: OK / one item should go into AGENTS.md
 
+## Correction Recurrence
+- This month: N corrections, N repeats (XX%); last month XX%
+- Repeating class `slug` — current level: docs → proposed: lint (`<check>`), must fail on YYYY-MM-DD entry
+- Escalations under observation: `slug` escalated YYYY-MM-DD — before N/month, after N/month (pending / effective / not effective)
+
 ## Recommendations
 1. ...
 2. ...
@@ -156,3 +194,4 @@ If the user has reviewed decisions, check:
 - Never judge the user's behavior — only audit the agent's advice quality
 - Never change the factual block or signals in an eval record (those are mechanical output; only fill in the review fields)
 - Never conclude anything from a single bad-looking session — only look at the rollup distribution
+- Never edit `reports/corrections/` or assign classes yourself — propose; the owner reviews the queue
