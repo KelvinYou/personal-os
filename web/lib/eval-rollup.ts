@@ -17,6 +17,31 @@ export interface EvalRollup {
   signals: Record<string, { count: number; share_pct: number }>;
   proposed_agents_md_changes: { file: string; change: string }[];
   bug_share_threshold_pct: number;
+  corrections?: CorrectionMonth | null;
+}
+
+/** One month of correction-queue recurrence (scripts/lib/corrections.py). */
+export interface CorrectionMonth {
+  month: string;
+  logged: number;
+  unclassified: number;
+  repeats: number;
+  repeat_rate_pct: number | null;
+  repeat_entries: { date: string; title: string; class: string }[];
+  classes: Record<string, number>;
+}
+
+/** Per-month correction recurrence via `session_eval.py --corrections --json`; null = load failed. */
+export async function loadCorrectionRecurrence(): Promise<CorrectionMonth[] | null> {
+  try {
+    const { stdout } = await run(PYTHON, [SCRIPT, "--corrections", "--json"], {
+      cwd: REPO_ROOT,
+      maxBuffer: 8 * 1024 * 1024,
+    });
+    return JSON.parse(stdout) as CorrectionMonth[];
+  } catch {
+    return null;
+  }
 }
 
 /**

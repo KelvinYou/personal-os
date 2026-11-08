@@ -1,15 +1,16 @@
 import { EvalSignalChart } from "@/components/eval-signal-chart";
+import { DataState } from "@/components/shared/data-state";
 import { SectionCard } from "@/components/shared/section-card";
 import { Stat } from "@/components/shared/stat";
 import { StatusBadge } from "@/components/status-badge";
-import { loadEvalRollupHistory } from "@/lib/eval-rollup";
+import { loadCorrectionRecurrence, loadEvalRollupHistory } from "@/lib/eval-rollup";
 import { pct } from "@/lib/utils";
 
 // Always re-read: rollup-*.json changes outside the app's knowledge (make eval-rollup).
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const history = await loadEvalRollupHistory();
+  const [history, corrections] = await Promise.all([loadEvalRollupHistory(), loadCorrectionRecurrence()]);
   const latest = history[history.length - 1];
 
   const topSignal = latest
@@ -66,8 +67,8 @@ export default async function Page() {
           title="月度明细"
           description={`超过 ${latest?.bug_share_threshold_pct ?? 50}% 标 Warning —— 不是"这次做得差"，是"AGENTS.md 该改了"`}
         >
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto" role="region" aria-label="月度 signal 明细" tabIndex={0}>
+            <table className="w-full min-w-[30rem] text-sm [&_td]:whitespace-nowrap [&_th]:whitespace-nowrap">
               <thead>
                 <tr className="border-b text-left text-[11px] uppercase tracking-wide text-muted-foreground">
                   <th className="pb-2 pr-3 font-medium">月份</th>
@@ -114,6 +115,60 @@ export default async function Page() {
           </div>
         </SectionCard>
       )}
+
+      <SectionCard
+        title="纠错复发"
+        description="来自 reports/corrections/ 每条纠错的 Class 字段。复发 = 之前已经出现过同一 class 的纠错——上一次的修正没挡住。升级强制层级后，这个比例应该下降"
+      >
+        {corrections === null ? (
+          <DataState
+            state="error"
+            title="纠错记录读取失败"
+            description={<>在仓库根目录跑 <code>python3 scripts/session_eval.py --corrections</code> 查看错误。</>}
+          />
+        ) : corrections.length === 0 ? (
+          <DataState
+            state="empty"
+            title="还没有纠错记录"
+            description={<>纠错写入 <code>reports/corrections/pending.md</code> 后会出现在这里。</>}
+          />
+        ) : (
+          <div className="overflow-x-auto" role="region" aria-label="纠错复发明细" tabIndex={0}>
+            <table className="w-full min-w-[32rem] text-sm [&_td]:whitespace-nowrap [&_th]:whitespace-nowrap">
+              <thead>
+                <tr className="border-b text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <th className="pb-2 pr-3 font-medium">月份</th>
+                  <th className="pb-2 pr-3 text-right font-medium">纠错数</th>
+                  <th className="pb-2 pr-3 text-right font-medium">复发</th>
+                  <th className="pb-2 pr-3 text-right font-medium">复发率</th>
+                  <th className="pb-2 font-medium">复发的 class</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...corrections].reverse().map((r) => {
+                  const classes = [...new Set(r.repeat_entries.map((e) => e.class))];
+                  return (
+                    <tr key={r.month} className="border-b align-top last:border-0">
+                      <td className="py-2 pr-3 text-foreground">{r.month}</td>
+                      <td className="num py-2 pr-3 text-right">{r.logged}</td>
+                      <td className="num py-2 pr-3 text-right">{r.repeats}</td>
+                      <td className="num py-2 pr-3 text-right">
+                        {r.repeat_rate_pct === null ? "—" : pct(r.repeat_rate_pct, 0)}
+                      </td>
+                      <td className="py-2 text-foreground">
+                        {classes.length ? classes.join(", ") : <span className="text-muted-foreground">无</span>}
+                        {r.unclassified > 0 && (
+                          <span className="block text-xs text-muted-foreground">{r.unclassified} 条未标 class，复发数偏低</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </SectionCard>
 
       <footer className="border-t pt-6 text-[11px] leading-relaxed text-muted-foreground">
         <code>judgement</code> / <code>agents_md_change</code> / <code>notes</code>{" "}

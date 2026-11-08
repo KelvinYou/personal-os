@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "source_status": "connected",
+  "source": "codex_local_transcript",
+  "observed_at": "2026-11-01T12:00:00Z",
+  "poll_interval_ms": 3000,
+  "stale_after_seconds": 180,
+  "warnings": [],
+  "sessions": [
+    {
+      "session_id": "00000000-0000-4000-8000-000000000001",
+      "parent_session_id": null,
+      "runtime": "codex",
+      "role_ids": [],
+      "state": "working",
+      "evidence": "local_transcript",
+      "started_at": "2026-11-01T12:00:00Z",
+      "last_event_at": "2026-11-01T12:00:00Z",
+      "activity_label": "Running a command",
+      "last_tool_outcome": null,
+      "coverage": "observed",
+      "events": [
+        {
+          "id": "synthetic-event-0",
+          "at": "2026-11-01T12:00:00Z",
+          "kind": "started",
+          "label": "Working on a turn"
+        },
+        {
+          "id": "synthetic-event-1",
+          "at": "2026-11-01T12:00:00Z",
+          "kind": "command",
+          "label": "Running a command"
+        }
+      ],
+      "artifact_refs": []
+    }
+  ]
+}

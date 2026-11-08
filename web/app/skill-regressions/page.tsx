@@ -1,6 +1,7 @@
 import { FlaskConical, ArrowRight, FileSearch } from "lucide-react";
 import { SectionCard } from "@/components/shared/section-card";
 import { Stat } from "@/components/shared/stat";
+import { DataState } from "@/components/shared/data-state";
 import { StatusBadge } from "@/components/status-badge";
 import { loadSkillRegressions, type Outcome, type CheckStatus } from "@/lib/skill-regressions";
 
@@ -17,11 +18,15 @@ export default async function Page() {
   let report;
   try { report = await loadSkillRegressions(); }
   catch (error) {
-    return <main className="container max-w-5xl py-12"><SectionCard title="Skill evidence unavailable">
-      <StatusBadge severity="Critical">Could not load regression evidence</StatusBadge>
-      <p className="mt-4 text-sm">Run <code>python3 scripts/skill_regressions.py --json</code> from the repository root to diagnose the error.</p>
-      <pre className="mt-4 whitespace-pre-wrap break-words text-xs">{String(error)}</pre>
-    </SectionCard></main>;
+    return <main id="main-content" className="container max-w-5xl space-y-6 py-12">
+      <h1 className="text-3xl font-semibold tracking-tight">Skill regressions</h1>
+      <DataState headingLevel={2} state="error" title="Skill evidence unavailable" description="The regression report could not be loaded. Try loading it again; if the problem continues, inspect the local diagnostic below." action={<a href="/skill-regressions" className="inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted">Try again</a>} />
+      <details className="rounded-xl border bg-card p-5">
+        <summary className="cursor-pointer py-2 text-sm font-medium">Local diagnostic</summary>
+        <p className="mt-4 text-sm leading-6">Run <code>python3 scripts/skill_regressions.py --json</code> from the repository root to diagnose the error.</p>
+        <pre className="mt-4 whitespace-pre-wrap break-words text-xs">{String(error)}</pre>
+      </details>
+    </main>;
   }
   return (
     <main id="main-content" className="container max-w-6xl space-y-10 px-6 py-10 md:py-14">
@@ -48,14 +53,14 @@ export default async function Page() {
         {report.errors.map(item => <p key={item.path} className="mt-3 break-words text-sm">{item.path}: {item.message}</p>)}
       </SectionCard>}
       <SectionCard title="Configuration comparison" icon={FlaskConical} description="Counts remain visible; a small sample is not evidence of a causal skill benefit.">
-        <div className="overflow-x-auto"><table className="w-full text-left text-sm">
+        {report.configurations.length === 0 ? <DataState state="empty" title="No configurations to compare" description="Configuration counts appear after a regression run is recorded. An empty report is not evidence that checks passed." /> : <div role="region" aria-label="Configuration comparison" tabIndex={0} className="max-w-full overflow-x-auto"><table className="w-full text-left text-sm">
           <thead><tr className="border-b text-xs text-muted-foreground">{["Configuration", "Pass", "Fail", "Inconclusive", "Unreviewed", "Conclusive pass rate"].map(label => <th key={label} className="px-3 py-3 font-medium">{label}</th>)}</tr></thead>
           <tbody>{report.configurations.map(config => <tr key={config.name} className="border-b last:border-0">
             <td className="px-3 py-3">{config.name.replaceAll("_", " ")}</td>
             {[config.passed, config.failed, config.inconclusive, config.unreviewed].map((n, i) => <td key={i} className="num px-3 py-3">{n}</td>)}
             <td className="num px-3 py-3">{config.pass_rate === null ? "Not available" : `${(config.pass_rate * 100).toFixed(0)}% (${config.passed}/${config.conclusive})`}</td>
           </tr>)}</tbody>
-        </table></div>
+        </table></div>}
       </SectionCard>
       <SectionCard title="Cases and execution stages" icon={FileSearch} description="Open a case for its acceptance checks, reviewed outputs and evidence gaps.">
         <div className="space-y-4">{report.cases.map(item => <details key={item.id} className="rounded-2xl border p-4 md:p-5">

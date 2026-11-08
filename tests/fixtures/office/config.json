@@ -1,0 +1,10 @@
+{
+  "poll_interval_ms": 3000,
+  "stale_after_seconds": 180,
+  "history_days": 3,
+  "max_sessions": 32,
+  "max_candidates": 256,
+  "max_read_bytes": 2097152,
+  "max_record_bytes": 262144,
+  "recent_events": 8
+}
