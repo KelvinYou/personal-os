@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<script>try{if(matchMedia("(prefers-color-scheme: dark)").matches)document.documentElement.classList.add("dark")}catch(e){}</script>
+{{asset_styles}}
+{{page_style}}
+</head>
+<body>
+<a class="ui-skip" href="#main-content">Skip to content</a>
+<main id="main-content" class="ui-page">
+<header>
+{{eyebrow}}
+<h1>{{title}}</h1>
+{{summary}}
+</header>
+{{body}}
+</main>
+</body>
+</html>

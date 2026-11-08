@@ -20,7 +20,7 @@ export function Stat({
   return (
     <div
       className={cn(
-        "finance-stat flex flex-col gap-2 rounded-2xl border bg-card p-5",
+        "finance-stat min-w-0 [overflow-wrap:anywhere] flex flex-col gap-2 rounded-[var(--radius-panel)] border bg-card p-5",
         className,
       )}
     >

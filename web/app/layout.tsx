@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DashboardNav } from "@/components/dashboard-nav";
 import "./globals.css";
+import "./design-controls.css";
 
 export const metadata: Metadata = {
   title: "Personal OS Dashboard",

@@ -1,0 +1,21 @@
+/* Shared layout for standalone Personal-OS pages built by scripts/ui_build.py.
+   Tokens come from web/app/design-controls.css (embedded before this file). No colours here. */
+/* In the web app globals.css paints the page; a standalone page has no globals.css, so do it here. */
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+body { margin: 0; background: hsl(var(--background)); color: hsl(var(--foreground)); line-height: 1.5; }
+.ui-skip { position: absolute; left: -9999px; }
+.ui-skip:focus { left: 16px; top: 16px; z-index: 10; padding: 8px 12px; border-radius: 8px; background: hsl(var(--card)); color: hsl(var(--foreground)); }
+.ui-page { box-sizing: border-box; max-width: 1080px; margin: 0 auto; padding: 40px 16px 64px; }
+.ui-page * { box-sizing: border-box; }
+.ui-eyebrow { margin: 0 0 8px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
+.ui-summary { margin: 12px 0 0; max-width: 68ch; line-height: 1.6; color: hsl(var(--muted-foreground)); }
+.ui-section { margin-top: var(--space-section); }
+.ui-card { background: hsl(var(--card)); color: hsl(var(--card-foreground)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-surface); padding: 20px; }
+.ui-card > :first-child { margin-top: 0; }
+.ui-card > :last-child { margin-bottom: 0; }
+.ui-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.ui-muted { color: hsl(var(--muted-foreground)); }
+.ui-media { display: block; width: 100%; height: auto; border-radius: calc(var(--radius-surface) - 6px); }
+.ui-page a { color: hsl(var(--brand)); }
+@media (max-width: 760px) { .ui-page { padding-top: 24px; } }

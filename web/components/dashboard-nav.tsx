@@ -1,17 +1,23 @@
 "use client";
 
-import { WalletCards, Activity, Workflow, Settings2, SunMoon, Layers, FlaskConical } from "lucide-react";
+import { WalletCards, Activity, Workflow, Settings2, SunMoon, Layers, FlaskConical, Box, House } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AppearanceMenu } from "@/components/shared/appearance-menu";
 
 export function DashboardNav() {
   const path = usePathname();
   const [dark, setDark] = useState(false);
   const [solid, setSolid] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"));
     setSolid(document.documentElement.dataset.material === "solid");
+    const updateScroll = () => setScrolled(window.scrollY >= 12);
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    return () => window.removeEventListener("scroll", updateScroll);
   }, []);
   function toggleTheme() {
     const next = !dark;
@@ -26,20 +32,17 @@ export function DashboardNav() {
     try { localStorage.setItem("os-material", next ? "solid" : "glass"); } catch {}
   }
   return (
-    <nav className="dashboard-nav glass-surface" aria-label="Main navigation">
+    <nav className="dashboard-nav glass-surface" aria-label="Main navigation" data-scrolled={scrolled}>
       <Link href="/" className="nav-brand">Personal OS<span>Local workspace</span></Link>
       <div className="nav-links">
-        {[{ href: "/", label: "Finance", icon: WalletCards }, { href: "/eval-rollup", label: "Agent signals", icon: Activity }, { href: "/skill-regressions", label: "Skill evals", icon: FlaskConical }, { href: "/flows", label: "Flows", icon: Workflow }].map(item => (
-          <Link key={item.href} href={item.href} aria-current={path === item.href ? "page" : undefined}><item.icon size={17} aria-hidden="true" />{item.label}</Link>
+        {[{ href: "/", label: "Office", icon: Box }, { href: "/finance", label: "Finance", icon: WalletCards }, { href: "/home-design", label: "Home", icon: House }, { href: "/eval-rollup", label: "Agent signals", icon: Activity }, { href: "/skill-regressions", label: "Skill evals", icon: FlaskConical }, { href: "/flows", label: "Flows", icon: Workflow }, { href: "/design-system", label: "Design", icon: Layers }].map(item => (
+          <Link key={item.href} href={item.href} aria-current={(path === item.href || (item.href === "/" && path.startsWith("/office"))) ? "page" : undefined}><item.icon size={17} aria-hidden="true" />{item.label}</Link>
         ))}
       </div>
-      <details className="appearance-menu">
-        <summary><Settings2 size={16} aria-hidden="true" />Appearance</summary>
-        <div className="appearance-options">
-          <button onClick={toggleTheme} aria-pressed={dark}><SunMoon size={16} aria-hidden="true" />Dark appearance {dark ? "On" : "Off"}</button>
-          <button onClick={toggleMaterial} aria-pressed={solid}><Layers size={16} aria-hidden="true" />Reduce glass {solid ? "On" : "Off"}</button>
-        </div>
-      </details>
+      <AppearanceMenu label="Appearance" heading="Interface preferences" icon={<Settings2 size={16} aria-hidden="true" />} options={[
+        { id: "os-theme-toggle", label: "Dark appearance", description: "A calmer palette for low-light settings", icon: <SunMoon size={17} aria-hidden="true" />, checked: dark, onCheckedChange: toggleTheme },
+        { id: "os-material-toggle", label: "Reduce transparency", description: "Solid surfaces with less background detail", icon: <Layers size={17} aria-hidden="true" />, checked: solid, onCheckedChange: toggleMaterial },
+      ]} />
     </nav>
   );
 }

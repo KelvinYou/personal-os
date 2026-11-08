@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- RECONSTRUCTION, not the original file. The 2026-10-27 media comparison page that bypassed
+     the design system (reports/corrections/pending.md, class design-bypass) was overwritten in
+     place by its corrected version. This fixture reproduces the documented shape of the bypass:
+     a shell-generated page with its own independent olive palette and no shared assets. -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Media comparison</title>
+<style>
+:root { --olive: #6b7a3a; --paper: #f4f1e6; --ink: #22261a; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: Georgia, serif; }
+h1 { color: var(--olive); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pair figure { margin: 0; border: 2px solid var(--olive); border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Comparison</h1>
+<div class="pair"><figure>A</figure><figure>B</figure></div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+/* Composition only. Shared controls keep their styles with their owners. */
+.design-shell { display: grid; grid-template-columns: 188px minmax(0, 1fr); gap: 56px; max-width: 1248px; margin: 0 auto; padding: 48px 32px 80px; }
+.design-sidebar { align-self: start; position: sticky; top: 112px; max-height: calc(100dvh - 136px); overflow-y: auto; padding-right: 12px; }
+.design-sidebar-title { margin: 0 0 18px 10px; font-size: 12px; font-weight: 600; color: hsl(var(--foreground)); }
+.design-sidebar nav { display: grid; gap: 2px; }
+.design-sidebar a { display: flex; align-items: center; min-height: 36px; padding: 8px 10px; border-radius: 6px; font-size: 13px; line-height: 1.5; color: hsl(var(--muted-foreground)); text-decoration: none; }
+.design-sidebar a:hover { color: hsl(var(--foreground)); background: hsl(var(--muted)); }
+.design-sidebar a[aria-current=location] { color: hsl(var(--action)); background: hsl(var(--brand-soft)); font-weight: 600; }
+.design-sidebar-note { margin: 26px 10px 0; padding-top: 20px; border-top: 1px solid hsl(var(--border)); font-size: 12px; line-height: 1.8; color: hsl(var(--muted-foreground)); }
+.design-document { min-width: 0; }
+.design-document > * + * { margin-top: 48px; }
+.design-document > section, .design-document > section h2 { scroll-margin-top: 120px; }
+.design-intro { padding: 4px 0 32px; border-bottom: 1px solid hsl(var(--border)); }
+.design-intro h1 { max-width: 700px; margin-top: 14px; font-size: clamp(28px, 3.3vw, 40px); font-weight: 600; line-height: 1.2; letter-spacing: -.04em; }
+.design-intro-description { margin-top: 18px; max-width: 580px; font-size: 16px; line-height: 1.8; color: hsl(var(--muted-foreground)); }
+.design-intro-meta { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; font-size: 12px; color: hsl(var(--muted-foreground)); }
+.design-intro-meta a { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; color: hsl(var(--action)); }
+.design-mobile-directory { display: none; }
+.design-source { margin-top: 20px; padding-top: 12px; border-top: 1px solid hsl(var(--border)); color: hsl(var(--muted-foreground)); font-size: 11px; line-height: 1.7; }
+.design-source summary { cursor: pointer; width: fit-content; min-height: 32px; display: list-item; align-content: center; }
+.design-source code { display: block; margin-top: 8px; overflow-wrap: anywhere; }
+.design-composition { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 32px; align-items: start; }
+.design-composition-note { padding-left: 20px; border-left: 1px solid hsl(var(--border)); font-size: 12px; line-height: 1.8; color: hsl(var(--muted-foreground)); }
+.design-composition-note strong { display: block; color: hsl(var(--foreground)); font-weight: 500; margin-bottom: 8px; }
+.design-footer { padding-top: 24px; border-top: 1px solid hsl(var(--border)); font-size: 12px; line-height: 1.8; color: hsl(var(--muted-foreground)); }
+@media (max-width: 1100px) { .design-shell { gap: 32px; grid-template-columns: 160px minmax(0, 1fr); padding-inline: 24px; } .design-composition { grid-template-columns: minmax(0, 1fr); } .design-composition-note { border-left: 0; padding: 16px 0 0; border-top: 1px solid hsl(var(--border)); } }
+@media (max-width: 900px) {
+  .design-shell { display: block; padding: 32px 20px 64px; }
+  .design-sidebar { display: none; }
+  .design-document > * + * { margin-top: 32px; }
+  .design-document > section, .design-document > section h2 { scroll-margin-top: 172px; }
+  .design-mobile-directory { display: block; border-bottom: 1px solid hsl(var(--border)); padding-bottom: 16px; }
+  .design-mobile-directory summary { cursor: pointer; font-size: 14px; font-weight: 500; min-height: 44px; align-content: center; }
+  .design-mobile-directory nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; padding-block: 12px; }
+  .design-mobile-directory a { display: flex; align-items: center; min-height: 44px; padding: 6px 0; font-size: 13px; color: hsl(var(--muted-foreground)); }
+  .design-mobile-directory a[aria-current=location] { color: hsl(var(--action)); font-weight: 600; }
+}
+@media (max-width: 390px) { .design-shell { padding-inline: 16px; } }

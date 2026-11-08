@@ -1,4 +1,45 @@
 node_modules/
 .next/
+.next-home-design/
 next-env.d.ts
 *.tsbuildinfo
+
+# Isolated office preview/build cache
+.next-office-review/
+.next-collaboration-review/
+.next-office-direct/
+
+# Owner-specific apartment model, served through the local-only viewer
+/components/home-design/apartment.html
+
+.next-home-edit/
+
+.next-office-team/
+
+.next-skill-employees/
+
+.next-office-layout/
+
+.next-home-walk/
+
+.next-home-realism/
+
+.next-office-workbench/
+
+.next-office-player/
+
+# Courtyard studio development and verification builds
+.next-office-courtyard*/
+
+# Garden-town development and verification builds
+.next-office-garden*/
+
+# Role wardrobe preview and verification builds
+.next-office-character*/
+
+# Every isolated Next build/preview cache (test runner, previews, verification builds)
+.next-*/
+
+# Playwright output
+test-results/
+playwright-report/

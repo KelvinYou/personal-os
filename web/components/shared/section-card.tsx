@@ -33,12 +33,12 @@ export function SectionCard({
             {title}
           </h2>
           {description && (
-            <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>
           )}
         </div>
         {action}
       </header>
-      <div className={cn("content-surface rounded-3xl border bg-card", flush ? "p-0" : "p-5 md:p-6")}>
+      <div className={cn("content-surface rounded-[var(--radius-panel)] border bg-card", flush ? "p-0" : "p-5 md:p-6")}>
         {children}
       </div>
     </section>

@@ -1,0 +1,135 @@
+{
+  "license_source": "https://polyhaven.com/license",
+  "assets": [
+    {
+      "asset": "terlenka",
+      "file": "curtain-color.jpg",
+      "source": "https://polyhaven.com/a/terlenka",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 691195,
+      "sha256": "74c4333ed05e133928b0cf6d52e732135c8c0ce6dc8623efa590fb31b90f15c0"
+    },
+    {
+      "asset": "terlenka",
+      "file": "curtain-normal.jpg",
+      "source": "https://polyhaven.com/a/terlenka",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 877301,
+      "sha256": "05d7152ff680a6699018f5c37456a14e16eb1e70014a79d4d500dfd2e099c8f9"
+    },
+    {
+      "asset": "terlenka",
+      "file": "curtain-roughness.jpg",
+      "source": "https://polyhaven.com/a/terlenka",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_rough_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 856303,
+      "sha256": "ec726afa814ff6bb92ae27e916bcbfc4d467acb5203d324355531a57cba4910d"
+    },
+    {
+      "asset": "cotton_jersey",
+      "file": "fabric-color.jpg",
+      "source": "https://polyhaven.com/a/cotton_jersey",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/cotton_jersey/cotton_jersey_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 581360,
+      "sha256": "0f1b790e4087223275aaa6fdffdd46a556a26d2af72cd811acf72ba9c21ec1f6"
+    },
+    {
+      "asset": "cotton_jersey",
+      "file": "fabric-normal.jpg",
+      "source": "https://polyhaven.com/a/cotton_jersey",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/cotton_jersey/cotton_jersey_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 678670,
+      "sha256": "9b79709806511b62567fb007ff61009c3b194bb0d0821fbaee3faf1b2bff0318"
+    },
+    {
+      "asset": "cotton_jersey",
+      "file": "fabric-roughness.jpg",
+      "source": "https://polyhaven.com/a/cotton_jersey",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/cotton_jersey/cotton_jersey_rough_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 865264,
+      "sha256": "89bed18f5c3f03fc7b4c2382446891629716278e521e06e8b7f6c8f02dd22590"
+    },
+    {
+      "asset": "curly_teddy_natural",
+      "file": "rug-color.jpg",
+      "source": "https://polyhaven.com/a/curly_teddy_natural",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/curly_teddy_natural/curly_teddy_natural_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 673494,
+      "sha256": "3e524df3f6b35bfd87b71ed6a1e2d0c96797e55ec4c1a5b2f7c4332b635a1d79"
+    },
+    {
+      "asset": "curly_teddy_natural",
+      "file": "rug-normal.jpg",
+      "source": "https://polyhaven.com/a/curly_teddy_natural",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/curly_teddy_natural/curly_teddy_natural_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 576152,
+      "sha256": "a6cea84bddf31c9d4643a25a09c3ec8fa8884e3c3e2d8ac291623e3f702159b8"
+    },
+    {
+      "asset": "curly_teddy_natural",
+      "file": "rug-roughness.jpg",
+      "source": "https://polyhaven.com/a/curly_teddy_natural",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/curly_teddy_natural/curly_teddy_natural_rough_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 812202,
+      "sha256": "b6e3c3eba019ec5d97b690c97fc602891d29de2428b536c0cc8b814e7c23520b"
+    },
+    {
+      "asset": "rosewood_veneer1",
+      "file": "wood-color.jpg",
+      "source": "https://polyhaven.com/a/rosewood_veneer1",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rosewood_veneer1/rosewood_veneer1_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 836142,
+      "sha256": "b4d36340d33b5bc8ff46864992d53ba3fbc92956ad3cc28d6b2acfa107801be0"
+    },
+    {
+      "asset": "rosewood_veneer1",
+      "file": "wood-normal.jpg",
+      "source": "https://polyhaven.com/a/rosewood_veneer1",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rosewood_veneer1/rosewood_veneer1_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 327517,
+      "sha256": "d5a37dd3cfeb557570368254fef9f68f945789c1931f68de4e5044d83584aae9"
+    },
+    {
+      "asset": "rosewood_veneer1",
+      "file": "wood-roughness.jpg",
+      "source": "https://polyhaven.com/a/rosewood_veneer1",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rosewood_veneer1/rosewood_veneer1_rough_1k.jpg",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 234966,
+      "sha256": "75a0f4a8d3e0334f453b6d358dc4ef15d145a7e2f9f77cecd02b55e5d360a6d5"
+    },
+    {
+      "asset": "small_empty_room_1",
+      "file": "room.hdr",
+      "source": "https://polyhaven.com/a/small_empty_room_1",
+      "download": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/small_empty_room_1_1k.hdr",
+      "license": "CC0-1.0",
+      "verified_at": "2026-11-02",
+      "bytes": 1548604,
+      "sha256": "b3e042c4a650370c383699f61f65fcca4f037af32660994dafa61fbb257a4b52"
+    }
+  ]
+}

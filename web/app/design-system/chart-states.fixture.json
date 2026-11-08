@@ -1,0 +1,140 @@
+{
+  "empty": {
+    "schema_version": 1,
+    "as_of": "2026-10-31",
+    "points": [],
+    "months": [],
+    "current_month": null,
+    "journal_state": "missing",
+    "transactions": [],
+    "investments": null
+  },
+  "single": {
+    "schema_version": 1,
+    "as_of": "2026-10-31",
+    "points": [
+      {
+        "date": "2026-08-31",
+        "tracked_total_myr": 10000.0,
+        "cash_total_myr": 6000.0,
+        "stocks_total_myr": 4000.0
+      }
+    ],
+    "months": [
+      {
+        "month": "2026-08",
+        "snapshot": {
+          "date": "2026-08-31",
+          "tracked_total_myr": 10000.0,
+          "cash_total_myr": 6000.0,
+          "stocks_total_myr": 4000.0
+        },
+        "previous": null,
+        "change": null,
+        "changePct": null
+      }
+    ],
+    "current_month": null,
+    "journal_state": "missing",
+    "transactions": [],
+    "investments": null
+  },
+  "complete": {
+    "schema_version": 1,
+    "as_of": "2026-10-31",
+    "points": [
+      {
+        "date": "2026-08-31",
+        "tracked_total_myr": 10000.0,
+        "cash_total_myr": 6000.0,
+        "stocks_total_myr": 4000.0
+      },
+      {
+        "date": "2026-09-30",
+        "tracked_total_myr": 11200.0,
+        "cash_total_myr": 6200.0,
+        "stocks_total_myr": 5000.0
+      },
+      {
+        "date": "2026-10-15",
+        "tracked_total_myr": 10800.0,
+        "cash_total_myr": 6000.0,
+        "stocks_total_myr": 4800.0
+      },
+      {
+        "date": "2026-10-31",
+        "tracked_total_myr": 12000.0,
+        "cash_total_myr": 6600.0,
+        "stocks_total_myr": 5400.0
+      }
+    ],
+    "months": [
+      {
+        "month": "2026-08",
+        "snapshot": {
+          "date": "2026-08-31",
+          "tracked_total_myr": 10000.0,
+          "cash_total_myr": 6000.0,
+          "stocks_total_myr": 4000.0
+        },
+        "previous": null,
+        "change": null,
+        "changePct": null
+      },
+      {
+        "month": "2026-09",
+        "snapshot": {
+          "date": "2026-09-30",
+          "tracked_total_myr": 11200.0,
+          "cash_total_myr": 6200.0,
+          "stocks_total_myr": 5000.0
+        },
+        "previous": {
+          "date": "2026-08-31",
+          "tracked_total_myr": 10000.0,
+          "cash_total_myr": 6000.0,
+          "stocks_total_myr": 4000.0
+        },
+        "change": 1200.0,
+        "changePct": 12.0
+      },
+      {
+        "month": "2026-10",
+        "snapshot": {
+          "date": "2026-10-31",
+          "tracked_total_myr": 12000.0,
+          "cash_total_myr": 6600.0,
+          "stocks_total_myr": 5400.0
+        },
+        "previous": {
+          "date": "2026-09-30",
+          "tracked_total_myr": 11200.0,
+          "cash_total_myr": 6200.0,
+          "stocks_total_myr": 5000.0
+        },
+        "change": 800.0,
+        "changePct": 7.142857142857142
+      }
+    ],
+    "current_month": {
+      "month": "2026-10",
+      "snapshot": {
+        "date": "2026-10-31",
+        "tracked_total_myr": 12000.0,
+        "cash_total_myr": 6600.0,
+        "stocks_total_myr": 5400.0
+      },
+      "previous": {
+        "date": "2026-09-30",
+        "tracked_total_myr": 11200.0,
+        "cash_total_myr": 6200.0,
+        "stocks_total_myr": 5000.0
+      },
+      "change": 800.0,
+      "changePct": 7.142857142857142
+    },
+    "journal_state": "missing",
+    "transactions": [],
+    "investments": null
+  }
+}

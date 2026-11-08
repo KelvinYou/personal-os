@@ -1,0 +1,48 @@
+{
+  "web/app/office/office.css": {
+    "hardcoded-hex": 100
+  },
+  "web/components/cash-table.tsx": {
+    "native-field": 13
+  },
+  "web/components/flow-graph.tsx": {
+    "native-button": 1
+  },
+  "web/components/home-design/apartment.html": {
+    "native-button": 22,
+    "native-field": 4,
+    "native-select": 8
+  },
+  "web/components/home-design/home-preview.tsx": {
+    "native-button": 1
+  },
+  "web/components/office-collaboration/workspace.tsx": {
+    "native-button": 1
+  },
+  "web/components/office/character-preview.tsx": {
+    "native-button": 2
+  },
+  "web/components/office/direct-task.tsx": {
+    "native-button": 8,
+    "native-field": 3
+  },
+  "web/components/office/office-player.tsx": {
+    "native-button": 3,
+    "native-field": 1
+  },
+  "web/components/office/office-scene.tsx": {
+    "native-button": 2
+  },
+  "web/components/office/office-workspace.tsx": {
+    "native-button": 10
+  },
+  "web/components/office/task-team-room.tsx": {
+    "native-button": 5
+  },
+  "web/components/office/workbench.tsx": {
+    "native-button": 2
+  },
+  "web/components/positions-table.tsx": {
+    "native-field": 6
+  }
+}

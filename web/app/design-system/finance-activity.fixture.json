@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-04",
+  "points": [
+    {
+      "date": "2026-08-31",
+      "tracked_total_myr": 10000.0,
+      "cash_total_myr": 8000.0,
+      "stocks_total_myr": 2000.0
+    },
+    {
+      "date": "2026-09-12",
+      "tracked_total_myr": 11000.0,
+      "cash_total_myr": 9000.0,
+      "stocks_total_myr": 2000.0
+    },
+    {
+      "date": "2026-09-30",
+      "tracked_total_myr": 12000.0,
+      "cash_total_myr": 10000.0,
+      "stocks_total_myr": 2000.0
+    },
+    {
+      "date": "2026-10-04",
+      "tracked_total_myr": 11400.0,
+      "cash_total_myr": 9400.0,
+      "stocks_total_myr": 2000.0
+    }
+  ],
+  "months": [
+    {
+      "month": "2026-08",
+      "snapshot": {
+        "date": "2026-08-31",
+        "tracked_total_myr": 10000.0,
+        "cash_total_myr": 8000.0,
+        "stocks_total_myr": 2000.0
+      },
+      "previous": null,
+      "change": null,
+      "changePct": null
+    },
+    {
+      "month": "2026-09",
+      "snapshot": {
+        "date": "2026-09-30",
+        "tracked_total_myr": 12000.0,
+        "cash_total_myr": 10000.0,
+        "stocks_total_myr": 2000.0
+      },
+      "previous": {
+        "date": "2026-08-31",
+        "tracked_total_myr": 10000.0,
+        "cash_total_myr": 8000.0,
+        "stocks_total_myr": 2000.0
+      },
+      "change": 2000.0,
+      "changePct": 20.0
+    },
+    {
+      "month": "2026-10",
+      "snapshot": {
+        "date": "2026-10-04",
+        "tracked_total_myr": 11400.0,
+        "cash_total_myr": 9400.0,
+        "stocks_total_myr": 2000.0
+      },
+      "previous": {
+        "date": "2026-09-30",
+        "tracked_total_myr": 12000.0,
+        "cash_total_myr": 10000.0,
+        "stocks_total_myr": 2000.0
+      },
+      "change": -600.0,
+      "changePct": -5.0
+    }
+  ],
+  "current_month": {
+    "month": "2026-10",
+    "snapshot": {
+      "date": "2026-10-04",
+      "tracked_total_myr": 11400.0,
+      "cash_total_myr": 9400.0,
+      "stocks_total_myr": 2000.0
+    },
+    "previous": {
+      "date": "2026-09-30",
+      "tracked_total_myr": 12000.0,
+      "cash_total_myr": 10000.0,
+      "stocks_total_myr": 2000.0
+    },
+    "change": -600.0,
+    "changePct": -5.0
+  },
+  "journal_state": "partial",
+  "transactions": [
+    {
+      "id": "sample-expense",
+      "recorded_on": "2026-10-04",
+      "occurred_on": null,
+      "kind": "expense",
+      "amount": 123.0,
+      "currency": "MYR",
+      "account": "sample_bank",
+      "description": "Synthetic expense; actual date unknown",
+      "counter_account": null,
+      "symbol": null,
+      "quantity": null,
+      "fees": null
+    }
+  ],
+  "investments": null
+}

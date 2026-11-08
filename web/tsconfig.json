@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -13,9 +17,53 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [{ "name": "next" }],
-    "paths": { "@/*": ["./*"] }
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next-3d-standard/types/**/*.ts",
+    ".next-browser-3027/types/**/*.ts",
+    ".next-browser-3031/types/**/*.ts",
+    ".next-browser-3032/types/**/*.ts",
+    ".next-browser-3040/types/**/*.ts",
+    ".next-browser-tests/types/**/*.ts",
+    ".next-collaboration-review/types/**/*.ts",
+    ".next-diag/types/**/*.ts",
+    ".next-home-design/types/**/*.ts",
+    ".next-home-edit/types/**/*.ts",
+    ".next-home-interactions/types/**/*.ts",
+    ".next-home-realism/types/**/*.ts",
+    ".next-home-walk/types/**/*.ts",
+    ".next-office-character-final/types/**/*.ts",
+    ".next-office-character-production/types/**/*.ts",
+    ".next-office-character-review/types/**/*.ts",
+    ".next-office-courtyard-final/types/**/*.ts",
+    ".next-office-courtyard-production/types/**/*.ts",
+    ".next-office-courtyard/types/**/*.ts",
+    ".next-office-direct/types/**/*.ts",
+    ".next-office-garden-production/types/**/*.ts",
+    ".next-office-garden-review/types/**/*.ts",
+    ".next-office-player/types/**/*.ts",
+    ".next-office-review/types/**/*.ts",
+    ".next-office-team/types/**/*.ts",
+    ".next-office-workbench/types/**/*.ts",
+    ".next-posts/types/**/*.ts",
+    ".next-skill-employees/types/**/*.ts",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    ".next-verify-3041/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

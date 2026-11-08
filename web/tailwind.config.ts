@@ -19,6 +19,9 @@ const config: Config = {
           foreground: "hsl(var(--muted-foreground))",
         },
         card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
+        // Interactive role — clickable things only, never data direction.
+        action: { DEFAULT: "hsl(var(--action))", foreground: "hsl(var(--action-foreground))" },
+        ring: "hsl(var(--ring))",
         // Status palette — reserved, never reused as a series color.
         ok: "hsl(var(--ok))",
         warning: "hsl(var(--warning))",
