@@ -19,6 +19,8 @@ A personal management system that drives data-driven self-management through str
 /data/protocol/           — standing protocol; standard_week.md is the single human-readable schedule, not re-shuffled weekly; standard_week.yaml is only a Calendar-anchors projection
 /data/finance/            — financial holdings (savings / portfolio / policy.yaml)
 /data/ideas/              — private startup-idea briefs, evidence, immutable runs, and append-only test events
+/data/office/             — private canonical collaboration tasks, resource claims, and handoff evidence; separate from disposable observation caches
+/data/runtime/ai-office/  — private, disposable Codex observation projection; source records remain in the client's own directory
 /data/reports/            — weekly report archive + weekly delta (only generated when there are exceptions)
 /data/travel/             — private trip plans (city-YYYY-MM.md); language exception: may be written in the traveler's preferred language, since map queries and mini-program names must stay in the local script
 /data/user_profile.md     — global user profile (routine/diet/training preferences)
@@ -27,6 +29,9 @@ A personal management system that drives data-driven self-management through str
 /docs/knowledge/          — evergreen cross-project notes; new notes use the minimal knowledge-note contract
 /docs/personal-direction.md — public routing note for optional private data/reference/personal-direction.md
 /docs/voice-guide.md      — public routing note for optional private data/reference/voice-guide.md
+/docs/artifact-design-guide.md — shared authored-artifact design and delivery; private selected style in data/reference/artifact-style.md
+/docs/presentation-guide.md — PPT format adapter; inherits shared artifact design
+/docs/social-post-visual-guide.md — social-post format adapter; identity stays under data/posts/
 /docs/dev-sop.md          — feature/bug-fix SOP (design → implement → test → review → merge; simple vs. complex/subtask-loop paths)
 /docs/design/             — technical design docs (implementation-ready specs, ADR-adjacent)
 /docs/plans/              — multi-phase project plans with phase-by-phase status; ROADMAP §4 links into these, don't duplicate their checklists
@@ -48,10 +53,13 @@ A personal management system that drives data-driven self-management through str
 /.agents/skills/travel-plan/ — trip-plan skill; owns the verification gate that must run BEFORE a plan is drafted (verify-class defects outnumber lint-class 26:17 and no review pass finds them)
 /scripts/travel_lint.py   — travel-plan consistency linter (`make travel-lint`); only checks what needs no external source
 /scripts/lib/travel/      — lint rules; each rule maps to a defect in tests/fixtures/travel_known_defects.yaml
+/scripts/deck_lint.py     — PPTX visual-acceptance lint (`make deck-lint`): cover artwork, dominant element, geometry-derived layout rhythm; rules in scripts/lib/deck.py; scripts/deck_hook.py gates delivery as a Claude Code Stop hook
 /scripts/nutrition.py     — nutrition query adapter (reads repos/notes)
 /scripts/lib/nutrition/   — shared implementation for the nutrition adapter (basis conversion, macro/cost derivation)
 /scripts/flow_graph.py    — derives web/public/flows.json for the `/flows` dashboard (`make flows`); structural parts auto-derived, see lib/flows/
 /scripts/lib/flows/       — Makefile/script/submodule parsing for the flow graph; a `# flow: <group>` header in a script is the only manual input it reads
+/scripts/office_monitor.py — on-demand, read-only Codex session observation for the local `/office` dashboard
+/scripts/lib/office/      — bounded incremental rollout adapter; owns office states and the public-safe snapshot allowlist
 ```
 
 ## Key Conventions
@@ -62,6 +70,8 @@ A personal management system that drives data-driven self-management through str
 - All output must conform to the CommonMark standard
 - Before extending a custom external-service integration, check whether an official connector or MCP meets the required capabilities. Verify coverage and affected consumers before retiring the existing integration.
 - When a request concerns weekend design, travel framing, public writing, or personal knowledge direction, read the owner's `data/reference/personal-direction.md` if present; otherwise ask when needed
+- Before saying a `web/` change works, drive it with `.agents/skills/verify-web/` (isolated launch → doctor → journey → evidence → cleanup) and cite the evidence folder; when a route, control or entry point changes, update its `features/` file in the same change
+- Before creating or changing any 3D scene, asset, camera or movement control (`/office`, `/home-design`, or new), read `docs/design/3d-scene-standard.md`; office and home follow the same standard, and only §4 per-scene parameters may differ
 
 ## Common Commands
 - `make setup` — create `.venv` and install dependencies
@@ -69,7 +79,9 @@ A personal management system that drives data-driven self-management through str
 - `make setup-private DATA_REPO=...` — attach the user's own private repo to `data/`; never overwrite existing files
 - `make doctor` — environment self-check; distinguishes error / expected (e.g. data not checked out due to missing permission) / warning
 - `make help` — discover the full command list, including knowledge, Mermaid, and web checks
-- `make test` — Python tests + web typecheck
+- `make test` — Python tests + web typecheck + web unit tests (Vitest, `web/tests/*.test.ts`)
+- `make test-browser [SUITES=...]` — real-browser Playwright regressions (`web/tests/browser/*.spec.ts`) on an isolated dev server; not part of `make test`; run it before and after any 3D movement/camera change
+- `make ui-build SPEC=… OUT=…` / `make ui-check MANIFEST=…|HTML=…` — standalone HTML that embeds the current design assets / fails pages that only claim reuse; required before delivering any standalone HTML outside a domain builder
 - `make kb-check` / `make kb-index` / `make kb-eval` / `make kb-graph` — knowledge-note contract, compact catalog, retrieval checks, and disposable Mermaid view
 - `make today` — generate today's log template
 - `make idea-validate IDEA_INPUT=...` — validate a startup-idea input without model calls
@@ -84,6 +96,7 @@ A personal management system that drives data-driven self-management through str
 - `make report` — lint + logic check + weekly synthesis; prepares the prompt for an AI-authored report
 - `make wealth` — Tracked Assets: cash/maturities/rates + stock valuation (NAV-priced products still excluded)
 - `make flows` — regenerate `web/public/flows.json` for the `/flows` dashboard (Makefile targets + script read/write edges + submodule touchpoints); `make doctor` warns if this drifts out of sync
+- `make office` / `make office-check` — launch the loopback-only virtual office / check local Codex observation; limits live under `office` in private thresholds
 - `make eval` — convert the most recent Claude Code session into an eval record (`SESSION=recent-3` to select one)
 - `make eval-rollup` — monthly agent-signal rollup; `/meta-coach` reads this, not individual evals
 
@@ -92,6 +105,7 @@ A personal management system that drives data-driven self-management through str
 - The scoring framework uses four weighted dimensions (Output 40 / Health 30 / Mental 20 / Habits 10)
 - Log style: engineer's-eye view, marked with `[Status: OK/Warning/Critical]`
 - All content — logs, reports, and skills alike — is written in English. Sole exception: `data/travel/` (see directory structure) — trip plans may use the traveler's preferred language, because map search queries, mini-program names and restaurant names have to stay in the local script to be usable on the ground
+- Before creating or editing authored visual artifacts (PPT, post, explanatory graphics), read `docs/artifact-design-guide.md` and private `data/reference/artifact-style.md` when present, then the medium adapter (`docs/presentation-guide.md` or `docs/social-post-visual-guide.md`) and applicable artifact skill. Load `data/posts/brand.md` and account identity images only for posts unless explicitly requested for another medium. Blog structural rules do not govern slides or carousels; artifact language follows the user's brief.
 - Read `data/reference/voice-guide.md` if present before writing **outward-facing text** (blog / LinkedIn / README prose / commit body). Internal repo reports use the `[Status: ...]` convention.
 
 ## Give Three Next Steps When Wrapping Up
@@ -124,6 +138,12 @@ improvement could substantially reduce future rework or prevent consequential er
 explain the evidence, expected benefit, and smallest proposed change, and seek the user's
 agreement before applying it. Follow the Correction Queue for changes to agent behavior.
 
+When a mistake class recurs (two or more occurrences), fix it at the highest level that works:
+architecture (one owner, one supported way) → types/schema → lint, hook or CI check whose error
+names the fix → behavior test → docs/agent rule last, for judgment calls only. Prove a new check
+fails on the real past mistake. `reports/corrections/enforcement.md` pairs each rule with what
+enforces it; a rule that recurs while only docs enforce it is a repeat — escalate it, don't reword it.
+
 ## Correction Queue
 When I (the agent) recognize mid-session that you're correcting my behavior — not just fixing a
 file, but telling me to do something differently going forward — I append an entry to
@@ -133,7 +153,8 @@ records above: the party being corrected can't be the one deciding its own instr
 - Detecting "this is a correction" is a judgment call I make in the moment — there is no hook that
   fires on this deterministically, so I can miss one. If you notice I should have logged something
   and didn't, tell me to log it retroactively.
-- Each entry: date, what I did, your correction (quoted), and a proposed AGENTS.md wording change.
+- Each entry: date, what I did, your correction (quoted), a proposed AGENTS.md wording change, and
+  the proposed enforcement level (see the ladder above) with why a higher level doesn't work.
   Status starts `pending`.
 - I never merge an entry into AGENTS.md myself. You review the queue (ask me to "review the
   correction queue" any time, or batch it into a session like the one that added this section),

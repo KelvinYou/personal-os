@@ -100,6 +100,35 @@ flowchart TD
   was wrong" goes all the way back to Design. Don't reflexively send every
   review rejection back to Design.
 
+## UI reuse and acceptance
+
+For UI work, read [the interface guide](design-system.md) and choose an existing
+composition from [the reuse catalog](design/interface-patterns.md) before implementation.
+Use the local `/design-system` page to inspect actual controls and difficult content.
+An explicit brief and the host product's language still take precedence.
+
+Standalone HTML (a page outside the Next app, including files written outside the
+repository) is built with `make ui-build` and must pass `make ui-check` before delivery;
+the check fails when the shared assets are missing, edited, stale or preceded by page CSS.
+It proves reuse, not visual quality — the acceptance below still applies.
+
+Record three short lines in the task or PR: **page pattern**, **reused components/assets**,
+and **new design decisions**. Reuse the existing implementation when it meets the
+need; explain a material departure. This does not add an approval gate for ordinary
+layout choices.
+
+List relevant states before wiring data: complete, loading, empty, error, partial,
+and disabled where applicable. For independently reviewable scenarios follow
+[UI-first development](knowledge/ui-first-development.md). Missing data must not
+silently become zero or a successful state.
+
+At acceptance, replay affected [recurring-failure scenarios](design/interface-patterns.md#recurring-failures-and-replay-checks)
+on the real output. Record viewport/zoom, theme/material, keyboard results where
+relevant, screenshot locations, and unverified gaps. For layout changes inspect
+320px, 390px and desktop; use the production build for material-effect claims.
+Keep visual acceptance separate from component reuse and data/behavior acceptance.
+The reference page is a reproducible review surface, not automatic visual approval.
+
 ## Bug acceptance contract
 
 Before editing, record the trigger, actual result, expected result, environment,
@@ -187,3 +216,15 @@ Use this handoff shape:
 These are agent workflow instructions and review criteria. They do not install
 CI checks or branch protection; repository automation must enforce any required
 merge checks separately.
+
+## Test conventions
+
+Tests are written in TypeScript.
+
+| Kind | File | Runs with | Notes |
+|---|---|---|---|
+| Python unit | `tests/*.py` | `make test` | |
+| Web unit and contract | `web/tests/*.test.ts` | `make test` (`npm test` in `web/`) | Vitest. `@/` aliases and `.mjs` shared modules import normally; mock modules with `vi.mock` or `vi.doMock` plus a dynamic import; no browser or server |
+| Web real-browser | `web/tests/browser/*.spec.ts` | `make test-browser` | `@playwright/test` with system Chrome. `web/playwright.config.ts` starts an isolated Next dev server (port `TEST_PORT`, default 3027); takes minutes, so it is separate from `make test` |
+
+Waiting in browser tests: poll for the state you expect (`expect.poll`, `waitForFunction`, web-first assertions) rather than sleeping a fixed time. Software-rendered WebGL frames are slow and a fixed sleep makes movement assertions flaky. Run the relevant specs before and after changing 3D movement, cameras or characters (see [3D scene standard](design/3d-scene-standard.md) §5).

@@ -42,7 +42,7 @@
 
 # Setup
 
-两条路。人类想自己跑命令 → 直接看 [README.md 的快速开始](README.md#快速开始)。
+两条路。人类想自己跑命令 → 直接看 [README.md 的 Quick Start](README.md#quick-start)。
 想让 agent 带着走一遍（推荐首次） → 对 agent 说：
 
 ```

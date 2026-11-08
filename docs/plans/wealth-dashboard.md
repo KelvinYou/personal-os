@@ -282,7 +282,7 @@ boost_bank 利率冲突单列一行。无价格持仓不计入合计，并写明
 ### 已关闭
 
 - ~~股票 current price 的唯一 owner~~ → ai-stock-analysis pipeline，见 Phase B。
-- ~~`personal-os/web/` 是否部署~~ → 不部署，localhost only。见 Phase C 与 `web/README.md`。
+- ~~`personal-os/web/` 是否部署~~ → 不部署，localhost only。见 Phase C 与 `ARCHITECTURE.md`。
 
 - ~~两个 repo 的 public/private 状态~~ → 见 §1.2，已确认。
 - ~~`data` submodule 是否 checkout / 字段名~~ → 已 checkout，见 §2.1。

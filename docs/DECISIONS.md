@@ -15,7 +15,7 @@
 ### 数据与自动化
 
 1. **Zepp Life body 数据自动同步** —— 手填是刻意的选择（memory: `feedback-body-data-manual`），不重启 `sync_scale.py`
-2. **cron / launchd / GitHub Actions 定时任务** —— 单用户本地系统的偏好，非能力限制。所有流程走显式 `make`
+2. **cron / launchd / GitHub Actions 定时任务** —— 单用户本地系统的偏好，非能力限制。所有流程走显式 `make`。**唯一例外**：momentum 影子记录的 launchd 任务（2026-11-06，见 §2），只追加研究记录，不碰个人数据
 3. **Automatic COROS writes in `make today`** — retired by the 2026-10-02 MCP decision; template creation performs no health query or staging patch.
 4. **事件驱动 pipeline**（如 daily-report 完成自动触发 `make check`）—— 复杂度 tax 无收益
 5. **COROS Partner API application** — official MCP OAuth covers personal queries; no custom password client.
@@ -43,6 +43,49 @@
 ---
 
 ## 2. 关键决策与被拒的替代方案
+
+### Momentum shadow tracking runs on launchd (2026-11-06)
+
+The owner approved one exception to §1 item 2 (no scheduled jobs): a user-level launchd agent,
+`com.personal-os.momentum-shadow`, runs `repos/ai-stock-analysis/scripts/momentum_shadow.py` on
+day 1 of each month at 10:07 local time.
+
+**Why an exception is acceptable**: the job only appends to
+`repos/ai-stock-analysis/reports/momentum_shadow/picks.jsonl` (idempotent per decision date). It
+does not touch `data/`, daily logs, reports, config, or the published momentum rule, and it needs
+no model keys. The value is a record that exists only if the month-end basket is captured on time.
+
+**Why §1 item 2 still stands**: every other flow stays an explicit `make` or skill run. This is
+not a precedent for scheduling anything that writes personal data or changes a published result.
+
+**Not adopted**: promoting any overlay (AI-complex cap, volatility skip) into the published rule.
+Exploratory backtests do not clear the evidence bar; see
+`repos/ai-stock-analysis/docs/design/momentum-risk-overlay.md`. Earliest review is 2027-03.
+
+**Uninstall**: `launchctl bootout gui/$(id -u)/com.personal-os.momentum-shadow`, then remove
+`~/Library/LaunchAgents/com.personal-os.momentum-shadow.plist`.
+
+### Design system: borrow structure, not look (2026-11-04)
+
+Compared `repos/portfolio-website` and `repos/ai-stock-analysis` with `web/`.
+Personal-OS had principles but no enforceable layer under them.
+
+**Adopted** (structure only):
+- An `action`/`ring` colour role, so "clickable" and focus no longer use a hardcoded hex or
+  borrow a data colour (from ai-stock-analysis).
+- `web/components/ui/button.tsx` as the single button primitive, without cva/Slot so no new
+  dependency (pattern from ai-stock-analysis `ui/button.tsx`, unpinned).
+- Hard NEVER/ALWAYS rules as the `ui-design-rules` skill (pattern from portfolio's design-system skill).
+- `make design-check` recomputes WCAG contrast from `globals.css` instead of trusting hand-written
+  notes; it found light `--warning` at 3.47:1 and dark `--critical` on card at 4.46:1, both fixed.
+
+**Rejected**: portfolio's pure-black void, neon-cyan glow and mouse spotlight, and
+ai-stock-analysis's wide `font-stretch` and 0.25rem corners. They contradict the warm, calm
+baseline in `docs/design-system.md`. A `subtle`/`faint` text ramp was also skipped: no current
+component needs a text step lighter than `muted-foreground` that still passes AA.
+
+**Deferred**: office/home 3D controls keep their own buttons (own standard in
+`docs/design/3d-scene-standard.md`); Input/Badge primitives wait for a second consumer.
 
 ### Official COROS MCP (2026-10-02)
 

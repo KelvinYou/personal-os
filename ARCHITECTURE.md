@@ -516,3 +516,73 @@ results. It never contacts customers, spends money, performs web search, emits
 a success probability, or writes a build/stop decision. A final user decision
 may be captured separately by `decision-log`; that journal does not own the
 idea claim graph.
+
+## 13. Local Virtual Office
+
+`/office` observes existing Codex sessions in this workspace through a local,
+read-only projection; observed external sessions stay in their original client.
+`scripts/lib/office/monitor.py` incrementally reads the client's own rollout
+JSONL, owns lifecycle interpretation and freshness, and retains only bounded
+cursors and allowlisted activity labels in `data/runtime/ai-office/`.
+`scripts/office_monitor.py --json` feeds the uncached, same-origin loopback API
+at `/api/office/state`. TypeScript validates schema v1 before the scene, list
+and detail panel consume it. Polling and retention limits come from the
+optional `office` block in private `thresholds.yaml`; existing consumers do
+not require that block. The shared daily-log schema is unchanged.
+
+The office roster has one permanent employee per repository skill under
+`.agents/skills/`. Scene identities are `skill:<id>`; sessions remain linked work
+records and never create new permanent roster members. The separate task-team
+view shows actual runtime participants for one run. Explicit observed role IDs or the owned
+task's selected `skill_id` connect evidence to an employee. Unassigned sessions
+remain inspectable separately. No linked task displays Standby, which describes
+assignment rather than an observed process state. Skills do not prove running
+agents; unobserved roles and parent links remain unassigned. See
+[the skill employee contract](docs/design/office-skill-employees.md). A recorded turn ending
+means idle, not completed work; tool failure does not establish session failure.
+No fresh activity evidence means unknown, not success. Reader health and source
+coverage are separate from session state. Demo mode is synthetic and makes no
+observation requests. Prompts, reasoning, code, command arguments/results and
+arbitrary artifact paths never cross the office snapshot boundary.
+
+The rollout format is an observed client detail, not a stable public API.
+Coverage limitations and operating instructions are maintained in
+[the office design](docs/design/ai-office-monitor.md); phase status belongs to
+[the implementation plan](docs/plans/virtual-office.md). No daemon, hosted
+service, model call, runtime hook change or database is introduced by observation.
+
+The separate opt-in [direct-task lane](docs/design/office-direct-tasks.md) adds
+`/api/office/execution` and an inline composer. A server-owned official Codex
+App Server creates one fresh workspace-write conversation; follow-ups can resume
+only its own remembered thread after stopping. Fixed workspace, disabled network,
+explicit permissions, bounded private replies and same-origin loopback checks
+are enforced at the execution boundary. Stop interrupts the turn and closes the
+owned runtime process tree because turn interruption alone may leave commands
+running. Existing observation schema v1 and collaboration remain independent.
+`office.execution` in private thresholds owns enablement and budgets. Browser
+reload reconnects; server restart loses the live chat view. The
+[workbench extension](docs/design/office-workbench.md) retains owned run evidence
+and explicit human review in the additive `owned_runs` table of
+`data/office/collaboration.sqlite3`. It shares the private store with the board;
+manual collaboration tasks remain separate records with unchanged semantics.
+The archive contains the task instruction, final result, owned agent evidence
+and file-change references, not raw tool output or question answers. Initial
+storage failure blocks dispatch; later failures remain visible and retry.
+Server restart never resumes archived work; active checkpoints have unknown
+current liveness. `/api/office/work` owns history and revision-checked human
+acceptance. File preview accepts only stored run/index references and returns
+bounded current workspace text with root confinement. Codex retains its own
+source history. No private prompt/reply enters the observation projection.
+
+Native team mode extends the direct-task lane with explicit delegation to two
+subagents and coordinator synthesis. `web/lib/office-team.ts` projects only
+owned parent-turn events and matching child `rootTurnId` completions. The
+private execution response adds task and agent records; Python observation v1
+remains unchanged. `web/lib/office-room.ts` reconciles identical thread ids
+before rendering: execution evidence wins, and connection loss marks active
+owned participants unknown. The main office retains permanent skill employees; `/office/team` shows
+current temporary runtime participants. Local sessions remain evidence records.
+These views have different identity semantics and never append runtime workers
+to the permanent skill roster.
+Incomplete delegation, missing results and child failures remain explicit;
+parent termination cannot leave known active child work falsely completed.

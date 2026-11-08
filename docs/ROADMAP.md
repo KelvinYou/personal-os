@@ -88,6 +88,7 @@ that the owner does not want. Do not implement E1–E4 or `scripts/apply_schedul
 | 线 | 待办 | 详细计划 |
 |---|---|---|
 | AI-native full-stack foundations | Planned: execution → backend/data correctness → reliable LLM features → evaluation and operations; supports the existing P0 cloud milestone | [plans/ai-native-full-stack-foundations.md](plans/ai-native-full-stack-foundations.md) |
+| Go ledger & payment API | Planned: design → double-entry + idempotent API → concurrency → outbox/recovery → optional AI consumer; does not replace §1 P0 | [plans/go-ledger-payment-api.md](plans/go-ledger-payment-api.md) |
 | Wealth dashboard | Phase D（知识库浏览页）· Phase E（历史趋势展示） | [plans/wealth-dashboard.md](plans/wealth-dashboard.md) §4 |
 | Duplicate definitions | Decision-reader extraction remains deferred until capture value is reassessed; wealth types, nutrition parity, finance dates, and command discovery are implemented | [consolidated plan](plans/telemetry-and-definition-consolidation.md) |
 | Public mirror | 3 项发布前检查；阈值泄漏核对与 [合并计划 Phase 1](plans/telemetry-and-definition-consolidation.md#phase-1--fix-live-instructions-and-make-telemetry-records-possible) 联动，完成公开路径扫描后再勾选 | [drafts/personal-os-public-readme.md](drafts/personal-os-public-readme.md) |
@@ -103,6 +104,7 @@ that the owner does not want. Do not implement E1–E4 or `scripts/apply_schedul
 | # | 问题 | 现有建议 |
 |---|---|---|
 | Q5 | D4 scoring 上线后要 backfill 历史周报吗？ | 生成 `*-backfill-score.md` 记新旧对比，不替换原 report |
+| Q6 | Should the Go ledger replace the support-ticket exercise as the vehicle for [foundations Phase 2](plans/ai-native-full-stack-foundations.md#phase-2--backend-and-data-correctness)? The exit criteria are identical; the foundations plan names TypeScript as the main stack. | Yes for Phase 2 only; keep TypeScript for Phases 1 and 3 so the two plans don't double-count the same hours |
 
 > 2026-08-24 清理：原 Q1（HRV 绝对 vs 相对）、Q2（`awake_min_max` 太严）、Q3
 > （`migrate.py --apply` 改不改 git 历史）**代码里早已按建议实现**，只是没人回头删表。
