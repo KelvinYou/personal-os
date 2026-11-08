@@ -1,6 +1,6 @@
 import { CreditCard, House, Car, CircleHelp } from "lucide-react";
 import type { Report } from "@/lib/report";
-import { myr } from "@/lib/utils";
+import { Money } from "@/components/shared/privacy";
 
 const labels: Record<string, string> = { credit_card: "Credit card", housing: "Home loan", auto: "Car loan" };
 const debtIcons = { credit_card: CreditCard, housing: House, auto: Car };
@@ -17,14 +17,14 @@ export function LiabilitiesPanel({ report: r }: { report: Report }) {
               {debt.outstanding_myr === null ? "Principal missing" : debt.stale ? "Balance stale" : "Recorded balance"}
             </span>
           </div>
-          <p className="num mt-5 text-2xl font-semibold tracking-tight">{debt.outstanding_myr === null ? "Unknown" : myr(debt.outstanding_myr)}</p>
+          <p className="num mt-5 text-2xl font-semibold tracking-tight">{debt.outstanding_myr === null ? "Unknown" : <Money value={debt.outstanding_myr} />}</p>
           <p className="mt-2 break-words text-xs text-muted-foreground">{debt.key.replaceAll("_", " ")}</p>
           <dl className="mt-5 space-y-3 text-sm">
-            <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Monthly payment</dt><dd className="num">{debt.monthly_myr === null ? "Not recorded" : myr(debt.monthly_myr)}</dd></div>
-            {debt.monthly_full_myr !== null && <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Full installment</dt><dd className="num">{myr(debt.monthly_full_myr)}</dd></div>}
+            <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Monthly payment</dt><dd className="num">{debt.monthly_myr === null ? "Not recorded" : <Money value={debt.monthly_myr} />}</dd></div>
+            {debt.monthly_full_myr !== null && <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Full installment</dt><dd className="num"><Money value={debt.monthly_full_myr} /></dd></div>}
             <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Balance observed</dt><dd>{debt.as_of ?? "Not recorded"}</dd></div>
             {debt.type === "credit_card" && <>
-              <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Statement due</dt><dd className="num">{debt.statement_due_myr === null ? "Not recorded" : myr(debt.statement_due_myr)}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Statement due</dt><dd className="num">{debt.statement_due_myr === null ? "Not recorded" : <Money value={debt.statement_due_myr} />}</dd></div>
               <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Payment deadline</dt><dd>{debt.payment_due_date ?? "Not recorded"}</dd></div>
             </>}
           </dl>

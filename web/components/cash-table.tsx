@@ -1,11 +1,14 @@
 "use client";
 
 import { Pencil, Trash2, Save, X, Plus } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Select } from "@/components/shared/select";
 import type { Account, Report } from "@/lib/report";
 import { StatusBadge } from "@/components/status-badge";
 import { accountLabel, myr, pct } from "@/lib/utils";
 import { useFieldSave } from "@/lib/use-field-save";
+import { Money, Private, usePrivacy } from "@/components/shared/privacy";
 
 interface Draft {
   balance: string;
@@ -52,6 +55,7 @@ const inputClass =
   "w-full rounded border border-border bg-background px-1.5 py-0.5 text-sm";
 
 export function CashTable({ report }: { report: Report }) {
+  const { hidden } = usePrivacy();
   const { cash, caps, thresholds } = report;
   const capByKey = new Map(caps.map((c) => [c.key, c]));
 
@@ -98,6 +102,9 @@ export function CashTable({ report }: { report: Report }) {
     setDraft(null);
     setError(null);
   }
+
+  // Edit inputs show raw values, so hiding amounts closes any open edit.
+  useEffect(() => { if (hidden) cancelEdit(); }, [hidden]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function saveEdit(a: Account) {
     if (!draft) return;
@@ -196,15 +203,7 @@ export function CashTable({ report }: { report: Report }) {
                     />
                   </td>
                   <td className="py-2.5 pr-3 space-y-1.5">
-                    <select
-                      className={inputClass}
-                      value={draft.liquidity}
-                      onChange={(e) => setDraft({ ...draft, liquidity: e.target.value })}
-                    >
-                      <option value="instant">instant</option>
-                      <option value="t+1">t+1</option>
-                      <option value="locked">locked</option>
-                    </select>
+                    <Select className={inputClass} aria-label="Cash account liquidity" value={draft.liquidity} onValueChange={value => setDraft({ ...draft, liquidity: value })} options={[{ value: "instant", label: "Instant" }, { value: "t+1", label: "T+1" }, { value: "locked", label: "Locked" }]} />
                     <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <input
                         type="checkbox"
@@ -240,22 +239,18 @@ export function CashTable({ report }: { report: Report }) {
                   </td>
                   <td className="py-2.5">
                     <div className="flex flex-col gap-1.5">
-                      <button
-                        type="button"
+                      <Button variant="default" size="sm"
                         disabled={saving}
                         onClick={() => saveEdit(a)}
-                        className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                       >
                         <Save size={14} aria-hidden="true" />{saving ? "保存中…" : "保存"}
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button variant="outline" size="sm"
                         disabled={saving}
                         onClick={cancelEdit}
-                        className="rounded border border-border px-2 py-1 text-xs"
                       >
                         <X size={14} aria-hidden="true" />取消
-                      </button>
+                      </Button>
                       {error && (
                         <p className="max-w-[10rem] text-[11px] text-critical">{error}</p>
                       )}
@@ -268,19 +263,19 @@ export function CashTable({ report }: { report: Report }) {
             return (
               <tr key={a.key} className="border-b last:border-0">
                 <td className="py-2.5 pr-3 font-medium text-foreground">{accountLabel(a.key)}</td>
-                <td className="num py-2.5 pr-3 text-right">
+                <td className="num whitespace-nowrap py-2.5 pr-3 text-right">
                   {a.currency === "USD" ? (
                     <span className="flex flex-col items-end">
-                      <span>{`USD ${a.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</span>
+                      <span><Private>{`USD ${a.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</Private></span>
                       <span className="text-[11px] text-muted-foreground">
-                        ≈ {myr(a.balance_myr)}
+                        ≈ <Money value={a.balance_myr} />
                       </span>
                     </span>
                   ) : (
-                    myr(a.balance)
+                    <Money value={a.balance} />
                   )}
                 </td>
-                <td className="num py-2.5 pr-3 text-right">
+                <td className="num whitespace-nowrap py-2.5 pr-3 text-right">
                   <span className="inline-flex items-center gap-2">
                     {pct(a.rate, 2)}
                     {a.rate_unverified && (
@@ -300,8 +295,8 @@ export function CashTable({ report }: { report: Report }) {
                       </StatusBadge>
                       <span>
                         {cap.overflow > 0
-                          ? `超出 ${myr(cap.overflow)} 只享 base rate`
-                          : `剩余 headroom ${myr(cap.cap - cap.balance)}`}
+                          ? <>超出 <Money value={cap.overflow} /> 只享 base rate</>
+                          : <>剩余 headroom <Money value={cap.cap - cap.balance} /></>}
                       </span>
                     </span>
                   ) : (
@@ -310,21 +305,19 @@ export function CashTable({ report }: { report: Report }) {
                 </td>
                 <td className="py-2.5">
                   <div className="flex flex-col gap-1.5">
-                    <button
-                      type="button"
+                    <Button variant="outline" size="sm"
+                      disabled={hidden}
+                      title={hidden ? "Show amounts to edit" : undefined}
                       onClick={() => startEdit(a)}
-                      className="rounded border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
                     >
                       <Pencil size={14} aria-hidden="true" />编辑
-                    </button>
-                    <button
-                      type="button"
+                    </Button>
+                    <Button variant="destructive" size="sm"
                       disabled={deleting && deletingKey === a.key}
                       onClick={() => confirmDelete(a.key)}
-                      className="rounded border border-critical/40 px-2 py-1 text-xs text-critical hover:bg-critical/10 disabled:opacity-50"
                     >
                       <Trash2 size={14} aria-hidden="true" />{deleting && deletingKey === a.key ? "删除中…" : "删除"}
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>
@@ -363,33 +356,9 @@ export function CashTable({ report }: { report: Report }) {
                 />
               </td>
               <td className="py-2.5 pr-3 space-y-1.5">
-                <select
-                  className={inputClass}
-                  value={newDraft.type}
-                  onChange={(e) => setNewDraft({ ...newDraft, type: e.target.value })}
-                >
-                  <option value="wallet">wallet</option>
-                  <option value="savings">savings</option>
-                  <option value="mmf">mmf</option>
-                  <option value="fd">fd</option>
-                </select>
-                <select
-                  className={inputClass}
-                  value={newDraft.currency}
-                  onChange={(e) => setNewDraft({ ...newDraft, currency: e.target.value })}
-                >
-                  <option value="MYR">MYR</option>
-                  <option value="USD">USD</option>
-                </select>
-                <select
-                  className={inputClass}
-                  value={newDraft.liquidity}
-                  onChange={(e) => setNewDraft({ ...newDraft, liquidity: e.target.value })}
-                >
-                  <option value="instant">instant</option>
-                  <option value="t+1">t+1</option>
-                  <option value="locked">locked</option>
-                </select>
+                <Select className={inputClass} aria-label="New cash account type" value={newDraft.type} onValueChange={value => setNewDraft({ ...newDraft, type: value })} options={[{value:"wallet",label:"Wallet"},{value:"savings",label:"Savings"},{value:"mmf",label:"Money market fund"},{value:"fd",label:"Fixed deposit"}]} />
+                <Select className={inputClass} aria-label="New cash account currency" value={newDraft.currency} onValueChange={value => setNewDraft({ ...newDraft, currency: value })} options={[{value:"MYR",label:"MYR"},{value:"USD",label:"USD"}]} />
+                <Select className={inputClass} aria-label="New cash account liquidity" value={newDraft.liquidity} onValueChange={value => setNewDraft({ ...newDraft, liquidity: value })} options={[{value:"instant",label:"Instant"},{value:"t+1",label:"T+1"},{value:"locked",label:"Locked"}]} />
                 <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <input
                     type="checkbox"
@@ -426,22 +395,18 @@ export function CashTable({ report }: { report: Report }) {
               </td>
               <td className="py-2.5">
                 <div className="flex flex-col gap-1.5">
-                  <button
-                    type="button"
+                  <Button variant="default" size="sm"
                     disabled={addingSaving}
                     onClick={saveAdd}
-                    className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                   >
                     <Save size={14} aria-hidden="true" />{addingSaving ? "保存中…" : "新增"}
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button variant="outline" size="sm"
                     disabled={addingSaving}
                     onClick={cancelAdd}
-                    className="rounded border border-border px-2 py-1 text-xs"
                   >
                     <X size={14} aria-hidden="true" />取消
-                  </button>
+                  </Button>
                   {addError && (
                     <p className="max-w-[10rem] text-[11px] text-critical">{addError}</p>
                   )}
@@ -453,13 +418,11 @@ export function CashTable({ report }: { report: Report }) {
       </table>
 
       {!adding && (
-        <button
-          type="button"
+        <Button variant="outline" size="sm"
           onClick={startAdd}
-          className="mt-3 rounded border border-border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
         >
           <Plus size={14} aria-hidden="true" />新增账户
-        </button>
+        </Button>
       )}
       {deleteError && (
         <p className="mt-2 text-[11px] text-critical">{deleteError}</p>

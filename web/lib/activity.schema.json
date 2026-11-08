@@ -1,0 +1,359 @@
+{
+  "$defs": {
+    "HistorySnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Date",
+          "type": "string"
+        },
+        "tracked_total_myr": {
+          "minimum": 0,
+          "title": "Tracked Total Myr",
+          "type": "number"
+        },
+        "cash_total_myr": {
+          "minimum": 0,
+          "title": "Cash Total Myr",
+          "type": "number"
+        },
+        "stocks_total_myr": {
+          "minimum": 0,
+          "title": "Stocks Total Myr",
+          "type": "number"
+        }
+      },
+      "required": [
+        "date",
+        "tracked_total_myr",
+        "cash_total_myr",
+        "stocks_total_myr"
+      ],
+      "title": "HistorySnapshot",
+      "type": "object"
+    },
+    "InvestmentAllocation": {
+      "additionalProperties": false,
+      "properties": {
+        "total_myr": {
+          "title": "Total Myr",
+          "type": "number"
+        },
+        "incomplete": {
+          "title": "Incomplete",
+          "type": "boolean"
+        },
+        "unpriced_symbols": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unpriced Symbols",
+          "type": "array"
+        },
+        "slices": {
+          "items": {
+            "$ref": "#/$defs/InvestmentSlice"
+          },
+          "title": "Slices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "total_myr",
+        "incomplete",
+        "unpriced_symbols",
+        "slices"
+      ],
+      "title": "InvestmentAllocation",
+      "type": "object"
+    },
+    "InvestmentSlice": {
+      "additionalProperties": false,
+      "properties": {
+        "bucket": {
+          "title": "Bucket",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "amount_myr": {
+          "title": "Amount Myr",
+          "type": "number"
+        },
+        "pct": {
+          "title": "Pct",
+          "type": "number"
+        }
+      },
+      "required": [
+        "bucket",
+        "label",
+        "amount_myr",
+        "pct"
+      ],
+      "title": "InvestmentSlice",
+      "type": "object"
+    },
+    "MonthlyAssets": {
+      "additionalProperties": false,
+      "properties": {
+        "month": {
+          "title": "Month",
+          "type": "string"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/HistorySnapshot"
+        },
+        "previous": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HistorySnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "change": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Change"
+        },
+        "changePct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Changepct"
+        }
+      },
+      "required": [
+        "month",
+        "snapshot",
+        "previous",
+        "change",
+        "changePct"
+      ],
+      "title": "MonthlyAssets",
+      "type": "object"
+    },
+    "Transaction": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "recorded_on": {
+          "format": "date",
+          "title": "Recorded On",
+          "type": "string"
+        },
+        "occurred_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occurred On"
+        },
+        "kind": {
+          "enum": [
+            "income",
+            "expense",
+            "deposit",
+            "withdrawal",
+            "transfer",
+            "buy",
+            "sell"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "amount": {
+          "exclusiveMinimum": 0,
+          "title": "Amount",
+          "type": "number"
+        },
+        "currency": {
+          "enum": [
+            "MYR",
+            "USD",
+            "CNY"
+          ],
+          "title": "Currency",
+          "type": "string"
+        },
+        "account": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Account",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "counter_account": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Counter Account"
+        },
+        "symbol": {
+          "anyOf": [
+            {
+              "maxLength": 30,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Symbol"
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quantity"
+        },
+        "fees": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fees"
+        }
+      },
+      "required": [
+        "id",
+        "recorded_on",
+        "kind",
+        "amount",
+        "currency",
+        "account",
+        "description"
+      ],
+      "title": "Transaction",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "as_of": {
+      "title": "As Of",
+      "type": "string"
+    },
+    "points": {
+      "items": {
+        "$ref": "#/$defs/HistorySnapshot"
+      },
+      "title": "Points",
+      "type": "array"
+    },
+    "months": {
+      "items": {
+        "$ref": "#/$defs/MonthlyAssets"
+      },
+      "title": "Months",
+      "type": "array"
+    },
+    "current_month": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MonthlyAssets"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "journal_state": {
+      "enum": [
+        "missing",
+        "partial"
+      ],
+      "title": "Journal State",
+      "type": "string"
+    },
+    "transactions": {
+      "items": {
+        "$ref": "#/$defs/Transaction"
+      },
+      "title": "Transactions",
+      "type": "array"
+    },
+    "investments": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InvestmentAllocation"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "as_of",
+    "points",
+    "months",
+    "current_month",
+    "journal_state",
+    "transactions",
+    "investments"
+  ],
+  "title": "ActivityReport",
+  "type": "object"
+}

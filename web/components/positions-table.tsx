@@ -1,11 +1,14 @@
 "use client";
 
 import { Pencil, Trash2, Save, X, Plus } from "lucide-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Select } from "@/components/shared/select";
 import type { Position, Report } from "@/lib/report";
 import { StatusBadge } from "@/components/status-badge";
 import { myr, signedPct } from "@/lib/utils";
 import { useFieldSave } from "@/lib/use-field-save";
+import { Money, Private, usePrivacy } from "@/components/shared/privacy";
 
 const SOURCE_LABEL: Record<string, string> = {
   pipeline: "pipeline",
@@ -42,6 +45,7 @@ const inputClass =
   "w-24 rounded border border-border bg-background px-1.5 py-0.5 text-right text-sm";
 
 export function PositionsTable({ report }: { report: Report }) {
+  const { hidden } = usePrivacy();
   const { stocks, thresholds, fx } = report;
   const staleBySymbol = new Map(
     stocks.stale_prices.map((s) => [s.symbol, s.age_days]),
@@ -92,6 +96,9 @@ export function PositionsTable({ report }: { report: Report }) {
     setDraft(null);
     setError(null);
   }
+
+  // Edit inputs show raw values, so hiding amounts closes any open edit.
+  useEffect(() => { if (hidden) cancelEdit(); }, [hidden]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function saveEdit(p: Position) {
     if (!draft) return;
@@ -186,7 +193,7 @@ export function PositionsTable({ report }: { report: Report }) {
                     {p.market}
                   </span>
                 </td>
-                <td className="num py-2.5 pr-3 text-right text-muted-foreground">
+                <td className="num whitespace-nowrap py-2.5 pr-3 text-right text-muted-foreground">
                   {isEditing ? (
                     <input
                       type="number"
@@ -196,10 +203,10 @@ export function PositionsTable({ report }: { report: Report }) {
                       onChange={(e) => setDraft({ ...draft, shares: e.target.value })}
                     />
                   ) : (
-                    p.shares.toLocaleString()
+                    <Private>{p.shares.toLocaleString()}</Private>
                   )}
                 </td>
-                <td className="num py-2.5 pr-3 text-right text-muted-foreground">
+                <td className="num whitespace-nowrap py-2.5 pr-3 text-right text-muted-foreground">
                   {isEditing ? (
                     <input
                       type="number"
@@ -212,27 +219,27 @@ export function PositionsTable({ report }: { report: Report }) {
                     `${p.avg_cost.toFixed(2)} ${p.currency}`
                   )}
                 </td>
-                <td className="num py-2.5 pr-3 text-right">
+                <td className="num whitespace-nowrap py-2.5 pr-3 text-right">
                   {p.price === null ? (
                     <span className="text-muted-foreground">—</span>
                   ) : (
                     `${p.price.toFixed(2)} ${p.currency}`
                   )}
                 </td>
-                <td className="num py-2.5 pr-3 text-right">
+                <td className="num whitespace-nowrap py-2.5 pr-3 text-right">
                   {p.market_value_myr === null ? (
                     <span className="text-muted-foreground">未计入</span>
                   ) : (
-                    myr(p.market_value_myr)
+                    <Money value={p.market_value_myr} />
                   )}
                 </td>
-                <td className="num py-2.5 pr-3 text-right">
+                <td className="num whitespace-nowrap py-2.5 pr-3 text-right">
                   {p.pnl_pct === null || p.pnl_myr === null ? (
                     <span className="text-muted-foreground">—</span>
                   ) : (
                     <span className={p.pnl_pct >= 0 ? "text-ok" : "text-critical"}>
                       {p.pnl_myr >= 0 ? "+" : "−"}
-                      {myr(Math.abs(p.pnl_myr))}
+                      <Money value={Math.abs(p.pnl_myr)} />
                       <span className="ml-1 text-[11px]">
                         ({signedPct(p.pnl_pct)})
                       </span>
@@ -258,43 +265,37 @@ export function PositionsTable({ report }: { report: Report }) {
                 <td className="py-2.5">
                   {isEditing ? (
                     <div className="flex flex-col gap-1.5">
-                      <button
-                        type="button"
+                      <Button variant="default" size="sm"
                         disabled={saving}
                         onClick={() => saveEdit(p)}
-                        className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                       >
                         <Save size={14} aria-hidden="true" />{saving ? "保存中…" : "保存"}
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button variant="outline" size="sm"
                         disabled={saving}
                         onClick={cancelEdit}
-                        className="rounded border border-border px-2 py-1 text-xs"
                       >
                         <X size={14} aria-hidden="true" />取消
-                      </button>
+                      </Button>
                       {error && (
                         <p className="max-w-[10rem] text-[11px] text-critical">{error}</p>
                       )}
                     </div>
                   ) : (
                     <div className="flex flex-col gap-1.5">
-                      <button
-                        type="button"
+                      <Button variant="outline" size="sm"
+                        disabled={hidden}
+                        title={hidden ? "Show amounts to edit" : undefined}
                         onClick={() => startEdit(p)}
-                        className="rounded border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
                       >
                         <Pencil size={14} aria-hidden="true" />编辑
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button variant="destructive" size="sm"
                         disabled={deleting && deletingSymbol === p.symbol}
                         onClick={() => confirmDelete(p)}
-                        className="rounded border border-critical/40 px-2 py-1 text-xs text-critical hover:bg-critical/10 disabled:opacity-50"
                       >
                         <Trash2 size={14} aria-hidden="true" />{deleting && deletingSymbol === p.symbol ? "删除中…" : "删除"}
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </td>
@@ -306,20 +307,7 @@ export function PositionsTable({ report }: { report: Report }) {
             <tr className="border-b last:border-0 align-top bg-muted/30">
               <td className="py-2.5 pr-3">
                 <div className="flex flex-col gap-1.5">
-                  <select
-                    className={inputClass}
-                    style={{ textAlign: "left" }}
-                    value={newDraft.market}
-                    onChange={(e) =>
-                      setNewDraft({
-                        ...newDraft,
-                        market: e.target.value as "US" | "MY",
-                      })
-                    }
-                  >
-                    <option value="US">US</option>
-                    <option value="MY">MY</option>
-                  </select>
+                  <Select className={inputClass} aria-label="New position market" value={newDraft.market} onValueChange={value => setNewDraft({ ...newDraft, market: value as "US" | "MY" })} options={[{ value: "US", label: "US" }, { value: "MY", label: "MY" }]} />
                   <input
                     type="text"
                     placeholder="symbol"
@@ -365,22 +353,18 @@ export function PositionsTable({ report }: { report: Report }) {
               </td>
               <td className="py-2.5">
                 <div className="flex flex-col gap-1.5">
-                  <button
-                    type="button"
+                  <Button variant="default" size="sm"
                     disabled={addingSaving}
                     onClick={saveAdd}
-                    className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
                   >
                     <Save size={14} aria-hidden="true" />{addingSaving ? "保存中…" : "新增"}
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button variant="outline" size="sm"
                     disabled={addingSaving}
                     onClick={cancelAdd}
-                    className="rounded border border-border px-2 py-1 text-xs"
                   >
                     <X size={14} aria-hidden="true" />取消
-                  </button>
+                  </Button>
                   {addError && (
                     <p className="max-w-[10rem] text-[11px] text-critical">{addError}</p>
                   )}
@@ -392,13 +376,11 @@ export function PositionsTable({ report }: { report: Report }) {
       </table>
 
       {!adding && (
-        <button
-          type="button"
+        <Button variant="outline" size="sm"
           onClick={startAdd}
-          className="mt-3 rounded border border-border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
         >
           <Plus size={14} aria-hidden="true" />新增持仓
-        </button>
+        </Button>
       )}
       {deleteError && <p className="mt-2 text-[11px] text-critical">{deleteError}</p>}
 

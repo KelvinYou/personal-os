@@ -1,6 +1,7 @@
 import type { MaturityEvent } from "@/lib/report";
 import { StatusBadge } from "@/components/status-badge";
-import { myr, pct } from "@/lib/utils";
+import { pct } from "@/lib/utils";
+import { Money } from "@/components/shared/privacy";
 
 function CandidateRow({
   c,
@@ -63,7 +64,7 @@ export function MaturityPanel({ event }: { event: MaturityEvent }) {
         <StatusBadge severity={event.severity} />
         <span className="font-medium text-foreground">{event.key}</span>
         <span className="num text-sm text-muted-foreground">
-          {myr(event.balance)} @ {pct(event.rate, 2)}
+          <Money value={event.balance} /> @ {pct(event.rate, 2)}
         </span>
         <span className="text-xs text-muted-foreground">
           到期 {event.lock_until}（{when}）

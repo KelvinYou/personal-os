@@ -1,83 +1,47 @@
 "use client";
 
-import { useState } from "react";
 import type { AllocationSlice } from "@/lib/report";
-import { myr, pct } from "@/lib/utils";
+import { pct } from "@/lib/utils";
+import { Money } from "@/components/shared/privacy";
+import { DataState } from "@/components/shared/data-state";
 
-/**
- * Part-to-whole across four buckets → a single horizontal stacked bar.
- *
- * Colour is the categorical palette slots 1–4 in fixed order (never cycled,
- * never reassigned by rank — the bucket keeps its hue as values move). The
- * light-mode palette carries a contrast WARN against the surface, so the
- * relief rule applies: every segment is direct-labelled and the full table
- * below repeats every number. Colour is therefore never the only channel.
- */
-const SLOT: Record<string, string> = {
-  stocks: "var(--series-1)",
-  fd: "var(--series-2)",
-  mmf: "var(--series-3)",
-  wallet: "var(--series-4)",
-  savings: "var(--series-4)",
-};
+// Stable category slots; never assign hues by changing balance rank.
+const SLOT: Record<string, string> = { stocks: "var(--series-1)", fd: "var(--series-2)", mmf: "var(--series-3)", wallet: "var(--series-4)", savings: "var(--series-5)" };
 
-function hueFor(bucket: string, index: number): string {
-  return SLOT[bucket] ?? `var(--series-${(index % 4) + 1})`;
-}
-
-export function AllocationBar({ slices }: { slices: AllocationSlice[] }) {
-  const [hovered, setHovered] = useState<number | null>(null);
-
-  return (
-    <div>
-      <div
-        className="flex h-11 w-full gap-[2px] overflow-hidden"
-        role="img"
-        aria-label={`资产配置：${slices
-          .map((s) => `${s.label} ${pct(s.pct)}`)
-          .join("，")}`}
-      >
-        {slices.map((s, i) => (
-          <div
-            key={s.bucket}
-            className="relative h-full transition-opacity first:rounded-l last:rounded-r"
-            style={{
-              width: `${s.pct}%`,
-              background: hueFor(s.bucket, i),
-              opacity: hovered === null || hovered === i ? 1 : 0.45,
-            }}
-            onMouseEnter={() => setHovered(i)}
-            onMouseLeave={() => setHovered(null)}
-          >
-            {hovered === i && (
-              <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max -translate-x-1/2 rounded-lg border bg-card px-3 py-2 shadow-lg">
-                <div className="text-xs font-medium text-foreground">{s.label}</div>
-                <div className="num mt-0.5 text-xs text-muted-foreground">
-                  {myr(s.amount_myr)} · {pct(s.pct)}
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+/** A small part-to-whole donut with a persistent, precise table. Larger
+ * category sets fall back to a stacked bar. All amounts come from Python. */
+export function AllocationBar({ slices, total, ranked = false }: { slices: AllocationSlice[]; total?: number; ranked?: boolean }) {
+  const visible = slices.filter(s => s.amount_myr > 0);
+  if (!visible.length) return <DataState state="empty" title="No priced assets" description="Add a cash balance or priced holding to see its share of gross assets." />;
+  let offset = 0;
+  const segments = visible.map((slice, i) => {
+    const start = offset;
+    offset += slice.pct;
+    return { ...slice, color: SLOT[slice.bucket] ?? `var(--series-${i % 5 + 1})`, start, end: offset };
+  });
+  const summary = visible.map(s => `${s.label} ${pct(s.pct)}`).join(", ");
+  return <div className="grid min-w-0 grid-cols-1 items-center gap-6 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+    {!ranked && visible.length <= 5 ? <div className="relative mx-auto aspect-square w-full max-w-56 rounded-full sm:max-w-64" role="img" aria-label={`Asset allocation donut: ${summary}`}
+      style={{ background: `conic-gradient(${segments.map(s => `${s.color} ${s.start}% ${s.end}%`).join(", ")})` }}>
+      <div className="absolute inset-[22%] flex flex-col items-center justify-center min-w-0 rounded-full bg-card px-2 text-center [overflow-wrap:anywhere]">
+        <span className="text-xs text-muted-foreground">Gross assets</span>
+        {total !== undefined ? <span className="num mt-1 max-w-full break-all text-sm font-semibold"><Money value={total} /></span> : <span className="mt-1 text-sm font-semibold">MYR · 100%</span>}
       </div>
-
-      {/* Direct labels — mandatory at four series, and the relief for the
-          light-surface contrast warning. */}
-      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-        {slices.map((s, i) => (
-          <div key={s.bucket} className="flex items-center gap-2">
-            <span
-              aria-hidden
-              className="h-2.5 w-2.5 shrink-0 rounded-sm"
-              style={{ background: hueFor(s.bucket, i) }}
-            />
-            <span className="text-xs text-foreground">{s.label}</span>
-            <span className="num text-xs font-medium text-muted-foreground">
-              {pct(s.pct)}
-            </span>
-          </div>
-        ))}
-      </div>
+    </div> : <div className="space-y-3" role="img" aria-label={`Investment allocation by market value: ${summary}`}>
+      {segments.map(s => <div key={s.bucket}>
+        <div className="mb-1 flex justify-between gap-3 text-xs"><span>{s.label}</span><span className="num">{pct(s.pct)}</span></div>
+        <div className="h-2 rounded bg-muted"><div className="h-full rounded" style={{ width: `${s.pct}%`, background: "var(--series-1)" }} /></div>
+      </div>)}
+    </div>}
+    <div role="region" aria-label="Asset allocation details" className="min-w-0 overflow-x-auto" tabIndex={0}>
+      <table className="w-full text-xs sm:text-sm">
+        <caption className="sr-only">Category shares of gross tracked assets before debt</caption>
+        <thead><tr className="border-b text-left text-xs text-muted-foreground"><th scope="col" className="py-3 font-medium">Category</th><th scope="col" className="py-3 text-right font-medium">MYR</th><th scope="col" className="py-3 pl-3 text-right font-medium">Share</th></tr></thead>
+        <tbody>{segments.map(s => <tr key={s.bucket} className="border-b last:border-0">
+          <th scope="row" className="py-3 pr-2 text-left font-normal"><span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm" style={{ background: s.color }} aria-hidden="true" />{s.label}</th>
+          <td className="num whitespace-nowrap py-3 text-right"><Money value={s.amount_myr} /></td><td className="num whitespace-nowrap py-3 pl-3 text-right">{pct(s.pct)}</td>
+        </tr>)}</tbody>
+      </table>
     </div>
-  );
+  </div>;
 }

@@ -1,0 +1,9 @@
+{
+  "id": "replace-with-a-unique-event-id",
+  "kind": "expense",
+  "amount": 123,
+  "currency": "MYR",
+  "account": "sample_bank",
+  "description": "Replace with the confirmed event description",
+  "occurred_on": null
+}
