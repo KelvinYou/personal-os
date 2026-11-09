@@ -1,7 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_status": "connected",
-  "source": "codex_local_transcript",
+  "source": "local_transcripts",
+  "source_coverage": {
+    "codex": "connected",
+    "claude": "connected"
+  },
   "observed_at": "2026-11-01T12:00:00Z",
   "poll_interval_ms": 3000,
   "stale_after_seconds": 180,
@@ -33,7 +37,18 @@
           "label": "Running a command"
         }
       ],
-      "artifact_refs": []
+      "artifact_refs": [],
+      "attention": "working",
+      "attention_since": "2026-11-01T12:00:00Z",
+      "tool": "command",
+      "segments": [
+        {
+          "at": "2026-11-01T12:00:00Z",
+          "state": "working",
+          "attention": "working",
+          "tool": "command"
+        }
+      ]
     }
   ]
 }

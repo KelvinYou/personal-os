@@ -4,6 +4,8 @@
 
 **Updated:** 2026-11-01 · **Tier:** Design-Lite · **Schema:** 1
 
+Current direction and observation schema v2 (Claude Code source, attention zones, replay, wait metric): [attention radar](office-attention-radar.md). Sections below describe the original Codex-only v1 release.
+
 [The implementation plan](../plans/virtual-office.md) owns phase status. This document owns architecture, coverage and operating semantics.
 
 The additive [collaboration extension](office-collaboration.md) owns task
