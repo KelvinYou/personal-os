@@ -35,10 +35,10 @@
     - BURSA_MANUAL: 27 天前
 
 ■ 资产配置 (按经济行为)
-  货币基金 MMF                61.0%  RM  19,500.00  ██████████████████████████████
-  定存 FD (locked)          31.3%  RM  10,000.00  ████████████████
-  股票 (market-valued)       6.2%  RM   1,990.00  ███
-  钱包 (instant)             1.6%  RM     500.00  █
+  Money market funds        61.0%  RM  19,500.00  ██████████████████████████████
+  Fixed deposits (locked)   31.3%  RM  10,000.00  ████████████████
+  Stocks (market-valued)     6.2%  RM   1,990.00  ███
+  Wallets (instant)          1.6%  RM     500.00  █
   [Status: Warning] 配置占比不完整 — 分母缺少无价持仓 (NOPRICE)，
     每一栏的百分比都偏了，不要据此判断是否需要再平衡。
 

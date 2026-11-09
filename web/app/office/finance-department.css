@@ -1,0 +1,47 @@
+/* Finance department of the town (docs/design/office-world.md). */
+.town-departments { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; margin-block: 1rem; }
+.town-departments > button { min-height: 44px; }
+.town-department-note { font-weight: 400; opacity: .8; margin-inline-start: .35rem; max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.town-anchor { position: absolute; translate: -50% -100%; z-index: 3; width: max-content; max-width: 170px; white-space: nowrap; pointer-events: auto; }
+.town-anchor-department { font-weight: 600; }
+/* Owner-wait count on a building name (office-attention.ts). CSS content keeps the button's name the building name. */
+.town-anchor[data-badge]::after { content: attr(data-badge); display: inline-grid; place-items: center; min-width: 18px; height: 18px; margin-inline-start: 6px; padding-inline: 5px; border-radius: 999px; background: hsl(var(--attention-needs)); color: hsl(var(--background)); font-size: 11px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.finance-aside { display: grid; gap: 1rem; padding: 1rem; }
+.finance-stations { display: grid; gap: .75rem; }
+.finance-detail { margin-top: 1.5rem; padding: clamp(1rem, 3vw, 2rem); border: 1px solid hsl(var(--border)); border-radius: var(--radius-surface); background: hsl(var(--card)); display: grid; gap: 1.25rem; scroll-margin-top: 6rem; }
+.finance-detail-heading { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
+@media (max-width: 900px) { .finance-stations { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .town-anchor-desk { display: none; } .town-department-note { display: none; } }
+@media (max-width: 480px) { .finance-stations { grid-template-columns: minmax(0, 1fr); } }
+/* Walking kelvin.ai in the town: the near-target button and one bottom-left hint. */
+.town-interact { position: absolute; bottom: 84px; left: 50%; translate: -50% 0; z-index: 9; }
+.radar-canvas-shell .office-overview-hint { display: none; }
+.radar-canvas-shell:focus-visible { outline: 2px solid hsl(var(--action)); outline-offset: -2px; }
+@media (max-width: 480px) { .town-interact { bottom: 180px; max-width: 200px; } }
+/* While walking, the player HUD owns the canvas corners; the overview camera buttons step aside. */
+.office-viewport:has(.radar-canvas-shell:not([data-office-view="overview"])) .office-camera-controls,
+.office-viewport:has(.radar-canvas-shell:not([data-office-view="overview"])) .office-camera-hint { display: none; }
+/* Research desk (docs/design/finance-research.md): Finance manager proposals and review boards. */
+.research-board { display: grid; gap: 1.5rem; }
+.research-lists { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.research-stats { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+.research-whatif-note { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .75rem 1rem; border: 1px dashed hsl(var(--border)); border-radius: var(--radius-panel); }
+.research-legend { display: flex; flex-wrap: wrap; gap: 1rem; }
+.research-swatch { display: inline-block; width: 1rem; height: 2px; margin-inline-end: .4rem; vertical-align: middle; border-radius: 1px; }
+.research-swatch-buy { background: var(--series-1); }
+.research-swatch-rent { background: var(--series-2); }
+.research-grid { border-collapse: separate; border-spacing: 2px; min-width: 30rem; }
+.research-grid th { padding: .5rem; font-weight: 500; color: hsl(var(--muted-foreground)); }
+.research-cell { display: grid; gap: .15rem; width: 100%; min-height: 64px; padding: .5rem; text-align: start; border-radius: var(--radius-control); border: 2px solid transparent; color: hsl(var(--foreground)); cursor: pointer; }
+.research-cell[data-side="buy"] { background: color-mix(in srgb, var(--series-1) var(--weight), hsl(var(--card))); }
+.research-cell[data-side="rent"] { background: color-mix(in srgb, var(--series-2) var(--weight), hsl(var(--card))); }
+.research-cell[aria-pressed="true"] { border-color: hsl(var(--foreground)); }
+.research-cash { display: grid; gap: .75rem 1.5rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.research-cash dt { font-size: .8rem; color: hsl(var(--muted-foreground)); }
+.research-cash dd { font-size: 1.05rem; font-weight: 600; }
+.research-table { min-width: 56rem; }
+.research-table th, .research-table td { padding: .5rem .75rem; white-space: nowrap; }
+.research-table thead th { font-weight: 500; color: hsl(var(--muted-foreground)); }
+.research-inputs { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+/* Grid children default to min-width:auto; without this, wide tables widen the page instead of scrolling in their region. */
+.finance-detail > *, .research-board > *, .research-board > div > * { min-width: 0; }

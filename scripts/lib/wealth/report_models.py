@@ -226,15 +226,34 @@ class ExcludedCashOut(BaseModel):
     reason: str
 
 
+class AttentionItem(BaseModel):
+    """One owner action the recorded data asks for (built by attention.py).
+
+    Amount-free on purpose: it is read while amounts are masked and its id feeds
+    the fixed-text phone push. `subject` is an account key the UI may label;
+    `title` reads correctly without it. `target` names the /finance tab that resolves it.
+    """
+    model_config = STRICT
+    id: str
+    kind: Literal["debt_principal_missing", "deposit_cap", "maturity", "valuation"]
+    severity: Severity
+    subject: str | None
+    title: str
+    detail: str
+    target: Literal["liabilities", "cash", "stocks"]
+    observations: list[str]
+
+
 class WealthReport(BaseModel):
     model_config = ConfigDict(extra="forbid", json_schema_serialization_defaults_required=True)
     # 消费者（web dashboard / skill）据此判断自己读的是不是它认识的形状。
     # 改动字段含义就 bump 它；删/加字段由 tests/test_report_contract.py 守。
+    # v5 (2026-11-09): attention[] — ranked owner actions shared by /finance, Office and push.
     # v4 (2026-10-04): dated liabilities, partial balance sheet and excluded travel cash.
     # v3 (2026-08-18): expose validated regulatory-rule freshness health.
     # v2 (2026-08-12): maturity[] 加 renewal_rate / renewal_product，候选门槛
     # 从合约利率改为续做利率。
-    report_schema_version: Literal[4] = 4
+    report_schema_version: Literal[5] = 5
     as_of: date
     currency: str
     thresholds: WealthCfg
@@ -250,5 +269,6 @@ class WealthReport(BaseModel):
     maturity: list[MaturityOut]
     caps: list[CapOut]
     wealth_rules: WealthRulesHealth
+    attention: list[AttentionItem]
     # Gross tracked assets; debt is exposed separately and never changes history/allocation.
     tracked_total_myr: float

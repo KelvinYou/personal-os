@@ -1,0 +1,54 @@
+# KL buy-vs-rent research rules — public market facts, no personal figures.
+#
+# `rules` is validated by scripts/lib/wealth/research.py::PurchaseRules and drives every
+# computed upfront and sale cost. `reference` is the Finance manager's sourced starting
+# point for proposal inputs; it is read by the agent, not by code.
+# Each source carries verified_at; after fresh_days the research desk shows a stale warning.
+
+rules:
+  transfer_stamp_tiers:            # Memorandum of Transfer, Stamp Act 1949 First Schedule
+    - {up_to: 100000, rate: 0.01}
+    - {up_to: 500000, rate: 0.02}
+    - {up_to: 1000000, rate: 0.03}
+    - {up_to: null, rate: 0.04}
+  loan_stamp_rate: 0.005           # loan agreement, flat on the loan amount
+  legal_fee_tiers:                 # Solicitors' Remuneration Order 2023; SPA on price, loan agreement on loan
+    - {up_to: 500000, rate: 0.0125}
+    - {up_to: null, rate: 0.01}
+  legal_fee_tax_rate: 0.08         # service tax on professional services since 2024-03-01; confirm on the lawyer's quote
+  first_home_exemption_cap: 500000 # first-time buyers, citizens; full MOT + loan stamp exemption to 2027-12-31 (Budget 2026)
+  rpgt_by_holding_year: [0.30, 0.30, 0.30, 0.20, 0.15]   # citizens/PR from 2022; 0% from year 6
+  verified_at: 2026-11-09
+  fresh_days: 180
+  sources:
+    - {label: "Stamp duty tiers on transfer (secondary summary)", url: "https://cleartax.com/my/en/stamp-duty-malaysia", verified_at: 2026-11-09}
+    - {label: "Budget 2026: first-home stamp duty exemption extended to 2027", url: "https://www.thestar.com.my/business/business-news/2025/10/10/budget-2026-stamp-duty-exemption-extended-for-first-time-homebuyers", verified_at: 2026-11-09}
+    - {label: "Malaysian Bar Circular 185/2023: Solicitors' Remuneration Order 2023", url: "https://www.malaysianbar.org.my/cms/upload_files/document/Circular%20No%20185-2023.pdf", verified_at: 2026-11-09}
+    - {label: "HASiL: RPGT rates", url: "https://www.hasil.gov.my/en/ckht/kadar-cukai-keuntungan-harta-tanah/", verified_at: 2026-11-09}
+    - {label: "NAPIC Malaysian House Price Index Q1–Q2 2026P", url: "https://napic.jpph.gov.my/storage/app/media/3-penerbitan/Shahrul/Bahagian%20Indeks%20Harta%20Tanah/Laporan%20Jadual%20MHPI/Q2%202026/MHPI%20Report%20Q1-Q2%202026P.pdf", verified_at: 2026-11-09}
+    - {label: "BNM Monetary Policy Statement, 5 Nov 2026 (OPR 2.75%)", url: "https://www.bnm.gov.my/-/monetary-policy-statement-05112026", verified_at: 2026-11-09}
+    - {label: "Vanguard VCMM 10-year return outlook (Sep 2026 run)", url: "https://corporate.vanguard.com/content/corporatesite/us/en/corp/vemo/vemo-return-forecasts.html", verified_at: 2026-11-09}
+    - {label: "DOSM annual CPI inflation", url: "https://open.dosm.gov.my/data-catalogue/cpi_annual_inflation", verified_at: 2026-11-09}
+
+reference:
+  verified_at: 2026-11-09
+  loan_rate: {low: 0.0395, base: 0.043, high: 0.047, note: "SBR 2.75% + 1.20–1.95% bank spread; floating; OPR 2.75% held 2026-11-05, possible 3.00% in H1 2027"}
+  loan_margin: {base: 0.9, note: "Normal bank practice for 1st/2nd home; 100% only via narrow schemes"}
+  loan_tenure_years: {max: 35, note: "35 years or age 70, whichever first"}
+  kl_price_growth:
+    note: "NAPIC MHPI KL: ~1.9%/yr over 10 years (2015→2025P), ~1.0%/yr over 5 years; Q2 2026P KL high-rise +1.5% YoY, average RM562,326"
+    suggested: {low: 0.0, base: 0.019, high: 0.035}
+    annualized_10y: 0.019          # NAPIC MHPI KL, 2015→2025P (derived from published annual changes)
+    annualized_5y: 0.010           # 2020→2025P
+  mid_market_condo_price: {low: 450000, high: 650000, note: "800–1,000 sq ft; anchored on NAPIC KL high-rise average"}
+  maintenance_psf_month: {low: 0.25, high: 0.50, note: "Mid-market; sinking fund adds >=10% of maintenance (Strata Management Act 2013)"}
+  property_tax_yearly_example: {value: 660, note: "Parcel rent RM180 + assessment RM480; illustration, not an average"}
+  room_rent_month: {middle: [700, 900], master: [900, 1200], note: "2026 asking prices from listings; no official index"}
+  rent_growth: {note: "Central KL rents flat since H2 2024 (IQI); KL whole-unit +6.1% YoY; blog 3–5%/yr"}
+  selling_cost_rate: {low: 0.02, high: 0.03, note: "Agent capped at 3% by BOVAEP; add ~0.5–1% legal for the seller"}
+  etf_return:
+    note: "Vanguard VCMM (USD, 10-yr): US 4.8–6.8%, developed ex-US 5.3–7.3%, EM 3.7–5.7%; repo planning midpoint 6% (docs/analysis/long-term-equity-allocation-2026-09.md)"
+    suggested: {low: 0.04, base: 0.06, high: 0.08}
+  etf_cost_drag: {value: 0.0045, note: "VWRA TER 0.14% + ~0.3% dividend withholding drag (15% on ~2% yield at fund level)"}
+  fx: {note: "Model is MYR; ETF is USD. USD/MYR 4.058 on 2026-10-30. A stronger ringgit lowers MYR ETF returns; stress-test −1 to −2%/yr"}
+  inflation: {value: 0.018, note: "DOSM 2016–2025 average 1.78%; Sep 2026 1.8% YoY"}

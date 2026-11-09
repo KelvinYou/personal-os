@@ -14,7 +14,9 @@ function Change({ amount }: { amount: number | null }) {
   return amount === null ? <>—</> : <>{amount >= 0 ? "+" : "−"}<Money value={Math.abs(amount)} /></>;
 }
 
-export function TrackedAssetsChart({ points, months, asOf }: { points: HistoryPoint[]; months: MonthlyAssets[]; asOf: string }) {
+/** `collapseBreakdown` folds the monthly bars and table into a disclosure so the
+ * overview keeps the trend first; the design-system preview leaves it open. */
+export function TrackedAssetsChart({ points, months, asOf, collapseBreakdown = false }: { points: HistoryPoint[]; months: MonthlyAssets[]; asOf: string; collapseBreakdown?: boolean }) {
   const noteId = useId();
   const [granularity, setGranularity] = useState<Granularity>("month");
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
@@ -57,10 +59,11 @@ export function TrackedAssetsChart({ points, months, asOf }: { points: HistoryPo
       </div>
       {data.length > 1 ? <div>
         <LineChart labels={data.map(d => d.date)} series={[{ label: "Gross tracked assets", color: "var(--series-1)", values: data.map(d => d.tracked_total_myr) }]}
-          fillFirstSeries hoverIndex={hoverIdx} onHover={setHoverIdx} />
+          zeroBaseline={false} markers={data.length <= 24} hoverIndex={hoverIdx} onHover={setHoverIdx} />
         <div className="flex justify-between text-xs text-muted-foreground"><span>{data[0].date}</span><span>{data[data.length - 1].date}</span></div>
+        <p className="mt-2 text-xs text-muted-foreground">{data.length} recorded snapshots · scale fits the observed range and does not start at zero.</p>
       </div> : data.length === 1 ? <p className="text-sm text-muted-foreground">One plotted period available. Another period is needed to show a trend.</p> : <DataState state="empty" title={points.length ? "No snapshots in this period" : "No asset snapshots"} description="Choose All to see earlier records. Edit a cash or stock holding to record today’s snapshot." />}
-      {granularity === "month" && visibleMonths.length > 0 && <>
+      {granularity === "month" && visibleMonths.length > 0 && <Breakdown collapsed={collapseBreakdown} count={visibleMonths.length}>
         <div className="border-t pt-4">
           <h3 className="text-sm font-medium">Monthly asset change</h3>
           <p className="mt-1 text-xs text-muted-foreground">Above zero = increase · Below zero = decrease · — = missing baseline</p>
@@ -97,7 +100,15 @@ export function TrackedAssetsChart({ points, months, asOf }: { points: HistoryPo
             </tr>)}</tbody>
           </table>
         </div>
-      </>}
+      </Breakdown>}
     </div>
   );
+}
+
+function Breakdown({ collapsed, count, children }: { collapsed: boolean; count: number; children: React.ReactNode }) {
+  if (!collapsed) return <>{children}</>;
+  return <details className="history-breakdown border-t pt-2">
+    <summary className="cursor-pointer py-2 text-sm font-medium">Monthly change breakdown <span className="font-normal text-muted-foreground">· {count} months</span></summary>
+    <div className="space-y-4 pt-2">{children}</div>
+  </details>;
 }

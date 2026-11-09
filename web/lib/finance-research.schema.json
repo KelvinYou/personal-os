@@ -1,0 +1,837 @@
+{
+  "$defs": {
+    "PostBrief": {
+      "additionalProperties": false,
+      "description": "Public XHS post handed to Content Lab. Generic market numbers only, never the owner's records.",
+      "properties": {
+        "public_inputs": {
+          "$ref": "#/$defs/RentVsBuyInputs"
+        },
+        "owner_derived": {
+          "description": "Inputs taken from the owner's private records; the public scenario must change each one",
+          "items": {
+            "type": "string"
+          },
+          "title": "Owner Derived",
+          "type": "array"
+        },
+        "public_notes": {
+          "additionalProperties": {
+            "maxLength": 600,
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": "Public reason for each changed input",
+          "title": "Public Notes",
+          "type": "object"
+        },
+        "reader_moment": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Reader Moment",
+          "type": "string"
+        },
+        "hypothesis": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Hypothesis",
+          "type": "string"
+        },
+        "changed_variable": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Changed Variable",
+          "type": "string"
+        },
+        "must_avoid": {
+          "items": {
+            "maxLength": 600,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Must Avoid",
+          "type": "array"
+        }
+      },
+      "required": [
+        "public_inputs",
+        "owner_derived",
+        "public_notes",
+        "reader_moment",
+        "hypothesis",
+        "changed_variable",
+        "must_avoid"
+      ],
+      "title": "PostBrief",
+      "type": "object"
+    },
+    "Proposal": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,79}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "rent_vs_buy",
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 600,
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "prepared_by": {
+          "const": "finance-manager",
+          "title": "Prepared By",
+          "type": "string"
+        },
+        "prepared_on": {
+          "format": "date",
+          "title": "Prepared On",
+          "type": "string"
+        },
+        "review_by": {
+          "description": "After this date the market inputs need refreshing",
+          "format": "date",
+          "title": "Review By",
+          "type": "string"
+        },
+        "inputs": {
+          "$ref": "#/$defs/RentVsBuyInputs"
+        },
+        "input_notes": {
+          "additionalProperties": {
+            "maxLength": 600,
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": "Why each input has its value; keys are input field names",
+          "title": "Input Notes",
+          "type": "object"
+        },
+        "recommendation": {
+          "$ref": "#/$defs/Recommendation"
+        },
+        "post": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PostBrief"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "kind",
+        "title",
+        "question",
+        "prepared_by",
+        "prepared_on",
+        "review_by",
+        "inputs",
+        "input_notes",
+        "recommendation",
+        "post"
+      ],
+      "title": "Proposal",
+      "type": "object"
+    },
+    "ProposalView": {
+      "additionalProperties": false,
+      "properties": {
+        "proposal": {
+          "$ref": "#/$defs/Proposal"
+        },
+        "result": {
+          "$ref": "#/$defs/RentVsBuyResult"
+        },
+        "status": {
+          "enum": [
+            "ready_for_review",
+            "accepted",
+            "revise",
+            "declined"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "reviews": {
+          "items": {
+            "$ref": "#/$defs/Review"
+          },
+          "title": "Reviews",
+          "type": "array"
+        },
+        "stale": {
+          "description": "Past review_by, or the recommendation was written for other inputs",
+          "title": "Stale",
+          "type": "boolean"
+        },
+        "post_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Content Lab post folder already filed from this proposal",
+          "title": "Post Id"
+        }
+      },
+      "required": [
+        "proposal",
+        "result",
+        "status",
+        "reviews",
+        "stale",
+        "post_id"
+      ],
+      "title": "ProposalView",
+      "type": "object"
+    },
+    "Range": {
+      "additionalProperties": false,
+      "properties": {
+        "low": {
+          "maximum": 0.5,
+          "minimum": -0.5,
+          "title": "Low",
+          "type": "number"
+        },
+        "base": {
+          "maximum": 0.5,
+          "minimum": -0.5,
+          "title": "Base",
+          "type": "number"
+        },
+        "high": {
+          "maximum": 0.5,
+          "minimum": -0.5,
+          "title": "High",
+          "type": "number"
+        }
+      },
+      "required": [
+        "low",
+        "base",
+        "high"
+      ],
+      "title": "Range",
+      "type": "object"
+    },
+    "Recommendation": {
+      "additionalProperties": false,
+      "properties": {
+        "headline": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Headline",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 1500,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "conditions_to_flip": {
+          "description": "What would change the answer",
+          "items": {
+            "maxLength": 600,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Conditions To Flip",
+          "type": "array"
+        },
+        "risks": {
+          "items": {
+            "maxLength": 600,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Risks",
+          "type": "array"
+        },
+        "next_steps": {
+          "items": {
+            "maxLength": 600,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Next Steps",
+          "type": "array"
+        },
+        "written_for": {
+          "description": "inputs_fingerprint the prose was written against",
+          "pattern": "^[0-9a-f]{16}$",
+          "title": "Written For",
+          "type": "string"
+        }
+      },
+      "required": [
+        "headline",
+        "summary",
+        "conditions_to_flip",
+        "risks",
+        "next_steps",
+        "written_for"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    },
+    "RentVsBuyInputs": {
+      "additionalProperties": false,
+      "properties": {
+        "horizon_years": {
+          "maximum": 35,
+          "minimum": 1,
+          "title": "Horizon Years",
+          "type": "integer"
+        },
+        "property_price": {
+          "exclusiveMinimum": 0,
+          "maximum": 100000000.0,
+          "title": "Property Price",
+          "type": "number"
+        },
+        "loan_margin": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Loan Margin",
+          "type": "number"
+        },
+        "loan_rate": {
+          "maximum": 0.2,
+          "minimum": 0,
+          "title": "Loan Rate",
+          "type": "number"
+        },
+        "loan_tenure_years": {
+          "maximum": 35,
+          "minimum": 1,
+          "title": "Loan Tenure Years",
+          "type": "integer"
+        },
+        "first_home_exemption": {
+          "title": "First Home Exemption",
+          "type": "boolean"
+        },
+        "other_purchase_costs": {
+          "description": "Valuation, disbursements, insurance set-up",
+          "maximum": 1000000000.0,
+          "minimum": 0,
+          "title": "Other Purchase Costs",
+          "type": "number"
+        },
+        "renovation": {
+          "maximum": 1000000000.0,
+          "minimum": 0,
+          "title": "Renovation",
+          "type": "number"
+        },
+        "maintenance_monthly": {
+          "description": "Maintenance plus sinking fund",
+          "maximum": 1000000000.0,
+          "minimum": 0,
+          "title": "Maintenance Monthly",
+          "type": "number"
+        },
+        "property_tax_yearly": {
+          "description": "Quit rent plus assessment",
+          "maximum": 1000000000.0,
+          "minimum": 0,
+          "title": "Property Tax Yearly",
+          "type": "number"
+        },
+        "insurance_yearly": {
+          "maximum": 1000000000.0,
+          "minimum": 0,
+          "title": "Insurance Yearly",
+          "type": "number"
+        },
+        "repair_rate": {
+          "description": "Repairs per year as a share of property value",
+          "maximum": 0.05,
+          "minimum": 0,
+          "title": "Repair Rate",
+          "type": "number"
+        },
+        "room_income_monthly": {
+          "description": "Rent from spare rooms the buyer lets out",
+          "maximum": 1000000000.0,
+          "minimum": 0,
+          "title": "Room Income Monthly",
+          "type": "number"
+        },
+        "cost_growth": {
+          "description": "Annual growth of maintenance, taxes and insurance",
+          "maximum": 0.5,
+          "minimum": -0.5,
+          "title": "Cost Growth",
+          "type": "number"
+        },
+        "property_growth": {
+          "$ref": "#/$defs/Range"
+        },
+        "selling_cost_rate": {
+          "maximum": 0.2,
+          "minimum": 0,
+          "title": "Selling Cost Rate",
+          "type": "number"
+        },
+        "rent_monthly": {
+          "maximum": 1000000000.0,
+          "minimum": 0,
+          "title": "Rent Monthly",
+          "type": "number"
+        },
+        "rent_growth": {
+          "maximum": 0.5,
+          "minimum": -0.5,
+          "title": "Rent Growth",
+          "type": "number"
+        },
+        "etf_return": {
+          "$ref": "#/$defs/Range",
+          "description": "Gross nominal annual total return"
+        },
+        "etf_cost_drag": {
+          "description": "Fund fee plus dividend withholding drag per year",
+          "maximum": 0.05,
+          "minimum": 0,
+          "title": "Etf Cost Drag",
+          "type": "number"
+        },
+        "inflation": {
+          "maximum": 0.2,
+          "minimum": -0.05,
+          "title": "Inflation",
+          "type": "number"
+        }
+      },
+      "required": [
+        "horizon_years",
+        "property_price",
+        "loan_margin",
+        "loan_rate",
+        "loan_tenure_years",
+        "first_home_exemption",
+        "other_purchase_costs",
+        "renovation",
+        "maintenance_monthly",
+        "property_tax_yearly",
+        "insurance_yearly",
+        "repair_rate",
+        "room_income_monthly",
+        "cost_growth",
+        "property_growth",
+        "selling_cost_rate",
+        "rent_monthly",
+        "rent_growth",
+        "etf_return",
+        "etf_cost_drag",
+        "inflation"
+      ],
+      "title": "RentVsBuyInputs",
+      "type": "object"
+    },
+    "RentVsBuyResult": {
+      "additionalProperties": false,
+      "properties": {
+        "upfront": {
+          "$ref": "#/$defs/Upfront"
+        },
+        "property_growth_levels": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Property Growth Levels",
+          "type": "array"
+        },
+        "etf_return_levels": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Etf Return Levels",
+          "type": "array"
+        },
+        "scenarios": {
+          "description": "Row-major: property growth level \u00d7 ETF return level",
+          "items": {
+            "$ref": "#/$defs/Scenario"
+          },
+          "title": "Scenarios",
+          "type": "array"
+        },
+        "base_index": {
+          "title": "Base Index",
+          "type": "integer"
+        },
+        "breakeven_property_growth": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Property growth that ties the two paths at the horizon, base ETF return",
+          "title": "Breakeven Property Growth"
+        },
+        "inputs_fingerprint": {
+          "title": "Inputs Fingerprint",
+          "type": "string"
+        }
+      },
+      "required": [
+        "upfront",
+        "property_growth_levels",
+        "etf_return_levels",
+        "scenarios",
+        "base_index",
+        "breakeven_property_growth",
+        "inputs_fingerprint"
+      ],
+      "title": "RentVsBuyResult",
+      "type": "object"
+    },
+    "Review": {
+      "additionalProperties": false,
+      "properties": {
+        "proposal_id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,79}$",
+          "title": "Proposal Id",
+          "type": "string"
+        },
+        "decision": {
+          "enum": [
+            "accepted",
+            "revise",
+            "declined"
+          ],
+          "title": "Decision",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 1500,
+          "title": "Note",
+          "type": "string"
+        },
+        "written_for": {
+          "pattern": "^[0-9a-f]{16}$",
+          "title": "Written For",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "proposal_id",
+        "decision",
+        "note",
+        "written_for",
+        "reviewed_at"
+      ],
+      "title": "Review",
+      "type": "object"
+    },
+    "Scenario": {
+      "additionalProperties": false,
+      "properties": {
+        "property_growth": {
+          "title": "Property Growth",
+          "type": "number"
+        },
+        "etf_return": {
+          "title": "Etf Return",
+          "type": "number"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/YearRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "final_gap": {
+          "title": "Final Gap",
+          "type": "number"
+        },
+        "first_buy_ahead_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "First year from which buying stays ahead to the horizon",
+          "title": "First Buy Ahead Year"
+        }
+      },
+      "required": [
+        "property_growth",
+        "etf_return",
+        "rows",
+        "final_gap",
+        "first_buy_ahead_year"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "maxLength": 600,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 500,
+          "pattern": "^https://",
+          "title": "Url",
+          "type": "string"
+        },
+        "verified_at": {
+          "format": "date",
+          "title": "Verified At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "url",
+        "verified_at"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "Upfront": {
+      "additionalProperties": false,
+      "properties": {
+        "down_payment": {
+          "title": "Down Payment",
+          "type": "number"
+        },
+        "transfer_stamp_duty": {
+          "title": "Transfer Stamp Duty",
+          "type": "number"
+        },
+        "loan_stamp_duty": {
+          "title": "Loan Stamp Duty",
+          "type": "number"
+        },
+        "legal_fees": {
+          "title": "Legal Fees",
+          "type": "number"
+        },
+        "other": {
+          "title": "Other",
+          "type": "number"
+        },
+        "renovation": {
+          "title": "Renovation",
+          "type": "number"
+        },
+        "total": {
+          "title": "Total",
+          "type": "number"
+        },
+        "loan": {
+          "title": "Loan",
+          "type": "number"
+        },
+        "monthly_instalment": {
+          "title": "Monthly Instalment",
+          "type": "number"
+        }
+      },
+      "required": [
+        "down_payment",
+        "transfer_stamp_duty",
+        "loan_stamp_duty",
+        "legal_fees",
+        "other",
+        "renovation",
+        "total",
+        "loan",
+        "monthly_instalment"
+      ],
+      "title": "Upfront",
+      "type": "object"
+    },
+    "YearRow": {
+      "additionalProperties": false,
+      "properties": {
+        "year": {
+          "title": "Year",
+          "type": "integer"
+        },
+        "property_value": {
+          "title": "Property Value",
+          "type": "number"
+        },
+        "loan_balance": {
+          "title": "Loan Balance",
+          "type": "number"
+        },
+        "sale_costs": {
+          "description": "Agent, legal and RPGT if sold at this year end",
+          "title": "Sale Costs",
+          "type": "number"
+        },
+        "home_equity": {
+          "description": "Value minus loan minus sale costs",
+          "title": "Home Equity",
+          "type": "number"
+        },
+        "buyer_portfolio": {
+          "description": "ETF bought with any monthly surplus the buyer had",
+          "title": "Buyer Portfolio",
+          "type": "number"
+        },
+        "buy_net_worth": {
+          "title": "Buy Net Worth",
+          "type": "number"
+        },
+        "rent_net_worth": {
+          "title": "Rent Net Worth",
+          "type": "number"
+        },
+        "gap": {
+          "description": "Buy minus rent; positive means buying is ahead",
+          "title": "Gap",
+          "type": "number"
+        },
+        "owner_monthly_cost": {
+          "description": "Average monthly cost of owning during this year",
+          "title": "Owner Monthly Cost",
+          "type": "number"
+        },
+        "rent_monthly": {
+          "title": "Rent Monthly",
+          "type": "number"
+        },
+        "deflator": {
+          "description": "Divide by this for today's ringgit",
+          "title": "Deflator",
+          "type": "number"
+        }
+      },
+      "required": [
+        "year",
+        "property_value",
+        "loan_balance",
+        "sale_costs",
+        "home_equity",
+        "buyer_portfolio",
+        "buy_net_worth",
+        "rent_net_worth",
+        "gap",
+        "owner_monthly_cost",
+        "rent_monthly",
+        "deflator"
+      ],
+      "title": "YearRow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "as_of": {
+      "format": "date",
+      "title": "As Of",
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "private",
+        "demo",
+        "missing"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "rules_verified_at": {
+      "format": "date",
+      "title": "Rules Verified At",
+      "type": "string"
+    },
+    "rules_stale": {
+      "title": "Rules Stale",
+      "type": "boolean"
+    },
+    "rules_sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "title": "Rules Sources",
+      "type": "array"
+    },
+    "proposals": {
+      "items": {
+        "$ref": "#/$defs/ProposalView"
+      },
+      "title": "Proposals",
+      "type": "array"
+    },
+    "invalid_files": {
+      "description": "Proposal files that failed validation; never silently skipped",
+      "items": {
+        "type": "string"
+      },
+      "title": "Invalid Files",
+      "type": "array"
+    }
+  },
+  "required": [
+    "as_of",
+    "source",
+    "rules_verified_at",
+    "rules_stale",
+    "rules_sources",
+    "proposals",
+    "invalid_files"
+  ],
+  "title": "ResearchSnapshot",
+  "type": "object"
+}

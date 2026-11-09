@@ -10,7 +10,7 @@ const SLOT: Record<string, string> = { stocks: "var(--series-1)", fd: "var(--ser
 
 /** A small part-to-whole donut with a persistent, precise table. Larger
  * category sets fall back to a stacked bar. All amounts come from Python. */
-export function AllocationBar({ slices, total, ranked = false }: { slices: AllocationSlice[]; total?: number; ranked?: boolean }) {
+export function AllocationBar({ slices, total, ranked = false, stacked = false }: { slices: AllocationSlice[]; total?: number; ranked?: boolean; stacked?: boolean }) {
   const visible = slices.filter(s => s.amount_myr > 0);
   if (!visible.length) return <DataState state="empty" title="No priced assets" description="Add a cash balance or priced holding to see its share of gross assets." />;
   let offset = 0;
@@ -20,8 +20,8 @@ export function AllocationBar({ slices, total, ranked = false }: { slices: Alloc
     return { ...slice, color: SLOT[slice.bucket] ?? `var(--series-${i % 5 + 1})`, start, end: offset };
   });
   const summary = visible.map(s => `${s.label} ${pct(s.pct)}`).join(", ");
-  return <div className="grid min-w-0 grid-cols-1 items-center gap-6 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-    {!ranked && visible.length <= 5 ? <div className="relative mx-auto aspect-square w-full max-w-56 rounded-full sm:max-w-64" role="img" aria-label={`Asset allocation donut: ${summary}`}
+  return <div className={`grid min-w-0 grid-cols-1 items-center gap-6 ${stacked ? "" : "md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]"}`}>
+    {!ranked && visible.length <= 5 ? <div className={`relative mx-auto aspect-square w-full max-w-56 rounded-full ${stacked ? "sm:max-w-52" : "sm:max-w-64"}`} role="img" aria-label={`Asset allocation donut: ${summary}`}
       style={{ background: `conic-gradient(${segments.map(s => `${s.color} ${s.start}% ${s.end}%`).join(", ")})` }}>
       <div className="absolute inset-[22%] flex flex-col items-center justify-center min-w-0 rounded-full bg-card px-2 text-center [overflow-wrap:anywhere]">
         <span className="text-xs text-muted-foreground">Gross assets</span>

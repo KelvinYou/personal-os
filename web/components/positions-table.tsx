@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2, Save, X, Plus } from "lucide-react";
+import { Pencil, Trash2, Save, X, Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Select } from "@/components/shared/select";
@@ -12,8 +12,8 @@ import { Money, Private, usePrivacy } from "@/components/shared/privacy";
 
 const SOURCE_LABEL: Record<string, string> = {
   pipeline: "pipeline",
-  manual: "手工兜底",
-  none: "无",
+  manual: "manual fallback",
+  none: "none",
 };
 
 interface Draft {
@@ -70,6 +70,7 @@ export function PositionsTable({ report }: { report: Report }) {
     "DELETE",
   );
 
+  const [editMode, setEditMode] = useState(false);
   const [adding, setAdding] = useState(false);
   const [newDraft, setNewDraft] = useState<NewDraft>(BLANK_NEW_DRAFT);
   const {
@@ -116,8 +117,13 @@ export function PositionsTable({ report }: { report: Report }) {
     if (ok) cancelEdit();
   }
 
+  function toggleEditMode() {
+    if (editMode) { cancelEdit(); cancelAdd(); }
+    setEditMode(!editMode);
+  }
+
   async function confirmDelete(p: Position) {
-    if (!window.confirm(`确认删除持仓 ${p.symbol}？此操作会直接写入 portfolio.yaml。`))
+    if (!window.confirm(`Delete position ${p.symbol}? This writes portfolio.yaml directly.`))
       return;
     setDeletingSymbol(p.symbol);
     await sendDelete({ market: p.market, symbol: p.symbol });
@@ -137,15 +143,15 @@ export function PositionsTable({ report }: { report: Report }) {
 
   async function saveAdd() {
     if (!newDraft.symbol.trim()) {
-      setAddError("标的 symbol 不能为空");
+      setAddError("Symbol is required");
       return;
     }
     if (!newDraft.shares || !newDraft.avg_cost) {
-      setAddError("股数和均价必填");
+      setAddError("Shares and average cost are required");
       return;
     }
     if (newDraft.market === "MY" && !newDraft.code.trim()) {
-      setAddError("马股需要 code");
+      setAddError("Bursa holdings need a numeric code");
       return;
     }
     const fields: Record<string, string> =
@@ -166,18 +172,25 @@ export function PositionsTable({ report }: { report: Report }) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="space-y-3">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="text-xs text-muted-foreground">{stocks.positions.length} holdings · read-only until you choose Edit</p>
+      <Button variant={editMode ? "default" : "outline"} size="sm" aria-pressed={editMode} onClick={toggleEditMode}>
+        {editMode ? <><Check size={14} aria-hidden="true" />Done editing</> : <><Pencil size={14} aria-hidden="true" />Edit holdings</>}
+      </Button>
+    </div>
+    <div className="overflow-x-auto" role="region" aria-label="Investment holdings, scroll horizontally for all columns" tabIndex={0}>
       <table className="w-full min-w-[46rem] text-sm">
         <thead>
           <tr className="border-b text-left text-[11px] uppercase tracking-wide text-muted-foreground">
-            <th className="pb-2 pr-3 font-medium">标的</th>
-            <th className="pb-2 pr-3 text-right font-medium">股数</th>
-            <th className="pb-2 pr-3 text-right font-medium">均价</th>
-            <th className="pb-2 pr-3 text-right font-medium">现价</th>
-            <th className="pb-2 pr-3 text-right font-medium">市值 (MYR)</th>
+            <th className="pb-2 pr-3 font-medium">Symbol</th>
+            <th className="pb-2 pr-3 text-right font-medium">Shares</th>
+            <th className="pb-2 pr-3 text-right font-medium">Avg cost</th>
+            <th className="pb-2 pr-3 text-right font-medium">Price</th>
+            <th className="pb-2 pr-3 text-right font-medium">Value (MYR)</th>
             <th className="pb-2 pr-3 text-right font-medium">P&amp;L</th>
-            <th className="pb-2 pr-3 font-medium">价格来源</th>
-            <th className="pb-2 font-medium">操作</th>
+            <th className="pb-2 pr-3 font-medium">Price source</th>
+            {editMode && <th className="pb-2 font-medium">Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -228,7 +241,7 @@ export function PositionsTable({ report }: { report: Report }) {
                 </td>
                 <td className="num whitespace-nowrap py-2.5 pr-3 text-right">
                   {p.market_value_myr === null ? (
-                    <span className="text-muted-foreground">未计入</span>
+                    <span className="text-muted-foreground">Not counted</span>
                   ) : (
                     <Money value={p.market_value_myr} />
                   )}
@@ -248,7 +261,7 @@ export function PositionsTable({ report }: { report: Report }) {
                 </td>
                 <td className="py-2.5 pr-3">
                   {p.price_source === "none" ? (
-                    <StatusBadge severity="Warning">无价格</StatusBadge>
+                    <StatusBadge severity="Warning">No price</StatusBadge>
                   ) : (
                     <span className="flex flex-wrap items-center gap-2">
                       <span className="text-[11px] text-muted-foreground">
@@ -256,49 +269,49 @@ export function PositionsTable({ report }: { report: Report }) {
                       </span>
                       {staleDays !== undefined && (
                         <StatusBadge severity="Warning">
-                          过期 {staleDays} 天
+                          {staleDays} days old
                         </StatusBadge>
                       )}
                     </span>
                   )}
                 </td>
-                <td className="py-2.5">
+                {editMode && <td className="py-2.5">
                   {isEditing ? (
                     <div className="flex flex-col gap-1.5">
                       <Button variant="default" size="sm"
                         disabled={saving}
                         onClick={() => saveEdit(p)}
                       >
-                        <Save size={14} aria-hidden="true" />{saving ? "保存中…" : "保存"}
+                        <Save size={14} aria-hidden="true" />{saving ? "Saving…" : "Save"}
                       </Button>
                       <Button variant="outline" size="sm"
                         disabled={saving}
                         onClick={cancelEdit}
                       >
-                        <X size={14} aria-hidden="true" />取消
+                        <X size={14} aria-hidden="true" />Cancel
                       </Button>
                       {error && (
                         <p className="max-w-[10rem] text-[11px] text-critical">{error}</p>
                       )}
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex gap-1.5">
                       <Button variant="outline" size="sm"
                         disabled={hidden}
                         title={hidden ? "Show amounts to edit" : undefined}
                         onClick={() => startEdit(p)}
                       >
-                        <Pencil size={14} aria-hidden="true" />编辑
+                        <Pencil size={14} aria-hidden="true" />Edit
                       </Button>
                       <Button variant="destructive" size="sm"
                         disabled={deleting && deletingSymbol === p.symbol}
                         onClick={() => confirmDelete(p)}
                       >
-                        <Trash2 size={14} aria-hidden="true" />{deleting && deletingSymbol === p.symbol ? "删除中…" : "删除"}
+                        <Trash2 size={14} aria-hidden="true" />{deleting && deletingSymbol === p.symbol ? "Deleting…" : "Delete"}
                       </Button>
                     </div>
                   )}
-                </td>
+                </td>}
               </tr>
             );
           })}
@@ -319,7 +332,7 @@ export function PositionsTable({ report }: { report: Report }) {
                   {newDraft.market === "MY" && (
                     <input
                       type="text"
-                      placeholder="code (如 1234)"
+                      placeholder="Code (e.g. 1234)"
                       className={inputClass}
                       style={{ textAlign: "left" }}
                       value={newDraft.code}
@@ -332,7 +345,7 @@ export function PositionsTable({ report }: { report: Report }) {
                 <input
                   type="number"
                   step="any"
-                  placeholder="股数"
+                  placeholder="Shares"
                   className={inputClass}
                   value={newDraft.shares}
                   onChange={(e) => setNewDraft({ ...newDraft, shares: e.target.value })}
@@ -342,14 +355,14 @@ export function PositionsTable({ report }: { report: Report }) {
                 <input
                   type="number"
                   step="0.01"
-                  placeholder="均价"
+                  placeholder="Avg cost"
                   className={inputClass}
                   value={newDraft.avg_cost}
                   onChange={(e) => setNewDraft({ ...newDraft, avg_cost: e.target.value })}
                 />
               </td>
               <td className="py-2.5 pr-3 text-xs text-muted-foreground" colSpan={4}>
-                现价 / 市值 / P&amp;L 待下次 pipeline 计价后出现
+                Price, value and P&amp;L appear after the next pipeline pricing run
               </td>
               <td className="py-2.5">
                 <div className="flex flex-col gap-1.5">
@@ -357,13 +370,13 @@ export function PositionsTable({ report }: { report: Report }) {
                     disabled={addingSaving}
                     onClick={saveAdd}
                   >
-                    <Save size={14} aria-hidden="true" />{addingSaving ? "保存中…" : "新增"}
+                    <Save size={14} aria-hidden="true" />{addingSaving ? "Saving…" : "Add"}
                   </Button>
                   <Button variant="outline" size="sm"
                     disabled={addingSaving}
                     onClick={cancelAdd}
                   >
-                    <X size={14} aria-hidden="true" />取消
+                    <X size={14} aria-hidden="true" />Cancel
                   </Button>
                   {addError && (
                     <p className="max-w-[10rem] text-[11px] text-critical">{addError}</p>
@@ -374,25 +387,25 @@ export function PositionsTable({ report }: { report: Report }) {
           ) : null}
         </tbody>
       </table>
+    </div>
 
-      {!adding && (
+      {editMode && !adding && (
         <Button variant="outline" size="sm"
           onClick={startAdd}
         >
-          <Plus size={14} aria-hidden="true" />新增持仓
+          <Plus size={14} aria-hidden="true" />Add holding
         </Button>
       )}
       {deleteError && <p className="mt-2 text-[11px] text-critical">{deleteError}</p>}
 
       <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-        价格来源唯一为 ai-stock-analysis pipeline（马股按数字 code 查）。
-        无价格的持仓<span className="font-medium text-foreground">不计入</span>
-        市值合计，合计因此偏低而非静默补零。 过期阈值{" "}
-        {thresholds.price_stale_days} 天。FX {fx.rate}（{fx.pair}，记于 {fx.as_of}）。
-        P&amp;L 的 MYR 值按<span className="font-medium text-foreground">当前汇率</span>
-        折算，不是真实本币回报——买入时汇率与手续费未记录。
-        股数/均价可编辑，写入 data/finance/portfolio.yaml；现价仍只读，唯一来源是
-        ai-stock-analysis pipeline。保存不会自动 git commit。
+        Prices come only from the ai-stock-analysis pipeline (Bursa by numeric code).
+        Unpriced holdings are <span className="font-medium text-foreground">not counted</span> in
+        the total, so it reads low instead of silently filling zero. Stale after{" "}
+        {thresholds.price_stale_days} days. FX {fx.rate} ({fx.pair}, observed {fx.as_of}).
+        MYR P&amp;L uses the <span className="font-medium text-foreground">current</span> rate,
+        not the real home-currency return; purchase FX and fees are not recorded.
+        Shares and average cost write data/finance/portfolio.yaml; prices stay read-only. Saving does not git commit.
       </p>
     </div>
   );

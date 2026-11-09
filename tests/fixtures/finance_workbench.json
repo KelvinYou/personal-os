@@ -1,0 +1,10 @@
+{
+  "policy": {
+    "schema_version": 1,
+    "base_currency": "MYR",
+    "emergency_fund": {"target_months": 3, "monthly_required_expenses": 1000},
+    "cash_flow": {"monthly_investable_amount": 2000}
+  },
+  "transactions": [{"id":"sample-buy","recorded_on":"2026-01-01","occurred_on":null,"kind":"buy","amount":100,"currency":"USD","account":"sample-broker","description":"Synthetic purchase; source funding is unconfirmed.","symbol":"SAMPLE","quantity":1}],
+  "commands": [{"action":"create_flow","request_id":"sample-initial","id":"sample-funding","title":"Sample investment funding","source_event_id":"sample-buy"}]
+}

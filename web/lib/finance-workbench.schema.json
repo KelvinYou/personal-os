@@ -1,0 +1,1033 @@
+{
+  "$defs": {
+    "AllocationInput": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "format": "date",
+          "title": "As Of",
+          "type": "string"
+        },
+        "assumptions_confirmed": {
+          "title": "Assumptions Confirmed",
+          "type": "boolean"
+        },
+        "available_after_bills_myr": {
+          "minimum": 0,
+          "title": "Available After Bills Myr",
+          "type": "number"
+        },
+        "near_term_need_myr": {
+          "minimum": 0,
+          "title": "Near Term Need Myr",
+          "type": "number"
+        },
+        "protected_reserve_myr": {
+          "minimum": 0,
+          "title": "Protected Reserve Myr",
+          "type": "number"
+        }
+      },
+      "required": [
+        "as_of",
+        "assumptions_confirmed",
+        "available_after_bills_myr",
+        "near_term_need_myr",
+        "protected_reserve_myr"
+      ],
+      "title": "AllocationInput",
+      "type": "object"
+    },
+    "AllocationPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "equity_target_pct_of_tracked_investable_assets": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Equity Target Pct Of Tracked Investable Assets"
+        },
+        "rebalance_band_percentage_points": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rebalance Band Percentage Points"
+        }
+      },
+      "required": [
+        "equity_target_pct_of_tracked_investable_assets",
+        "rebalance_band_percentage_points"
+      ],
+      "title": "AllocationPolicy",
+      "type": "object"
+    },
+    "AllocationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "emergency_target_myr": {
+          "minimum": 0,
+          "title": "Emergency Target Myr",
+          "type": "number"
+        },
+        "near_term_allocation_myr": {
+          "minimum": 0,
+          "title": "Near Term Allocation Myr",
+          "type": "number"
+        },
+        "near_term_unfunded_myr": {
+          "minimum": 0,
+          "title": "Near Term Unfunded Myr",
+          "type": "number"
+        },
+        "emergency_allocation_myr": {
+          "minimum": 0,
+          "title": "Emergency Allocation Myr",
+          "type": "number"
+        },
+        "emergency_remaining_gap_myr": {
+          "minimum": 0,
+          "title": "Emergency Remaining Gap Myr",
+          "type": "number"
+        },
+        "unassigned_myr": {
+          "minimum": 0,
+          "title": "Unassigned Myr",
+          "type": "number"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "emergency_target_myr",
+        "near_term_allocation_myr",
+        "near_term_unfunded_myr",
+        "emergency_allocation_myr",
+        "emergency_remaining_gap_myr",
+        "unassigned_myr",
+        "warnings"
+      ],
+      "title": "AllocationResult",
+      "type": "object"
+    },
+    "CashMonth": {
+      "additionalProperties": false,
+      "properties": {
+        "month": {
+          "title": "Month",
+          "type": "integer"
+        },
+        "baseline_myr": {
+          "title": "Baseline Myr",
+          "type": "number"
+        },
+        "alternative_myr": {
+          "title": "Alternative Myr",
+          "type": "number"
+        }
+      },
+      "required": [
+        "month",
+        "baseline_myr",
+        "alternative_myr"
+      ],
+      "title": "CashMonth",
+      "type": "object"
+    },
+    "CashPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "monthly_investable_amount": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Monthly Investable Amount"
+        }
+      },
+      "required": [
+        "monthly_investable_amount"
+      ],
+      "title": "CashPolicy",
+      "type": "object"
+    },
+    "ConcentrationPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "max_single_position_pct_of_equity": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Single Position Pct Of Equity"
+        },
+        "max_sector_pct_of_equity": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Sector Pct Of Equity"
+        },
+        "max_usd_pct_of_tracked_investable_assets": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Usd Pct Of Tracked Investable Assets"
+        }
+      },
+      "required": [
+        "max_single_position_pct_of_equity",
+        "max_sector_pct_of_equity",
+        "max_usd_pct_of_tracked_investable_assets"
+      ],
+      "title": "ConcentrationPolicy",
+      "type": "object"
+    },
+    "ConstraintsPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "us_situs_warning_buffer_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Us Situs Warning Buffer Pct"
+        }
+      },
+      "required": [
+        "us_situs_warning_buffer_pct"
+      ],
+      "title": "ConstraintsPolicy",
+      "type": "object"
+    },
+    "EmergencyPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "target_months": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Months"
+        },
+        "monthly_required_expenses": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Monthly Required Expenses"
+        }
+      },
+      "required": [
+        "target_months",
+        "monthly_required_expenses"
+      ],
+      "title": "EmergencyPolicy",
+      "type": "object"
+    },
+    "Policy": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "base_currency": {
+          "const": "MYR",
+          "default": "MYR",
+          "title": "Base Currency",
+          "type": "string"
+        },
+        "emergency_fund": {
+          "$ref": "#/$defs/EmergencyPolicy"
+        },
+        "cash_flow": {
+          "$ref": "#/$defs/CashPolicy"
+        },
+        "allocation": {
+          "$ref": "#/$defs/AllocationPolicy"
+        },
+        "equity_sleeve": {
+          "$ref": "#/$defs/SleevePolicy"
+        },
+        "concentration": {
+          "$ref": "#/$defs/ConcentrationPolicy"
+        },
+        "constraints": {
+          "$ref": "#/$defs/ConstraintsPolicy"
+        },
+        "tax": {
+          "$ref": "#/$defs/TaxPolicy"
+        }
+      },
+      "required": [
+        "schema_version",
+        "base_currency",
+        "emergency_fund",
+        "cash_flow",
+        "allocation",
+        "equity_sleeve",
+        "concentration",
+        "constraints",
+        "tax"
+      ],
+      "title": "Policy",
+      "type": "object"
+    },
+    "PolicyAudit": {
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "configured",
+            "missing",
+            "invalid"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "source": {
+          "const": "data/finance/policy.yaml",
+          "default": "data/finance/policy.yaml",
+          "title": "Source",
+          "type": "string"
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Policy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fingerprint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Fingerprint"
+        },
+        "missing_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing Keys",
+          "type": "array"
+        },
+        "currency": {
+          "const": "MYR",
+          "default": "MYR",
+          "title": "Currency",
+          "type": "string"
+        },
+        "verified_at": {
+          "default": null,
+          "title": "Verified At",
+          "type": "null"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state",
+        "source",
+        "policy",
+        "fingerprint",
+        "missing_keys",
+        "currency",
+        "verified_at",
+        "message"
+      ],
+      "title": "PolicyAudit",
+      "type": "object"
+    },
+    "ScenarioInput": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "format": "date",
+          "title": "As Of",
+          "type": "string"
+        },
+        "assumptions_confirmed": {
+          "title": "Assumptions Confirmed",
+          "type": "boolean"
+        },
+        "starting_cash_myr": {
+          "minimum": 0,
+          "title": "Starting Cash Myr",
+          "type": "number"
+        },
+        "monthly_income_myr": {
+          "minimum": 0,
+          "title": "Monthly Income Myr",
+          "type": "number"
+        },
+        "monthly_expenses_myr": {
+          "minimum": 0,
+          "title": "Monthly Expenses Myr",
+          "type": "number"
+        },
+        "protected_buffer_myr": {
+          "minimum": 0,
+          "title": "Protected Buffer Myr",
+          "type": "number"
+        },
+        "one_off_cost_myr": {
+          "minimum": 0,
+          "title": "One Off Cost Myr",
+          "type": "number"
+        },
+        "extra_monthly_expense_myr": {
+          "minimum": 0,
+          "title": "Extra Monthly Expense Myr",
+          "type": "number"
+        },
+        "income_pause_months": {
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Income Pause Months",
+          "type": "integer"
+        },
+        "horizon_months": {
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Horizon Months",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "as_of",
+        "assumptions_confirmed",
+        "starting_cash_myr",
+        "monthly_income_myr",
+        "monthly_expenses_myr",
+        "protected_buffer_myr",
+        "one_off_cost_myr",
+        "extra_monthly_expense_myr",
+        "income_pause_months",
+        "horizon_months"
+      ],
+      "title": "ScenarioInput",
+      "type": "object"
+    },
+    "ScenarioResult": {
+      "additionalProperties": false,
+      "properties": {
+        "months": {
+          "items": {
+            "$ref": "#/$defs/CashMonth"
+          },
+          "title": "Months",
+          "type": "array"
+        },
+        "baseline_end_myr": {
+          "title": "Baseline End Myr",
+          "type": "number"
+        },
+        "alternative_end_myr": {
+          "title": "Alternative End Myr",
+          "type": "number"
+        },
+        "minimum_alternative_myr": {
+          "title": "Minimum Alternative Myr",
+          "type": "number"
+        },
+        "end_difference_myr": {
+          "title": "End Difference Myr",
+          "type": "number"
+        },
+        "first_buffer_breach_month": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Buffer Breach Month"
+        },
+        "scope": {
+          "const": "Cash only; no investment returns, tax estimates or financial execution.",
+          "default": "Cash only; no investment returns, tax estimates or financial execution.",
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "months",
+        "baseline_end_myr",
+        "alternative_end_myr",
+        "minimum_alternative_myr",
+        "end_difference_myr",
+        "first_buffer_breach_month",
+        "scope"
+      ],
+      "title": "ScenarioResult",
+      "type": "object"
+    },
+    "SleevePolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "core_target_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Core Target Pct"
+        },
+        "satellite_target_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Satellite Target Pct"
+        }
+      },
+      "required": [
+        "core_target_pct",
+        "satellite_target_pct"
+      ],
+      "title": "SleevePolicy",
+      "type": "object"
+    },
+    "Step": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "status": {
+          "default": "planned",
+          "enum": [
+            "planned",
+            "in_transit",
+            "confirmed",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "enum": [
+                "MYR",
+                "USD",
+                "CNY"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "occurred_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occurred On"
+        },
+        "evidence": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Evidence",
+          "type": "string"
+        },
+        "source_event_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Event Id"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "status",
+        "amount",
+        "currency",
+        "occurred_on",
+        "evidence",
+        "source_event_id"
+      ],
+      "title": "Step",
+      "type": "object"
+    },
+    "TaxPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "marginal_tax_rate_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Marginal Tax Rate Pct"
+        },
+        "prs_status": {
+          "anyOf": [
+            {
+              "enum": [
+                "unused",
+                "used",
+                "not_applicable"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prs Status"
+        },
+        "us_estate_applicability": {
+          "anyOf": [
+            {
+              "enum": [
+                "nonresident_noncitizen",
+                "not_applicable",
+                "unknown"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Us Estate Applicability"
+        }
+      },
+      "required": [
+        "marginal_tax_rate_pct",
+        "prs_status",
+        "us_estate_applicability"
+      ],
+      "title": "TaxPolicy",
+      "type": "object"
+    },
+    "Transaction": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "recorded_on": {
+          "format": "date",
+          "title": "Recorded On",
+          "type": "string"
+        },
+        "occurred_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occurred On"
+        },
+        "kind": {
+          "enum": [
+            "income",
+            "expense",
+            "deposit",
+            "withdrawal",
+            "transfer",
+            "buy",
+            "sell"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "amount": {
+          "exclusiveMinimum": 0,
+          "title": "Amount",
+          "type": "number"
+        },
+        "currency": {
+          "enum": [
+            "MYR",
+            "USD",
+            "CNY"
+          ],
+          "title": "Currency",
+          "type": "string"
+        },
+        "account": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Account",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "counter_account": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Counter Account"
+        },
+        "symbol": {
+          "anyOf": [
+            {
+              "maxLength": 30,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Symbol"
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quantity"
+        },
+        "fees": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fees"
+        }
+      },
+      "required": [
+        "id",
+        "recorded_on",
+        "kind",
+        "amount",
+        "currency",
+        "account",
+        "description"
+      ],
+      "title": "Transaction",
+      "type": "object"
+    },
+    "Workflow": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "title": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "kind": {
+          "default": "flow",
+          "enum": [
+            "flow",
+            "allocation",
+            "scenario"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "default": "open",
+          "enum": [
+            "open",
+            "completed",
+            "draft",
+            "reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/Step"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "recorded_at": {
+          "title": "Recorded At",
+          "type": "string"
+        },
+        "policy_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Policy Fingerprint"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AllocationInput"
+            },
+            {
+              "$ref": "#/$defs/ScenarioInput"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputs"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AllocationResult"
+            },
+            {
+              "$ref": "#/$defs/ScenarioResult"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Result"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "title",
+        "kind",
+        "status",
+        "steps",
+        "recorded_at",
+        "policy_fingerprint",
+        "inputs",
+        "result"
+      ],
+      "title": "Workflow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "as_of": {
+      "title": "As Of",
+      "type": "string"
+    },
+    "ledger_state": {
+      "enum": [
+        "missing",
+        "present"
+      ],
+      "title": "Ledger State",
+      "type": "string"
+    },
+    "workflows": {
+      "items": {
+        "$ref": "#/$defs/Workflow"
+      },
+      "title": "Workflows",
+      "type": "array"
+    },
+    "policy": {
+      "$ref": "#/$defs/PolicyAudit"
+    },
+    "purchase_evidence": {
+      "items": {
+        "$ref": "#/$defs/Transaction"
+      },
+      "title": "Purchase Evidence",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "as_of",
+    "ledger_state",
+    "workflows",
+    "policy",
+    "purchase_evidence"
+  ],
+  "title": "WorkbenchSnapshot",
+  "type": "object"
+}

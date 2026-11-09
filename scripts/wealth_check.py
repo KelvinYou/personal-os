@@ -129,7 +129,7 @@ def render_text(r: dict) -> int:
     print("\n■ 资产配置 (按经济行为)")
     for a in r["allocation"]["slices"]:
         bar = "█" * max(1, round(a["pct"] / 2))
-        print(f"  {a['label']:<22} {a['pct']:>5.1f}%  RM{a['amount_myr']:>11,.2f}  {bar}")
+        print(f"  {a['label']:<24} {a['pct']:>5.1f}%  RM{a['amount_myr']:>11,.2f}  {bar}")
     if r["allocation"]["incomplete"]:
         print(
             "  [Status: Warning] 配置占比不完整 — 分母缺少无价持仓 "

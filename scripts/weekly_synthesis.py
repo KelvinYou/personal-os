@@ -47,6 +47,22 @@ def _has_coros_source(day: date, fitness_dir: Path) -> bool:
     return any(data.get(k) for k in ("sleep", "readiness", "training", "activities"))
 
 
+def _agent_wait_section(monday: date, cfg) -> list[str]:
+    """§4.6 agent wait on human; optional, never blocks the weekly report."""
+    if cfg.office is None:
+        return []
+    from lib.clock import user_timezone
+    from lib.config import ROOT
+    from lib.office.sources import claude_projects, codex_sessions
+    from lib.office.waits import content_review_markdown, content_review_week, markdown, week_waits
+    content = content_review_markdown(content_review_week(ROOT / "data" / "posts", monday, user_timezone()))
+    try:
+        week = week_waits(codex_sessions(), ROOT, claude_projects() if cfg.office.claude_enabled else None, cfg.office, monday, user_timezone())
+    except (OSError, ValueError):
+        return ["## 4.6 Agent wait on human (review latency)", "", "- [Status: Warning] Local agent records unavailable; run make agent-wait for diagnostics.", *content]
+    return markdown(week, cfg.office) + content
+
+
 def generate_weekly_synthesis(target_date: date | None = None,
                               coros_snapshot: CorosSnapshot | None = None) -> None:
     cfg = load_thresholds()
@@ -274,6 +290,8 @@ def generate_weekly_synthesis(target_date: date | None = None,
             nearest = due_decisions[0][1].get("id", "?")
             lines.append(f"- 最近到期：{nearest}")
         lines.append("")
+
+    lines.extend(_agent_wait_section(monday, cfg))
 
     lines.append("## 5. 每日日志切片采样 (Daily Slices)")
     lines.append("")

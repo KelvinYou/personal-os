@@ -1,6 +1,6 @@
 "use client";
 
-import { WalletCards, Activity, Workflow, Settings2, SunMoon, Layers, FlaskConical, Box, House } from "lucide-react";
+import { WalletCards, Activity, Workflow, Settings2, SunMoon, Layers, FlaskConical, Box, House, Images } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -35,7 +35,7 @@ export function DashboardNav() {
     <nav className="dashboard-nav glass-surface" aria-label="Main navigation" data-scrolled={scrolled}>
       <Link href="/" className="nav-brand">Personal OS<span>Local workspace</span></Link>
       <div className="nav-links">
-        {[{ href: "/", label: "Office", icon: Box }, { href: "/finance", label: "Finance", icon: WalletCards }, { href: "/home-design", label: "Home", icon: House }, { href: "/eval-rollup", label: "Agent signals", icon: Activity }, { href: "/skill-regressions", label: "Skill evals", icon: FlaskConical }, { href: "/flows", label: "Flows", icon: Workflow }, { href: "/design-system", label: "Design", icon: Layers }].map(item => (
+        {[{ href: "/", label: "Office", icon: Box }, { href: "/finance", label: "Finance", icon: WalletCards }, { href: "/home-design", label: "Home", icon: House }, { href: "/posts", label: "Posts", icon: Images }, { href: "/eval-rollup", label: "Agent signals", icon: Activity }, { href: "/skill-regressions", label: "Skill evals", icon: FlaskConical }, { href: "/flows", label: "Flows", icon: Workflow }, { href: "/design-system", label: "Design", icon: Layers }].map(item => (
           <Link key={item.href} href={item.href} aria-current={(path === item.href || (item.href === "/" && path.startsWith("/office"))) ? "page" : undefined}><item.icon size={17} aria-hidden="true" />{item.label}</Link>
         ))}
       </div>

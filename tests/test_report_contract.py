@@ -119,7 +119,7 @@ class ReportContractTests(unittest.TestCase):
         fixture = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
         WealthReport.model_validate(fixture)
         schema = WealthReport.model_json_schema(mode="serialization")
-        self.assertEqual(schema["properties"]["report_schema_version"]["const"], 4)
+        self.assertEqual(schema["properties"]["report_schema_version"]["const"], 5)
         self.assertIn("report_schema_version", schema["required"])
         self.assertEqual(set(schema["$defs"]["WealthCfg"]["required"]),
                          set(WealthCfg.model_fields))
@@ -134,7 +134,7 @@ class ReportContractTests(unittest.TestCase):
         schema, types = generate()
         self.assertEqual(SCHEMA_PATH.read_text(encoding="utf-8"), schema)
         self.assertEqual(TYPE_PATH.read_text(encoding="utf-8"), types)
-        self.assertIn("export type ReportSchemaVersion = 4", types)
+        self.assertIn("export type ReportSchemaVersion = 5", types)
         self.assertIn("export type Price = number | null", types)
 
     def test_no_section_is_empty(self):

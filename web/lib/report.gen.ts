@@ -6,7 +6,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type ReportSchemaVersion = 4;
+export type ReportSchemaVersion = 5;
 export type AsOf = string;
 export type Currency = string;
 export type MaturityAlertDays = number;
@@ -132,6 +132,15 @@ export type Caps = CapOut[];
 export type SchemaVersion = number;
 export type Stale2 = boolean;
 export type StaleFacts = string[];
+export type Id = string;
+export type Kind = "debt_principal_missing" | "deposit_cap" | "maturity" | "valuation";
+export type Severity1 = "OK" | "Warning" | "Critical";
+export type Subject = string | null;
+export type Title = string;
+export type Detail = string;
+export type Target = "liabilities" | "cash" | "stocks";
+export type Observations = string[];
+export type Attention = AttentionItem[];
 export type TrackedTotalMyr = number;
 
 export interface WealthReport {
@@ -151,6 +160,7 @@ export interface WealthReport {
   maturity: Maturity;
   caps: Caps;
   wealth_rules: WealthRulesHealth;
+  attention: Attention;
   tracked_total_myr: TrackedTotalMyr;
 }
 export interface WealthCfg {
@@ -316,4 +326,21 @@ export interface WealthRulesHealth {
   schema_version: SchemaVersion;
   stale: Stale2;
   stale_facts: StaleFacts;
+}
+/**
+ * One owner action the recorded data asks for (built by attention.py).
+ *
+ * Amount-free on purpose: it is read while amounts are masked and its id feeds
+ * the fixed-text phone push. `subject` is an account key the UI may label;
+ * `title` reads correctly without it. `target` names the /finance tab that resolves it.
+ */
+export interface AttentionItem {
+  id: Id;
+  kind: Kind;
+  severity: Severity1;
+  subject: Subject;
+  title: Title;
+  detail: Detail;
+  target: Target;
+  observations: Observations;
 }

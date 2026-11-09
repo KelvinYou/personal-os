@@ -1,18 +1,13 @@
 import { TriangleAlert } from "lucide-react";
 import type { Report } from "@/lib/report";
-import { pct } from "@/lib/utils";
+
+/** Valuation caveats as sentences; worded once in scripts/lib/wealth/attention.py. */
+export function valuationIssues(r: Report): string[] {
+  return r.attention.find(item => item.kind === "valuation")?.observations ?? [];
+}
 
 export function DataHealth({ report: r }: { report: Report }) {
-  const issues = [
-    ...r.stale_files.map(f => `${f.name}: last updated ${f.age_days} days ago.`),
-    ...r.catalog_conflicts.map(c => `${c.key}: recorded ${pct(c.held_rate, 2)} differs from the reference catalog. Keep the reported rate until product terms are checked.`),
-    ...r.cash.accounts.filter(a => a.rate_unverified).map(a => `${a.key}: current yield has not been confirmed.`),
-    ...r.stocks.stale_prices.map(p => `${p.symbol}: price is ${p.age_days} days old.`),
-    ...r.liabilities.stale_balance_keys.map(key => `${key}: outstanding balance observation is stale.`),
-    ...(r.fx.stale ? [`USD conversion uses ${r.fx.rate} MYR, observed ${r.fx.as_of} (${r.fx.age_days} days old).`] : []),
-    ...(r.allocation.incomplete ? [`Unpriced holdings: ${r.allocation.unpriced_symbols.join(", ")}. Asset allocation is incomplete.`] : []),
-    ...(r.wealth_rules.stale ? [`Regulatory facts need review: ${r.wealth_rules.stale_facts.join(", ")}.`] : []),
-  ];
+  const issues = valuationIssues(r);
   if (!issues.length) return <p className="text-sm text-ok">Recorded valuations are current.</p>;
   return (
     <div className="quality-notice">

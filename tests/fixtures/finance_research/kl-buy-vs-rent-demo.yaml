@@ -1,0 +1,70 @@
+# Synthetic demo proposal. Not the owner's figures and not market advice.
+schema_version: 1
+id: kl-buy-vs-rent-demo
+kind: rent_vs_buy
+title: "Demo: buy a KL condo or rent a room and invest"
+question: "Over 0–20 years, is buying a mid-market KL condo better than renting a room and putting the same money into a global ETF?"
+prepared_by: finance-manager
+prepared_on: 2026-11-09
+review_by: 2027-05-09
+inputs:
+  horizon_years: 20
+  property_price: 500000
+  loan_margin: 0.9
+  loan_rate: 0.042
+  loan_tenure_years: 35
+  first_home_exemption: false
+  other_purchase_costs: 3000
+  renovation: 30000
+  maintenance_monthly: 350
+  property_tax_yearly: 600
+  insurance_yearly: 300
+  repair_rate: 0.005
+  room_income_monthly: 0
+  cost_growth: 0.025
+  property_growth: {low: 0.0, base: 0.02, high: 0.04}
+  selling_cost_rate: 0.03
+  rent_monthly: 900
+  rent_growth: 0.025
+  etf_return: {low: 0.04, base: 0.06, high: 0.08}
+  etf_cost_drag: 0.004
+  inflation: 0.025
+input_notes:
+  property_price: "Synthetic mid-market condo."
+  etf_return: "Synthetic planning range."
+recommendation:
+  headline: "Demo: renting and investing stays ahead unless prices beat the break-even growth"
+  summary: "Synthetic demo text. The boards show where each path leads under the stated inputs."
+  conditions_to_flip: ["Property growth above the break-even line"]
+  risks: ["Synthetic data"]
+  next_steps: ["Replace with a real proposal from the Finance manager"]
+  written_for: "11a8a6b0e47248b6"
+post:
+  public_inputs:
+    horizon_years: 20
+    property_price: 500000
+    loan_margin: 0.9
+    loan_rate: 0.042
+    loan_tenure_years: 35
+    first_home_exemption: true
+    other_purchase_costs: 3000
+    renovation: 30000
+    maintenance_monthly: 350
+    property_tax_yearly: 600
+    insurance_yearly: 300
+    repair_rate: 0.005
+    room_income_monthly: 0
+    cost_growth: 0.025
+    property_growth: {low: 0.0, base: 0.02, high: 0.04}
+    selling_cost_rate: 0.03
+    rent_monthly: 1000
+    rent_growth: 0.025
+    etf_return: {low: 0.04, base: 0.06, high: 0.08}
+    etf_cost_drag: 0.004
+    inflation: 0.025
+  owner_derived: [rent_monthly]
+  public_notes: {rent_monthly: 'Synthetic: a KL master room.'}
+  reader_moment: Synthetic reader moment.
+  hypothesis: Synthetic hypothesis.
+  changed_variable: Synthetic variable
+  must_avoid: [Synthetic constraint]

@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2, Save, X, Plus } from "lucide-react";
+import { Pencil, Trash2, Save, X, Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Select } from "@/components/shared/select";
@@ -78,6 +78,7 @@ export function CashTable({ report }: { report: Report }) {
     "DELETE",
   );
 
+  const [editMode, setEditMode] = useState(false);
   const [adding, setAdding] = useState(false);
   const [newDraft, setNewDraft] = useState<NewDraft>(BLANK_NEW_DRAFT);
   const {
@@ -123,8 +124,13 @@ export function CashTable({ report }: { report: Report }) {
     if (ok) cancelEdit();
   }
 
+  function toggleEditMode() {
+    if (editMode) { cancelEdit(); cancelAdd(); }
+    setEditMode(!editMode);
+  }
+
   async function confirmDelete(key: string) {
-    if (!window.confirm(`确认删除账户 ${key}？此操作会直接写入 savings.yaml。`)) return;
+    if (!window.confirm(`Delete account ${key}? This writes savings.yaml directly.`)) return;
     setDeletingKey(key);
     await sendDelete(key);
     setDeletingKey(null);
@@ -143,7 +149,7 @@ export function CashTable({ report }: { report: Report }) {
 
   async function saveAdd() {
     if (!newDraft.key.trim()) {
-      setAddError("账户 key 不能为空");
+      setAddError("Account key is required");
       return;
     }
     const fields: Record<string, string> = {
@@ -163,16 +169,23 @@ export function CashTable({ report }: { report: Report }) {
   }
 
   return (
+    <div className="space-y-3">
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="text-xs text-muted-foreground">{cash.accounts.length} accounts · read-only until you choose Edit</p>
+      <Button variant={editMode ? "default" : "outline"} size="sm" aria-pressed={editMode} onClick={toggleEditMode}>
+        {editMode ? <><Check size={14} aria-hidden="true" />Done editing</> : <><Pencil size={14} aria-hidden="true" />Edit accounts</>}
+      </Button>
+    </div>
     <div className="overflow-x-auto" role="region" aria-label="Cash accounts, scroll horizontally for all columns" tabIndex={0}>
-      <table className="w-full min-w-[46rem] text-sm">
+      <table className={`w-full text-sm ${editMode ? "min-w-[46rem]" : "min-w-[38rem]"}`}>
         <thead>
           <tr className="border-b text-left text-[11px] uppercase tracking-wide text-muted-foreground">
-            <th className="pb-2 pr-3 font-medium">账户</th>
-            <th className="pb-2 pr-3 text-right font-medium">余额</th>
-            <th className="pb-2 pr-3 text-right font-medium">利率</th>
-            <th className="pb-2 pr-3 font-medium">类型 / 流动性</th>
-            <th className="pb-2 pr-3 font-medium">备注</th>
-            <th className="pb-2 font-medium">操作</th>
+            <th className="pb-2 pr-3 font-medium">Account</th>
+            <th className="pb-2 pr-3 text-right font-medium">Balance</th>
+            <th className="pb-2 pr-3 text-right font-medium">Rate</th>
+            <th className="pb-2 pr-3 font-medium">Type / liquidity</th>
+            <th className="pb-2 pr-3 font-medium">Notes</th>
+            {editMode && <th className="pb-2 font-medium">Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -223,7 +236,7 @@ export function CashTable({ report }: { report: Report }) {
                     <input
                       type="number"
                       step="0.01"
-                      placeholder="cap (留空 = 无)"
+                      placeholder="Cap (blank = none)"
                       className={inputClass}
                       value={draft.cap}
                       onChange={(e) => setDraft({ ...draft, cap: e.target.value })}
@@ -243,13 +256,13 @@ export function CashTable({ report }: { report: Report }) {
                         disabled={saving}
                         onClick={() => saveEdit(a)}
                       >
-                        <Save size={14} aria-hidden="true" />{saving ? "保存中…" : "保存"}
+                        <Save size={14} aria-hidden="true" />{saving ? "Saving…" : "Save"}
                       </Button>
                       <Button variant="outline" size="sm"
                         disabled={saving}
                         onClick={cancelEdit}
                       >
-                        <X size={14} aria-hidden="true" />取消
+                        <X size={14} aria-hidden="true" />Cancel
                       </Button>
                       {error && (
                         <p className="max-w-[10rem] text-[11px] text-critical">{error}</p>
@@ -279,13 +292,13 @@ export function CashTable({ report }: { report: Report }) {
                   <span className="inline-flex items-center gap-2">
                     {pct(a.rate, 2)}
                     {a.rate_unverified && (
-                      <StatusBadge severity="Warning">未核实</StatusBadge>
+                      <StatusBadge severity="Warning">Unverified</StatusBadge>
                     )}
                   </span>
                 </td>
                 <td className="py-2.5 pr-3 text-xs text-muted-foreground">
                   {a.type} · {a.liquidity}
-                  {a.lock_until && ` · 解锁 ${a.lock_until}`}
+                  {a.lock_until && ` · unlocks ${a.lock_until}`}
                 </td>
                 <td className="py-2.5 pr-3 text-xs text-muted-foreground">
                   {cap ? (
@@ -295,31 +308,31 @@ export function CashTable({ report }: { report: Report }) {
                       </StatusBadge>
                       <span>
                         {cap.overflow > 0
-                          ? <>超出 <Money value={cap.overflow} /> 只享 base rate</>
-                          : <>剩余 headroom <Money value={cap.cap - cap.balance} /></>}
+                          ? <><Money value={cap.overflow} /> over the cap earns base rate only</>
+                          : <><Money value={cap.cap - cap.balance} /> headroom left</>}
                       </span>
                     </span>
                   ) : (
-                    a.rate_reason
+                    <Note text={a.rate_reason} />
                   )}
                 </td>
-                <td className="py-2.5">
-                  <div className="flex flex-col gap-1.5">
+                {editMode && <td className="py-2.5">
+                  <div className="flex gap-1.5">
                     <Button variant="outline" size="sm"
                       disabled={hidden}
                       title={hidden ? "Show amounts to edit" : undefined}
                       onClick={() => startEdit(a)}
                     >
-                      <Pencil size={14} aria-hidden="true" />编辑
+                      <Pencil size={14} aria-hidden="true" />Edit
                     </Button>
                     <Button variant="destructive" size="sm"
                       disabled={deleting && deletingKey === a.key}
                       onClick={() => confirmDelete(a.key)}
                     >
-                      <Trash2 size={14} aria-hidden="true" />{deleting && deletingKey === a.key ? "删除中…" : "删除"}
+                      <Trash2 size={14} aria-hidden="true" />{deleting && deletingKey === a.key ? "Deleting…" : "Delete"}
                     </Button>
                   </div>
-                </td>
+                </td>}
               </tr>
             );
           })}
@@ -329,7 +342,7 @@ export function CashTable({ report }: { report: Report }) {
               <td className="py-2.5 pr-3">
                 <input
                   type="text"
-                  placeholder="账户 key（如 gxbank）"
+                  placeholder="Account key (e.g. gxbank)"
                   className={inputClass}
                   value={newDraft.key}
                   onChange={(e) => setNewDraft({ ...newDraft, key: e.target.value })}
@@ -339,7 +352,7 @@ export function CashTable({ report }: { report: Report }) {
                 <input
                   type="number"
                   step="0.01"
-                  placeholder="余额"
+                  placeholder="Balance"
                   className={`${inputClass} text-right`}
                   value={newDraft.balance}
                   onChange={(e) => setNewDraft({ ...newDraft, balance: e.target.value })}
@@ -349,7 +362,7 @@ export function CashTable({ report }: { report: Report }) {
                 <input
                   type="number"
                   step="0.01"
-                  placeholder="利率 %"
+                  placeholder="Rate %"
                   className={`${inputClass} text-right`}
                   value={newDraft.rate}
                   onChange={(e) => setNewDraft({ ...newDraft, rate: e.target.value })}
@@ -378,7 +391,7 @@ export function CashTable({ report }: { report: Report }) {
                 <input
                   type="number"
                   step="0.01"
-                  placeholder="cap (留空 = 无)"
+                  placeholder="Cap (blank = none)"
                   className={inputClass}
                   value={newDraft.cap}
                   onChange={(e) => setNewDraft({ ...newDraft, cap: e.target.value })}
@@ -387,7 +400,7 @@ export function CashTable({ report }: { report: Report }) {
               <td className="py-2.5 pr-3">
                 <input
                   type="text"
-                  placeholder="备注"
+                  placeholder="Notes"
                   className={inputClass}
                   value={newDraft.rate_reason}
                   onChange={(e) => setNewDraft({ ...newDraft, rate_reason: e.target.value })}
@@ -399,13 +412,13 @@ export function CashTable({ report }: { report: Report }) {
                     disabled={addingSaving}
                     onClick={saveAdd}
                   >
-                    <Save size={14} aria-hidden="true" />{addingSaving ? "保存中…" : "新增"}
+                    <Save size={14} aria-hidden="true" />{addingSaving ? "Saving…" : "Add"}
                   </Button>
                   <Button variant="outline" size="sm"
                     disabled={addingSaving}
                     onClick={cancelAdd}
                   >
-                    <X size={14} aria-hidden="true" />取消
+                    <X size={14} aria-hidden="true" />Cancel
                   </Button>
                   {addError && (
                     <p className="max-w-[10rem] text-[11px] text-critical">{addError}</p>
@@ -417,11 +430,12 @@ export function CashTable({ report }: { report: Report }) {
         </tbody>
       </table>
 
-      {!adding && (
+    </div>
+      {editMode && !adding && (
         <Button variant="outline" size="sm"
           onClick={startAdd}
         >
-          <Plus size={14} aria-hidden="true" />新增账户
+          <Plus size={14} aria-hidden="true" />Add account
         </Button>
       )}
       {deleteError && (
@@ -430,9 +444,19 @@ export function CashTable({ report }: { report: Report }) {
 
       <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
         Balances update when you save.
-        Deposit-limit warning threshold: {(thresholds.cap_utilization_warn * 100).toFixed(0)}%。
+        Deposit-limit warning threshold: {(thresholds.cap_utilization_warn * 100).toFixed(0)}%.
         Changes are saved locally.
       </p>
     </div>
   );
+}
+
+/** Provenance notes run long; show the first clause and fold the rest. */
+export function Note({ text }: { text: string }) {
+  if (text.length <= 72) return <>{text}</>;
+  const cut = text.lastIndexOf(" ", 64);
+  return <details className="table-note">
+    <summary className="cursor-pointer">{text.slice(0, cut > 32 ? cut : 64)}…</summary>
+    <p className="mt-1">{text}</p>
+  </details>;
 }

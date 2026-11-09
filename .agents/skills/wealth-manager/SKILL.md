@@ -8,6 +8,8 @@ description: >
   investing (PRS, ETF withholding tax), or mentions buying/selling shares — even if they don't
   explicitly say "wealth" or "portfolio". Also trigger when the user provides a new trade,
   updates savings placement, asks "where should I put my money", or "is my plan any good".
+  Also acts as the office Finance manager: trigger on "research", "compare buy vs rent", "should I buy a property",
+  "give me finance advice", or a Research-desk revision request.
 ---
 
 # Wealth Manager — Personal Wealth Management Assistant
@@ -94,6 +96,13 @@ When WebSearch fails or returns ambiguous results, tell the user the data might 
 ask them to confirm the current price rather than silently using old numbers.
 
 ## Capabilities
+
+### 0. Finance manager research proposals
+
+When the owner asks for finance research or advice that compares paths over years (for example "buy a KL property vs
+rent a room and invest"), or a Research-desk review asks for a revision, follow
+`references/research-proposals.md`: write a private proposal under `data/finance/research/`, let
+`scripts/finance_research.py validate` own every number, and leave the decision to the owner's review.
 
 ### 1. Stock Analysis & Buy-the-Dip Recommendations
 

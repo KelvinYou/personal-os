@@ -60,6 +60,82 @@
       "title": "AllocationSlice",
       "type": "object"
     },
+    "AttentionItem": {
+      "additionalProperties": false,
+      "description": "One owner action the recorded data asks for (built by attention.py).\n\nAmount-free on purpose: it is read while amounts are masked and its id feeds\nthe fixed-text phone push. `subject` is an account key the UI may label;\n`title` reads correctly without it. `target` names the /finance tab that resolves it.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "debt_principal_missing",
+            "deposit_cap",
+            "maturity",
+            "valuation"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "OK",
+            "Warning",
+            "Critical"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Subject"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "target": {
+          "enum": [
+            "liabilities",
+            "cash",
+            "stocks"
+          ],
+          "title": "Target",
+          "type": "string"
+        },
+        "observations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Observations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "severity",
+        "subject",
+        "title",
+        "detail",
+        "target",
+        "observations"
+      ],
+      "title": "AttentionItem",
+      "type": "object"
+    },
     "BalanceSheetSection": {
       "additionalProperties": false,
       "properties": {
@@ -1020,8 +1096,8 @@
   "additionalProperties": false,
   "properties": {
     "report_schema_version": {
-      "const": 4,
-      "default": 4,
+      "const": 5,
+      "default": 5,
       "title": "Report Schema Version",
       "type": "integer"
     },
@@ -1093,6 +1169,13 @@
     "wealth_rules": {
       "$ref": "#/$defs/WealthRulesHealth"
     },
+    "attention": {
+      "items": {
+        "$ref": "#/$defs/AttentionItem"
+      },
+      "title": "Attention",
+      "type": "array"
+    },
     "tracked_total_myr": {
       "title": "Tracked Total Myr",
       "type": "number"
@@ -1115,6 +1198,7 @@
     "maturity",
     "caps",
     "wealth_rules",
+    "attention",
     "tracked_total_myr"
   ],
   "title": "WealthReport",

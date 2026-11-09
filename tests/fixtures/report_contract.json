@@ -1,5 +1,5 @@
 {
-  "report_schema_version": 4,
+  "report_schema_version": 5,
   "as_of": "2026-09-05",
   "currency": "MYR",
   "thresholds": {
@@ -254,25 +254,25 @@
     "slices": [
       {
         "bucket": "mmf",
-        "label": "货币基金 MMF",
+        "label": "Money market funds",
         "amount_myr": 19500.0,
         "pct": 60.96
       },
       {
         "bucket": "fd",
-        "label": "定存 FD (locked)",
+        "label": "Fixed deposits (locked)",
         "amount_myr": 10000.0,
         "pct": 31.26
       },
       {
         "bucket": "stocks",
-        "label": "股票 (market-valued)",
+        "label": "Stocks (market-valued)",
         "amount_myr": 1990.0,
         "pct": 6.22
       },
       {
         "bucket": "wallet",
-        "label": "钱包 (instant)",
+        "label": "Wallets (instant)",
         "amount_myr": 500.0,
         "pct": 1.56
       }
@@ -395,5 +395,59 @@
     "stale": false,
     "stale_facts": []
   },
+  "attention": [
+    {
+      "id": "maturity:locked_fd:2026-08-20",
+      "kind": "maturity",
+      "severity": "Critical",
+      "subject": "locked_fd",
+      "title": "Matured 16 days ago",
+      "detail": "Unlocks 2026-08-20. Compare renewal candidates before the date.",
+      "target": "cash",
+      "observations": []
+    },
+    {
+      "id": "debt_principal_missing",
+      "kind": "debt_principal_missing",
+      "severity": "Warning",
+      "subject": null,
+      "title": "1 of 2 liabilities has no outstanding principal",
+      "detail": "home loan. The after-debt figure leaves these out until balances are recorded.",
+      "target": "liabilities",
+      "observations": []
+    },
+    {
+      "id": "deposit_cap:capped_mmf",
+      "kind": "deposit_cap",
+      "severity": "Warning",
+      "subject": "capped_mmf",
+      "title": "Deposit limit 97.5% used",
+      "detail": "New deposits above the limit earn only the base rate (warning at 90%).",
+      "target": "cash",
+      "observations": []
+    },
+    {
+      "id": "valuation",
+      "kind": "valuation",
+      "severity": "Warning",
+      "subject": null,
+      "title": "11 valuation observations need review",
+      "detail": "USD uses the 2026-08-10 exchange rate. Totals use the recorded values until these are checked.",
+      "target": "stocks",
+      "observations": [
+        "savings.yaml: last updated 35 days ago.",
+        "interest_rates.yaml: last updated 31 days ago.",
+        "capped_mmf: recorded 3.30% differs from the reference catalog. Keep the reported rate until product terms are checked.",
+        "capped_mmf: current yield has not been confirmed.",
+        "MANUALED: price is 66 days old.",
+        "PIPED: price is 28 days old.",
+        "BURSA_OK: price is 28 days old.",
+        "BURSA_MANUAL: price is 27 days old.",
+        "example_card: outstanding balance observation is stale.",
+        "USD conversion uses 4.0 MYR, observed 2026-08-10 (26 days old).",
+        "Unpriced holdings: NOPRICE. Asset allocation is incomplete."
+      ]
+    }
+  ],
   "tracked_total_myr": 31990.0
 }

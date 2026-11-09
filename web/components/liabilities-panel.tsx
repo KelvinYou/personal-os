@@ -6,7 +6,7 @@ const labels: Record<string, string> = { credit_card: "Credit card", housing: "H
 const debtIcons = { credit_card: CreditCard, housing: House, auto: Car };
 export function LiabilitiesPanel({ report: r }: { report: Report }) {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2">
       {r.liabilities.accounts.map(debt => {
         const Icon = debtIcons[debt.type as keyof typeof debtIcons] ?? CircleHelp;
         return (
@@ -17,7 +17,9 @@ export function LiabilitiesPanel({ report: r }: { report: Report }) {
               {debt.outstanding_myr === null ? "Principal missing" : debt.stale ? "Balance stale" : "Recorded balance"}
             </span>
           </div>
-          <p className="num mt-5 text-2xl font-semibold tracking-tight">{debt.outstanding_myr === null ? "Unknown" : <Money value={debt.outstanding_myr} />}</p>
+          {debt.outstanding_myr === null
+            ? <p className="mt-5 text-sm text-muted-foreground">Outstanding principal not recorded</p>
+            : <p className="num mt-5 text-2xl font-semibold tracking-tight"><Money value={debt.outstanding_myr} /></p>}
           <p className="mt-2 break-words text-xs text-muted-foreground">{debt.key.replaceAll("_", " ")}</p>
           <dl className="mt-5 space-y-3 text-sm">
             <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Monthly payment</dt><dd className="num">{debt.monthly_myr === null ? "Not recorded" : <Money value={debt.monthly_myr} />}</dd></div>

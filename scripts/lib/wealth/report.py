@@ -12,6 +12,7 @@ from datetime import date
 from pathlib import Path
 
 from ..schema import WealthCfg
+from .attention import attention_items
 from .consistency import catalog_conflicts, check_currencies, stale_files
 from .files import FxFile, PortfolioFile, RatesFile, SavingsFile, TravelCashFile
 from .market_layer import resolve_positions, stale_prices
@@ -43,11 +44,11 @@ from .yield_layer import (
 
 # Allocation buckets follow economic behaviour, not vehicle branding.
 BUCKET_LABELS = {
-    "stocks": "股票 (market-valued)",
-    "fd": "定存 FD (locked)",
-    "mmf": "货币基金 MMF",
-    "wallet": "钱包 (instant)",
-    "savings": "储蓄账户",
+    "stocks": "Stocks (market-valued)",
+    "fd": "Fixed deposits (locked)",
+    "mmf": "Money market funds",
+    "wallet": "Wallets (instant)",
+    "savings": "Savings accounts",
 }
 
 
@@ -111,7 +112,8 @@ def build_report_model(
     known_total = round(sum(known), 2) if known or not debts else None
     unknown = [d["key"] for d in debts if d["outstanding_myr"] is None]
 
-    return WealthReport(
+    report = WealthReport(
+        attention=[],
         liabilities=dict(
             known_outstanding_myr=known_total, balances_complete=not unknown,
             unknown_balance_keys=unknown,
@@ -272,6 +274,8 @@ def build_report_model(
         },
         tracked_total_myr=gross,
     )
+    # Attention reads only the finished report, so it can never disagree with it.
+    return report.model_copy(update={"attention": attention_items(report)})
 
 
 def build_report(

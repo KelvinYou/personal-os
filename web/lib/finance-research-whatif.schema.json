@@ -1,0 +1,237 @@
+{
+  "$defs": {
+    "Scenario": {
+      "additionalProperties": false,
+      "properties": {
+        "property_growth": {
+          "title": "Property Growth",
+          "type": "number"
+        },
+        "etf_return": {
+          "title": "Etf Return",
+          "type": "number"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/YearRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "final_gap": {
+          "title": "Final Gap",
+          "type": "number"
+        },
+        "first_buy_ahead_year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "First year from which buying stays ahead to the horizon",
+          "title": "First Buy Ahead Year"
+        }
+      },
+      "required": [
+        "property_growth",
+        "etf_return",
+        "rows",
+        "final_gap",
+        "first_buy_ahead_year"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "Upfront": {
+      "additionalProperties": false,
+      "properties": {
+        "down_payment": {
+          "title": "Down Payment",
+          "type": "number"
+        },
+        "transfer_stamp_duty": {
+          "title": "Transfer Stamp Duty",
+          "type": "number"
+        },
+        "loan_stamp_duty": {
+          "title": "Loan Stamp Duty",
+          "type": "number"
+        },
+        "legal_fees": {
+          "title": "Legal Fees",
+          "type": "number"
+        },
+        "other": {
+          "title": "Other",
+          "type": "number"
+        },
+        "renovation": {
+          "title": "Renovation",
+          "type": "number"
+        },
+        "total": {
+          "title": "Total",
+          "type": "number"
+        },
+        "loan": {
+          "title": "Loan",
+          "type": "number"
+        },
+        "monthly_instalment": {
+          "title": "Monthly Instalment",
+          "type": "number"
+        }
+      },
+      "required": [
+        "down_payment",
+        "transfer_stamp_duty",
+        "loan_stamp_duty",
+        "legal_fees",
+        "other",
+        "renovation",
+        "total",
+        "loan",
+        "monthly_instalment"
+      ],
+      "title": "Upfront",
+      "type": "object"
+    },
+    "YearRow": {
+      "additionalProperties": false,
+      "properties": {
+        "year": {
+          "title": "Year",
+          "type": "integer"
+        },
+        "property_value": {
+          "title": "Property Value",
+          "type": "number"
+        },
+        "loan_balance": {
+          "title": "Loan Balance",
+          "type": "number"
+        },
+        "sale_costs": {
+          "description": "Agent, legal and RPGT if sold at this year end",
+          "title": "Sale Costs",
+          "type": "number"
+        },
+        "home_equity": {
+          "description": "Value minus loan minus sale costs",
+          "title": "Home Equity",
+          "type": "number"
+        },
+        "buyer_portfolio": {
+          "description": "ETF bought with any monthly surplus the buyer had",
+          "title": "Buyer Portfolio",
+          "type": "number"
+        },
+        "buy_net_worth": {
+          "title": "Buy Net Worth",
+          "type": "number"
+        },
+        "rent_net_worth": {
+          "title": "Rent Net Worth",
+          "type": "number"
+        },
+        "gap": {
+          "description": "Buy minus rent; positive means buying is ahead",
+          "title": "Gap",
+          "type": "number"
+        },
+        "owner_monthly_cost": {
+          "description": "Average monthly cost of owning during this year",
+          "title": "Owner Monthly Cost",
+          "type": "number"
+        },
+        "rent_monthly": {
+          "title": "Rent Monthly",
+          "type": "number"
+        },
+        "deflator": {
+          "description": "Divide by this for today's ringgit",
+          "title": "Deflator",
+          "type": "number"
+        }
+      },
+      "required": [
+        "year",
+        "property_value",
+        "loan_balance",
+        "sale_costs",
+        "home_equity",
+        "buyer_portfolio",
+        "buy_net_worth",
+        "rent_net_worth",
+        "gap",
+        "owner_monthly_cost",
+        "rent_monthly",
+        "deflator"
+      ],
+      "title": "YearRow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "upfront": {
+      "$ref": "#/$defs/Upfront"
+    },
+    "property_growth_levels": {
+      "items": {
+        "type": "number"
+      },
+      "title": "Property Growth Levels",
+      "type": "array"
+    },
+    "etf_return_levels": {
+      "items": {
+        "type": "number"
+      },
+      "title": "Etf Return Levels",
+      "type": "array"
+    },
+    "scenarios": {
+      "description": "Row-major: property growth level \u00d7 ETF return level",
+      "items": {
+        "$ref": "#/$defs/Scenario"
+      },
+      "title": "Scenarios",
+      "type": "array"
+    },
+    "base_index": {
+      "title": "Base Index",
+      "type": "integer"
+    },
+    "breakeven_property_growth": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Property growth that ties the two paths at the horizon, base ETF return",
+      "title": "Breakeven Property Growth"
+    },
+    "inputs_fingerprint": {
+      "title": "Inputs Fingerprint",
+      "type": "string"
+    }
+  },
+  "required": [
+    "upfront",
+    "property_growth_levels",
+    "etf_return_levels",
+    "scenarios",
+    "base_index",
+    "breakeven_property_growth",
+    "inputs_fingerprint"
+  ],
+  "title": "RentVsBuyResult",
+  "type": "object"
+}

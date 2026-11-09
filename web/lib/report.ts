@@ -18,7 +18,7 @@ const SCRIPT = path.join(REPO_ROOT, "scripts", "wealth_check.py");
  */
 
 import type { WealthReport } from "./report.gen";
-export type { PriceSource, Severity, AllocationSlice } from "./report.gen";
+export type { PriceSource, Severity, AllocationSlice, AttentionItem } from "./report.gen";
 export type Position = import("./report.gen").PositionOut;
 export type Account = import("./report.gen").CashAccountOut;
 export type Candidate = import("./report.gen").CandidateOut;
@@ -27,7 +27,7 @@ export type Allocation = import("./report.gen").AllocationSection;
 export type FxObservation = import("./report.gen").FxSection;
 export type Report = WealthReport;
 
-const SUPPORTED_REPORT_SCHEMA_VERSION: Report["report_schema_version"] = 4;
+const SUPPORTED_REPORT_SCHEMA_VERSION: Report["report_schema_version"] = 5;
 
 export type LoadResult =
   | { ok: true; report: Report }
