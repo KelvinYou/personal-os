@@ -40,7 +40,7 @@ These are owner-approved production starting points for a standard 16:9 deck, no
 
 Use a coherent type family with regular, semibold and bold weights; add a second family only for a defined role such as code or metadata. Verify Chinese glyph coverage and record font substitution. Do not use thin grey text for essential explanations.
 
-If content does not fit, shorten, restructure or split the slide before reducing type. Independently read decks may carry more text, but retain the hierarchy and use 18 pt as the initial body-size floor. Nonessential credits can be smaller only when they remain readable in the delivered reading artifact; a caveat necessary to interpret a result must stay in the readable content area. A supplied template or unusual viewing environment may require adjusted sizes; record the rationale and inspect the result.
+`make deck-lint` enforces the floor (BODY rule, `body_min_pt` in private thresholds): each slide's main body size, the size carrying the most characters outside the footer band, must reach it. If content does not fit, shorten, restructure or split the slide before reducing type. Independently read decks may carry more text, but retain the hierarchy and use 18 pt as the initial body-size floor. Nonessential credits can be smaller only when they remain readable in the delivered reading artifact; a caveat necessary to interpret a result must stay in the readable content area. A supplied template or unusual viewing environment may require adjusted sizes; record the rationale and inspect the result.
 
 Establish a consistent grid, outer margins and content anchors in reusable layouts or the slide master. Let the current claim determine the focal point. A large unused area does not compensate for crowded text elsewhere.
 

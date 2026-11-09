@@ -1,12 +1,14 @@
 """Mechanical PPTX checks for docs/presentation-guide.md § Visual acceptance.
 
-Stdlib only (zipfile + ElementTree), so no python-pptx dependency. Three rules:
+Stdlib only (zipfile + ElementTree), so no python-pptx dependency. Four rules:
 
 - DECK-ART: the cover (slide 1) has no artwork picture, or the whole deck has
   none. Catches the 2026-11-06 deck: 12 slides, 0 pictures.
 - FOCAL: a content slide has neither a text run >= focal_text_ratio x its body
   size nor a picture/chart covering >= focal_visual_min_area of the slide.
   Catches v4 slides 4 / 11 / 12 (36 pt headline over 22-24 pt body, no visual).
+- BODY: the slide's main body size (the size carrying the most characters) is
+  below body_min_pt. Catches the 11-06 deck (15-18 pt) and a 12.5 pt handbook.
 - RHYTHM: one layout repeats on too many consecutive or total content slides.
   The layout is derived from geometry, not self-reported, e.g. `art-C/text-C`.
   Catches v4 (art-C/text-C on 7 of 11, slides 5-8 in a row) and v3
@@ -17,6 +19,7 @@ What it cannot judge: whether artwork is 3D, on-topic or well composed.
 from __future__ import annotations
 
 import json
+import posixpath
 import re
 import zipfile
 from collections import Counter
@@ -90,14 +93,92 @@ def _box(el: ET.Element, w: int, h: int) -> tuple[float, float, float, float] | 
     return None
 
 
-def _runs(el: ET.Element) -> list[tuple[float, int]]:
+def _runs(el: ET.Element, default_pt: float | None = None) -> list[tuple[float, int]]:
+    """(point size, non-space chars) per run; runs without sz take the inherited default."""
     out = []
     for run in el.iter(A + "r"):
         rpr, t = run.find(A + "rPr"), run.find(A + "t")
         text = re.sub(r"\s", "", (t.text or "") if t is not None else "")
-        if rpr is not None and rpr.get("sz") and text:
+        if not text:
+            continue
+        if rpr is not None and rpr.get("sz"):
             out.append((int(rpr.get("sz")) / 100, len(text)))
+        elif default_pt:
+            out.append((default_pt, len(text)))
     return out
+
+
+def _rel_target(z: zipfile.ZipFile, part: str, type_suffix: str) -> str | None:
+    rels = posixpath.join(posixpath.dirname(part), "_rels", posixpath.basename(part) + ".rels")
+    if rels not in z.namelist():
+        return None
+    for r in ET.fromstring(z.read(rels)).iter(REL + "Relationship"):
+        if r.get("Type", "").endswith(type_suffix):
+            return posixpath.normpath(posixpath.join(posixpath.dirname(part), r.get("Target")))
+    return None
+
+
+def _ph(el: ET.Element) -> tuple[str, str | None] | None:
+    """(type, idx) of a placeholder shape; ctrTitle is matched as title."""
+    ph = el.find(f"{P}nvSpPr/{P}nvPr/{P}ph")
+    if ph is None:
+        return None
+    kind = ph.get("type", "body")
+    return ("title" if kind == "ctrTitle" else kind), ph.get("idx")
+
+
+class _Inheritance:
+    """Placeholder position and default font size from slideLayout, then slideMaster.
+
+    Template decks leave both off the slide's placeholder shapes; PowerPoint
+    inherits them, and so must the lint, or body text silently drops out.
+    Only lvl1 sizes are resolved; that covers headline and first-level body.
+    """
+
+    def __init__(self, z: zipfile.ZipFile, slide_part: str):
+        layout = _rel_target(z, slide_part, "/slideLayout")
+        master = _rel_target(z, layout, "/slideMaster") if layout else None
+        self.chain = [self._index(z, p) for p in (layout, master) if p and p in z.namelist()]
+        self.tx_styles = (ET.fromstring(z.read(master)).find(f"{P}txStyles")
+                          if master and master in z.namelist() else None)
+
+    @staticmethod
+    def _index(z: zipfile.ZipFile, part: str) -> dict:
+        index: dict = {}
+        tree = ET.fromstring(z.read(part)).find(f"{P}cSld/{P}spTree")
+        for el in tree if tree is not None else []:
+            if key := _ph(el):
+                index.setdefault(("type", key[0]), el)
+                if key[1] is not None:
+                    index.setdefault(("idx", key[1]), el)
+        return index
+
+    def _sources(self, key: tuple[str, str | None]) -> list[ET.Element]:
+        found = []
+        for index in self.chain:
+            el = index.get(("idx", key[1])) if key[1] is not None else None
+            el = el if el is not None else index.get(("type", key[0]))
+            if el is not None:
+                found.append(el)
+        return found
+
+    def resolve(self, el: ET.Element, w: int, h: int):
+        """(box, default_pt) for a placeholder shape; (None, None) otherwise."""
+        key = _ph(el)
+        if key is None:
+            return None, None
+        sources = self._sources(key)
+        box = next((b for s in sources if (b := _box(s, w, h))), None)
+        for s in sources:
+            d = s.find(f"{P}txBody/{A}lstStyle/{A}lvl1pPr/{A}defRPr")
+            if d is not None and d.get("sz"):
+                return box, int(d.get("sz")) / 100
+        if self.tx_styles is not None:
+            style = "titleStyle" if key[0] == "title" else "bodyStyle"
+            d = self.tx_styles.find(f"{P}{style}/{A}lvl1pPr/{A}defRPr")
+            if d is not None and d.get("sz"):
+                return box, int(d.get("sz")) / 100
+        return box, None
 
 
 def _slide_paths(z: zipfile.ZipFile) -> list[str]:
@@ -116,11 +197,15 @@ def read_deck(path: Path) -> list[SlideStats]:
         stats = []
         for n, part in enumerate(_slide_paths(z), 1):
             tree = ET.fromstring(z.read(part)).find(f"{P}cSld/{P}spTree")
+            inherit = _Inheritance(z, part)
             s = SlideStats(n)
-            chars: Counter[float] = Counter()
+            chars: Counter[float] = Counter()       # every run: largest size
+            body_chars: Counter[float] = Counter()  # excluding footer band: body size
             for el in tree:
                 tag = el.tag.removeprefix(P)
                 box = _box(el, w, h)
+                inherited_box, default_pt = inherit.resolve(el, w, h)
+                box = box or inherited_box
                 if tag == "pic" or (tag == "grpSp" and el.find(f".//{P}pic") is not None):
                     if box:
                         s.visuals.append(Visual("art", box[2], box[0]))
@@ -129,14 +214,17 @@ def read_deck(path: Path) -> list[SlideStats]:
                     if box:
                         s.visuals.append(Visual("chart", box[2], box[0]))
                     continue
-                runs = _runs(el)
+                runs = _runs(el, default_pt)
+                in_footer = bool(box) and box[1] > FOOTER_BAND
                 for pt, c in runs:
                     chars[pt] += c
+                    if not in_footer:
+                        body_chars[pt] += c
                 if runs and box:
                     s.texts.append(TextBox(sum(c for _, c in runs), max(pt for pt, _ in runs),
                                            box[0], box[1]))
             if chars:
-                s.body_pt = chars.most_common(1)[0][0]
+                s.body_pt = (body_chars or chars).most_common(1)[0][0]
                 s.max_pt = max(chars)
             stats.append(s)
     return stats
@@ -156,7 +244,7 @@ def _focal(s: SlideStats, cfg: PresentationCfg) -> tuple[str, float] | None:
     if big and big.area >= cfg.focal_visual_min_area:
         return big.kind, big.cx
     if s.body_pt and s.max_pt and s.max_pt >= cfg.focal_text_ratio * s.body_pt:
-        # Placeholder text may inherit its position from the layout (no xfrm); treat as centred.
+        # Position unresolvable even through layout/master inheritance: treat as centred.
         box = next((t for t in s.texts if t.max_pt == s.max_pt), None)
         return "type", box.cx if box else 0.5
     return None
@@ -182,6 +270,13 @@ def lint_slides(slides: list[SlideStats], cfg: PresentationCfg,
                                 "no artwork pictures in the deck; the shared style requires 3D artwork"))
     elif slides and not _artwork(slides[0], cfg) and 1 not in exempt:
         findings.append(Finding("DECK-ART", 1, "cover has no artwork picture"))
+
+    for s in slides:
+        if s.number not in exempt and s.body_pt and s.body_pt < cfg.body_min_pt:
+            findings.append(Finding(
+                "BODY", s.number,
+                f"main body text {s.body_pt:g} pt is below the {cfg.body_min_pt:g} pt floor; "
+                "shorten or split the slide before shrinking type"))
 
     for s in slides:
         if s.number in exempt or _focal(s, cfg):

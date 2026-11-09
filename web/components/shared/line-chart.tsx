@@ -25,6 +25,8 @@ export function LineChart({
   fillFirstSeries = false,
   onHover,
   hoverIndex,
+  zeroBaseline = true,
+  markers = false,
 }: {
   labels: string[];
   series: LineChartSeries[];
@@ -32,11 +34,16 @@ export function LineChart({
   fillFirstSeries?: boolean;
   onHover?: (index: number | null) => void;
   hoverIndex?: number | null;
+  /** false fits the scale to the observed range, so a large total with small
+   * moves is not drawn as a flat line. The caller must say the axis is not zero-based. */
+  zeroBaseline?: boolean;
+  /** Dot every observation; use for sparse series so the reader sees real points, not interpolation. */
+  markers?: boolean;
 }) {
   const n = labels.length;
   const allValues = series.flatMap((s) => s.values);
-  const min = Math.min(...allValues, 0);
-  const max = Math.max(...allValues, 0);
+  const min = zeroBaseline ? Math.min(...allValues, 0) : Math.min(...allValues);
+  const max = zeroBaseline ? Math.max(...allValues, 0) : Math.max(...allValues);
   const span = max - min || Math.max(1, max * 0.02 || 1);
   const yPad = span * 0.15;
 
@@ -117,6 +124,10 @@ export function LineChart({
           strokeLinejoin="round"
         />
       ))}
+
+      {markers && series.map((s) => s.values.map((v, i) => (
+        <circle key={`${s.label}-${i}`} cx={x(i)} cy={y(v)} r="3.5" fill="hsl(var(--card))" stroke={s.color} strokeWidth="2" />
+      )))}
 
       {hoverIndex !== null && hoverIndex !== undefined && n > 0 && (
         <>

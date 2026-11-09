@@ -15,7 +15,9 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [["list"]],
+  // Concurrent Office work can use a distinct port and evidence directory.
   outputDir: "test-results",
+  ...(process.env.TEST_OUTPUT_DIR ? { outputDir: process.env.TEST_OUTPUT_DIR } : {}),
   use: {
     baseURL,
     viewport: { width: 1440, height: 1000 },

@@ -23,6 +23,7 @@ from lib.deck import layout_of, lint_deck, read_deck, sidecar_exempt  # noqa: E4
 from lib.schema import PresentationCfg  # noqa: E402
 
 CFG = PresentationCfg(focal_text_ratio=3.0, focal_visual_min_area=0.25, background_min_area=0.95,
+                      body_min_pt=18,
                       rhythm_max_run=2, rhythm_max_share=0.34, rhythm_min_content_slides=6)
 W, H = 12192000, 6858000
 NS = ('xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" '
@@ -79,6 +80,41 @@ def build(path: Path, slides: list[str]) -> Path:
         for i in reversed(range(len(slides))):
             z.writestr(f"ppt/slides/slide{i + 1}.xml",
                        f'<p:sld {NS}><p:cSld><p:spTree>{slides[i]}</p:spTree></p:cSld></p:sld>')
+    return path
+
+
+def build_template(path: Path) -> Path:
+    """One slide whose title/body placeholders carry neither position nor size:
+    position comes from the layout, size from the master's txStyles (template decks)."""
+    rel_ns = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+
+    def ph(kind: str | None, idx: str | None, inner: str = "", sppr: str = "") -> str:
+        attrs = (f' type="{kind}"' if kind else "") + (f' idx="{idx}"' if idx else "")
+        return (f'<p:sp><p:nvSpPr><p:cNvPr id="2" name="ph"/><p:cNvSpPr/><p:nvPr><p:ph{attrs}/></p:nvPr></p:nvSpPr>'
+                f'<p:spPr>{sppr}</p:spPr>{inner}</p:sp>')
+
+    def body(s: str) -> str:
+        return f'<p:txBody><a:bodyPr/><a:p><a:r><a:rPr/><a:t>{s}</a:t></a:r></a:p></p:txBody>'
+
+    def rels(target: str, kind: str) -> str:
+        return ('<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                f'<Relationship Id="rId1" Target="{target}" Type="{rel_ns}/{kind}"/></Relationships>')
+
+    slide = (ph("title", None, body("模板标题")) + ph(None, "1", body("模板正文" * 10)) + pic(0.3, 0.75))
+    layout = (ph("title", None, sppr=_xfrm(0.5, 0.12, 0.8, 0.1))
+              + ph(None, "1", sppr=_xfrm(0.25, 0.6, 0.4, 0.5)))
+    master = (f'<p:sldMaster {NS}><p:cSld><p:spTree/></p:cSld><p:txStyles>'
+              '<p:titleStyle><a:lvl1pPr><a:defRPr sz="4400"/></a:lvl1pPr></p:titleStyle>'
+              '<p:bodyStyle><a:lvl1pPr><a:defRPr sz="2000"/></a:lvl1pPr></p:bodyStyle>'
+              '</p:txStyles></p:sldMaster>')
+    build(path, [slide])
+    with zipfile.ZipFile(path, "a") as z:
+        z.writestr("ppt/slides/_rels/slide1.xml.rels", rels("../slideLayouts/slideLayout1.xml", "slideLayout"))
+        z.writestr("ppt/slideLayouts/slideLayout1.xml",
+                   f'<p:sldLayout {NS}><p:cSld><p:spTree>{layout}</p:spTree></p:cSld></p:sldLayout>')
+        z.writestr("ppt/slideLayouts/_rels/slideLayout1.xml.rels",
+                   rels("../slideMasters/slideMaster1.xml", "slideMaster"))
+        z.writestr("ppt/slideMasters/slideMaster1.xml", master)
     return path
 
 
@@ -173,6 +209,25 @@ class DeckLintTest(unittest.TestCase):
         finally:
             if env is not None:
                 os.environ["CLAUDE_PROJECT_DIR"] = env
+
+    def test_template_placeholders_inherit_position_and_size(self):
+        s = read_deck(build_template(self.tmp / "t.pptx"))[0]
+        self.assertEqual((s.body_pt, s.max_pt), (20, 44))          # from master txStyles
+        self.assertEqual(layout_of(s, CFG), "art-R/text-L")         # body position from layout
+
+    def test_small_body_text_fails_body_floor(self):
+        # Shape of the 2026-11 nutrition handbook: 32 pt headline over 12.5 pt body.
+        small = pic(0.33) + text(32, "标题") + text(12.5, "营养说明" * 20)
+        self.assertIn(("BODY", 1), self.lint([small]))
+        self.assertNotIn(("BODY", 1), self.lint([small], exempt={1}))
+        ok = pic(0.33) + text(36, "标题") + text(22, "说明" * 20)
+        self.assertEqual(self.lint([ok]), [])
+
+    def test_footer_does_not_count_as_body(self):
+        # v3 cover: a long 10.5 pt footer must not become the "body" size.
+        cover = (pic(0.33) + text(40, "封面", (0.3, 0.4)) + text(20, "副标题文字" * 3, (0.3, 0.6))
+                 + text(10.5, "dtc-e2e-tests source footer" * 2, (0.4, 0.96)))
+        self.assertEqual(read_deck(build(self.tmp / "d.pptx", [cover]))[0].body_pt, 20)
 
     def test_body_is_size_with_most_characters(self):
         s = read_deck(build(self.tmp / "d.pptx", [text(36, "短标题") + text(18, "页码") + text(22, "正文" * 30)]))[0]

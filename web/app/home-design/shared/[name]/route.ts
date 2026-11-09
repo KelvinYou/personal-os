@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Serves the shared 3D modules to the standalone home viewer. Fixed allowlist; no other file is readable.
-const allowed = new Set(["scene-standard.mjs", "scene-floor.mjs", "character-builder.mjs"]);
+const allowed = new Set(["scene-standard.mjs", "scene-floor.mjs", "character-builder.mjs", "kenney-mini-data.mjs"]);
 
 export async function GET(request: Request, context: { params: Promise<{ name: string }> }) {
   if (!isLocalPreviewRequest(request)) return new Response("Local dashboard access only.", { status: 403 });

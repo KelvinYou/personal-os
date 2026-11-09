@@ -36,6 +36,10 @@
     ".next-browser-3031/types/**/*.ts",
     ".next-browser-3032/types/**/*.ts",
     ".next-browser-3040/types/**/*.ts",
+    ".next-browser-3067/types/**/*.ts",
+    ".next-browser-3069/types/**/*.ts",
+    ".next-browser-3071/types/**/*.ts",
+    ".next-browser-3073/types/**/*.ts",
     ".next-browser-tests/types/**/*.ts",
     ".next-collaboration-review/types/**/*.ts",
     ".next-diag/types/**/*.ts",
@@ -59,9 +63,16 @@
     ".next-office-workbench/types/**/*.ts",
     ".next-posts/types/**/*.ts",
     ".next-skill-employees/types/**/*.ts",
+    ".next-verify-3041/types/**/*.ts",
+    ".next-verify-3043/types/**/*.ts",
+    ".next-verify-3045/types/**/*.ts",
+    ".next-verify-3047/types/**/*.ts",
+    ".next-verify-3051/types/**/*.ts",
+    ".next-verify-3053/types/**/*.ts",
+    ".next-verify-3061/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next-verify-3041/types/**/*.ts"
+    ".next-browser-3075/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

@@ -23,3 +23,15 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTML
   ),
 );
 Textarea.displayName = "Textarea";
+
+/**
+ * Range slider primitive (e.g. the office timeline scrubber). Uses the action
+ * colour for the thumb/track via `accent-color`; focus comes from the global rule.
+ * Pass layout via `className`.
+ */
+export const Range = React.forwardRef<HTMLInputElement, Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">>(
+  ({ className, ...props }, ref) => (
+    <input ref={ref} type="range" className={cn("ui-range block w-full min-w-0 min-h-[var(--control-height)] cursor-pointer accent-[hsl(var(--action))] disabled:cursor-not-allowed disabled:opacity-50", className)} {...props} />
+  ),
+);
+Range.displayName = "Range";

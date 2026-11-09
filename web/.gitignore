@@ -43,3 +43,8 @@ next-env.d.ts
 # Playwright output
 test-results/
 playwright-report/
+
+# Warm scene preview state, catalogs and screenshots (survives Playwright cleanup)
+.scene-preview/
+# verify-web server ownership and evidence (survives Playwright cleanup; may hold private screenshots)
+.verify-web/

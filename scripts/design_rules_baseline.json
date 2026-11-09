@@ -5,6 +5,9 @@
   "web/components/cash-table.tsx": {
     "native-field": 13
   },
+  "web/components/finance/research-board.tsx": {
+    "native-button": 1
+  },
   "web/components/flow-graph.tsx": {
     "native-button": 1
   },
@@ -24,7 +27,7 @@
   },
   "web/components/office/direct-task.tsx": {
     "native-button": 8,
-    "native-field": 3
+    "native-field": 2
   },
   "web/components/office/office-player.tsx": {
     "native-button": 3,
@@ -33,11 +36,20 @@
   "web/components/office/office-scene.tsx": {
     "native-button": 2
   },
+  "web/components/office/office-timeline.tsx": {
+    "native-button": 1
+  },
   "web/components/office/office-workspace.tsx": {
-    "native-button": 10
+    "native-button": 2
+  },
+  "web/components/office/radar-scene.tsx": {
+    "native-button": 1
   },
   "web/components/office/task-team-room.tsx": {
     "native-button": 5
+  },
+  "web/components/office/town-workspace.tsx": {
+    "native-button": 10
   },
   "web/components/office/workbench.tsx": {
     "native-button": 2

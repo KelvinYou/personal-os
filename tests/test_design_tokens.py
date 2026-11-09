@@ -14,6 +14,7 @@ CSS = """
     --critical: 358 70% 40%;
     --action: 213 70% 40%;
     --ring: 213 70% 40%;
+    --attention-needs: 28 80% 30%; --attention-working: 215 50% 35%; --attention-review: 145 35% 25%;
     --series-1: #2a78d6; --series-2: #000000; --series-3: #000000; --series-4: #000000; --series-5: #000000;
   }
   .dark {
@@ -26,6 +27,7 @@ CSS = """
     --critical: 358 70% 70%;
     --action: 213 75% 70%;
     --ring: 213 75% 70%;
+    --attention-needs: 30 85% 65%; --attention-working: 215 70% 75%; --attention-review: 145 40% 65%;
     --series-1: #ffffff; --series-2: #ffffff; --series-3: #ffffff; --series-4: #ffffff; --series-5: #ffffff;
   }
 }

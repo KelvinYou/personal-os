@@ -31,3 +31,9 @@ export function accountLabel(key: string): string {
   if (key.startsWith("gxbank_fd_")) return `GXBank FD · ${key.slice(10).replaceAll("_", "-")}`;
   return key.replaceAll("_", " ");
 }
+
+/** "RYT Bank · Deposit limit 99.8% used". The item is built in Python
+ * (scripts/lib/wealth/attention.py); only the account label is web presentation. */
+export function attentionTitle(item: { subject: string | null; title: string }): string {
+  return item.subject ? `${accountLabel(item.subject)} · ${item.title}` : item.title;
+}
