@@ -1,0 +1,83 @@
+---
+title: "My Agents Waited 39 Hours on Me in One Week. A Session Cap Would Not Have Helped."
+date: "2026-11-09"
+description: "I measured how long my coding agents sat waiting for me. The long waits clustered when only one or two were running and I had walked away, so the fix that shipped was a phone alert."
+tags: ["AI Agents", "Claude Code", "Observability", "Product Thinking", "Personal-OS"]
+author: "Kelvin You"
+---
+
+**TL;DR**
+
+- In one week, 65 Claude Code and Codex sessions on my laptop ended a turn and waited for me 285 times — 2,372 minutes of summed waiting.
+- I expected the long waits to come from running too many agents at once. Bucketing every wait by how many sessions were in play said the opposite: 25% of waits ran past 10 minutes with 1–2 sessions in play, versus 11% with 3 or more.
+- The real lesson is that "agents wait on the human" is two different problems with opposite fixes, and you cannot tell which one you have without counting.
+
+You start four agents, go make coffee, come back, and three of them have been sitting on a finished turn for twenty minutes. The obvious conclusion is that you are running more agents than you can review. Cap the parallelism, problem solved.
+
+That was my plan. I had the config key half-written. Then I measured it first.
+
+## What the radar actually counts
+
+The [office radar](https://github.com/KelvinYou/personal-os) in Personal-OS reads the transcripts that Codex and Claude Code already write to disk — read-only, no prompt text, no tool arguments, just timestamps and state labels. Every session gets one of four attention zones: *needs you*, *working*, *review*, *done*.
+
+A **wait** opens when a session needs me — a turn ended, or it asked for input or permission — and closes at my next prompt in that session. Waits over four hours count as abandoned and drop out of the totals.
+
+The part that answers the question is one function. When a wait opens, it counts how many sessions were holding my attention at that instant:
+
+```python
+def in_play(timelines, at, cfg) -> int:
+    count = 0
+    for points in timelines.values():
+        covering = _phase_at(points, at)
+        if covering is None: continue
+        start, phase, following = covering
+        age = (at - start).total_seconds()
+        if phase in RUNNING and (following is not None or age <= cfg.stale_after_seconds): count += 1
+        elif phase == "input" and age <= cfg.wait_cap_seconds: count += 1
+        elif phase == "ended" and age <= cfg.review_window_seconds: count += 1
+    return count
+```
+
+Running agents count. Unanswered input requests count. A turn that ended recently and is sitting in review counts. The session that opened the wait counts itself, so the minimum is 1.
+
+Then the weekly report compares the share of long waits (over 10 minutes) at 1–2 in play against 3 or more, and prints whichever reading the data supports. Both sentences are in the code; neither is the default.
+
+## The week of 2 November
+
+| Sessions in play | Waits | Median | p90 | Over 10 min |
+|---|---:|---:|---:|---:|
+| 1 | 65 | 1.0 min | 31.0 min | 22% |
+| 2 | 55 | 2.7 min | 57.4 min | 29% |
+| 3 | 87 | 1.0 min | 10.5 min | 11% |
+| 4 | 46 | 0.5 min | 6.2 min | 9% |
+| 5+ | 32 | 0.7 min | 11.4 min | 12% |
+
+The median wait was 1.1 minutes. Most of the time I answer almost immediately. The damage is all in the tail — p90 of 19.2 minutes, a longest single wait of 186 minutes — and the tail lives at the *low* end of parallelism.
+
+## Why the obvious diagnosis was wrong
+
+When I have four or five sessions going, I am at my desk, switching between them. A finished turn gets seen within a minute because I am already looking.
+
+When I have one or two going, it is usually because I kicked off something long and left — lunch, a meeting, the commute. The session finishes while I am away, and it waits until I happen to come back.
+
+A session cap attacks the first situation, which was not the problem. It does nothing for the second, because there is nothing to cap. What shortens a wait while I am away from the desk is a signal that reaches me away from the desk. So the change that shipped was a Claude Code `Notification` hook that pushes to my phone through ntfy: a permission prompt left untouched for 90 seconds, or a turn that ended and got no input for about a minute. The push text is fixed — no session name, path or command leaves the laptop. Codex sessions are not covered yet.
+
+Two honesty notes on the numbers. The 2,372 minutes is summed across parallel sessions, so it measures agent-time spent waiting; the hours it cost my own day are far fewer. And 31 of the 65 sessions had only partial history in the scan window, so the per-bucket counts are a floor.
+
+## The counter-argument I take seriously
+
+*A wait nobody pays for is not a cost.* If I deliberately left a long task running over lunch, the agent sitting idle for forty minutes cost me nothing — I was not going to review it anyway. Counting it as "waiting on the human" inflates a number that does not matter.
+
+That is partly right, and it is why the median is the headline and the total is not. But it misses where the time goes. A finished turn usually ends with a question or a permission prompt, and the next turn cannot start until I answer it. A forty-minute wait on a session that needed a ten-second "yes" is forty minutes the rest of the task did not run. The phone alert lets those cheap answers happen without a desk.
+
+What I cannot show you yet is the after-picture. The push hook shipped on 8 November. One day of data is not evidence, and I will publish the next full week whether or not the tail moves.
+
+## The transferable part
+
+**Split the waiting problem before you fix it.** "Too many agents to review" and "agent finished while I was away" produce the same symptom and need opposite fixes — a cap for one, a reachable alert for the other. Bucketing waits by sessions in play separates them in one table.
+
+**Let the report pick the reading.** The weekly line is computed from the comparison, with both conclusions written in code. If next month the long waits move to 3+ in play, the same report will tell me to cap sessions, and I will not have to remember to re-check my own assumption.
+
+**Count from records the tools already write.** Nothing here needed an agent framework or a wrapper around the CLI. Codex and Claude Code both leave transcripts on disk; one hook adds exact permission-prompt times. Observation that needs no client changes is observation you will still be running in three months.
+
+The radar, the wait metric and the push hook are in [Personal-OS](https://github.com/KelvinYou/personal-os).

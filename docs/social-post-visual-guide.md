@@ -54,6 +54,7 @@ Choose each explanation page's type from this list. No two consecutive pages sha
 | Process | Order matters and has 3–5 steps | Stacked rows allowed here; cap two per set |
 | Checklist | The saveable page | Numbered actions with one icon object each |
 | Closing | Last page | One question with A/B options drawn on the image |
+| Data chart (rendered) | A research post needs exact numbers | Same header, headline hotspot, takeaway, aside and footer; one flat 2D chart on a cream card, built from `sources/research-data.json` by `make post-chart`, never generated |
 
 ## Restraint rules
 

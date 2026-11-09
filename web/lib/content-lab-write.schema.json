@@ -1,0 +1,311 @@
+{
+  "$defs": {
+    "Measurement": {
+      "additionalProperties": false,
+      "properties": {
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "traffic": {
+          "default": "unknown",
+          "enum": [
+            "organic",
+            "paid",
+            "mixed",
+            "unknown"
+          ],
+          "title": "Traffic",
+          "type": "string"
+        },
+        "views": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Views"
+        },
+        "likes": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Likes"
+        },
+        "saves": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Saves"
+        },
+        "comments": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comments"
+        },
+        "shares": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shares"
+        },
+        "follows": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Follows"
+        }
+      },
+      "required": [
+        "observed_at",
+        "source",
+        "traffic",
+        "views",
+        "likes",
+        "saves",
+        "comments",
+        "shares",
+        "follows"
+      ],
+      "title": "Measurement",
+      "type": "object"
+    },
+    "Publication": {
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "const": "xhs",
+          "title": "Platform",
+          "type": "string"
+        },
+        "published_at": {
+          "format": "date-time",
+          "title": "Published At",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 2000,
+          "pattern": "^https://(?:www\\.)?(?:xiaohongshu\\.com|xhslink\\.com)/\\S+$",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "platform",
+        "published_at",
+        "url"
+      ],
+      "title": "Publication",
+      "type": "object"
+    },
+    "ResultsCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "record_results",
+          "title": "Action",
+          "type": "string"
+        },
+        "post_id": {
+          "maxLength": 180,
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,168}-\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Post Id",
+          "type": "string"
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Revision"
+        },
+        "publication": {
+          "$ref": "#/$defs/Publication"
+        },
+        "measurement": {
+          "$ref": "#/$defs/Measurement"
+        }
+      },
+      "required": [
+        "action",
+        "post_id",
+        "expected_revision",
+        "publication",
+        "measurement"
+      ],
+      "title": "ResultsCommand",
+      "type": "object"
+    },
+    "ReviewCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "review_content",
+          "title": "Action",
+          "type": "string"
+        },
+        "post_id": {
+          "maxLength": 180,
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,168}-\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Post Id",
+          "type": "string"
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Revision"
+        },
+        "decision": {
+          "enum": [
+            "accepted",
+            "changes_requested"
+          ],
+          "title": "Decision",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "post_id",
+        "expected_revision",
+        "decision",
+        "note"
+      ],
+      "title": "ReviewCommand",
+      "type": "object"
+    },
+    "WorkCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "approve_idea",
+            "archive",
+            "requeue"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "post_id": {
+          "maxLength": 180,
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,168}-\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Post Id",
+          "type": "string"
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Revision"
+        }
+      },
+      "required": [
+        "action",
+        "post_id",
+        "expected_revision"
+      ],
+      "title": "WorkCommand",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "approve_idea": "#/$defs/WorkCommand",
+      "archive": "#/$defs/WorkCommand",
+      "record_results": "#/$defs/ResultsCommand",
+      "requeue": "#/$defs/WorkCommand",
+      "review_content": "#/$defs/ReviewCommand"
+    },
+    "propertyName": "action"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/ResultsCommand"
+    },
+    {
+      "$ref": "#/$defs/ReviewCommand"
+    },
+    {
+      "$ref": "#/$defs/WorkCommand"
+    }
+  ],
+  "title": "LabWriteCommand"
+}

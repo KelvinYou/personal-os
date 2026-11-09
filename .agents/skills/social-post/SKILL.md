@@ -40,7 +40,8 @@ Score each candidate. Question 1 is a hard gate: a "no" ends the candidate, howe
 
 - Build at least 3 candidates; recommend the highest-scoring one and say why the others lost.
 - Pick the failure or doubt moment, not the happy path. "Where does my money go after a successful scan" is curiosity; "payment stuck, do I press again" is a need.
-- Demand evidence: ask the owner to type the seed word into XHS search and paste the dropdown suggestions, or search the web for the phrasing people actually use. Record it in `post.md`. Never claim search volume you did not observe.
+- Demand evidence: ask the owner to type the seed word into XHS search and paste the dropdown suggestions, or search the web for the phrasing people actually use. Record observations, source references, timestamps and qualifications in the selected post's `lab.yaml` under `experiment.demand_evidence`. Never claim search volume you did not observe.
+- Record the selected candidate's five gate results in `lab.yaml` under `experiment.gate` (`question: 1..5`, `result: pass|fail|unknown`, `note`), alongside `hypothesis` and `changed_variable`. `lab.yaml` is the sole structured owner; `post.md` keeps candidate reasoning, copy and prose, and existing historical gate tables stay untouched. Use the Pydantic owner in `scripts/lib/content_lab.py` and run `make posts-check` after every record write. Failed/unknown question 1 cannot be treated as passing the topic gate.
 - Material from the owner's employer or private repositories needs explicit owner confirmation that it may be published. Default: generalise the mechanism and drop internal names, paths and known limitations.
 
 ## 2. Sequence (6–9 pages)
@@ -66,6 +67,18 @@ Generation runs in Codex's built-in `image_gen`. From Claude Code, pipe the inst
 printf '%s' "<instruction naming prompts.md sections and output paths>" \
   | codex exec -s workspace-write -C <repo> --image <style-reference.png>
 ```
+
+### Research posts: rendered chart pages
+
+When the post folder has `sources/research-data.json` (filed from the Finance Research desk), its numbers are owned by the Python model, not by you or the image generator.
+
+- Plan 2–4 **data chart** pages: `networth`, `monthly`, `breakeven`, `grid`. Cover, mechanism, checklist and closing pages stay generated.
+- Write one spec per chart page in `charts/<NN>-<name>.json`. Fields are in `scripts/lib/post_chart.py::PageSpec`; set `"data": "../sources/research-data.json"`.
+- Put every number in a spec through a `{{fact}}` placeholder. A typed digit fails the spec on purpose. Write years and ratios as `{{horizon}}` or in Chinese words.
+- Mark the page's single hotspot with `[[...]]`. Use `\n` for a headline line break.
+- Render each page with `make post-chart SPEC=data/posts/<id>/charts/<NN>-<name>.json OUT=data/posts/<id>/images/<NN>-<name>.png`. Never regenerate a chart page with `image_gen`, and never edit its numbers by hand.
+- In `verification.md`, cite `sources/research-data.json` plus the sources listed inside it for every figure. Use the public scenario only; `post.md` → Must avoid lists the owner's limits.
+- Chart pages are flat by design, as the style allows for 2D charts. The cover and mechanism pages still carry the 3D artwork, so the set keeps its signature.
 
 ## 5. Visual QA (every page, before showing the owner)
 
@@ -94,6 +107,20 @@ Publication checklist for the owner (the agent never posts):
 - [ ] Source qualifications present in the caption.
 - [ ] Employer or third-party material cleared.
 
+## Autonomous mode (Content Lab pipeline)
+
+Applies when the instruction starts with `AUTONOMOUS` (sent by `scripts/content_pipeline.py`). Nobody is there to answer, so every "ask the owner" above changes into a rule you follow without asking. Steps 1–6 still apply. Write only inside the named post folder.
+
+- **Topic:** the idea brief in `post.md` names the topic. Still score the five gate questions. If question 1 fails, record the gate and stop. The final message says why it failed; do not swap in a different topic.
+- **Demand evidence:** use WebSearch for the phrasing people actually use (forums, XHS/Lowyat/Reddit pages that are publicly indexed). In each `qualification`, write that this is web evidence and not an XHS search-volume figure.
+- **Employer or private-repository material:** never use it. There is nobody to clear it, so generalise the mechanism.
+- **Owner feedback:** the run instruction lists change notes, oldest first. Address every note, and say in `post.md` which change answers which note.
+- **Images:** `printf '%s' "<instruction>" | codex exec -s workspace-write -C data/posts/<id> --image <style-reference>`. This keeps Codex writes inside the post folder.
+- **Critic (step 5):** you are the critic and Codex is the generator; that different-family split is intentional. Downscale copies one command per page with literal paths. The allowlist denies loops and `$VAR` expansion; this was observed in the first run on 2026-11-09. Use `sips -Z 800 data/posts/<id>/images/01-cover.png --out data/posts/<id>/.qa/01-cover.png`, then Read each page and the whole set. Regenerate a failing page at most twice. After that, record the failure in `verification.md` and set `readiness.visual: failed`; do not keep looping.
+- **Sameness:** XHS penalises batches of near-identical AI posts. Read the cover and sequence table of the three most recent posts in `data/posts/`, and do not repeat their cover composition or page-type order.
+- **Readiness:** set `factual: passed` only when every on-image claim has a primary source in `verification.md`. Set `visual: passed` only when every step-5 box passes on every page. Never edit `stage`, `pipeline` or `owner_review`; the runner decides whether the package reaches review.
+- **Final message (three lines):** what was made; the weakest claim or page; what the owner should look at first.
+
 ## 7. Seven-day review
 
-After 7 days, record views, saves, comments and follows in `post.md` under "Results", next to the gate scores from step 1. Compare with the account's own median, not with viral examples. When three posts have results, check whether gate questions 2–4 predicted saves; revise this skill from that evidence, not from new articles.
+After 7 days, record actual publication evidence and views, likes, saves, comments, shares and post-attributed follows in `lab.yaml` (`publication`, `measurements`), alongside the structured gate results from step 1. Each observation requires its timestamp, source reference and organic/paid/mixed/unknown coverage. Missing metrics are null, observed zero is 0; account-level follower growth is not post-attributed follows. Keep observations before publication invalid. For the Content Lab's comparison, collect an observation at 168–192 hours after publication, and compare the same coverage against the account's own median, not viral examples. Keep older prose results untouched and do not backfill inferred numbers. Run `make posts-check` after every record write. When three comparable posts have results, check whether gate questions 2–4 predicted saves; propose any skill revision from that evidence rather than new articles, following the owner's correction/change workflow.

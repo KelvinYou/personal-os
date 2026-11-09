@@ -1,0 +1,645 @@
+{
+  "$defs": {
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reference",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "observation": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Observation",
+          "type": "string"
+        },
+        "qualification": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Qualification",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference",
+        "observed_at",
+        "observation",
+        "qualification"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Experiment": {
+      "additionalProperties": false,
+      "properties": {
+        "hypothesis": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Hypothesis",
+          "type": "string"
+        },
+        "changed_variable": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Changed Variable",
+          "type": "string"
+        },
+        "gate": {
+          "items": {
+            "$ref": "#/$defs/GateResult"
+          },
+          "maxItems": 5,
+          "title": "Gate",
+          "type": "array"
+        },
+        "demand_evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 100,
+          "title": "Demand Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "hypothesis",
+        "changed_variable",
+        "gate",
+        "demand_evidence"
+      ],
+      "title": "Experiment",
+      "type": "object"
+    },
+    "Feedback": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "note"
+      ],
+      "title": "Feedback",
+      "type": "object"
+    },
+    "GateResult": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Question",
+          "type": "integer"
+        },
+        "result": {
+          "enum": [
+            "pass",
+            "fail",
+            "unknown"
+          ],
+          "title": "Result",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "result",
+        "note"
+      ],
+      "title": "GateResult",
+      "type": "object"
+    },
+    "LabItem": {
+      "additionalProperties": false,
+      "properties": {
+        "post_id": {
+          "title": "Post Id",
+          "type": "string"
+        },
+        "record": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LabRecord"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        }
+      },
+      "required": [
+        "post_id",
+        "record",
+        "revision"
+      ],
+      "title": "LabItem",
+      "type": "object"
+    },
+    "LabRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "stage": {
+          "default": "research",
+          "enum": [
+            "idea",
+            "research",
+            "production",
+            "review",
+            "ready",
+            "published",
+            "archived"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "experiment": {
+          "$ref": "#/$defs/Experiment"
+        },
+        "task_ids": {
+          "items": {
+            "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Task Ids",
+          "type": "array"
+        },
+        "readiness": {
+          "$ref": "#/$defs/Readiness"
+        },
+        "publication": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Publication"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "measurements": {
+          "items": {
+            "$ref": "#/$defs/Measurement"
+          },
+          "maxItems": 1000,
+          "title": "Measurements",
+          "type": "array"
+        },
+        "production": {
+          "$ref": "#/$defs/Production"
+        },
+        "pipeline": {
+          "$ref": "#/$defs/Pipeline"
+        }
+      },
+      "required": [
+        "schema_version",
+        "stage",
+        "experiment",
+        "task_ids",
+        "readiness",
+        "publication",
+        "measurements",
+        "production",
+        "pipeline"
+      ],
+      "title": "LabRecord",
+      "type": "object"
+    },
+    "Measurement": {
+      "additionalProperties": false,
+      "properties": {
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "traffic": {
+          "default": "unknown",
+          "enum": [
+            "organic",
+            "paid",
+            "mixed",
+            "unknown"
+          ],
+          "title": "Traffic",
+          "type": "string"
+        },
+        "views": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Views"
+        },
+        "likes": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Likes"
+        },
+        "saves": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Saves"
+        },
+        "comments": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comments"
+        },
+        "shares": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shares"
+        },
+        "follows": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Follows"
+        }
+      },
+      "required": [
+        "observed_at",
+        "source",
+        "traffic",
+        "views",
+        "likes",
+        "saves",
+        "comments",
+        "shares",
+        "follows"
+      ],
+      "title": "Measurement",
+      "type": "object"
+    },
+    "Pipeline": {
+      "additionalProperties": false,
+      "description": "Autonomous production state; the runner owns it, the owner only queues or stops work.",
+      "properties": {
+        "status": {
+          "default": "idle",
+          "enum": [
+            "idle",
+            "queued",
+            "running",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "requested_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Requested At"
+        },
+        "feedback": {
+          "items": {
+            "$ref": "#/$defs/Feedback"
+          },
+          "maxItems": 100,
+          "title": "Feedback",
+          "type": "array"
+        },
+        "runs": {
+          "items": {
+            "$ref": "#/$defs/PipelineRun"
+          },
+          "maxItems": 100,
+          "title": "Runs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "requested_at",
+        "feedback",
+        "runs"
+      ],
+      "title": "Pipeline",
+      "type": "object"
+    },
+    "PipelineRun": {
+      "additionalProperties": false,
+      "properties": {
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished At"
+        },
+        "outcome": {
+          "enum": [
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "reason": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Reason",
+          "type": "string"
+        },
+        "log": {
+          "default": "",
+          "pattern": "^[A-Za-z0-9._-]{0,200}$",
+          "title": "Log",
+          "type": "string"
+        }
+      },
+      "required": [
+        "started_at",
+        "finished_at",
+        "outcome",
+        "reason",
+        "log"
+      ],
+      "title": "PipelineRun",
+      "type": "object"
+    },
+    "Production": {
+      "additionalProperties": false,
+      "properties": {
+        "minutes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minutes"
+        },
+        "cost": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        }
+      },
+      "required": [
+        "minutes",
+        "cost",
+        "currency"
+      ],
+      "title": "Production",
+      "type": "object"
+    },
+    "Publication": {
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "const": "xhs",
+          "title": "Platform",
+          "type": "string"
+        },
+        "published_at": {
+          "format": "date-time",
+          "title": "Published At",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 2000,
+          "pattern": "^https://(?:www\\.)?(?:xiaohongshu\\.com|xhslink\\.com)/\\S+$",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "platform",
+        "published_at",
+        "url"
+      ],
+      "title": "Publication",
+      "type": "object"
+    },
+    "Readiness": {
+      "additionalProperties": false,
+      "properties": {
+        "factual": {
+          "default": "unknown",
+          "enum": [
+            "unknown",
+            "passed",
+            "failed"
+          ],
+          "title": "Factual",
+          "type": "string"
+        },
+        "visual": {
+          "default": "unknown",
+          "enum": [
+            "unknown",
+            "passed",
+            "failed"
+          ],
+          "title": "Visual",
+          "type": "string"
+        },
+        "owner_review": {
+          "default": "pending",
+          "enum": [
+            "pending",
+            "accepted",
+            "changes_requested"
+          ],
+          "title": "Owner Review",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed At"
+        }
+      },
+      "required": [
+        "factual",
+        "visual",
+        "owner_review",
+        "reviewed_at"
+      ],
+      "title": "Readiness",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/LabItem"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "partial": {
+      "title": "Partial",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "items",
+    "partial"
+  ],
+  "title": "LabCollection",
+  "type": "object"
+}

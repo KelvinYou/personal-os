@@ -25,7 +25,7 @@ test("posts: board, reader, copy, focus, reflow and recovery", async ({ page }, 
     return r.fulfill({ json: { schema_version: 1, thread_id: null, turn_id: null, status: "ready", activity: "Ready", error: null, messages: [], input_request: null, poll_interval_ms: 60000, max_prompt_chars: 8000, updated_at: "2026-01-02T00:00:00Z", task: null, agents: [] } });
   });
   const button = (name: string) => page.getByRole("button", { name, exact: true });
-  await page.goto("/office");
+  await page.goto("/office?scene=town");
   await page.locator(".office-host-label").waitFor();
   await button("Browse posts").click(); await expect(page.getByRole("dialog")).toBeVisible(); await button("Close posts").click();
   await button("Posts").click(); await page.getByRole("button", { name: new RegExp(title) }).click();
@@ -37,7 +37,7 @@ test("posts: board, reader, copy, focus, reflow and recovery", async ({ page }, 
   await expect(page.getByText("Post notes and sources", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Verification record", { exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => "untrusted" in window)).toBe(false);
-  await button("Enlarge image").click(); await expect(button("Fit image")).toBeVisible(); await page.keyboard.press("Escape"); await expect(button("Enlarge image")).toBeVisible();
+  await button("Enlarge image").click(); await expect(page.getByRole("dialog", { name: `${title} — image viewer`, exact: true })).toBeVisible(); await expect(button("Actual size")).toBeVisible(); await page.keyboard.press("Escape"); await expect(button("Enlarge image")).toBeFocused();
   for (const theme of ["light", "dark"]) {
     await page.evaluate(v => document.documentElement.classList.toggle("dark", v === "dark"), theme);
     for (const width of [1440, 390, 320]) {
