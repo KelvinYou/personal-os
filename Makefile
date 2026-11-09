@@ -13,7 +13,7 @@ IDEA_ENGINE ?= demo
 IDEA_MODEL ?= sonnet
 IDEA_CONFIG ?= config/idea_pipeline.yaml
 
-.PHONY: office office-check ui-build ui-check coros-health archive sync-protocol setup setup-ideas setup-private doctor doctor-web test test-browser today daily check weekly sync-coros report lint deck-lint travel-lint travel-build travel-check travel-build-all travel-check-all check-mermaid design-check kb-check kb-index kb-eval kb-graph migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
+.PHONY: office office-check office-push-test finance-push agent-wait ui-build ui-check coros-health archive sync-protocol setup setup-ideas setup-private doctor doctor-web test test-browser today daily check weekly sync-coros report lint deck-lint travel-lint travel-build travel-check travel-build-all travel-check-all check-mermaid design-check kb-check kb-index kb-eval kb-graph migrate decisions-due decision-new calibration quarterly wealth web flows eval evals evals-list eval-rollup idea-validate idea-init idea-evaluate idea-confirm-test idea-record-result idea-add-evidence help
 
 ## 建立 .venv 并安装依赖 (public repo 即可跑)
 setup:
@@ -55,10 +55,51 @@ test:
 		echo "[Status: Warning] 跳过 web typecheck — web/node_modules 缺失 (cd web && npm i)"; \
 	fi
 
+.PHONY: content-run
+## Drain the Content Lab queue now (headless claude -p; office.content_pipeline in private thresholds)
+content-run:
+	@$(PYTHON) scripts/content_pipeline.py
+
+.PHONY: post-chart
+## Render one exact chart page for a post from research data: make post-chart SPEC=data/posts/<id>/charts/03-x.json OUT=data/posts/<id>/images/03-x.png
+post-chart:
+	@test -n "$(SPEC)" -a -n "$(OUT)" || (echo "usage: make post-chart SPEC=page.json OUT=page.png" && exit 2)
+	@$(PYTHON) scripts/post_chart.py "$(SPEC)" "$(OUT)"
+
+.PHONY: posts-check
+## Validate private content-lab records and generated contract drift
+posts-check:
+	@$(PYTHON) scripts/export_content_lab_schema.py --check
+	@$(PYTHON) scripts/content_lab.py
+
 ## 真实浏览器回归 (@playwright/test + 系统 Chrome, 自动起隔离的 Next dev server); 不在 make test 里
 ## 用法: make test-browser [SUITES="office-player home-interactions"]  可选 TEST_PORT / CHROME_PATH
 test-browser:
 	@cd web && npm run --silent test:browser -- $(SUITES)
+
+# Reusable local 3D construction loop; preview state survives Playwright output cleanup.
+SCENE ?= office
+WIDTH ?= 1440
+SCENE_PORT ?= 3051
+
+.PHONY: scene-assets scene-preview scene-stop scene-reset scene-plan scene-check
+scene-assets:
+	@python3 scripts/scene_assets.py list --query "$(QUERY)"
+
+scene-preview:
+	@python3 scripts/scene_workflow.py preview --scene "$(SCENE)" --width "$(WIDTH)" --port "$(SCENE_PORT)" $(if $(filter 1,$(DARK)),--dark,)
+
+scene-stop:
+	@python3 scripts/scene_workflow.py stop --port "$(SCENE_PORT)"
+
+scene-reset:
+	@python3 scripts/scene_workflow.py reset
+
+scene-plan:
+	@python3 scripts/scene_workflow.py plan
+
+scene-check:
+	@python3 scripts/scene_workflow.py check
 
 ## 生成今天的日志模板 (如果不存在)
 today:
@@ -259,6 +300,18 @@ office:
 office-check:
 	@$(PYTHON) $(SCRIPTS_DIR)/office_monitor.py
 
+## Send one phone push test (office.push in private thresholds) and print the ntfy subscribe URL
+office-push-test:
+	@$(PYTHON) $(SCRIPTS_DIR)/office_signal.py --test-push
+
+## Push once per new Warning/Critical Finance attention item (also runs at Claude Code SessionStart); DRY=1 previews
+finance-push:
+	@$(PYTHON) $(SCRIPTS_DIR)/finance_push.py $(if $(DRY),--dry-run,)
+
+## Agent wait on human for a week (Codex + Claude Code records); 用法: make agent-wait [DATE=YYYY-MM-DD]
+agent-wait:
+	@$(PYTHON) $(SCRIPTS_DIR)/agent_wait.py $(if $(DATE),--date $(DATE),)
+
 ## 决策校准分析 (Brier score + 分布)
 calibration:
 	@$(PYTHON) $(SCRIPTS_DIR)/calibration.py
@@ -342,6 +395,14 @@ help:
 	@echo "  make web                — 启动本地理财仪表盘 (localhost)"
 	@echo "  make office             — launch the local 3D office (open /office)"
 	@echo "  make office-check       — check local Codex session observation"
+	@echo "  make office-push-test   — send a phone push test and print the ntfy subscribe URL"
+	@echo "  make finance-push       — push new Finance attention items to the phone (DRY=1 previews)"
+	@echo "  make scene-assets QUERY=desk — search verified local 3D models and dimensions"
+	@echo "  make scene-preview [SCENE=office|characters|home] [WIDTH=390] [DARK=1] — warm 3D capture"
+	@echo "  make scene-plan / scene-check — changed-file scope / final required checks"
+	@echo "  make scene-stop / scene-reset — stop owned preview / start a fresh baseline"
+	@echo "  make posts-check        — validate private content-lab records and generated contract drift"
+	@echo "  make content-run        — drain the Content Lab queue now (autonomous headless run)"
 	@echo "  make flows              — 重新生成 /flows 数据流仪表盘的数据"
 	@echo "  make quarterly          — 季度身份审计 (可选: QUARTER=2026-Q1)"
 	@echo "  make eval               — 最近一次 session 转 eval (可选: SESSION=recent-3)"

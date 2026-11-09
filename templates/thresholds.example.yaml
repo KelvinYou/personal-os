@@ -10,6 +10,13 @@ office:
   max_read_bytes: 2097152
   max_record_bytes: 262144
   recent_events: 8
+  # Attention radar (docs/design/office-attention-radar.md §6); all optional.
+  review_window_seconds: 1800     # ended turn stays in "ready for review" this long
+  pending_tool_seconds: 45        # a Claude tool call without result this long is flagged "needs you"
+  wait_cap_seconds: 14400         # longer waits are abandoned, not counted
+  max_segments: 120               # replay change points kept per session
+  wait_median_warning_seconds: 600
+  claude_enabled: true            # read ~/.claude/projects transcripts (read-only)
   collaboration:
     enabled: false
     lease_seconds: 900
@@ -23,11 +30,25 @@ office:
     max_message_chars: 32768
     rpc_timeout_seconds: 30
     turn_timeout_seconds: 900
+  # Phone push for agent waits (office-attention-radar.md §4.2); optional, off by default.
+  # Generate a private topic: python3 -c "import secrets; print('pos-' + secrets.token_urlsafe(24))"
+  push:
+    enabled: false
+    server: https://ntfy.sh
+    topic: replace-with-a-random-private-topic
+    approval_delay_seconds: 90    # prompts answered sooner are not pushed
+    idle_turns: true              # also push Claude Code's idle_prompt (turn ended, ~60 s idle)
+    finance_attention: true       # push once when a new Warning/Critical Finance attention item appears
+  # Autonomous Content Lab runs (office-content-lab.md autonomy revision); optional, off by default.
+  content_pipeline:
+    enabled: false                # true: approving an idea starts a headless claude -p run
+    timeout_seconds: 2700         # one package, including image generation
 # Deck lint (make deck-lint); optional. See docs/presentation-guide.md § Visual acceptance.
 presentation:
   focal_text_ratio: 3.0        # largest text >= 3x the slide's body size
   focal_visual_min_area: 0.25  # or a picture/chart covering >= 25% of the slide
   background_min_area: 0.95    # pictures this large are backgrounds, not artwork
+  body_min_pt: 18              # main body text floor (presentation-guide § Typography)
   rhythm_max_run: 2            # at most 2 consecutive content slides share a layout
   rhythm_max_share: 0.34       # no layout covers more than one third of content slides
   rhythm_min_content_slides: 6 # share rule applies only to decks with >= 6 content slides

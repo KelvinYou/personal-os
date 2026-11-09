@@ -25,10 +25,12 @@ evidence that the escalation worked; a flat one means it didn't.
 | A `web/` change is proven in the real app before "done" | `verify-web` skill + feature map | docs (skill) | n/a — new; no automated gate |
 | Shared 3D style: decks include real 3D artwork | `make deck-lint` DECK-ART rule (`scripts/lib/deck.py`); 3D finish and topic fit remain docs (`docs/artifact-design-guide.md`, `docs/presentation-guide.md`) | lint + docs | Yes — fails the 2026-11-06 deck (12 slides, 0 pictures) |
 | Each content slide has one dominant element (≥ 3× body text or ≥ 25% visual) | `make deck-lint` FOCAL rule; thresholds under `presentation:` | lint | Yes — fails v4 slides 4 / 11 / 12 and v3 slides 4 / 11 |
+| Slide body text ≥ 18 pt (footer band excluded) | `make deck-lint` BODY rule; `body_min_pt` under `presentation:` | lint | Yes — fails the 11-06 deck (8 slides at 15–17.25 pt), v3 (7 slides) and a 12–16 pt nutrition handbook (9 slides); v4 (22–24 pt) passes |
 | Deck composition rhythm (no 3 consecutive same layout; ≤ 1/3 per layout) | `make deck-lint` RHYTHM rule; layout derived from PPTX geometry (not self-reported) | lint | Yes — fails v4 (`art-C/text-C` 7/11, slides 5–8 in a row), v3 (`art-R/text-L` 6/11) and the 11-06 deck (`text/text-C` 10/11) |
 | A failing deck is not delivered | `scripts/deck_hook.py` Claude Code Stop hook: lints every `.pptx` changed this session and blocks the stop once; exemptions only via `deck_lint.exempt` + `reason` in `production.json` | hook | Yes — blocks a fresh copy of the v4 deck (selftest 2026-11-08). Also wired globally in `~/.claude/settings.json` (`--global`: scans the session's project, skips personal-os) so decks built in other repos are gated too. Gap: Codex has no equivalent hook yet |
 | Standalone HTML reuses the design system | `make ui-build` (embeds current `design-controls.css` + `templates/ui/standalone.css` with digests) and `make ui-check` (fails missing / edited / stale / out-of-order assets, network code, missing local files); routed by `ui-design-rules`, `docs/dev-sop.md`, AGENTS.md | lint (CLI) | Yes — fails all four real 10-27 pages (comment-only reuse claim, untagged stale copy) and a labelled reconstruction of the original olive page. Gap: no hook yet, so an agent that skips the CLI is not caught |
 | Post pinned comment asks for the next topic | memory + pending queue entry | docs | No — see class D |
+| Tool state and evidence never live in a test runner's output folder (Playwright deletes `web/test-results/` on every run) | Architecture: defaults are `web/.verify-web/` and `web/.scene-preview/`; `web/tests/tool-state-paths.test.ts` in `make test` fails if a verify-web script, `drive.mjs` or `scene_workflow.py` default moves under Playwright's `outputDir` | architecture + test | Yes — fails on the pre-2026-11-09 `cleanup.sh` and `drive.mjs` defaults (`web/test-results/verify-web`). Gap: only checks the listed tools; a new tool must be added to the test |
 
 ## Mistake classes (audit 2026-11-08, pending.md + archive.md)
 
@@ -41,7 +43,12 @@ evidence that the escalation worked; a flat one means it didn't.
 | E. `claimed-not-executed` — claimed work underway without executing | 10-27 video re-edit | 1 | docs | — (not a class yet) | Single occurrence |
 
 Single occurrences (not classes yet): grocery format (10-08), image style + archive path (10-28),
-travel photography scope (09-29), restaurant radius (10-01).
+travel photography scope (09-29), restaurant radius (10-01), `disposable-output-state` (11-09:
+verify-web kept its pid file and evidence in `web/test-results/`; a concurrent `make scene-check`
+deleted the pid, so cleanup orphaned the server, and evidence cited in `office-world.md` /
+`finance-workbench.md` is gone. Found by the agent, not an owner correction. `.scene-preview`
+had avoided this by design on 11-08, so the lesson existed but was not carried over; escalated
+straight to architecture + test above because the check is cheap).
 
 ## Next escalations (owner approval needed; one change each)
 

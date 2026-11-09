@@ -467,7 +467,7 @@ Scoring 的职责切分：
 
 ## 10. Wealth Report Contract
 
-`scripts/lib/wealth/report_models.py::WealthReport` 是 Tracked Assets 报告的 Python owner；`scripts/wealth_check.py --json` 和 `web/` 都消费同一份 `build_report()` 输出。`report_schema_version` 当前为 `4`。`scripts/export_wealth_report_schema.py` 从 serialization schema 生成 `web/lib/report.schema.json` 和 `web/lib/report.gen.ts`；Python contract test、fixture、生成检查与 web typecheck 共同守护边界，估值逻辑仍只在 Python。
+`scripts/lib/wealth/report_models.py::WealthReport` 是 Tracked Assets 报告的 Python owner；`scripts/wealth_check.py --json` 和 `web/` 都消费同一份 `build_report()` 输出。`report_schema_version` 当前为 `5`（v5 加 `attention[]`：由 `scripts/lib/wealth/attention.py` 从成品报告派生的排序待办，`/finance`、Office Finance 公告与 `scripts/finance_push.py` 手机推送共用这一份）。`scripts/export_wealth_report_schema.py` 从 serialization schema 生成 `web/lib/report.schema.json` 和 `web/lib/report.gen.ts`；Python contract test、fixture、生成检查与 web typecheck 共同守护边界，估值逻辑仍只在 Python。
 
 报告中的 `tracked_total_myr` 不是 net worth：只包含现金与已计价股票，不包含未计价持仓、NAV 计价产品或未追踪 liabilities。`allocation.incomplete` 与 `wealth_rules.stale` 都是 fail-closed health signals：下游不得把不完整占比或过期法规事实当成确定性建议。
 
@@ -517,39 +517,44 @@ a success probability, or writes a build/stop decision. A final user decision
 may be captured separately by `decision-log`; that journal does not own the
 idea claim graph.
 
-## 13. Local Virtual Office
+## 13. Local Virtual Office (attention radar)
 
-`/office` observes existing Codex sessions in this workspace through a local,
-read-only projection; observed external sessions stay in their original client.
-`scripts/lib/office/monitor.py` incrementally reads the client's own rollout
-JSONL, owns lifecycle interpretation and freshness, and retains only bounded
-cursors and allowlisted activity labels in `data/runtime/ai-office/`.
-`scripts/office_monitor.py --json` feeds the uncached, same-origin loopback API
-at `/api/office/state`. TypeScript validates schema v1 before the scene, list
-and detail panel consume it. Polling and retention limits come from the
-optional `office` block in private `thresholds.yaml`; existing consumers do
-not require that block. The shared daily-log schema is unchanged.
+`/office` answers one question: which agent needs the owner, which are working,
+and which are ready for review. It observes existing Codex and Claude Code
+sessions in this workspace through a local, read-only projection; sessions stay
+in their original client. `scripts/lib/office/monitor.py` reads Codex rollout
+JSONL and `scripts/lib/office/claude.py` reads Claude Code transcripts
+(`~/.claude/projects/<workspace-slug>*`, membership decided by the recorded
+cwd). `scripts/lib/office/attention.py` is the single owner of attention zones
+(needs you / working / ready for review / done), replay segments and the human
+wait definition. Only bounded cursors, fixed labels, tool kinds and timestamps
+are retained in `data/runtime/ai-office/`. `scripts/office_monitor.py --json`
+feeds the uncached, same-origin loopback API at `/api/office/state`;
+TypeScript validates schema v2 before the radar, queue and timeline consume it.
+Limits come from the optional `office` block in private `thresholds.yaml`.
 
-The office roster has one permanent employee per repository skill under
-`.agents/skills/`. Scene identities are `skill:<id>`; sessions remain linked work
-records and never create new permanent roster members. The separate task-team
-view shows actual runtime participants for one run. Explicit observed role IDs or the owned
-task's selected `skill_id` connect evidence to an employee. Unassigned sessions
-remain inspectable separately. No linked task displays Standby, which describes
-assignment rather than an observed process state. Skills do not prove running
-agents; unobserved roles and parent links remain unassigned. See
-[the skill employee contract](docs/design/office-skill-employees.md). A recorded turn ending
-means idle, not completed work; tool failure does not establish session failure.
-No fresh activity evidence means unknown, not success. Reader health and source
-coverage are separate from session state. Demo mode is synthetic and makes no
-observation requests. Prompts, reasoning, code, command arguments/results and
-arbitrary artifact paths never cross the office snapshot boundary.
+One person is one live session; a repository skill is only a badge from Claude
+skill attribution. Position in the room is the attention zone; movement happens
+only when an observed zone or tool changes. A recorded turn ending means ready
+for review, not completed work. A Claude permission prompt is exact when the
+project hook `scripts/office_signal.py` (SessionStart + Notification) has recorded
+it in private `data/runtime/ai-office/claude-signals.jsonl` (session id, fixed
+kind and time only); for sessions started without the hook, a tool call without
+a result is flagged as a possible approval wait and labelled as inferred. No fresh activity evidence
+means unknown, not success. Demo mode is synthetic and makes no observation
+requests. Prompts, reasoning, code, command arguments/results, titles and paths
+never cross the snapshot boundary. `scripts/lib/office/waits.py` aggregates the
+same change points into the weekly agent-wait metric (`make agent-wait`,
+`make weekly` §4.6).
 
-The rollout format is an observed client detail, not a stable public API.
-Coverage limitations and operating instructions are maintained in
-[the office design](docs/design/ai-office-monitor.md); phase status belongs to
-[the implementation plan](docs/plans/virtual-office.md). No daemon, hosted
-service, model call, runtime hook change or database is introduced by observation.
+The classic garden town (`/office?scene=town`) is frozen. Both client formats
+are observed details, not stable public APIs. Contracts and limits:
+[the attention radar design](docs/design/office-attention-radar.md); original
+observation coverage: [the office design](docs/design/ai-office-monitor.md). No
+daemon, hosted service, model call or database is introduced by observation; the
+only hook is the project-scoped signal writer above, which never blocks a session.
+When private `office.push` is enabled, that hook also sends fixed-text phone
+pushes through ntfy from a detached worker; no session detail leaves the machine.
 
 The separate opt-in [direct-task lane](docs/design/office-direct-tasks.md) adds
 `/api/office/execution` and an inline composer. A server-owned official Codex

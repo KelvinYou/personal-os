@@ -58,8 +58,8 @@ A personal management system that drives data-driven self-management through str
 /scripts/lib/nutrition/   — shared implementation for the nutrition adapter (basis conversion, macro/cost derivation)
 /scripts/flow_graph.py    — derives web/public/flows.json for the `/flows` dashboard (`make flows`); structural parts auto-derived, see lib/flows/
 /scripts/lib/flows/       — Makefile/script/submodule parsing for the flow graph; a `# flow: <group>` header in a script is the only manual input it reads
-/scripts/office_monitor.py — on-demand, read-only Codex session observation for the local `/office` dashboard
-/scripts/lib/office/      — bounded incremental rollout adapter; owns office states and the public-safe snapshot allowlist
+/scripts/office_monitor.py — on-demand, read-only Codex + Claude Code session observation for the local `/office` attention radar
+/scripts/lib/office/      — bounded incremental transcript adapters; attention.py owns zones, replay segments and the agent-wait definition
 ```
 
 ## Key Conventions
@@ -96,7 +96,9 @@ A personal management system that drives data-driven self-management through str
 - `make report` — lint + logic check + weekly synthesis; prepares the prompt for an AI-authored report
 - `make wealth` — Tracked Assets: cash/maturities/rates + stock valuation (NAV-priced products still excluded)
 - `make flows` — regenerate `web/public/flows.json` for the `/flows` dashboard (Makefile targets + script read/write edges + submodule touchpoints); `make doctor` warns if this drifts out of sync
-- `make office` / `make office-check` — launch the loopback-only virtual office / check local Codex observation; limits live under `office` in private thresholds
+- `make office` / `make office-check` — launch the loopback-only attention radar / check local Codex + Claude Code observation; limits live under `office` in private thresholds
+- `make office-push-test` — send one phone push (ntfy) and print the subscribe URL; config under `office.push` in private thresholds
+- `make agent-wait [DATE=...]` — weekly agent wait on human (review latency) from local transcripts; also §4.6 of `make weekly`
 - `make eval` — convert the most recent Claude Code session into an eval record (`SESSION=recent-3` to select one)
 - `make eval-rollup` — monthly agent-signal rollup; `/meta-coach` reads this, not individual evals
 

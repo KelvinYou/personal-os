@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-07T23:53:07.659901+00:00",
-  "input_hash": "94c959756790b9e56d900316e9e846ea74378c1c01431ae80c0bac99dfa6c664",
+  "generated_at": "2026-11-09T09:38:58.839437+00:00",
+  "input_hash": "47e64054dbc5d4edc090f8a3f57c72051961ea89cdae020de833d1b6fce81f28",
   "nodes": [
     {
       "id": "make:setup",
@@ -51,8 +51,80 @@
       "rank": 1
     },
     {
+      "id": "make:content-run",
+      "label": "content-run",
+      "kind": "make-target",
+      "meta": {},
+      "group": "office",
+      "rank": 1
+    },
+    {
+      "id": "make:post-chart",
+      "label": "post-chart",
+      "kind": "make-target",
+      "meta": {},
+      "group": "content",
+      "rank": 0
+    },
+    {
+      "id": "make:posts-check",
+      "label": "posts-check",
+      "kind": "make-target",
+      "meta": {},
+      "group": "office",
+      "rank": 1
+    },
+    {
       "id": "make:test-browser",
       "label": "test-browser",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 0
+    },
+    {
+      "id": "make:scene-assets",
+      "label": "scene-assets",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:scene-preview",
+      "label": "scene-preview",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:scene-stop",
+      "label": "scene-stop",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:scene-reset",
+      "label": "scene-reset",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 0
+    },
+    {
+      "id": "make:scene-plan",
+      "label": "scene-plan",
+      "kind": "make-target",
+      "meta": {},
+      "group": null,
+      "rank": 1
+    },
+    {
+      "id": "make:scene-check",
+      "label": "scene-check",
       "kind": "make-target",
       "meta": {},
       "group": null,
@@ -363,6 +435,30 @@
       "rank": 1
     },
     {
+      "id": "make:office-push-test",
+      "label": "office-push-test",
+      "kind": "make-target",
+      "meta": {},
+      "group": "office",
+      "rank": 1
+    },
+    {
+      "id": "make:finance-push",
+      "label": "finance-push",
+      "kind": "make-target",
+      "meta": {},
+      "group": "office",
+      "rank": 1
+    },
+    {
+      "id": "make:agent-wait",
+      "label": "agent-wait",
+      "kind": "make-target",
+      "meta": {},
+      "group": "office",
+      "rank": 0
+    },
+    {
       "id": "make:calibration",
       "label": "calibration",
       "kind": "make-target",
@@ -435,12 +531,28 @@
       "rank": 0
     },
     {
+      "id": "script:agent_wait.py",
+      "label": "agent_wait.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 1
+    },
+    {
       "id": "script:archive.py",
       "label": "archive.py",
       "kind": "script",
       "group": "archive",
       "meta": {},
       "rank": 2
+    },
+    {
+      "id": "script:build_kenney_characters.py",
+      "label": "build_kenney_characters.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
     },
     {
       "id": "script:calibration.py",
@@ -455,6 +567,22 @@
       "label": "check_mermaid.py",
       "kind": "script",
       "group": "docs-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:content_lab.py",
+      "label": "content_lab.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:content_pipeline.py",
+      "label": "content_pipeline.py",
+      "kind": "script",
+      "group": "office",
       "meta": {},
       "rank": 2
     },
@@ -523,12 +651,36 @@
       "rank": 3
     },
     {
+      "id": "script:export_content_lab_schema.py",
+      "label": "export_content_lab_schema.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 2
+    },
+    {
       "id": "script:export_finance_activity_schema.py",
       "label": "export_finance_activity_schema.py",
       "kind": "script",
       "group": null,
       "meta": {},
       "rank": 1
+    },
+    {
+      "id": "script:export_finance_research_schema.py",
+      "label": "export_finance_research_schema.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:export_finance_workbench_schema.py",
+      "label": "export_finance_workbench_schema.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
     },
     {
       "id": "script:export_wealth_report_schema.py",
@@ -561,6 +713,30 @@
       "group": "wealth",
       "meta": {},
       "rank": 0
+    },
+    {
+      "id": "script:finance_push.py",
+      "label": "finance_push.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:finance_research.py",
+      "label": "finance_research.py",
+      "kind": "script",
+      "group": "wealth",
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:finance_workbench.py",
+      "label": "finance_workbench.py",
+      "kind": "script",
+      "group": "wealth",
+      "meta": {},
+      "rank": 1
     },
     {
       "id": "script:flow_graph.py",
@@ -637,6 +813,22 @@
     {
       "id": "script:lib/config.py",
       "label": "lib/config.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/content_lab.py",
+      "label": "lib/content_lab.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/content_pipeline.py",
+      "label": "lib/content_pipeline.py",
       "kind": "script",
       "group": null,
       "meta": {},
@@ -947,6 +1139,22 @@
       "rank": 0
     },
     {
+      "id": "script:lib/office/attention.py",
+      "label": "lib/office/attention.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/claude.py",
+      "label": "lib/office/claude.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/office/collaboration.py",
       "label": "lib/office/collaboration.py",
       "kind": "script",
@@ -963,6 +1171,30 @@
       "rank": 0
     },
     {
+      "id": "script:lib/office/push.py",
+      "label": "lib/office/push.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/signals.py",
+      "label": "lib/office/signals.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/office/sources.py",
+      "label": "lib/office/sources.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/office/team.py",
       "label": "lib/office/team.py",
       "kind": "script",
@@ -971,8 +1203,24 @@
       "rank": 0
     },
     {
+      "id": "script:lib/office/waits.py",
+      "label": "lib/office/waits.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/office/work.py",
       "label": "lib/office/work.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/post_chart.py",
+      "label": "lib/post_chart.py",
       "kind": "script",
       "group": null,
       "meta": {},
@@ -1067,6 +1315,14 @@
       "rank": 0
     },
     {
+      "id": "script:lib/wealth/attention.py",
+      "label": "lib/wealth/attention.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "script:lib/wealth/consistency.py",
       "label": "lib/wealth/consistency.py",
       "kind": "script",
@@ -1115,8 +1371,40 @@
       "rank": 0
     },
     {
+      "id": "script:lib/wealth/research.py",
+      "label": "lib/wealth/research.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/research_post.py",
+      "label": "lib/wealth/research_post.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 1
+    },
+    {
       "id": "script:lib/wealth/rules.py",
       "label": "lib/wealth/rules.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/workbench.py",
+      "label": "lib/wealth/workbench.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 0
+    },
+    {
+      "id": "script:lib/wealth/workbench_planning.py",
+      "label": "lib/wealth/workbench_planning.py",
       "kind": "script",
       "group": null,
       "meta": {},
@@ -1179,6 +1467,14 @@
       "rank": 2
     },
     {
+      "id": "script:office_signal.py",
+      "label": "office_signal.py",
+      "kind": "script",
+      "group": "office",
+      "meta": {},
+      "rank": 2
+    },
+    {
       "id": "script:office_work.py",
       "label": "office_work.py",
       "kind": "script",
@@ -1195,10 +1491,34 @@
       "rank": 1
     },
     {
+      "id": "script:post_chart.py",
+      "label": "post_chart.py",
+      "kind": "script",
+      "group": "content",
+      "meta": {},
+      "rank": 1
+    },
+    {
       "id": "script:report_gen.py",
       "label": "report_gen.py",
       "kind": "script",
       "group": "logic-check",
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:scene_assets.py",
+      "label": "scene_assets.py",
+      "kind": "script",
+      "group": null,
+      "meta": {},
+      "rank": 2
+    },
+    {
+      "id": "script:scene_workflow.py",
+      "label": "scene_workflow.py",
+      "kind": "script",
+      "group": null,
       "meta": {},
       "rank": 2
     },
@@ -1297,6 +1617,13 @@
       "group": null,
       "meta": {},
       "rank": 1
+    },
+    {
+      "id": "path:/config/",
+      "label": "/config/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
     },
     {
       "id": "path:/data/",
@@ -1404,6 +1731,13 @@
       "rank": 0
     },
     {
+      "id": "path:/tests/",
+      "label": "/tests/",
+      "kind": "data-path",
+      "meta": {},
+      "rank": 0
+    },
+    {
       "id": "path:/web/",
       "label": "/web/",
       "kind": "data-path",
@@ -1424,7 +1758,7 @@
       "label": "notes",
       "kind": "submodule",
       "meta": {
-        "summary": "- https://docusaurus.io/docs"
+        "summary": "Public notes built with Docusaurus, plus the structured nutrition dataset consumed by Personal-OS."
       },
       "rank": 0
     },
@@ -1497,6 +1831,56 @@
     {
       "from": "make:test",
       "to": "script:kb_eval.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:content-run",
+      "to": "script:content_pipeline.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:post-chart",
+      "to": "script:post_chart.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:posts-check",
+      "to": "script:export_content_lab_schema.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:posts-check",
+      "to": "script:content_lab.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:scene-assets",
+      "to": "script:scene_assets.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:scene-preview",
+      "to": "script:scene_workflow.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:scene-stop",
+      "to": "script:scene_workflow.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:scene-reset",
+      "to": "script:scene_workflow.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:scene-plan",
+      "to": "script:scene_workflow.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:scene-check",
+      "to": "script:scene_workflow.py",
       "kind": "invokes"
     },
     {
@@ -1692,6 +2076,21 @@
     {
       "from": "make:office-check",
       "to": "script:office_monitor.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:office-push-test",
+      "to": "script:office_signal.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:finance-push",
+      "to": "script:finance_push.py",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:agent-wait",
+      "to": "script:agent_wait.py",
       "kind": "invokes"
     },
     {
@@ -1931,6 +2330,46 @@
     },
     {
       "from": "make:help",
+      "to": "make:office-push-test",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:finance-push",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:scene-assets",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:scene-preview",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:scene-plan",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:scene-stop",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:posts-check",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
+      "to": "make:content-run",
+      "kind": "invokes"
+    },
+    {
+      "from": "make:help",
       "to": "make:flows",
       "kind": "invokes"
     },
@@ -1993,6 +2432,16 @@
       "from": "script:archive.py",
       "to": "path:/data/archive/",
       "kind": "writes"
+    },
+    {
+      "from": "script:build_kenney_characters.py",
+      "to": "path:/web/",
+      "kind": "writes"
+    },
+    {
+      "from": "script:build_kenney_characters.py",
+      "to": "path:/web/",
+      "kind": "reads"
     },
     {
       "from": "script:calibration.py",
@@ -2075,6 +2524,11 @@
       "kind": "reads"
     },
     {
+      "from": "script:finance_workbench.py",
+      "to": "path:/tests/",
+      "kind": "reads"
+    },
+    {
       "from": "script:flow_graph.py",
       "to": "path:/scripts/",
       "kind": "reads"
@@ -2110,6 +2564,11 @@
       "kind": "reads"
     },
     {
+      "from": "script:lib/wealth/research_post.py",
+      "to": "path:/config/",
+      "kind": "reads"
+    },
+    {
       "from": "script:office_collaboration.py",
       "to": "path:/data/",
       "kind": "reads"
@@ -2117,6 +2576,16 @@
     {
       "from": "script:office_monitor.py",
       "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:office_signal.py",
+      "to": "path:/data/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:office_signal.py",
+      "to": "path:/data/finance/",
       "kind": "reads"
     },
     {
@@ -2132,6 +2601,31 @@
     {
       "from": "script:patch_coros.py",
       "to": "path:/data/daily/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:scene_assets.py",
+      "to": "path:/web/",
+      "kind": "writes"
+    },
+    {
+      "from": "script:scene_assets.py",
+      "to": "path:/web/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:scene_workflow.py",
+      "to": "path:/web/",
+      "kind": "writes"
+    },
+    {
+      "from": "script:scene_workflow.py",
+      "to": "path:/config/",
+      "kind": "reads"
+    },
+    {
+      "from": "script:scene_workflow.py",
+      "to": "path:/web/",
       "kind": "reads"
     },
     {

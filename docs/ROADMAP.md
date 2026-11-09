@@ -87,6 +87,7 @@ that the owner does not want. Do not implement E1–E4 or `scripts/apply_schedul
 
 | 线 | 待办 | 详细计划 |
 |---|---|---|
+| Office Content Lab | Planned: capability check → third building → research/production tasks → output review and recorded results; v1 uses the existing department panel, moves into the immersive shell when it lands | [plans/office-content-lab.md](plans/office-content-lab.md) |
 | AI-native full-stack foundations | Planned: execution → backend/data correctness → reliable LLM features → evaluation and operations; supports the existing P0 cloud milestone | [plans/ai-native-full-stack-foundations.md](plans/ai-native-full-stack-foundations.md) |
 | Go ledger & payment API | Planned: design → double-entry + idempotent API → concurrency → outbox/recovery → optional AI consumer; does not replace §1 P0 | [plans/go-ledger-payment-api.md](plans/go-ledger-payment-api.md) |
 | Wealth dashboard | Phase D（知识库浏览页）· Phase E（历史趋势展示） | [plans/wealth-dashboard.md](plans/wealth-dashboard.md) §4 |

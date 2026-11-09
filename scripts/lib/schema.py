@@ -290,6 +290,37 @@ class OfficeExecutionCfg(BaseModel):
     turn_timeout_seconds: int = Field(ge=30, le=3600)
 
 
+class OfficePushCfg(BaseModel):
+    """Phone push for agent waits (docs/design/office-attention-radar.md §4.2).
+
+    The topic is the only access control on a public ntfy server: keep it random
+    and private. Pushed text is fixed; no session, path or command is sent.
+    """
+    model_config = ConfigDict(extra="forbid")
+    enabled: bool = False
+    server: str = Field(default="https://ntfy.sh", pattern=r"^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?$")
+    topic: str = Field(pattern=r"^[A-Za-z0-9_-]{20,64}$")
+    # A permission prompt answered within this many seconds is not pushed.
+    approval_delay_seconds: int = Field(default=90, ge=10, le=3600)
+    # Also push Claude Code's own idle_prompt (turn ended, about 60 s without input).
+    idle_turns: bool = True
+    # Push once when a new Warning/Critical item enters the Finance attention list
+    # (scripts/finance_push.py, run at Claude Code SessionStart). Fixed text only.
+    finance_attention: bool = True
+
+
+class OfficeContentPipelineCfg(BaseModel):
+    """Autonomous Content Lab runs (docs/design/office-content-lab.md, autonomy revision).
+
+    Off by default: enabling lets an approved idea start a headless `claude -p` run.
+    """
+    model_config = ConfigDict(extra="forbid")
+    enabled: bool = False
+    timeout_seconds: int = Field(default=2700, ge=300, le=10800)
+    max_budget_usd: float | None = Field(default=None, gt=0, le=100)
+    model: str | None = Field(default=None, pattern=r"^[a-z0-9.\-\[\]]{1,64}$")
+
+
 class OfficeCfg(BaseModel):
     """Operational limits, explicitly configured in the owner's thresholds file."""
     model_config = ConfigDict(extra="forbid")
@@ -301,8 +332,18 @@ class OfficeCfg(BaseModel):
     max_read_bytes: int = Field(ge=4096, le=16777216)
     max_record_bytes: int = Field(ge=4096, le=4194304)
     recent_events: int = Field(ge=1, le=50)
+    # Attention radar (docs/design/office-attention-radar.md §6). Optional with
+    # documented defaults so existing private thresholds keep validating.
+    review_window_seconds: int = Field(default=1800, ge=60, le=86400)
+    pending_tool_seconds: int = Field(default=45, ge=5, le=3600)
+    wait_cap_seconds: int = Field(default=14400, ge=600, le=172800)
+    max_segments: int = Field(default=120, ge=10, le=1000)
+    wait_median_warning_seconds: int = Field(default=600, ge=60, le=86400)
+    claude_enabled: bool = True
     collaboration: OfficeCollaborationCfg | None = None
     execution: OfficeExecutionCfg | None = None
+    push: OfficePushCfg | None = None
+    content_pipeline: OfficeContentPipelineCfg | None = None
 
 
 class PresentationCfg(BaseModel):
@@ -314,6 +355,8 @@ class PresentationCfg(BaseModel):
     focal_visual_min_area: float = Field(gt=0, lt=1)
     # A picture covering >= this fraction is a background, not a focal element or artwork.
     background_min_area: float = Field(gt=0, le=1)
+    # Main body text (size carrying the most characters) must be at least this.
+    body_min_pt: float = Field(ge=8, le=40)
     # Composition rhythm over content slides (cover and exempt slides excluded).
     rhythm_max_run: int = Field(ge=1, le=10)                # consecutive slides with one layout
     rhythm_max_share: float = Field(gt=0, le=1)             # fraction of content slides per layout
