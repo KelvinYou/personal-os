@@ -1,5 +1,7 @@
 // Actual scene acceptance using only the explicitly synthetic demo roster.
 import fs from "node:fs";
+import path from "node:path";
+import { loadOfficeSkills } from "../../lib/office-skills";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 test.use({ reducedMotion: "reduce" });
@@ -8,7 +10,7 @@ const viewportShot = async (page: Page, testInfo: TestInfo, name: string): Promi
   fs.writeFileSync(testInfo.outputPath(name), await page.locator(".office-viewport").screenshot());
 };
 
-test("courtyard: 18 employees, stable filtered seat, selection, demo isolation, responsive", async ({ page }, testInfo) => {
+test("courtyard: canonical skill employees, stable filtered seat, selection, demo isolation, responsive", async ({ page }, testInfo) => {
   const errors: string[] = [];
   const privateRequests: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -16,9 +18,12 @@ test("courtyard: 18 employees, stable filtered seat, selection, demo isolation, 
     if (req.url().includes("/api/office/")) privateRequests.push(req.url());
   });
 
-  await page.goto("/office?mode=demo&scenario=team");
+  await page.goto("/office?scene=town&mode=demo&scenario=team");
   await page.locator(".office-host-label").waitFor();
-  expect(await page.locator(".office-worker-chip").count()).toBe(18);
+  // Repository skills own membership. A fixed headcount breaks every legitimate expansion.
+  const expected = loadOfficeSkills(path.resolve(process.cwd(), "..")).map(skill => skill.name).sort();
+  const names = await page.locator(".office-worker-chip strong").allTextContents();
+  expect(names.map(name => name.trim()).sort()).toEqual(expected);
   await page.getByRole("button", { name: "Name labels", exact: true }).click();
   await viewportShot(page, testInfo, "01-courtyard-overview.png");
   await page.getByRole("button", { name: "Name labels", exact: true }).click();

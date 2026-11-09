@@ -1,0 +1,123 @@
+{
+  "author": "Kenney",
+  "pack": "furniture-kit",
+  "files": [
+    {
+      "file": "License.txt",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 614,
+      "sha256": "bc0de1a0742cb490f9ed4bae0bd284286ebb27e23149b9917c7d8c0d590b8b29",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "benchCushionLow.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 10268,
+      "sha256": "d1fac209eae2ea7393beefa4932dacb54d500e8f9932a1b17d2a842527df1b2c",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "bookcaseOpen.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 18020,
+      "sha256": "750702218d68c062b15dfef6ab06a4014d1cfa8bd05f02e57c53b7e13bec157c",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "books.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 6864,
+      "sha256": "b8dc56e5d29f6fc1f4727fccb1b9642627fee9942c48060a00034e98df02701c",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "chairDesk.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 39016,
+      "sha256": "46406619186034cbe92b19b79a5f1a8e3f442a17a70a7524ef2c0ad0f35095c6",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "computerKeyboard.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 3476,
+      "sha256": "9d9135789de2120e9f41ce3f0a56dd1b15f40adcc7888739bb842a2d820da322",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "computerScreen.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 6404,
+      "sha256": "5942cbad29a2d2b956619569926e81d50a4174403d592fece6556e57632dc643",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "desk.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 15048,
+      "sha256": "0164fe828f028b321730fb8c74502e353583f751be74da1682d42fff7d3c5a42",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "kitchenCoffeeMachine.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 13332,
+      "sha256": "063f582c6fa0f00a9f24e3393dac2295491c4becdaf5513c893ab1a2826b6ec3",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "laptop.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 5540,
+      "sha256": "5fa8a1f4a71ab8d82ef64da77a6973ffd350c6d4557516069a4ffd4bb8d808af",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "pottedPlant.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 7576,
+      "sha256": "5b760eda2766f75fda36b2c5df652a1662f82981ef64cd8fa7fe7bcd386b3a15",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "tableRound.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 6444,
+      "sha256": "f8daea9124a542a00b7bdacfddac82dc468573d43e44d7b54dd6316e9695754b",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "trashcan.glb",
+      "source_url": "https://kenney.nl/assets/furniture-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6675726e69747572652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 6452,
+      "sha256": "e0ccc1fe50cbd05386477fdff527171d1cf7c0de2ba7ff3233f8d9561feb2561",
+      "verified_at": "2026-11-08"
+    }
+  ]
+}

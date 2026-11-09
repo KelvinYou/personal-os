@@ -29,7 +29,7 @@ test("characters: cast preview, angles, poses, responsive and keyboard", async (
   const btn = (name: string) => page.getByRole("button", { name, exact: true });
 
   await select("Coach Planner");
-  await page.locator(".office-character-captions").getByText("Training top · shorts · trainers", { exact: true }).waitFor();
+  await page.locator(".office-character-captions").getByText("Mini Characters · active", { exact: true }).waitFor();
   for (const angle of ["Front", "Side", "Back"]) {
     await btn(angle).click();
     await stageShot(page, testInfo, `02-coach-${angle.toLowerCase()}.png`);

@@ -1,0 +1,141 @@
+{
+  "pack": "Kenney Mini Characters 2.0",
+  "author": "Kenney",
+  "files": [
+    {
+      "file": "License.txt",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 704,
+      "sha256": "92aba6c40f4d09ea7c637c50b36147946632e5ade3c0296ca78be1effcd81661",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "Textures/colormap.png",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 10852,
+      "sha256": "3aba07b39c13e9fa9a02cba6246fdd9d711bb15702e00e10ad84595b25452f95",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-female-a.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 269200,
+      "sha256": "10e4f70e4279913b4f78134c9eeb699a11091cd4b452ecccf9d2b27b32206320",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-female-b.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 249988,
+      "sha256": "3a0e6c3e431ae9d2016c2c9a91ec3abe8bb45243016a5cae80cbde0b61f8f2a9",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-female-c.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 249904,
+      "sha256": "163ed5cb5b130177a64724efd9cf4f681fd73d7072f4f9b83ed584307dad870a",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-female-d.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 255988,
+      "sha256": "788767a12ed89cea1c6b2617be1a9b7ddd999e9ed283baaac7cddfbe69720ccf",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-female-e.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 245116,
+      "sha256": "265a52129eb18106c16aa25863ef691c97eb959a19b43f63857df933f6439b58",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-female-f.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 256600,
+      "sha256": "67ec9b7d30a59f292dbd9a864cc4ef118f98b156203f2285addb1ab6997f9106",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-male-a.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 245232,
+      "sha256": "c1cba637e1d946822df07385fabf9d1bc55255ce19e0e8f7124d767e03987126",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-male-b.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 238300,
+      "sha256": "81464391ab3291bc78d23c33d5a5313cfab43469285a8e1f02b974aecbd4f943",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-male-c.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 259876,
+      "sha256": "6bb3b1ac8b196fd005dd5cb73621cd88d8a44d1f0f92fcf0c03f3b47ac9b9a74",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-male-d.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 243700,
+      "sha256": "bded80fb516310186bf151b040696295395043b520a77d09533e20445dd4c02a",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-male-e.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 235644,
+      "sha256": "7b67dbd3b1873a8182e78b1764db008496e4c3b871db59f45ed224852c238fd4",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-male-f.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 247520,
+      "sha256": "83fa60802557199778ab606e5ee3b2da2140ef35839ac4fb557ef95dbac9c5d4",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "character-male-g.glb",
+      "source_url": "https://kenney.nl/assets/mini-characters",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d696e692d63686172616374657273",
+      "license": "CC0-1.0",
+      "bytes": 263036,
+      "sha256": "14e4b60c26a330b8dcd52f1e5a36ba124869600f9fa94075fbc6a4665f6f6525",
+      "verified_at": "2026-11-08"
+    }
+  ]
+}

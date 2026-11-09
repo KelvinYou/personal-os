@@ -1,0 +1,19 @@
+{
+  "floor": "modular-space-kit/template-floor.glb",
+  "wall": "modular-space-kit/template-wall.glb",
+  "halfWall": "modular-space-kit/template-wall-half.glb",
+  "gate": "modular-space-kit/gate.glb",
+  "cables": "modular-space-kit/cables.glb",
+  "desk": "furniture-kit/desk.glb",
+  "screen": "furniture-kit/computerScreen.glb",
+  "keyboard": "furniture-kit/computerKeyboard.glb",
+  "chair": "furniture-kit/chairDesk.glb",
+  "bookcase": "furniture-kit/bookcaseOpen.glb",
+  "books": "furniture-kit/books.glb",
+  "bench": "furniture-kit/benchCushionLow.glb",
+  "plant": "furniture-kit/pottedPlant.glb",
+  "table": "furniture-kit/tableRound.glb",
+  "laptop": "furniture-kit/laptop.glb",
+  "coffee": "furniture-kit/kitchenCoffeeMachine.glb",
+  "bin": "furniture-kit/trashcan.glb"
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { buttonClass } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/input";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Send, Square, RotateCcw, MessageSquare, Crosshair } from "lucide-react";
 import { Select } from "@/components/shared/select";
@@ -35,7 +36,13 @@ export function DirectTask({ onSnapshot, onConnection, onFocus, onAgent, canFocu
   const [expanded, setExpanded] = useState(true);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [retry, setRetry] = useState<Record<string, unknown> | null>(null);
-  useEffect(() => { if (prepared) { setDraft(prepared.text); setExpanded(true); } }, [prepared]);
+  const prompt = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (!prepared) return;
+    setDraft(prepared.text); setExpanded(true);
+    const frame = requestAnimationFrame(() => { prompt.current?.focus({ preventScroll: true }); prompt.current?.scrollIntoView({ block: "center", behavior: "instant" }); });
+    return () => cancelAnimationFrame(frame);
+  }, [prepared]);
   const current = useRef<ExecutionSnapshot | null>(null);
   const transcript = useRef<HTMLDivElement>(null);
   function accept(value: ExecutionSnapshot) {
@@ -107,7 +114,7 @@ export function DirectTask({ onSnapshot, onConnection, onFocus, onAgent, canFocu
       <button type="submit" disabled={pending}>Send answer</button>
     </form> : <form className="office-direct-composer" onSubmit={event => { event.preventDefault(); if (draft.trim()) void act({ action: "send", request_id: crypto.randomUUID(), text: draft, collaboration, skill_id: skillId }); }}>
       <label className="sr-only" htmlFor="office-task-prompt">Task instruction</label>
-      <textarea id="office-task-prompt" rows={2} placeholder="Ask Codex to work on something…" value={draft} maxLength={snapshot?.max_prompt_chars ?? 8000} onChange={event => setDraft(event.target.value)} disabled={pending || !snapshot} />
+      <Textarea ref={prompt} id="office-task-prompt" rows={8} placeholder="Ask Codex to work on something…" value={draft} maxLength={snapshot?.max_prompt_chars ?? 8000} onChange={event => setDraft(event.target.value)} disabled={pending || !snapshot} />
       <div className="office-direct-actions"><button type="submit" disabled={pending || busy || !snapshot || snapshot.status === "error" || !draft.trim() || !skillId}><Send size={15} />{pending ? "Sending…" : "Send task"}</button></div>
     </form>}
     <div className="office-direct-bottom"><span>{snapshot?.activity ?? "Reading task service…"}{snapshot?.status === "interrupted" ? "" : busy ? " · Closing this tab keeps work running." : " · Live conversation; task results saved in private history."}</span><button type="button" className="office-direct-stop" disabled={pending || !busy || snapshot?.status === "stopping"} onClick={() => void act({ action: "stop", request_id: crypto.randomUUID() })}><Square size={12} />Stop task</button></div>

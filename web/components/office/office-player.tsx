@@ -3,16 +3,17 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type RefObject } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Quaternion, Vector3, type Group, type PerspectiveCamera as Camera } from "three";
-import { advancePlayer, boomClearance, createPlayer, officeParams, thirdPersonPosition, walkWorld, type OfficeView, type PlayerPose } from "@/lib/office-navigation";
+import { advancePlayer, boomClearance, createPlayer, officeParams, thirdPersonPosition, walkWorld, type OfficeView, type PlayerPose, type WalkWorld } from "@/lib/office-navigation";
 import { clamp, joystick, STANDARD, stepBoom } from "@/lib/scene-standard.mjs";
 
 const movement = new Set(["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "ShiftLeft", "ShiftRight"]);
 const overviewKeys = new Set(["KeyW", "KeyA", "KeyS", "KeyD", "ShiftLeft", "ShiftRight"]);
 const editing = (target: EventTarget | null) => target instanceof HTMLElement && !!target.closest("input,textarea,select,button,a,[contenteditable=true],[role=combobox]");
-export function useOfficePlayer() {
+export function useOfficePlayer(spawn = createPlayer()) {
   const [view, setView] = useState<OfficeView>("overview");
   const [entered, setEntered] = useState(false);
-  const player = useRef(createPlayer());
+  const player = useRef({ ...spawn });
+  const initialSpawn = useRef({ ...spawn });
   const keys = useRef(new Set<string>());
   const stick = useRef({ forward: 0, side: 0 });
   const boomTarget = useRef<number>(officeParams.boom);
@@ -22,12 +23,12 @@ export function useOfficePlayer() {
   const root = useRef<HTMLDivElement>(null);
   const drag = useRef<{ id: number; x: number; y: number } | null>(null);
   function clear() { stick.current = { forward: 0, side: 0 }; keys.current.clear(); player.current.moving = false; drag.current = null; }
-  function reset() { clear(); boomTarget.current = officeParams.boom; Object.assign(player.current, createPlayer()); root.current?.focus({ preventScroll: true }); }
+  function reset() { clear(); boomTarget.current = officeParams.boom; Object.assign(player.current, initialSpawn.current); root.current?.focus({ preventScroll: true }); }
   function changeView(next: OfficeView) { clear(); if (next !== "overview") setEntered(true); setView(next); }
   useEffect(() => {
     const clearInput = () => { stick.current = { forward: 0, side: 0 }; keys.current.clear(); player.current.moving = false; drag.current = null; };
-    window.addEventListener("blur", clearInput); document.addEventListener("visibilitychange", clearInput);
-    return () => { clearInput(); window.removeEventListener("blur", clearInput); document.removeEventListener("visibilitychange", clearInput); };
+    window.addEventListener("blur", clearInput); document.addEventListener("visibilitychange", clearInput); document.addEventListener("fullscreenchange", clearInput);
+    return () => { clearInput(); window.removeEventListener("blur", clearInput); document.removeEventListener("visibilitychange", clearInput); document.removeEventListener("fullscreenchange", clearInput); };
   }, []);
   useEffect(() => { if (entered) root.current?.focus({ preventScroll: true }); }, [view, entered]);
   function keyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -71,8 +72,8 @@ export function useOfficePlayer() {
     reset };
 }
 export type OfficePlayerControls = ReturnType<typeof useOfficePlayer>;
-export function PlayerCamera({ player, keys, controls, view, count, visible }: { player: RefObject<PlayerPose>; keys: RefObject<Set<string>>; controls: OfficePlayerControls; view: "first" | "third"; count: number; visible: boolean }) {
-  const world = useMemo(() => walkWorld(count), [count]);
+export function PlayerCamera({ player, keys, controls, view, count, visible, world: providedWorld }: { player: RefObject<PlayerPose>; keys: RefObject<Set<string>>; controls: OfficePlayerControls; view: "first" | "third"; count: number; visible: boolean; world?: WalkWorld }) {
+  const world = useMemo(() => providedWorld ?? walkWorld(count), [count, providedWorld]);
   const scene = useThree(state => state.scene);
   const host = useRef<Group | null>(null);
   useEffect(() => () => { if (host.current) host.current.visible = true; }, []);
@@ -112,8 +113,8 @@ export function PlayerCamera({ player, keys, controls, view, count, visible }: {
   return null;
 }
 /** God view: the same avatar walks from the overview, with input relative to the screen and the camera left alone. */
-export function OverviewPlayer({ controls, count }: { controls: OfficePlayerControls; count: number }) {
-  const world = useMemo(() => walkWorld(count), [count]);
+export function OverviewPlayer({ controls, count, world: providedWorld }: { controls: OfficePlayerControls; count: number; world?: WalkWorld }) {
+  const world = useMemo(() => providedWorld ?? walkWorld(count), [count, providedWorld]);
   const invalidate = useThree(state => state.invalidate);
   useEffect(() => { controls.wake.current = invalidate; return () => { controls.wake.current = () => {}; }; }, [controls, invalidate]);
   useFrame(({ camera, controls: orbit }, delta) => {
@@ -181,7 +182,7 @@ export function InteractWatch({ controls, ids, onSelect, targets = [] }: { contr
   });
   return null;
 }
-export function PlayerHud({ controls }: { controls: OfficePlayerControls }) {
+export function PlayerHud({ controls, interactionHint = "select a nearby colleague", resetLabel = "Back to aisle", run = true }: { controls: OfficePlayerControls; interactionHint?: string; resetLabel?: string; run?: boolean }) {
   const active = controls.view !== "overview";
   function touch(code: string, label: string, content: string) {
     return <button type="button" aria-label={label} onPointerDown={event => { event.preventDefault(); controls.keys.current.add(code); if (event.currentTarget.hasPointerCapture(event.pointerId) === false) { try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* Synthetic or cancelled touch. */ } } }} onPointerUp={() => controls.keys.current.delete(code)} onPointerCancel={() => controls.keys.current.delete(code)} onLostPointerCapture={() => controls.keys.current.delete(code)} onKeyDown={event => { if (event.code === "Space" || event.code === "Enter") { event.preventDefault(); controls.keys.current.add(code); } }} onKeyUp={() => controls.keys.current.delete(code)} onBlur={() => controls.keys.current.delete(code)}>{content}</button>;
@@ -197,15 +198,15 @@ export function PlayerHud({ controls }: { controls: OfficePlayerControls }) {
   }
   function release() { setKnob({ x: 0, y: 0 }); controls.stick.current = { forward: 0, side: 0 }; }
   return <>
-    {!active && <p className="office-overview-hint">W A S D walk kelvin.ai · Shift to run</p>}
+    {!active && <p className="office-overview-hint">W A S D walk kelvin.ai{run ? " · Shift to run" : ""}</p>}
     <div className="office-player-views" aria-label="Camera perspective">
       {([ ["overview", "Overview"], ["first", "First person"], ["third", "Third person"] ] as const).map(([value, label]) => <button type="button" key={value} aria-label={label} aria-pressed={controls.view === value} onClick={() => controls.changeView(value)}>{label}</button>)}
     </div>
     {active && <>
-      <div className="office-player-help"><strong>Controlling kelvin.ai</strong><span className="office-player-desktop-hint">W A S D to move · A / D swing the camera behind you · ← → to turn · Shift to run · Drag to look · Scroll for distance · F to select a nearby colleague · V to switch · R to reset · Esc for overview</span><span className="office-player-touch-hint">Drag to look · Use the joystick to move</span><label className="office-player-fov">Field of view <input type="range" min={STANDARD.fovRange[0]} max={STANDARD.fovRange[1]} step={1} value={controls.fov} onChange={event => controls.setFov(Number(event.target.value))} aria-label="Field of view" /> <span>{controls.fov}°</span></label><button type="button" onClick={controls.reset} aria-label="Reset player position">Back to aisle</button></div>
+      <div className="office-player-help"><strong>Controlling kelvin.ai</strong><span className="office-player-desktop-hint">W A S D to move · A / D swing the camera behind you · ← → to turn{run ? " · Shift to run" : ""} · Drag to look · Scroll for distance · F to {interactionHint} · V to switch · R to reset · Esc for overview</span><span className="office-player-touch-hint">Drag to look · Use the joystick to move</span><label className="office-player-fov">Field of view <input type="range" min={STANDARD.fovRange[0]} max={STANDARD.fovRange[1]} step={1} value={controls.fov} onChange={event => controls.setFov(Number(event.target.value))} aria-label="Field of view" /> <span>{controls.fov}°</span></label><button type="button" onClick={controls.reset} aria-label="Reset player position">{resetLabel}</button></div>
       <div className="office-player-pad" aria-label="Movement joystick" role="group">
         <div className="office-joystick" data-office-joystick onPointerDown={event => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); moveStick(event); }} onPointerMove={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) moveStick(event); }} onPointerUp={release} onPointerCancel={release} onLostPointerCapture={release}><span className="office-joystick-knob" style={{ transform: `translate(${knob.x}px, ${knob.y}px)` }} /></div>
-        {touch("ShiftLeft", "Run", "Run")}
+        {run && touch("ShiftLeft", "Run", "Run")}
       </div>
     </>}
   </>;

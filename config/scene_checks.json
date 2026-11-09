@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "scenes": {
+    "office": {
+      "route": "/office?mode=demo&scenario=team",
+      "wait_for": [
+        "canvas",
+        ".radar-canvas-shell[data-assets-ready=\"true\"]",
+        ".radar-label"
+      ]
+    },
+    "characters": {
+      "route": "/office/characters",
+      "wait_for": [
+        "canvas",
+        ".office-character-captions h2"
+      ]
+    },
+    "home": {
+      "route": "/home-design",
+      "wait_for": [
+        "iframe >> [data-ready=\"true\"]"
+      ]
+    }
+  },
+  "full_suites": [
+    "office-radar",
+    "office-player",
+    "office-camera",
+    "office-courtyard",
+    "office-team",
+    "office-characters",
+    "home-interactions",
+    "office-departments",
+    "content-lab"
+  ],
+  "rules": [
+    {
+      "scope": "shared-character",
+      "patterns": [
+        "web/lib/character-*",
+        "web/lib/kenney-mini-data.mjs",
+        "web/lib/office-character*",
+        "web/components/office/office-character*",
+        "web/public/office-materials/kenney-mini/*",
+        "scripts/build_kenney_characters.py"
+      ],
+      "suites": "all"
+    },
+    {
+      "scope": "shared-navigation",
+      "patterns": [
+        "web/lib/scene-*",
+        "web/lib/office-navigation*",
+        "web/components/office/office-player*",
+        "web/components/office/office-scene*",
+        "web/components/home-design/*"
+      ],
+      "suites": "all"
+    },
+    {
+      "scope": "office-props",
+      "patterns": [
+        "web/lib/office-assets.json",
+        "web/components/office/kenney-office-assets.tsx",
+        "web/public/office-materials/*"
+      ],
+      "suites": [
+        "office-radar",
+        "office-departments"
+      ]
+    },
+    {
+      "scope": "cast-preview",
+      "patterns": [
+        "web/components/office/character-preview*",
+        "web/app/office/characters/*"
+      ],
+      "suites": [
+        "office-characters"
+      ]
+    },
+    {
+      "scope": "home",
+      "patterns": [
+        "web/app/home-design/*"
+      ],
+      "suites": [
+        "home-interactions"
+      ]
+    },
+    {
+      "scope": "office-town",
+      "patterns": [
+        "web/components/office/finance-department.tsx",
+        "web/lib/office-departments.ts",
+        "web/lib/office-finance.ts",
+        "web/app/office/world/*",
+        "web/app/office/finance-department.css",
+        "web/components/office/town-landscape.tsx"
+      ],
+      "suites": [
+        "office-departments",
+        "office-radar",
+        "finance-workbench"
+      ]
+    },
+    {
+      "scope": "content-lab",
+      "patterns": [
+        "web/components/office/content-lab*",
+        "web/app/office/content-lab.css",
+        "web/lib/content-lab*",
+        "web/app/api/office/content-lab/*"
+      ],
+      "suites": [
+        "content-lab",
+        "office-departments"
+      ]
+    }
+  ],
+  "conservative_patterns": [
+    "web/*",
+    "config/scene_checks.json"
+  ],
+  "snapshot_roots": [
+    "web/components/office",
+    "web/components/home-design",
+    "web/lib",
+    "web/app/office",
+    "web/app/home-design",
+    "web/public/office-materials",
+    "web/app/globals.css",
+    "config/scene_checks.json",
+    "scripts/build_kenney_characters.py"
+  ]
+}

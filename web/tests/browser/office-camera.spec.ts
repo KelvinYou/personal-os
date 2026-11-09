@@ -12,7 +12,7 @@ test("camera: perspective overview, eased travel, FOV and F interaction", async 
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
 
-  await page.goto("/office?mode=demo&scenario=team");
+  await page.goto("/office?scene=town&mode=demo&scenario=team");
   await page.locator("canvas").waitFor();
   await page.locator(".office-host-label").waitFor();
   const overview = await shot(page, testInfo, "00-overview-perspective");

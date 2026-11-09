@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { test } from "vitest";
 import { STANDARD, sceneParams, approach, smoothAngle, joystick, stepBoom, recenterYaw } from "@/lib/scene-standard.mjs";
+import { townPalette, townSky, townSkyAnchors } from "@/lib/office-palette";
 
 const doc = fs.readFileSync(path.resolve(import.meta.dirname, "../../docs/design/3d-scene-standard.md"), "utf8");
 test('documented numbers match the shared module',()=>{
@@ -39,4 +40,13 @@ test('chase camera swings behind sideways and forward travel, never toward the c
  assert.equal(recenterYaw(0,1.5,.016,{forward:1,side:1},.3),0,'recent look input blocks it');
  assert.ok(Math.abs(recenterYaw(0,3,1,{forward:0,side:1},idle))<=1.8+1e-9,'rate is capped');
  assert.ok(recenterYaw(3,-3,.016,{forward:1,side:0},idle)>3,'takes the short way round');
+});
+test('Office town palette in §4 matches web/lib/office-palette.ts both ways',()=>{
+ const start=doc.indexOf('### Office town parameters'),end=doc.indexOf('## 5.',start);assert.ok(start>0&&end>start,'§4 Office town section');
+ const section=doc.slice(start,end);
+ const documented=new Set((section.match(/#[0-9a-f]{6}\b/gi)??[]).map(h=>h.toLowerCase()));
+ const coded=new Set([...Object.values(townPalette).flat(),townSky,...townSkyAnchors.map(a=>a.color)].map(h=>h.toLowerCase()));
+ for(const hex of coded)assert.ok(documented.has(hex),hex+' is in office-palette.ts but not in §4');
+ for(const hex of documented)assert.ok(coded.has(hex),hex+' is in §4 but not in office-palette.ts');
+ for(const {at,color} of townSkyAnchors)assert.match(section,new RegExp(at+'[^`]*`'+color+'`'),'sky anchor '+at+' → '+color);
 });

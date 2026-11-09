@@ -74,7 +74,7 @@ test("workbench: answer, review, artifact, history, reflow, source failure", asy
 
   const button = (name: string) => page.getByRole("button", { name, exact: true });
 
-  await page.goto("/office");
+  await page.goto("/office?scene=town");
   await expect(button("Answer question")).toBeVisible();
   await expect(page.getByRole("radio", { name: "Solo", exact: true })).toBeChecked();
 

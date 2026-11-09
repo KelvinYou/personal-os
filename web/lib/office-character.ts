@@ -21,6 +21,8 @@ export function characterProfile(id: string) {
 export type WardrobeFamily = 'athletic' | 'creative' | 'study' | 'business' | 'travel' | 'host' | 'casual';
 export type CharacterWardrobe = {
   family: WardrobeFamily;
+  /** Official Kenney Mini Characters asset; legacy garment fields are selection metadata only. */
+  asset: string;
   outfit: 'athletic' | 'hoodie' | 'overshirt' | 'cardigan' | 'knit' | 'blazer' | 'utility';
   label: string;
   shirt: string; inner: string; pants: string; accent: string; shoe: string;
@@ -56,9 +58,13 @@ export function characterWardrobe(id: string, skillId?: string, host = false): C
     ? { family: 'host', outfit: 'overshirt', shirt: '#53657d', accent: '#c5a777', accessory: 'watch' }
     : (skillId && Object.hasOwn(roleStyles, skillId) ? roleStyles[skillId] : undefined) ?? { family: 'casual', outfit: 'knit', shirt: identity.shirt, accent: '#b5c4ae', accessory: 'none' };
   const athletic = style.family === 'athletic';
-  const labels: Record<WardrobeFamily, string> = { athletic: 'Training top · shorts · trainers', creative: 'Creative casual · layered workwear', study: 'Soft knitwear · quiet study', business: 'Business casual · tailored jacket', travel: 'Utility overshirt · compact backpack', host: 'Studio overshirt · everyday sneakers', casual: 'Casual studio clothing' };
+  const labels: Record<WardrobeFamily, string> = { athletic: 'Mini Characters · active', creative: 'Mini Characters · makers', study: 'Mini Characters · thinkers', business: 'Mini Characters · analysts', travel: 'Mini Characters · explorers', host: 'Mini Characters · host', casual: 'Mini Characters · teammates' };
+  const variant: Record<WardrobeFamily, string> = { athletic: 'g', creative: 'b', study: 'c', business: 'd', travel: 'e', host: 'a', casual: String.fromCharCode(97 + identity.style % 6) };
+  const feminine = identity.feminine && !host;
+  const letter = feminine && variant[style.family] === 'g' ? 'b' : variant[style.family];
   return {
     ...style, label: labels[style.family],
+    asset: `character-${feminine ? 'female' : 'male'}-${letter}`,
     inner: athletic ? '#e1ead4' : '#e2dccb',
     pants: athletic ? '#3f5049' : ({ business: '#4e555d', travel: '#6b7358', study: '#8b8270', creative: '#5d6a73', casual: '#7a7468', host: '#bda985' } as Record<string, string>)[style.family] ?? '#656c75',
     bottom: athletic ? 'shorts' : 'trousers', shoes: athletic ? 'trainers' : style.family === 'business' ? 'loafers' : 'sneakers',

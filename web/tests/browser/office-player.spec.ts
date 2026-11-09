@@ -14,7 +14,7 @@ test("player: first/third person, walking, focus guard and touch joystick", asyn
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
 
-  await page.goto("/office?mode=demo&scenario=team");
+  await page.goto("/office?scene=town&mode=demo&scenario=team");
   await page.locator("canvas").waitFor();
   await page.locator(".office-host-label").waitFor();
   await viewportShot(page, testInfo, "00-overview-baseline.png");

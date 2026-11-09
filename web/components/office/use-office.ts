@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { parseOfficeSnapshot, type OfficeSnapshot } from "@/lib/office-contract";
 
-export function useOffice(enabled: boolean) {
+/**
+ * Polls the local observation API. Hidden tabs stop polling unless `background`
+ * is set (opt-in alerts): then polling continues so a newly waiting session can
+ * still raise a notification. Browsers throttle hidden-tab timers (Chrome: at
+ * most once per minute after ~5 hidden minutes), which bounds alert latency.
+ */
+export function useOffice(enabled: boolean, background = false) {
   const [snapshot, setSnapshot] = useState<OfficeSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -17,7 +23,7 @@ export function useOffice(enabled: boolean) {
     let interval: number | undefined;
     let generation = 0;
     async function refresh() {
-      if (disposed || document.hidden) return;
+      if (disposed || (document.hidden && !background)) return;
       const current = ++generation;
       controller?.abort();
       const requestController = new AbortController();
@@ -41,11 +47,12 @@ export function useOffice(enabled: boolean) {
       }
     }
     const visibility = () => {
+      if (document.hidden && background) return; // keep the existing cadence for alerts
       clearTimeout(timer);
       if (document.hidden) { generation++; controller?.abort(); setLoading(false); } else void refresh();
     };
     void refresh(); document.addEventListener("visibilitychange", visibility);
     return () => { disposed = true; clearTimeout(timer); controller?.abort(); document.removeEventListener("visibilitychange", visibility); };
-  }, [enabled, attempt]);
+  }, [enabled, background, attempt]);
   return { snapshot, error, loading, retry };
 }

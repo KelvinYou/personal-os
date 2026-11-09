@@ -1,0 +1,69 @@
+{
+  "author": "Kenney",
+  "pack": "modular-space-kit",
+  "files": [
+    {
+      "file": "License.txt",
+      "source_url": "https://kenney.nl/assets/modular-space-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d6f64756c61722d73706163652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 706,
+      "sha256": "38d94a4c79768cf5dc65e55b85f2dedd9f4bad35e325db1d0e5898fc1b7c5bbb",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "Textures/colormap.png",
+      "source_url": "https://kenney.nl/assets/modular-space-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d6f64756c61722d73706163652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 33547,
+      "sha256": "5aa7d186416e85310d99308c8e5510ededda181f3354ba9f4887cd56273f2b1e",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "cables.glb",
+      "source_url": "https://kenney.nl/assets/modular-space-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d6f64756c61722d73706163652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 42612,
+      "sha256": "f689e942aad71167bde86c559061aea03537bfb07f2851aeac9fb538fec72526",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "gate.glb",
+      "source_url": "https://kenney.nl/assets/modular-space-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d6f64756c61722d73706163652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 54556,
+      "sha256": "389440050ca22abb309ebbf9f3b3872d434132614b29430b66ea27b5b8f762fc",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "template-floor.glb",
+      "source_url": "https://kenney.nl/assets/modular-space-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d6f64756c61722d73706163652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 2092,
+      "sha256": "a8d73df13986aff68927a872f46b121c13a1b1db0877c512e4415b02faced3e7",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "template-wall-half.glb",
+      "source_url": "https://kenney.nl/assets/modular-space-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d6f64756c61722d73706163652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 10440,
+      "sha256": "07cbcb4603635489698f30b66f748e7d13fb19d2303dc6468d787b73bf14976f",
+      "verified_at": "2026-11-08"
+    },
+    {
+      "file": "template-wall.glb",
+      "source_url": "https://kenney.nl/assets/modular-space-kit",
+      "download_url": "https://kenney.nl/download-link/6173736574732f6d6f64756c61722d73706163652d6b6974",
+      "license": "CC0-1.0",
+      "bytes": 38472,
+      "sha256": "d12cfc5bebbabf8f71f5f8898548bd0af4dcaafa7edd386c9de5dacf280ade5f",
+      "verified_at": "2026-11-08"
+    }
+  ]
+}

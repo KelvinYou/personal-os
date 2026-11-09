@@ -1,5 +1,7 @@
 # Office player controls
 
+> **Superseded / frozen (2026-11-08):** the office direction is owned by [the attention radar](office-attention-radar.md). This view remains at `/office?scene=town`; bug fixes only.
+
 [Status: OK] Implemented and locally verified · 2026-11-03
 
 ## Scope and acceptance

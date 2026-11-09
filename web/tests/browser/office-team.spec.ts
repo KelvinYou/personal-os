@@ -45,7 +45,7 @@ test("team task: dispatch once, reload, results, keyboard, reflow", async ({ pag
     await route.fulfill({ json: snapshot });
   });
 
-  await page.goto("/office");
+  await page.goto("/office?scene=town");
   await expect(page.getByRole("radio", { name: "Team · two subagents" })).toBeVisible();
 
   await test.step("name labels toggle by keyboard", async () => {

@@ -1,8 +1,8 @@
 # 3D scene standard
 
-[Status: OK] Active shared standard · Applies to `/office`, `/office/characters`, `/home-design` and any new scene · 2026-11-04
+[Status: OK] Active shared standard · Applies to `/office` (radar and classic town), `/office/characters`, `/home-design` and any new scene · 2026-11-08
 
-This is the one standard for real-time 3D in Personal-OS. The office and the home follow the same rules for units, colour, lighting, materials, movement, cameras, view switching and acceptance. A scene may declare only the parameters in §4: scale factor, palette, available views and spawn points. Everything else comes from this document. If a rule does not fit a scene, change the rule here first; do not add a local exception.
+This is the one standard for real-time 3D in Personal-OS. The office and the home follow the same rules for units, colour, lighting, materials, movement, cameras, view switching and acceptance. A scene may declare only the parameters in §4: scale factor, palette, available views, spawn points, and a fixed walking speed that replaces walk/run. Everything else comes from this document. If a rule does not fit a scene, change the rule here first; do not add a local exception.
 
 | Question | Owner |
 |---|---|
@@ -84,7 +84,7 @@ Keys are captured only while the scene has focus and never while focus is in a f
 ### Locomotion feel
 
 | Parameter | Value (× `worldScale`) | Note |
-|---|---|---|
+|---|---|---|---|
 | Walk speed | 1.8 m/s | Between real walking (about 1.4) and Unity's 2.0; indoor scale |
 | Run speed | 3.6 m/s | Indoor; Unity's sprint of 5.3 is too fast for rooms |
 | Acceleration | `v += (target − v) · (1 − e^(−10·dt))` | Rate 10 ≈ Unity `SpeedChangeRate`; about 0.2 s to full speed and to a stop |
@@ -99,7 +99,7 @@ Keys are captured only while the scene has focus and never while focus is in a f
 
 ## 3. Cameras and view switching
 
-People: every scene draws a person with `web/lib/character-builder.mjs`, which owns the geometry. Scenes only place and animate the figure, and the office's `office-character.ts` owns identity and wardrobe. The office scales figures by `worldScale` (1.37), so a real-scale scene scales the figure by `1 / 1.37`. Sitting while in third person switches to first person, and standing up restores the previous view.
+People use original **Kenney Mini Characters 2.0** (CC0). Preserve the original silhouette, face, hair and palette; do not add anatomical fingers, realistic irises, fine fabric textures or procedural hair spikes. `scripts/build_kenney_characters.py` derives the synchronous rigid geometry and official idle/sit poses from locally bundled GLBs. `office-character.ts` owns the asset selection, and legacy garment metadata does not recolour the asset. Every scene draws a person with `web/lib/character-builder.mjs`, which owns the geometry. Scenes only place and animate the figure, and the office's `office-character.ts` owns identity and wardrobe. The office scales figures by `worldScale` (1.37), so a real-scale scene scales the figure by `1 / 1.37`. Sitting while in third person switches to first person, and standing up restores the previous view.
 
 ### Look input
 
@@ -139,24 +139,64 @@ Movement input remains live during a transition, and the transition targets the 
 
 ## 4. Per-scene parameters (the only allowed differences)
 
-| Parameter | Office · garden town | Home · Walnut House |
+| Parameter | Office · garden town (frozen) | Office · radar | Home · Walnut House |
 |---|---|---|
-| `worldScale` | 1.37 (stylized; desk top 1.22) | 1.0 (real-world estimates) |
-| Views | Overview, first, third | Overview, first, third |
-| Interact targets | People, workstations | Doors, seats |
-| Surface detail | Flat colours, light canvas textures | PBR maps and HDR environment |
-| Background | `#f0ede4` | `#f8f6f0` overview, `#e3e6e0` walking |
-| Neutrals | cream `#ede6d6`, wall `#e8ddc7` | wall `#f1e9db`, linen `#eee5d1` |
-| Wood | walnut `#b98a57`, light `#caa679` | walnut `#a58460`, oak `#c5b094` |
-| Accent | sage `#929b7e`, leaves `#71864b` / `#829559` / `#536d41` | olive `#788064`, brass `#a58c58` |
-| Dark / metal | `#464d49` | `#323533`, metal `#b4a083` |
-| Ground | grass tint `#a6ab80` (soft olive, large-scale blotches), kerb `#cdbf9f`, paving `#e9dcc3`, floor `#f3e8d3` over canvas wood `#dcc4a2` | n/a |
+| `worldScale` | 1.37 (stylized; desk top 1.22) | 1.37 (same figures and furniture) | 1.0 (real-world estimates) |
+| Views | Overview, first, third | Overview only (no walk; position is status) | Overview, first, third |
+| Interact targets | People, workstations | People (click / label / queue) | Doors, seats |
+| Surface detail | Flat colours, light canvas textures | Original local Kenney Modular Space Kit + Furniture Kit models and flat palette maps | PBR maps and HDR environment |
+| Background | `#f0ede4` | Mini charcoal `#484653` | `#f8f6f0` overview, `#e3e6e0` walking |
+| Neutrals | cream `#ede6d6`, wall `#e8ddc7` | Original Modular Space Kit / Furniture Kit colours; overlay borders `#7b80ad` / `#b9bfd7`, pads `#a5b3ce` / `#8c91ad` | wall `#f1e9db`, linen `#eee5d1` |
+| Wood | walnut `#b98a57`, light `#caa679` | same | walnut `#a58460`, oak `#c5b094` |
+| Accent | sage `#929b7e`, leaves `#71864b` / `#829559` / `#536d41` | needs-you coral `#ef925b` (pad `#edbd8d`), review mint `#64bfa7` (pad `#9ad5c1`) | olive `#788064`, brass `#a58c58` |
+| Dark / metal | `#464d49` | `#464d49` | `#323533`, metal `#b4a083` |
+| Ground | grass tint `#a6ab80` (soft olive, large-scale blotches), kerb `#cdbf9f`, paving `#e9dcc3`, floor `#f3e8d3` over canvas wood `#dcc4a2` | Original instanced Modular Space Kit floor tiles; no procedural grain or normal maps | n/a |
 
-Both palettes stay warm, low-saturation and matte, so a prop can move between scenes by rescaling and re-tinting.
+The radar walks a person only when the observed zone or tool changes, at the standard walk speed × `worldScale`, turning with the 0.12 s avatar smoothing; reduced motion cuts. Materials remain matte. The radar uses original Kenney Modular Space Kit wall, gate and floor modules plus Furniture Kit props, retaining their palette maps and material colours. Functional attention overlays add mint and coral accents. The modular shell keeps original-height modules in an open two-wall diorama; floor modules are uniformly scaled to a 2-unit grid; furniture is uniformly scaled to the existing desk height of 1.23. This is a project interpretation of the official Mini Characters / Mini Market / Mini Arcade reference images, not a published Kenney specification. Home architecture retains its Walnut House palette; the same original characters appear in both scenes.
+
+### Office town parameters
+
+`/office` is one flat town: `worldScale = 1.37`; views Overview, First person and
+Third person (only kelvin.ai walks; Lab people keep the radar rule that position is
+status). Buildings use the *Office · radar* materials (Modular Space Kit floor and
+walls, Furniture Kit props). The Lab keeps the radar room at the origin (26 × 20);
+Finance (18 × 20) sits at `x = 34` across a paved plaza. Content Lab (18 × 20) sits
+at `x = -30`, with four workstations and an avenue connection. Combined town framing
+includes all three buildings; walk/pan ground is centred at `(1, 3)` with extent
+108 × 50. Existing Lab/Finance coordinates and the plaza spawn remain unchanged.
+Each building has only a
+back wall row (4-unit modules, a half module for an odd edge) and no side walls.
+Town palette: sky/background and fog `#dfe8e2`, grass `#9fb27a`, soil `#6f5a45`,
+paving `#e3d8c2`, kerb `#cbbd9e`, trunk `#8a6a4a`, leaves `#71864b` / `#829559` /
+`#5f7a45`, pine `#536d41` / `#4d6a48` / `#5d7a4c`, flowers coral `#ef925b`, yellow
+`#f2c94c`, white `#f4f1e6`, pink `#d97a9b`, lamp `#464d49` with a `#fff0c8` lantern.
+Planned time-of-day sky (not rendered yet; [immersive world](office-immersive-world.md)
+phase 3 replaces the single sky/fog colour), local time → sky/fog: 00:00 and 06:00
+`#1c2740`, 07:30 `#cfe3ee`, 12:00 `#a9d2ea`, 19:15 `#e8b996`, 20:15 `#1c2740`,
+interpolated including across midnight. Code owner: `web/lib/office-palette.ts`; every hex
+in this section must match it (`web/tests/scene-standard.test.ts`).
+Render budget: the drawing buffer stays within 3.0 megapixels (provisional until the immersive
+phase 1 baseline); effective DPR is min(device, 1.75, √(budget ÷ CSS pixels)), floor 0.5, so
+fullscreen trades 3D sharpness for bounded GPU work while DOM text stays native
+(`web/lib/office-render.ts`). Resizing (fullscreen entry/exit) never reframes a camera the user
+orbited, zoomed or focused; only load and Reset frame the town. In native fullscreen, Esc follows
+§2 only where the browser delivers it (Chromium keyboard lock: a held Esc exits); otherwise the
+browser exits fullscreen and the on-screen `Overview` / `Exit fullscreen` controls cover the rest.
+Greenery is flat-shaded low-poly primitives placed by a seeded LCG. Spawn: plaza
+`(19, 5.6)` facing −Z. Default framing is the whole town with a wider margin;
+the overview camera is centred on kelvin.ai and follows the walk, keeping the user's
+orbit and zoom (focusing a person pauses the follow until kelvin.ai moves). Pan keeps
+the orbit target inside the town ground rectangle (`GROUND`), shifting camera and target
+together at the edge, so the view never leaves the town; it never
+frames a single building (department changes outline the selected building on the
+ground instead). Walking speed is fixed at the standard run speed (3.6 m/s × 1.37);
+there is no run: Shift does nothing and the touch Run button is absent. Stride rate
+follows actual speed.
+Interaction targets are people (Lab) and desks (Finance). Classic town remains frozen.
 
 ## 5. Acceptance for each 3D change
 
-1. Run `make test` and `make test-browser` (specs in `web/tests/browser/`: `office-player`, `office-camera`, `office-courtyard`, `office-team`, `office-characters`, `home-interactions`). Pure navigation logic has unit tests for acceleration, diagonal normalisation, the `dt` clamp, collision sliding and boom collision.
+1. During visual iteration use the warm preview and targeted checks described in [the world construction guide](3d-world-workflow.md). At final acceptance run `make test`, `make design-check` and every browser suite selected by `config/scene_checks.json` via `make scene-plan` / `make scene-check`. Static office asset/prop changes require `office-radar`; shared character or navigation changes retain all seven scene suites. Mixed camera/room files and unknown scene code conservatively select all suites. Review the changed-file list; broaden it for any extra affected consumer. `make test-browser` remains the full release/integration sweep. Preview alone is never final acceptance. The town specs open `/office?scene=town`. Pure navigation logic has unit tests for acceleration, diagonal normalisation, the `dt` clamp, collision sliding and boom collision.
 2. Take fixed-camera screenshots before and after. Check new assets with a gray override and with neutral, warm and side lighting.
 3. Feel check for navigation changes: walk a full loop, bump into a wall, run, toggle V mid-stride, and press Esc mid-stride, in both scenes. Record anything that stutters, pops or clips.
 4. Check that the layout holds at 1440, 390 and 320 px, with touch emulation. Expect no console errors and no external requests. Check reduced motion.

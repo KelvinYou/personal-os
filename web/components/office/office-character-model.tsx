@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import type { Group } from "three";
 import type { RoomWorker as OfficeSession } from "@/lib/office-room";
-import type { PlayerPose } from "@/lib/office-navigation";
+import { officeParams, type PlayerPose } from "@/lib/office-navigation";
 import { characterProfile, characterWardrobe } from "@/lib/office-character";
 import { buildCharacter } from "@/lib/character-builder.mjs";
 import { deskAngle, idlePose, type IdleMode, type V3 } from "@/lib/office-life";
@@ -31,7 +31,8 @@ export function OfficePerson({ session, selected, animate, onSelect, at, index =
   useEffect(() => () => built.dispose(), [built]);
   useEffect(() => () => { document.body.style.cursor = ""; }, []);
   useFrame(({ clock }, delta) => {
-    if (animate || player?.moving) walkTime.current += delta;
+    // A walking player's stride rate follows its actual speed (standard §2), so faster walks do not slide.
+    if (animate || player?.moving) walkTime.current += delta * (player?.moving ? Math.max(.6, Math.hypot(player.vx, player.vz) / officeParams.walkSpeed) : 1);
     const pose = preview ? { at, angle: 0, mode: "studying" as IdleMode, standing: preview === "standing", stride: 0 } : player ? { at: [player.x, .82, player.z] as V3, angle: player.facing + Math.PI, mode: (player.moving ? "walking" : "studying") as IdleMode, standing: true, stride: player.moving ? 1 : 0 } : idle ? idlePose(index, walkTime.current) : { at, angle: Math.PI + deskAngle(index) + .15, mode: "studying" as IdleMode, standing: false, stride: 0 };
     if (routineRef.current.mode !== pose.mode || routineRef.current.standing !== pose.standing) { routineRef.current = { mode: pose.mode, standing: pose.standing }; setRoutine(routineRef.current); }
     if (body.current) {

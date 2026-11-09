@@ -20,14 +20,14 @@ test("Python observation fixture is accepted without changing lifecycle meanings
   assert.equal(value.sessions[0].activity_label, "Running a command");
 });
 test("schema drift, wrong source, duplicate identity and invalid states fail visibly", () => {
-  const mutations: Array<(v: any) => unknown> = [v => v.schema_version = 2, v => v.sessions[0].state = "success", v => v.source = "demo", v => v.sessions.push(v.sessions[0]), v => v.sessions[0].last_event_at = "yesterday", v => delete v.sessions[0].coverage, v => v.sessions[0].raw_prompt = "should not cross the boundary"];
+  const mutations: Array<(v: any) => unknown> = [v => v.schema_version = 1, v => v.sessions[0].state = "success", v => v.sessions[0].attention = "later", v => v.sessions[0].segments.push({ at: "x", state: "working", attention: "working", tool: null }), v => delete v.source_coverage, v => v.source = "demo", v => v.sessions.push(v.sessions[0]), v => v.sessions[0].last_event_at = "yesterday", v => delete v.sessions[0].coverage, v => v.sessions[0].raw_prompt = "should not cross the boundary"];
   for (const mutate of mutations) {
     const value = copy(); mutate(value);
     assert.throws(() => contract.parseOfficeSnapshot(value), /office_/);
   }
 });
-test("demo scenarios are isolated and include empty, partial and eight-worker cases", () => {
-  assert.equal(contract.parseOfficeSnapshot(demo.demoSnapshot("team", "working")).sessions.length, 8);
+test("demo scenarios are isolated and include empty, partial and a ten-person all-zone team", () => {
+  assert.equal(contract.parseOfficeSnapshot(demo.demoSnapshot("team", "working")).sessions.length, 10);
   assert.equal(contract.parseOfficeSnapshot(demo.demoSnapshot("empty", "working")).sessions.length, 0);
   assert.equal(contract.parseOfficeSnapshot(demo.demoSnapshot("partial", "working")).source_status, "partial");
   for (const session of demo.demoSnapshot("team", "waiting").sessions) assert.equal(session.evidence, "demo");

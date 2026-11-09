@@ -1,5 +1,7 @@
 # Skill employees — Design-Lite
 
+> **Superseded / frozen (2026-11-08):** the office direction is owned by [the attention radar](office-attention-radar.md). This view remains at `/office?scene=town`; bug fixes only.
+
 [Status: OK] Implemented contract · 2026-11-01
 
 ## 1. Context

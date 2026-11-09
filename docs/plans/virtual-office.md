@@ -4,6 +4,43 @@
 
 This document owns delivery status and verification. [The design and operating contract](../design/ai-office-monitor.md) owns source coverage, privacy, configuration and recovery. The completed project has been removed from the active ROADMAP table.
 
+## Revamp — 2026-11-08
+
+The office was re-anchored as an attention radar ([design](../design/office-attention-radar.md)): Claude Code observation, attention zones, day replay, browser alerts, `/posts` route and the weekly agent-wait metric. The garden town is frozen at `/office?scene=town`. Verification evidence: `data/runtime/ai-office/radar-evidence/` (private).
+
+## Success check and scene freeze — 2026-11-08
+
+[Status: Warning] Open until the 2026-11-16 review.
+
+The radar exists to shorten agent wait on human. Baseline is the week before it
+and its alert fixes went live (`make agent-wait DATE=2026-11-02`, measured
+2026-11-08):
+
+| Metric | Baseline 11-02 → 11-08 |
+|---|---|
+| Closed waits | 261 |
+| Median / p90 / longest | 1.2 / 23.5 / 186.1 min |
+| Total wait | 2326 min |
+| Over 10 min at 1–2 vs 3+ sessions in play | 24% vs 12% — the tail is time away, not overload |
+
+On 2026-11-16, run `make agent-wait DATE=2026-11-09` and compare p90 and total
+wait. Same day: hidden-tab alerts (radar §8) and exact Claude permission waits
+(radar §4.1). Exact waits add permission time that the heuristic previously
+left out, so a flat total with a lower p90 still counts as progress. If p90 and
+total do not fall, the radar is a display, not a tool: fix delivery (for example,
+alerts that reach you away from the desk) before adding any scene work.
+
+**Scene freeze until that review:** no new buildings, interiors, characters,
+asset kits or camera modes in `/office` or the classic town.
+Fixes to existing scenes and attention/observation work are allowed. A new
+destination still needs a recurring task that earns it ([office world](../design/office-world.md)).
+
+Owner override (2026-11-08, same day): the Lab ↔ street ↔ Finance doors were
+replaced by one flat town with Lab and Finance as departments
+([office town](../design/office-world.md)). This removes scenes rather than adding
+them; no new asset kit, building or camera mode was introduced. The freeze stands
+for everything else.
+
 ## Delivered outcome
 
 The current, already-running Codex conversation appears as a worker in `/office` without restarting it or launching its task from the web. Four actual workspace sessions were observed. The default source is live local records; synthetic scenarios are explicitly separate. There is no task execution, permission reply or hosted deployment.

@@ -1,4 +1,4 @@
-import type { OfficeSession, OfficeState } from "./office-contract";
+import type { AttentionZone, OfficeSession, OfficeState } from "./office-contract";
 import type { ExecutionAgent, ExecutionSnapshot } from "./office-execution-contract";
 
 // A view model, not a change to the strict Python observation v1 contract.
@@ -9,6 +9,9 @@ export interface RoomWorker extends Omit<OfficeSession, "evidence"> {
   standby?: boolean;
   sessions?: RoomWorker[];
 }
+// Office-owned runtime agents report status, not transcript phases. This fixed
+// mapping is the only zone rule outside Python (office-attention-radar.md §4).
+export const ownedZone: Record<OfficeState, AttentionZone> = { waiting: "needs_you", error: "needs_you", working: "working", idle: "review", completed: "review", unknown: "done" };
 export function projectRoom(observed: OfficeSession[], execution: ExecutionSnapshot | null, connected: boolean, scope: "task" | "all"): RoomWorker[] {
   const workers = new Map<string, RoomWorker>();
   if (execution?.task) for (const agent of execution.agents) {
@@ -18,6 +21,7 @@ export function projectRoom(observed: OfficeSession[], execution: ExecutionSnaps
       state, evidence: "owned_runtime", started_at: execution.task.started_at, last_event_at: agent.updated_at,
       activity_label: `${agent.role === "coordinator" ? "Coordinator" : agent.assignment} · ${state === "unknown" ? "Connection unavailable" : agent.status}`,
       last_tool_outcome: null, coverage: "observed", events: [], artifact_refs: [], agent,
+      attention: ownedZone[state], attention_since: agent.updated_at, tool: state === "working" ? "other" : null, segments: [],
     });
   }
   if (scope === "all") for (const session of [...observed].sort((a,b)=>a.session_id.localeCompare(b.session_id))) {
@@ -46,7 +50,8 @@ export function projectSkillRoom(roster: OfficeSkill[], observed: OfficeSession[
     return {
       ...(current ?? { parent_session_id: null, runtime: "codex" as const, state: "idle" as const,
         evidence: "local_transcript" as const, started_at: null, last_event_at: null,
-        last_tool_outcome: null, coverage: "observed" as const, events: [], artifact_refs: [] }),
+        last_tool_outcome: null, coverage: "observed" as const, events: [], artifact_refs: [],
+        attention: "done" as const, attention_since: null, tool: null, segments: [] }),
       session_id: `skill:${skill.id}`, role_ids: [skill.id], skill, sessions, standby: !current,
       activity_label: current ? `${sessions.length} linked ${sessions.length === 1 ? "session" : "sessions"} · ${current.activity_label}` : "Standby · No linked task",
     };

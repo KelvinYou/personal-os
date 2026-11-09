@@ -10,7 +10,9 @@ export interface WalkInput { forward: number; side: number; turn: number; run?: 
 export const OFFICE_SCALE = 1.37;
 export const officeParams = sceneParams(OFFICE_SCALE);
 type Rect = { x: number; z: number; halfX: number; halfZ: number };
-export interface WalkWorld { minX: number; maxX: number; minZ: number; maxZ: number; ground: GroundPoint[]; obstacles: Rect[]; cameraWalls: Rect[]; floor: GroundPoint[]; bounds: FloorBox; boxes: FloorBox[]; cameraBoxes: FloorBox[]; radius: number; sim: FloorWorld }
+export interface WalkWorld { minX: number; maxX: number; minZ: number; maxZ: number; ground: GroundPoint[]; obstacles: Rect[]; cameraWalls: Rect[]; floor: GroundPoint[]; bounds: FloorBox; boxes: FloorBox[]; cameraBoxes: FloorBox[]; radius: number; sim: FloorWorld;
+  /** Scene standard §4: a scene may fix one walking speed (m/s × worldScale) and drop run. */
+  walkSpeed?: number }
 export const createPlayer = (): PlayerPose => ({ x: 2, z: 9, yaw: 0, pitch: -.08, moving: false, vx: 0, vz: 0, facing: 0, lookIdle: 0 });
 const box = (x: number, z: number, width: number, depth: number): Rect => ({ x, z, halfX: width / 2, halfZ: depth / 2 });
 export function walkWorld(count: number): WalkWorld {
@@ -31,7 +33,8 @@ export function advancePlayer(player: PlayerPose, input: WalkInput, seconds: num
   const dt = clampDt(seconds);
   // From the overview (frameYaw given) input is relative to that camera and the player yaw is left alone.
   if (frameYaw === undefined) player.yaw -= input.turn * dt * STANDARD.keyTurnRate;
-  const { vx, vz, facing } = stepLocomotion(frameYaw === undefined ? player : { yaw: frameYaw, vx: player.vx, vz: player.vz, facing: player.facing }, input, dt, officeParams);
+  const params = world.walkSpeed ? { ...officeParams, walkSpeed: world.walkSpeed, runSpeed: world.walkSpeed } : officeParams;
+  const { vx, vz, facing } = stepLocomotion(frameYaw === undefined ? player : { yaw: frameYaw, vx: player.vx, vz: player.vz, facing: player.facing }, input, dt, params);
   player.vx = vx; player.vz = vz; player.facing = facing;
   // Chase camera in every view: the view swings behind the avatar while A/D/W carry it, unless the player is looking around.
   player.lookIdle = input.turn ? 0 : player.lookIdle + dt;
