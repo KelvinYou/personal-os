@@ -6,7 +6,7 @@
 set -euo pipefail
 PORT="${1:-${VERIFY_PORT:-3041}}"
 ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
-STATE="$ROOT/web/test-results/verify-web/.run-$PORT"
+STATE="${VERIFY_STATE_ROOT:-$ROOT/web/.verify-web}/.run-$PORT"
 mkdir -p "$STATE"
 
 if [ -f "$STATE/pid" ] && kill -0 "$(cat "$STATE/pid")" 2>/dev/null; then

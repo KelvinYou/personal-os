@@ -5,7 +5,7 @@
 //     --heading "Flows" [--wait-for "css" | "iframe >> css"]... [--click "Button name"]...
 //     [--expect-text "text"]... [--label flows] [--width 390] [--full] [--dark]
 // Always fails on page errors and on horizontal page scroll (UI rule: none at 320px).
-// Evidence: web/test-results/verify-web/<stamp>-<label>/ {before.png, after.png, evidence.json}
+// Evidence: web/.verify-web/<stamp>-<label>/ (outside Playwright's outputDir, which every run clears) {before.png, after.png, evidence.json}
 // Records every step, page errors, console errors, and non-GET /api/ requests (side effects).
 import fs from "node:fs";
 import path from "node:path";
@@ -29,7 +29,7 @@ const full = args.includes("--full"); // full-page after.png, for sections below
 const dark = args.includes("--dark"); // same class toggle the browser specs use
 
 const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-const out = path.resolve("test-results", "verify-web", `${stamp}-${label}`);
+const out = path.resolve(one("--out-root", ".verify-web"), `${stamp}-${label}`);
 fs.mkdirSync(out, { recursive: true });
 
 const evidence = { route, port: Number(port), width, started_at: new Date().toISOString(), steps: [], page_errors: [], console_errors: [], failed_responses: [], writes: [], result: "fail" };
@@ -37,7 +37,7 @@ const step = (action, outcome, ok = true) => { evidence.steps.push({ action, out
 
 const browser = await chromium.launch({ channel: process.env.CHROME_PATH ? undefined : "chrome", executablePath: process.env.CHROME_PATH, args: ["--enable-webgl", "--use-gl=angle", "--use-angle=swiftshader"] });
 try {
-  const page = await browser.newPage({ viewport: { width, height: 1000 } });
+  const page = await browser.newPage({ viewport: { width, height: 1000 }, ...(args.includes("--reduced-motion") ? { reducedMotion: "reduce" } : {}) });
   page.on("pageerror", e => evidence.page_errors.push(e.message));
   page.on("console", m => { if (m.type() === "error") evidence.console_errors.push(m.text()); });
   page.on("response", r => { if (r.status() >= 400) evidence.failed_responses.push(`${r.status()} ${r.url()}`); });
@@ -70,8 +70,21 @@ try {
     step(`expect text "${t}"`, "visible");
   }
   await page.screenshot({ path: path.join(out, "after.png"), fullPage: full, caret: "initial" });
+  // Available scene metrics travel with the capture; do not rebuild ad-hoc stat scripts.
+  evidence.render_stats = [];
+  for (const frame of page.frames()) {
+    const stats = await frame.evaluate(() => [...document.querySelectorAll("[data-render-stats]")].map(el => {
+      try { return JSON.parse(el.getAttribute("data-render-stats")); } catch { return null; }
+    }).filter(Boolean));
+    evidence.render_stats.push(...stats);
+  }
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   step("no horizontal page scroll", overflow > 1 ? `page is ${overflow}px wider than the viewport` : "ok", overflow <= 1);
+  if (args.includes("--read-only")) step("no API writes", evidence.writes.length ? evidence.writes.join(" | ") : "none", evidence.writes.length === 0);
+  if (args.includes("--asset-strict")) {
+    const failed = evidence.failed_responses.filter(line => !line.includes("/favicon.ico"));
+    step("asset and page responses", failed.length ? failed.join(" | ") : "none failed", failed.length === 0);
+  }
   step("page errors", evidence.page_errors.length ? evidence.page_errors.join(" | ") : "none", evidence.page_errors.length === 0);
   evidence.result = "pass";
 } catch (e) {

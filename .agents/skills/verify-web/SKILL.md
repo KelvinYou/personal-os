@@ -55,7 +55,10 @@ accessible names, matching `web/tests/browser/*.spec.ts`. Per-feature commands: 
 
 ## Evidence
 
-Each drive writes `web/test-results/verify-web/<UTC stamp>-<label>/` (gitignored):
+Each drive writes `web/.verify-web/<UTC stamp>-<label>/` (gitignored). Server ownership
+(`.run-<port>/pid`) lives there too. Never move either under `web/test-results/`: every
+Playwright run (`make test-browser`, `make scene-check`) deletes that folder, which orphans
+the server and erases evidence. Contents:
 `before.png`, `after.png`, `evidence.json` with every step and its outcome, `page_errors`,
 `console_errors`, `failed_responses`, and `writes` (non-GET `/api/` requests = side effects).
 
@@ -69,7 +72,7 @@ Proof standards:
 - Baseline noise, not a failure: one `404 (Not Found)` console error = browser favicon fetch
   (`/favicon.ico` has no route); it never appears in `failed_responses`.
 - Privacy: Finance amounts are masked by default. Never click **Show amounts** in a captured
-  journey, and never copy finance screenshots outside `web/test-results/`.
+  journey, and never copy finance screenshots outside `web/.verify-web/`.
 
 ## Cleanup
 
@@ -79,6 +82,8 @@ Proof standards:
 
 Kills only the process group `launch.sh` started, removes `.next-verify-<port>` and the run state,
 and keeps every evidence folder. Run it after every failed iteration too. Never `pkill node/next`.
+If the pid file is gone, it kills nothing: it names the remaining listener and, when that
+matches `launch.sh`'s command, prints the exact `kill -TERM -- -<pgid>` to run after you check it.
 
 ## Feature map upkeep
 
@@ -86,3 +91,17 @@ and keeps every evidence folder. Run it after every failed iteration too. Never 
 control or entry point, update that feature file in the same change and drive it once. If a
 journey fails because the app no longer behaves as mapped, decide: doc drift (fix the map) or
 product regression (report it; never weaken the journey to make it pass).
+
+## Warm 3D construction adapter
+
+For repeated 3D edits use `make scene-preview SCENE=office|characters|home` and
+`make scene-stop` ([workflow guide](../../../docs/design/3d-world-workflow.md)).
+This reuses the launch/doctor/drive/cleanup scripts with `VERIFY_STATE_ROOT` set to
+`web/.scene-preview/`, separate from the default `web/.verify-web/`. `VERIFY_KEEP_BUILD=1` keeps the owned
+Next build cache on cleanup. Default verify-web behaviour and cleanup remain unchanged.
+
+The driver also accepts `--out-root <directory>`, `--reduced-motion`, `--read-only`
+(fail on API writes) and `--asset-strict` (fail on non-favicon HTTP errors).
+Available `data-render-stats` values (including same-origin iframe scenes) are included in evidence.json.
+Warm previews are iterative evidence; final acceptance follows the scene standard's
+changed-file scope map and still requires opening the screenshots.
